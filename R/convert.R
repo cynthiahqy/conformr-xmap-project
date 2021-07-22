@@ -16,15 +16,27 @@
 #' destination codes to convert to.
 #' @param values_from A string specifying which column in `data` to get cell values from.
 #' @param values_to A string specifying the name of the new column created to store
-#' the distributed values.
+#' the distributed values. Defaults to "value_new"
 #' @param weights A string specifying which column in `code_dict` to get the
 #' weights to distribute `values_from` between `code_from` and `code_to`
 #' @return
 #' @export
 #'
 #' @examples
-convert <- function(data, code_dict, code_from, code_to, values_from, values_to, weights){
-  # ---- input checks
-  assertthat::assert_that(has_name(data, code_from) & has_name(code_dict, code_from))
+convert <- function(data, code_dict, code_from, code_to, values_from, values_to = NULL, weights){
+  # ---- input existence checks ----
+  ### code_from exists in both data & code_dict
+  assertthat::assert_that(has_name(data, code_from))
+  assertthat::assert_that(has_name(code_dict, code_from))
+  ### code_to exists in code_dict
+  assertthat::assert_that(has_name(code_dict, code_to))
 
+  ### values_from exists in data
+  assertthat::assert_that(has_name(data, values_from))
+  ### values_to is given or created
+  values_to %||% "value_new"
+  ### weights are provided
+  assertthat::assert_that(has_name(code_dict, weights))
+
+  # ---- code_dict checks ----
 }

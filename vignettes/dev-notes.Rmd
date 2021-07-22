@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-#library(CONCORD)
+library(CONCORD)
 library(tidyverse)
 ```
 
@@ -125,6 +125,6 @@ nrow(df_codes) == nrow(distinct(df_codes))
   * `code_from`
   * `code_to`
   * `value_from` -- one column, eventually multiple column (e.g. multiple series from INDSTAT) via tidyselect?
-  * `value_to`
+  * `value_to`-- one to one case would just not take value_ arguments (but you would have to check for one-to-one correspondence)
   * `weights`
 
