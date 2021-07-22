@@ -1,0 +1,95 @@
+---
+title: "dev-notes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dev-notes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+#library(CONCORD)
+library(tidyverse)
+```
+
+# Prototype
+```{r test-setup}
+## make test data
+origin_codes <- c("x001", "x002", "x003", "x004")
+cases <- list(ABC = tibble(code_o = origin_codes,
+                           value_o = rep(10, length(origin_codes))
+                           ),
+              XYZ = tibble(code_o = origin_codes,
+                           value_o = rep(100, length(origin_codes))
+                           )
+              )
+df_origin <- cases %>% bind_rows(.id = "case")
+
+## make test correspondence table
+df_codes <- tribble(~code_d, ~code_o,
+                    "A1", "x001", # one-to-one
+                    "B2", "x002", # many-to-one
+                    "B2", "x003", # one-to-many
+                    "C3", "x004",
+                    "C4", "x004",
+                    "C5", "x004",
+                    "C6", "x004")
+
+## generate default weights
+df_weights <- df_codes %>%
+  group_by(code_o) %>%
+  mutate(n_dest = n_distinct(code_d),
+         weight = 1/n_dest) %>%
+  ungroup()
+```
+
+```{r apply-transformation}
+df_merged <- df_origin %>%
+  right_join(x = .,
+             y = df_weights,
+             by = c("code_o")) %>%
+  mutate(weight_value = weight * value_o)
+
+df_merged %>%
+  group_by(case) %>%
+  group_by(code_d, .add = TRUE) %>%
+  summarise(target_value = sum(weight_value))
+```
+
+Tests
+* `df_codes` has no duplication if used for making weights.
+
+```{r draft-tests}
+## no duplication of code correspondences
+nrow(df_codes) == nrow(distinct(df_codes))
+## check every origin value has somewhere to go
+all(unique(df_origin$code_o) %in% unique(df_weights$code_o))
+## check weights on origin values sum to 1 for each origin code
+### conversation of value
+df_weights %>%
+  group_by(code_o) %>%
+  summarise(total_w = sum(weight)) %>%
+  filter(total_w != 1)
+```
+Informative
+```{r draft-messages}
+## flag if any origin values need spliting
+if(any(df_weights$n_dest != 1)){
+  message("some origin values will be split")
+}
+
+
+```
+
+# Functional Workflow
+```{r draft-functions}
+
+```
+
