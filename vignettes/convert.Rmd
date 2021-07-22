@@ -15,22 +15,23 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(CONCORD)
-library(tidyverse)
+library(dplyr)
 ```
 
 # Prototype
-```{r test-setup}
+## Data 
+```{r test-data}
 ## make test data
 origin_codes <- c("x001", "x002", "x003", "x004")
 cases <- list(ABC = tibble(code_o = origin_codes,
                            value_o = rep(10, length(origin_codes))
-                           ),
-              XYZ = tibble(code_o = origin_codes,
-                           value_o = rep(100, length(origin_codes))
-                           )
-              )
-df_origin <- cases %>% bind_rows(.id = "case")
+),
+XYZ = tibble(code_o = origin_codes,
+             value_o = rep(100, length(origin_codes))
+)
+)
+
+(df_origin <- cases %>% bind_rows(.id = "case"))
 
 ## make test correspondence table
 df_codes <- tribble(~code_d, ~code_o,
@@ -43,43 +44,54 @@ df_codes <- tribble(~code_d, ~code_o,
                     "C6", "x004")
 
 ## generate default weights
-df_weights <- df_codes %>%
+(df_weights <- df_codes %>%
+    # ---- make_weights() ----
   group_by(code_o) %>%
-  mutate(n_dest = n_distinct(code_d),
-         weight = 1/n_dest) %>%
-  ungroup()
+    mutate(n_dest = n_distinct(code_d),
+           weight = 1/n_dest) %>%
+    ungroup())
 ```
 
+## Script conversion
 ```{r apply-transformation}
-df_merged <- df_origin %>%
+## intermediate merge
+(df_merged <- df_origin %>%
   right_join(x = .,
              y = df_weights,
              by = c("code_o")) %>%
   mutate(weight_value = weight * value_o)
+)
 
-df_merged %>%
+## final data
+(df_convert_script <- df_origin %>%
   group_by(case) %>%
-  group_by(code_d, .add = TRUE) %>%
-  summarise(target_value = sum(weight_value))
-```
-
-```{r}
-df_origin %>%
-  group_by(case) %>%
-  ## convert
+  # ---- IN convert() ----
   right_join(x = .,
              y = df_weights,
              by = c("code_o")) %>%
   mutate(weight_value = weight * value_o) %>%
   group_by(code_d, .add = TRUE) %>%
-  summarise(target_value = sum(weight_value)) %>%
-  ## convert output maintains grouping
+  summarise(target_value = sum(weight_value))
+  # ---- OUT convert() ----
+)
+```
+
+## `convert()` vs. script
+```{r use-pkg-fnc}
+df_convert_fnc <- df_origin %>%
+  group_by(case) %>%
+  conformr::convert(., df_weights, 
+                    code_from = "code_o", code_to = "code_d",
+                    values_from = "value_o", values_to = "target_value", 
+                    weight_col = "weight")
+
+assertthat::are_equal(df_convert_script, df_convert_fnc)
 ```
 
 
-# Tests
+# Function Architecture
+## Input tests
 * `df_codes` has no duplication if used for making weights.
-
 ```{r draft-tests}
 
 ## check every origin value has somewhere to go
@@ -91,7 +103,7 @@ df_weights %>%
   summarise(total_w = sum(weight)) %>%
   filter(total_w != 1)
 ```
-Informative
+
 ```{r draft-messages}
 ## flag if any origin values need spliting
 if(any(df_weights$n_dest != 1)){
@@ -103,7 +115,7 @@ if(any(df_weights$n_dest != 1)){
 
 ```
 
-## Exception catching & handling
+## Default corrections?
 ### Missing correspondences in `code_dict`
 ```{r}
 ## no duplicate information
@@ -117,14 +129,5 @@ nrow(df_codes) == nrow(distinct(df_codes))
 * [] generate default `weights`
 * check `weights` sum to 1 for each unique `from`
 
-# Function Architecture
-* `convert()`
-  * `data`
-  * `groups` -- can I inherit group statements?
-  * `code_dict` -- weights eventually optional, but not for initial prototype
-  * `code_from`
-  * `code_to`
-  * `value_from` -- one column, eventually multiple column (e.g. multiple series from INDSTAT) via tidyselect?
-  * `value_to`-- one to one case would just not take value_ arguments (but you would have to check for one-to-one correspondence)
-  * `weights`
+
 
