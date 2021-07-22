@@ -1,9 +1,9 @@
-Package: CONCORD
+Package: conformr
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Cynthia",
+           family = "Huang",
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -20,3 +20,8 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+Imports: 
+    dplyr (>= 1.0.0),
+    rlang,
+    assertthat
+    

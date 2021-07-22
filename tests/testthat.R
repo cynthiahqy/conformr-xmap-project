@@ -1,4 +1,4 @@
 library(testthat)
-library(CONCORD)
+library(conformr)
 
-test_check("CONCORD")
+test_check("conformr")
