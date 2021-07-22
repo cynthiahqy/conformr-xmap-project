@@ -63,12 +63,25 @@ df_merged %>%
   summarise(target_value = sum(weight_value))
 ```
 
-Tests
+```{r}
+df_origin %>%
+  group_by(case) %>%
+  ## convert
+  right_join(x = .,
+             y = df_weights,
+             by = c("code_o")) %>%
+  mutate(weight_value = weight * value_o) %>%
+  group_by(code_d, .add = TRUE) %>%
+  summarise(target_value = sum(weight_value)) %>%
+  ## convert output maintains grouping
+```
+
+
+# Tests
 * `df_codes` has no duplication if used for making weights.
 
 ```{r draft-tests}
-## no duplication of code correspondences
-nrow(df_codes) == nrow(distinct(df_codes))
+
 ## check every origin value has somewhere to go
 all(unique(df_origin$code_o) %in% unique(df_weights$code_o))
 ## check weights on origin values sum to 1 for each origin code
@@ -86,10 +99,32 @@ if(any(df_weights$n_dest != 1)){
 }
 
 
-```
 
-# Functional Workflow
-```{r draft-functions}
 
 ```
+
+## Exception catching & handling
+### Missing correspondences in `code_dict`
+```{r}
+## no duplicate information
+## TODO: test data
+nrow(df_codes) == nrow(distinct(df_codes))
+```
+* `distinct()` --> remove duplicate entries with the same info
+
+### Missing weights in `code_dict`
+* `weights` cant be empty
+* [] generate default `weights`
+* check `weights` sum to 1 for each unique `from`
+
+# Function Architecture
+* `convert()`
+  * `data`
+  * `groups` -- can I inherit group statements?
+  * `code_dict` -- weights eventually optional, but not for initial prototype
+  * `code_from`
+  * `code_to`
+  * `value_from` -- one column, eventually multiple column (e.g. multiple series from INDSTAT) via tidyselect?
+  * `value_to`
+  * `weights`
 
