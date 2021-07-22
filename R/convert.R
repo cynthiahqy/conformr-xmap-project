@@ -39,4 +39,14 @@ convert <- function(data, code_dict, code_from, code_to, values_from, values_to 
   assertthat::assert_that(has_name(code_dict, weights))
 
   # ---- code_dict checks ----
+  ### no duplicate instruction in code_dict // probably safe to correct inside fnc
+  assertthat::assert_that(nrow(code_dict) == nrow(distinct(code_dict)))
+  ### every code in data has a destination instruction in code_dict
+  assertthat::assert_that(all(unique(data[code_from]) %in% unique(code_dict[code_from])))
+  ### value distribution weights total exactly 1 for each code_from (no value loss or creation)
+  t_weight_by_code_from <- code_dict %>%
+    dplyr::group_by(!!sym(code_from)) %>%
+    dplyr::summarise(t_weight = sum(!!sym(weights)))
+  assertthat::assert_that(all(t_weight_by_code_from$t_weight == 1))
+
 }
