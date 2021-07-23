@@ -22,30 +22,31 @@
 #' @return
 #' @export
 #'
-#' @importFrom assertthat assert_that
+#' @importFrom assertthat has_name
 #' @examples
 #'
 #'
 convert <- function(data, code_dict, code_from, code_to, values_from, values_to = NULL, weight_col){
   # ---- input existence checks ----
   ### code_from exists in both data & code_dict
-  assert_that(assertthat::has_name(data, code_from))
-  assert_that(assertthat::has_name(code_dict, code_from))
+  assertthat::assert_that(has_name(data, code_from))
+  assertthat::assert_that(has_name(code_dict, code_from))
   ### code_to exists in code_dict
-  assert_that(assertthat::has_name(code_dict, code_to))
+  assertthat::assert_that(has_name(code_dict, code_to))
 
   ### values_from exists in data
-  assert_that(assertthat::has_name(data, values_from))
+  assertthat::assert_that(has_name(data, values_from))
+  assertthat::assert_that(is.numeric(data[[values_from]]))
   ### values_to is given or created
   values_to %||% "value_new"
   ### weights are provided
-  assert_that(assertthat::has_name(code_dict, weight_col))
+  assertthat::assert_that(has_name(code_dict, weight_col))
 
   # ---- code_dict checks ----
   ### no duplicate instruction in code_dict // probably safe to correct inside fnc
-  assert_that(nrow(code_dict) == nrow(dplyr::distinct(code_dict)))
+  assertthat::assert_that(nrow(code_dict) == nrow(dplyr::distinct(code_dict)))
   ### every code in data has a destination instruction in code_dict
-  assert_that(all(unique(data[code_from]) %in% unique(code_dict[code_from])))
+  assertthat::assert_that(all(unique(data[code_from]) %in% unique(code_dict[code_from])))
   ### value distribution weights total exactly 1 for each code_from (no value loss or creation)
   t_weight_by_code_from <- code_dict %>%
     dplyr::group_by(!!rlang::sym(code_from)) %>%
