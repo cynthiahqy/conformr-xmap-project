@@ -5,4 +5,8 @@
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
 ## usethis namespace: end
+
+#' @importFrom rlang ":=" .data
+#' @importFrom magrittr "%>%"
+
 NULL
