@@ -23,6 +23,7 @@ Imports:
     dplyr (>= 1.0.0),
     rlang,
     assertthat,
-    magrittr
+    magrittr,
+    stringi
 Depends: 
     R (>= 2.10)
