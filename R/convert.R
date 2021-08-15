@@ -42,7 +42,8 @@ convert <- function(data, code_dict, code_from, code_to, values_from, values_to 
   ### weights are provided
   assertthat::assert_that(has_name(code_dict, weight_col))
 
-  # ---- code_dict checks ----
+  # ---- code_dict checks ---- //
+  # TODO: replace with code-dict-tools fncs
   ### no duplicate instruction in code_dict // probably safe to correct inside fnc
   assertthat::assert_that(nrow(code_dict) == nrow(dplyr::distinct(code_dict)))
   ### every code in data has a destination instruction in code_dict
