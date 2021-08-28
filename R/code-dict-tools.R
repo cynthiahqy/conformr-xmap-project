@@ -45,6 +45,11 @@ check_cd_weights <- function(code_dict, code_from, code_to, weight_col){
   assertthat::assert_that(all(t_weight_by_code_from$t_weight == 1))
 }
 
+verify_cd <- function(data, code_dict, code_from, code_to, weight_col, correct = FALSE){
+  ## at least one instruction per code
+  ## instruction is complete (weight check)
+}
+
 make_cd_equal <- function(codes, code_from, code_to){
   ## [] quosures
   code_from = enquo(code_from)
