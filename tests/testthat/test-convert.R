@@ -17,9 +17,9 @@ test_that("convert() output matches toy output", {
                       code_dict = conformr:::toy_AB$code_dict,
                       code_from = "code_A",
                       code_to = "code_B",
-                      values_from = "value_A",
+                      values_from = value_A,
                       values_to = "value_B",
-                      weight_col = "weight")
+                      weight_col = weight)
 
   expect_identical(conformr:::toy_AB$data_out, data_out_fnc)
 })
