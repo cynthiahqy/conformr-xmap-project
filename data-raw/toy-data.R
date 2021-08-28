@@ -24,6 +24,7 @@ cases <- list(
 )
 
 data_A <- cases %>% dplyr::bind_rows(.id = "case")
+grouped_A <- data_A %>% dplyr::group_by(case)
 
 ## make test correspondence table
 codes_BA <- dplyr::tribble(~ code_B, ~ code_A,
@@ -70,9 +71,10 @@ data_AB_out <- AB_merged %>%
   dplyr::summarise(value_B = sum(weight_value), .groups = "drop_last")
 
 toy_AB <- list("data_in" = data_A,
+               "group_in" = grouped_A,
                 "df_codes" = codes_BA,
                 "code_dict" = code_dict_BA,
                 "df_merged" = AB_merged,
                 "data_out" = data_AB_out)
 
-# usethis::use_data(toy_AB, internal = TRUE)
+# usethis::use_data(toy_AB, internal = TRUE, overwrite = TRUE)

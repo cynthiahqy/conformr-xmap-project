@@ -10,8 +10,8 @@ convert(
   code_from,
   code_to,
   values_from,
-  values_to = NULL,
-  weight_col
+  weight_col,
+  values_to = NULL
 )
 }
 \arguments{
@@ -27,11 +27,11 @@ destination codes to convert to.}
 
 \item{values_from}{A string specifying which column in \code{data} to get cell values from.}
 
-\item{values_to}{A string specifying the name of the new column created to store
-the distributed values. Defaults to "value_new"}
-
 \item{weight_col}{A string specifying which column in \code{code_dict} to get the
 weights to distribute \code{values_from} between \code{code_from} and \code{code_to}}
+
+\item{values_to}{A string specifying the name of the new column created to store
+the distributed values. Defaults to "value_new"}
 }
 \value{
 
