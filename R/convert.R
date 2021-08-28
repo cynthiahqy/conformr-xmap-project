@@ -26,7 +26,7 @@
 #' @examples
 #'
 #'
-convert <- function(data, code_dict, code_from, code_to, values_from, values_to = NULL, weight_col){
+convert <- function(data, code_dict, code_from, code_to, values_from, weight_col, values_to = NULL){
   # ---- input existence checks ----
   ### code_from exists in both data & code_dict
   assertthat::assert_that(has_name(data, code_from))
