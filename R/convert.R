@@ -40,8 +40,8 @@ convert <- function(data, code_dict, code_from, code_to, weight_col, values_from
   assertthat::assert_that(has_name(code_dict, code_to))
 
   ### values_from exists in data
-  assertthat::assert_that(has_name(data, rlang::quo_name(q_values)))
-  assertthat::assert_that(is.numeric(data[[rlang::quo_name(q_values)]]))
+  # assertthat::assert_that(has_name(data, rlang::quo_name(q_values)))
+  # assertthat::assert_that(is.numeric(data[[rlang::quo_name(q_values)]]))
   ### weights are provided
   assertthat::assert_that(has_name(code_dict, rlang::quo_name(q_weight)))
 

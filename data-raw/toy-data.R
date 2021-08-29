@@ -66,7 +66,7 @@ AB_merged <- group_in %>%
 ## final data // collapse destination codes with multiple transfers
 data_AB_out <- AB_merged %>%
   dplyr::group_by(code_B, .add = TRUE) %>%
-  dplyr::summarise(across(starts_with("valA_"), ~ sum(.x), names = "{.col}_out"),
+  dplyr::summarise(dplyr::across(starts_with("valA_"), ~ sum(.x), .names = "{.col}_out"),
                    .groups = "drop_last")
 
 toy_AB <- list("data_in" = data_in,

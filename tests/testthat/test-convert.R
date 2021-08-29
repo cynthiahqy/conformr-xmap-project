@@ -3,24 +3,22 @@
 ## prepare data inputs
 ### single case
 case_in <- conformr:::toy_AB$data_in %>%
-  dplyr::filter(case == "ABC")
+  dplyr::filter(country == "AUS")
 ### grouped cases
-group_in <- conformr:::toy_AB$data_in %>%
-  dplyr::group_by(case)
+group_in <- conformr:::toy_AB$group_in
 ### code_dict
 code_dict <- conformr:::toy_AB$code_dict
-code_miss <- code_dict %>% dplyr::filter(code_A != "x004")
+code_miss <- code_dict %>% dplyr::filter(code_A != "x4444")
 
 ## ideal cases ----
 test_that("convert() output matches toy output", {
-  data_out_fnc <- conformr::convert(data = group_in,
+  data_out_fnc <- conformr::convert(data = conformr:::toy_AB$group_in,
                       code_dict = conformr:::toy_AB$code_dict,
                       code_from = "code_A",
                       code_to = "code_B",
-                      values_from = value_A,
-                      names_suffix = "_B",
-                      weight_col = weight) %>%
-    dplyr::rename(value_B = value_A_B)
+                      values_from = starts_with("valA_"), # tidy-select
+                      names_suffix = "_out",
+                      weight_col = weight)
 
   expect_identical(conformr:::toy_AB$data_out, data_out_fnc)
 })
@@ -34,13 +32,12 @@ test_that("convert() output matches toy multi-value output", {
 
 ## bad inputs ----
 test_that("convert() breaks if values_from is not numeric", {
-  expect_error(conformr::convert(data = case_in,
+  expect_error(conformr::convert(data = group_in,
                                  code_dict = code_dict,
                                  code_from = "code_A",
                                  code_to = "code_B",
-                                 values_from = "value_bad", #! BAD INPUT !#
-                                 values_to = "value_B",
-                                 weight_col = "weight"))
+                                 values_from = value_str, #! BAD INPUT !#
+                                 weight_col = weight))
 })
 
 test_that("convert() breaks if total weights don't sum to 1", {
@@ -48,18 +45,16 @@ test_that("convert() breaks if total weights don't sum to 1", {
                                  code_dict = code_dict,
                                  code_from = "code_A",
                                  code_to = "code_B",
-                                 values_from = "value_A",
-                                 values_to = "value_B",
-                                 weight_col = "weight_more" #! BAD INPUT !#
+                                 values_from = valA_100,
+                                 weight_col = weight_more #! BAD INPUT !#
                                  )
                )
   expect_error(conformr::convert(data = case_in,
                                  code_dict = code_dict,
                                  code_from = "code_A",
                                  code_to = "code_B",
-                                 values_from = "value_A",
-                                 values_to = "value_B",
-                                 weight_col = "weight_less" #! BAD INPUT !#
+                                 values_from = valA_100,
+                                 weight_col = weight_less #! BAD INPUT !#
   )
   )
 })
@@ -74,8 +69,7 @@ test_that("convert() breaks if code_from isn't found", {
                                  code_dict = code_dict,
                                  code_from = "!!---MISTAKE---!!",
                                  code_to = "code_B",
-                                 values_from = "value_A",
-                                 values_to = "value_B",
-                                 weight_col = "weight"))
+                                 values_from = value_A,
+                                 weight_col = weight))
 
 })
