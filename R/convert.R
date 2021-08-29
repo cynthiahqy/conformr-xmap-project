@@ -14,7 +14,7 @@
 #' with the codes to convert from.
 #' @param code_to A string specifying which column in `code_dict` contains the
 #' destination codes to convert to.
-#' @param values_from \code{\link[<tidy-select>]{dplyr::dplyr_data_masking}} Column in `data` to get cell values from.
+#' @param values_from `<tidy-select>` columns in `data` to get cell values from.
 #' @param names_suffix A string appended to every `value_from` column name to create column names for transformed values.
 #' Defaults to "_out"
 #' @param weight_col A string specifying which column in `code_dict` to get the
