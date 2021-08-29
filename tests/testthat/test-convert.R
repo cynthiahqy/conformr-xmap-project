@@ -11,18 +11,26 @@ group_in <- conformr:::toy_AB$data_in %>%
 code_dict <- conformr:::toy_AB$code_dict
 code_miss <- code_dict %>% dplyr::filter(code_A != "x004")
 
-## ideal case ----
+## ideal cases ----
 test_that("convert() output matches toy output", {
   data_out_fnc <- conformr::convert(data = group_in,
                       code_dict = conformr:::toy_AB$code_dict,
                       code_from = "code_A",
                       code_to = "code_B",
                       values_from = value_A,
-                      values_to = "value_B",
-                      weight_col = weight)
+                      names_suffix = "_B",
+                      weight_col = weight) %>%
+    dplyr::rename(value_B = value_A_B)
 
   expect_identical(conformr:::toy_AB$data_out, data_out_fnc)
 })
+
+test_that("convert() output matches toy multi-value output", {
+
+}
+)
+
+
 
 ## bad inputs ----
 test_that("convert() breaks if values_from is not numeric", {
