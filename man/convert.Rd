@@ -9,9 +9,9 @@ convert(
   code_dict,
   code_from,
   code_to,
+  weight_col,
   values_from,
-  values_to = NULL,
-  weight_col
+  names_suffix = "_out"
 )
 }
 \arguments{
@@ -25,13 +25,13 @@ with the codes to convert from.}
 \item{code_to}{A string specifying which column in \code{code_dict} contains the
 destination codes to convert to.}
 
-\item{values_from}{A string specifying which column in \code{data} to get cell values from.}
-
-\item{values_to}{A string specifying the name of the new column created to store
-the distributed values. Defaults to "value_new"}
-
 \item{weight_col}{A string specifying which column in \code{code_dict} to get the
 weights to distribute \code{values_from} between \code{code_from} and \code{code_to}}
+
+\item{values_from}{\verb{<tidy-select>} columns in \code{data} to get cell values from.}
+
+\item{names_suffix}{A string appended to every \code{value_from} column name to create column names for transformed values.
+Defaults to "_out"}
 }
 \value{
 

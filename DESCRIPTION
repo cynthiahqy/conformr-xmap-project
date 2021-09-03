@@ -1,13 +1,14 @@
 Package: conformr
-Title: What the Package Does (One Line, Title Case)
+Title: Tools for conforming data across classifications and statistics
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Cynthia",
            family = "Huang",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "29718979+cynthiahqy@users.noreply.github.com",
+           comment = c(ORCID = "0000-0002-9218-987X"))
+Description: conformr provides tools for converting data between classification standards, 
+    and correcting discrepancies in reported and calculated statistics.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
