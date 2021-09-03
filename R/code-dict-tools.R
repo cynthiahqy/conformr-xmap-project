@@ -50,19 +50,36 @@ verify_cd <- function(data, code_dict, code_from, code_to, weight_col, correct =
   ## instruction is complete (weight check)
 }
 
-make_cd_equal <- function(codes, code_from, code_to){
-  ## [] quosures
-  code_from = enquo(code_from)
-  code_to = enquo(code_to)
+#' Create code map from code correspondence with equal weight splits
+#'
+#' Generate code map for transforming values between classification codes,
+#' using all distinct correspondence between two codes.
+#'
+#' @param codes df containing correspondence btween input and output codes
+#' @param code_from column name of input code
+#' @param code_to column name of output
+#'
+#' @return
+#' @export
+#'
+#' @examples
+make_cd_equal <- function(codes, code_from, code_to, name_weight_col = NULL){
 
-  ## [x] no duplicate entries
-  # TODO: switch to warning/ignore as n_distinct in weight creation ensures no double count
-  assertthat::assert_that(nrow(dplyr::distinct(codes, !!code_from, !!code_to)) == nrow(codes))
+  ## get distinct correspondences
+  in_out <- codes %>%
+    dplyr::distinct({{code_from}}, {{code_to}})
 
-  ## [] create weights
-  codes %>%
-    dplyr::group_by(!!code_from) %>%
-    dplyr::mutate(n_dest = n_distinct(!!code_to), ## do not use nrow in case of dups
-                  weight = 1 / n_dest) %>%
-    dplyr::ungroup()
+  ## code names as strings
+
+  ## make column name for weights
+  name_weight_col <- name_weight_col %||% paste("w", deparse(substitute(code_from)), sep = "_")
+
+  code_map <- in_out %>%
+    dplyr::group_by({{code_from}}) %>%
+    dplyr::mutate("n_dest" = dplyr::n(), ## faster than n_distinct()
+                  !!name_weight_col := 1 / n_dest) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-n_dest)
+
+  return(code_map)
 }
