@@ -7,7 +7,7 @@
 \title{conformr: Tools for conforming data across classifications and statistics}
 \description{
 conformr provides tools for converting data between classification standards, 
-    and correcting discrepancies in reported and calculated statistics (such as aggregates, or rates)
+    and correcting discrepancies in reported and calculated statistics.
 }
 \author{
 \strong{Maintainer}: Cynthia Huang \email{29718979+cynthiahqy@users.noreply.github.com} (\href{https://orcid.org/0000-0002-9218-987X}{ORCID})
