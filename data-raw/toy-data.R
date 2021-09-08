@@ -18,15 +18,14 @@ set.seed(1832)
 code_in <- c("x1111", "x2222", "x3333", "x4444", "x5555")
 
 data_in <- tidyr::expand_grid(country = c("AUS", "JPN"),
-                   code_A = code_in) %>%
-  dplyr::mutate(valA_100 = 100,
-                valA_prod = abs(rnorm(nrow(.))) * 10000,
-                value_str = stringi::stri_rand_strings(nrow(.), 5))
-group_in <- data_in %>% dplyr::group_by(country)
+                   std_A = code_in) %>%
+  dplyr::mutate(A_100 = 100,
+                A_prod = abs(rnorm(nrow(.))) * 10000) %>%
+  dplyr::mutate(value_str = stringi::stri_rand_strings(nrow(.), 5)) ## bad value!)
 
 
 ## make test correspondence table
-codes_BA <- dplyr::tribble(~ code_B, ~ code_A,
+codes_BA <- dplyr::tribble(~ std_B, ~ std_A,
                                 "A1", "x1111", # one-to-one
                                 "B2", "x2222", # many-to-one
                                 "B2", "x3333",
@@ -42,10 +41,10 @@ codes_BA <- dplyr::tribble(~ code_B, ~ code_A,
 ## generate code_dict with weights
 eps <- 0.001 # small "dust" to mess up weights
 
-code_dict_BA <- codes_BA %>%
-    dplyr::group_by(code_A) %>%
-    dplyr::mutate(n_dest = dplyr::n_distinct(code_B),
-           weight = 1 / n_dest) %>%
+weights_BA <- codes_BA %>%
+    dplyr::group_by(std_A) %>%
+    dplyr::mutate(n_dest = dplyr::n_distinct(std_B),
+                  weight = 1 / n_dest) %>%
     dplyr::ungroup() %>%
   # add bad weights
     dplyr::mutate(weight_more = dplyr::case_when(weight == 1 ~ weight,
@@ -55,25 +54,21 @@ code_dict_BA <- codes_BA %>%
                                           TRUE ~ weight)
                   )
 
-
-## intermediate merge of code & value transfer weights
-AB_merged <- group_in %>%
-  dplyr::right_join(x = .,
-                    y = code_dict_BA,
-                    by = c("code_A")) %>%
-  dplyr::mutate(across(starts_with("valA_"), ~ .x * weight))
+## generate data_map
+data_map_BA <- dplyr::left_join(data_in, weights_BA, by = "std_A")
 
 ## final data // collapse destination codes with multiple transfers
-data_AB_out <- AB_merged %>%
-  dplyr::group_by(code_B, .add = TRUE) %>%
-  dplyr::summarise(dplyr::across(starts_with("valA_"), ~ sum(.x), .names = "{.col}_out"),
+data_AB_out <- data_map_BA %>%
+  dplyr::group_by(country) %>%
+  dplyr::mutate(across(starts_with("A_"), ~ .x * weight)) %>%
+  dplyr::group_by(std_B, .add = TRUE) %>%
+  dplyr::summarise(dplyr::across(starts_with("A_"), ~ sum(.x), .names = "{.col}_out"),
                    .groups = "drop_last")
 
 toy_AB <- list("data_in" = data_in,
-               "group_in" = group_in,
-                "df_codes" = codes_BA,
-                "code_dict" = code_dict_BA,
-                "df_merged" = AB_merged,
+                "codes_BA" = codes_BA,
+                "weights_BA" = weights_BA,
+                "data_map" = data_map_BA,
                 "data_out" = data_AB_out)
 
 # usethis::use_data(toy_AB, internal = TRUE, overwrite = TRUE)
