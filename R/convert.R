@@ -16,7 +16,7 @@
 #' @param names_suffix A string appended to every `value_from` column name to create column names for transformed values.
 #' Defaults to "_out"
 #' @param weights Variable in `data_map` to get the
-#' weights to distribute `values_from` between `code_from` and `code_to`
+#' weights to distribute `values_from` between `code_in` and `code_out`
 #' @return
 #' @export
 #'
@@ -27,7 +27,7 @@
 #'
 convert <- function(data_map, code_in, code_out, weights, values_from, names_suffix = "_out"){
   # ---- correspondence checks ---- //
-  ### value distribution weights total exactly 1 for each code_from (no value loss or creation)
+  ### value distribution weights total exactly 1 for each code_in (no value loss or creation)
   sum_weights <- data_map %>%
     dplyr::group_by({{ code_in }}, .add = TRUE) %>%
     dplyr::summarise(t_weight = sum({{ weights }}))

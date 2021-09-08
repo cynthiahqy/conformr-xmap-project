@@ -22,7 +22,7 @@ and correspondence and weights between codes, for every data value}
 \item{code_out}{Variable in \code{data_map} containing the destination codes to convert to.}
 
 \item{weights}{Variable in \code{data_map} to get the
-weights to distribute \code{values_from} between \code{code_from} and \code{code_to}}
+weights to distribute \code{values_from} between \code{code_in} and \code{code_out}}
 
 \item{values_from}{\verb{<tidy-select>} columns in \code{data-map} to get cell values from.}
 

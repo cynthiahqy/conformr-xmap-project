@@ -39,8 +39,8 @@ test_that("convert() output matches toy multi-value output", {
 test_that("convert() breaks if values_from is not numeric", {
   expect_error(conformr::convert(data = group_in,
                                  code_dict = code_dict,
-                                 code_from = "code_A",
-                                 code_to = "code_B",
+                                 code_in = "code_A",
+                                 code_out = "code_B",
                                  values_from = value_str, #! BAD INPUT !#
                                  weight_col = weight))
 })
@@ -48,16 +48,16 @@ test_that("convert() breaks if values_from is not numeric", {
 test_that("convert() breaks if total weights don't sum to 1", {
   expect_error(conformr::convert(data = case_in,
                                  code_dict = code_dict,
-                                 code_from = "code_A",
-                                 code_to = "code_B",
+                                 code_in = "code_A",
+                                 code_out = "code_B",
                                  values_from = valA_100,
                                  weight_col = weight_more #! BAD INPUT !#
                                  )
                )
   expect_error(conformr::convert(data = case_in,
                                  code_dict = code_dict,
-                                 code_from = "code_A",
-                                 code_to = "code_B",
+                                 code_in = "code_A",
+                                 code_out = "code_B",
                                  values_from = valA_100,
                                  weight_col = weight_less #! BAD INPUT !#
   )
@@ -69,11 +69,11 @@ test_that("convert() breaks if to-from mapping is missing", {
   expect_error()
 })
 
-test_that("convert() breaks if code_from isn't found", {
+test_that("convert() breaks if code_in isn't found", {
   expect_error(conformr::convert(data = case_in,
                                  code_dict = code_dict,
-                                 code_from = "!!---MISTAKE---!!",
-                                 code_to = "code_B",
+                                 code_in = "!!---MISTAKE---!!",
+                                 code_out = "code_B",
                                  values_from = value_A,
                                  weight_col = weight))
 

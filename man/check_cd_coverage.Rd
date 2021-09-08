@@ -4,21 +4,21 @@
 \alias{check_cd_coverage}
 \title{Check code-dict coverage}
 \usage{
-check_cd_coverage(data, code_dict, code_from)
+check_cd_coverage(data, code_dict, code_in)
 }
 \arguments{
-\item{data}{<df> with data to be converted. Must contain \code{code_from} column.}
+\item{data}{<df> with data to be converted. Must contain \code{code_in} column.}
 
-\item{code_dict}{<dataframe> with instructions for \code{code_from} into target schema.}
+\item{code_dict}{<dataframe> with instructions for \code{code_in} into target schema.}
 
-\item{code_from}{col containing codes to be converted}
+\item{code_in}{col containing codes to be converted}
 }
 \value{
 
 }
 \description{
-Checks if every \code{code_from} in \code{data} has
+Checks if every \code{code_in} in \code{data} has
 at least one destination (row) in \code{code_dict}.
-Warns if any \code{data$code_from} is not present in \code{code_dict$code_from}
+Warns if any \code{data$code_in} is not present in \code{code_dict$code_in}
 }
 \concept{code_dict helpers}

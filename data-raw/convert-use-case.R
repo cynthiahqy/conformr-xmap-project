@@ -76,8 +76,8 @@ if (FALSE) {
     dplyr::group_by(case) %>%
     conformr::convert(data = .,
                     code_dict = code_dict_BA,
-                    code_from = code_A,
-                    code_to = code_B,
+                    code_in = code_A,
+                    code_out = code_B,
                     values_from = value_A,
                     values_to = "value_B",
                     weight_col = weight)

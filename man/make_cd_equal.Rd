@@ -4,14 +4,14 @@
 \alias{make_cd_equal}
 \title{Create code map from code correspondence with equal weight splits}
 \usage{
-make_cd_equal(codes, code_from, code_to, name_weight_col = NULL)
+make_cd_equal(codes, code_in, code_out, name_weight_col = NULL)
 }
 \arguments{
 \item{codes}{df containing correspondence btween input and output codes}
 
-\item{code_from}{column name of input code}
+\item{code_in}{column name of input code}
 
-\item{code_to}{column name of output}
+\item{code_out}{column name of output}
 }
 \value{
 
