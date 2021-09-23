@@ -17,14 +17,15 @@ RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown,
+    stringi,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
     dplyr (>= 1.0.0),
     rlang,
+    assertr,
     assertthat,
     magrittr,
-    stringi
 Depends: 
     R (>= 2.10)

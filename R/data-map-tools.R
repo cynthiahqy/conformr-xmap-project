@@ -1,6 +1,6 @@
 # Completeness Checks
 
-#' Verify data map weights
+#' Verify data/code map weights
 #'
 #' Check that weights applied to given code_in/value_from add up to 1.
 #' Ensures that no value is created or lost in the transformation process.
@@ -8,19 +8,41 @@
 #'
 #' NA values of weights will (cause error/be fixed?)
 #'
-#' @param data_map
+#' @param map code or data map with correspondence between code_in and code_out
 #' @param code_in
 #' @param code_out
+#' @param weights
 #'
-#' @return
+#' @return data_map
 #' @export
 #'
 #' @family  data map tools
 #' @seealso [dm_check_values()], [dm_check_codes()]
 #'
 #' @examples
-dm_check_weights <- function(data_map, code_in, code_out, na = c('rm', 'zero')){
+dm_check_weights <- function(map, code_in, code_out, weights){
 
+# calculate and check total weights
+  t_weight <- map %>%
+    dplyr::group_by({{ code_in }}, .add = TRUE) %>%
+    dplyr::mutate(total_in_weight = sum({{ weights }})) %>%
+    dplyr::ungroup()
+
+# write predicate
+  equal_one <- function(x) if (x != 1) return(FALSE)
+# check total using assertr
+  outcome <- assertr::assert(data = t_weight,
+                             predicate = equal_one,
+                             total_in_weight,
+                             success_fun = assertr::success_logical,
+                             error_fun = assertr::error_return)
+
+# return data_map or error report
+  if (outcome == TRUE){
+    return(map)
+  } else {
+    return(outcome)
+  }
 }
 
 
