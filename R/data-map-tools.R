@@ -25,13 +25,13 @@
 dm_check_weights <- function(map, code_in, code_out, weights, ...){
 # assertr params
   params <- list(...)
-  params$success_fun <- params$success_fun %||% assertr::success_logical
+  params$success_fun <- params$success_fun %||% assertr::success_continue
   params$error_fun <- params$error_fun %||% assertr::error_logical
 
 # calculate and check total weights
   t_weight <- map %>%
     dplyr::group_by({{ code_in }}, .add = TRUE) %>%
-    dplyr::mutate(total_in_weight = sum({{ weights }})) %>%
+    dplyr::mutate(t_weight_by_in = sum({{ weights }})) %>%
     dplyr::ungroup()
 
 # write predicate
@@ -39,7 +39,7 @@ dm_check_weights <- function(map, code_in, code_out, weights, ...){
 # check total using assertr
   outcome <- assertr::assert(data = t_weight,
                              predicate = equal_one,
-                             total_in_weight,
+                             t_weight_by_in,
                              success_fun = params$success_fun,
                              error_fun = params$error_fun)
 
