@@ -12,15 +12,21 @@
 #' @param code_in
 #' @param code_out
 #' @param weights
+#' @param ... named arguments passed to assertr fncs.
+#' Specifically `success_fun` and `error_fun` for modifying function output
 #'
-#' @return data_map
+#' @return map
 #' @export
 #'
 #' @family  data map tools
 #' @seealso [dm_check_values()], [dm_check_codes()]
 #'
 #' @examples
-dm_check_weights <- function(map, code_in, code_out, weights){
+dm_check_weights <- function(map, code_in, code_out, weights, ...){
+# assertr params
+  params <- list(...)
+  params$success_fun <- params$success_fun %||% assertr::success_logical
+  params$error_fun <- params$error_fun %||% assertr::error_logical
 
 # calculate and check total weights
   t_weight <- map %>%
@@ -34,15 +40,11 @@ dm_check_weights <- function(map, code_in, code_out, weights){
   outcome <- assertr::assert(data = t_weight,
                              predicate = equal_one,
                              total_in_weight,
-                             success_fun = assertr::success_logical,
-                             error_fun = assertr::error_return)
+                             success_fun = params$success_fun,
+                             error_fun = params$error_fun)
 
 # return data_map or error report
-  if (outcome == TRUE){
-    return(map)
-  } else {
-    return(outcome)
-  }
+  return(outcome)
 }
 
 
