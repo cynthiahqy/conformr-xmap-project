@@ -95,10 +95,10 @@ Some contrived snippets for further illustration (real datasets are much too lar
 ## Planned Features
 
 For implementing & using data maps:
-* single step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using data maps: `convert()`
+* single step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using data maps: `convert()`. Note that many-to-many transformations are just combinations of the above cases.
 * helpers for verifying and creating valid data maps
 * helpers for generating custom weights -- e.g. based off some reference dataset
-* TBD: an explicit _data_map_ object, perhaps as an extension on _tibbles_ (though I have very little idea how to do this, or how to even assess the utility of such an object so any/all advice is welcome!)
+* TBD: an explicit _Data Map_ object, perhaps as an extension on _tibbles_ (though I have very little idea how to do this, or how to even assess the utility of such an object so any/all advice is welcome! Particularly if you are familar with existing object classes that might overlap with Data Maps)
 
 In addition, to simplying and making explicit data concordance, I also hope to write some additional tools for making explict other design choices that other occur when curating datasets with data at different aggregations:
 * helpers for identifying discrepancies between reported and calculated statistics (e.g. `compare` reported category totals vs. calculated sum of category records)
