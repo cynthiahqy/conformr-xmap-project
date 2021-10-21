@@ -41,22 +41,22 @@ convert <- function(data_map, code_in, code_out, weights, values_from, names_suf
 
   # ---- check totals ----
   group <- data_map %>% dplyr::group_vars()
-  totals <- list()
-  totals$data_in <- data_map %>%
+  totals_in <- data_map %>%
     dplyr::group_by({{ code_in }}, .add = TRUE) %>%
     dplyr::summarise(dplyr::across({{ values_from }}, ~ mean(.x, na.rm = TRUE))) %>%
     dplyr::summarise(dplyr::across({{ values_from }}, ~ sum(.x, na.rm = TRUE)))
-  totals$data_out <- data_out %>%
+  totals_out <- data_out %>%
     dplyr::summarise(dplyr::across({{ values_from }}, ~ sum(.x, na.rm = TRUE)))
-  total_check <- dplyr::full_join(x = totals$data_in, y = totals$data_out, by = group, suffix = c(".in", ".out"))
+  # total_check <- dplyr::full_join(x = totals_in,
+  #                                 y = totals_out,
+  #                                 by = group, suffix = c(".in", ".out"))
+  assertthat::assert_that(assertthat::are_equal(totals_in, totals_out))
 
-  if (! assertthat::are_equal(totals$data_in, totals$data_out))
-    return(total_check)
-  else
-    data_out <- data_out %>%
-      dplyr::rename_with(., ~ paste0(.x, names_suffix), .cols = {{ values_from }})
+  # ---- rename data_out ----
+  data_out <- data_out %>%
+    dplyr::rename_with(., ~ paste0(.x, names_suffix), .cols = {{ values_from }})
 
   return(data_out)
-  # ---- rename data_out ----
+
 
 }
