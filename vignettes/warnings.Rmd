@@ -1,0 +1,42 @@
+---
+title: "Warnings"
+output: html_notebook
+---
+
+```{r}
+library(conformr)
+library(dplyr)
+```
+
+
+```{r}
+## here's one I prepared earlier
+toy_AB$data_map
+```
+```{r, error=FALSE}
+## try convert on a data_map
+toy_AB$data_map %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+
+## oops, missing groups
+toy_AB$data_map %>%
+  dplyr::group_by(country) %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+
+## what if weights are wrong?
+toy_AB$data_map %>%
+  dplyr::group_by(country) %>%
+  conformr::convert(., std_A, std_B, weight_less, A_100)
+```
+
+```{r, error=FALSE}
+## what if value to be split are not duplicated?
+(bad_data_map <- toy_AB$data_map %>%
+  dplyr::filter(country == "AUS") %>%
+  dplyr::mutate(A_100 = case_when(std_B == "C3" ~ NA_real_,
+                                      TRUE ~ A_100)))
+
+bad_data_map %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+```
+
