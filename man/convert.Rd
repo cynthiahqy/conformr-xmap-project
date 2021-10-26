@@ -10,7 +10,9 @@ convert(
   code_out,
   weights,
   values_from,
-  names_suffix = "_out"
+  names_suffix = "_out",
+  .check = TRUE,
+  .sum_na = TRUE
 )
 }
 \arguments{
