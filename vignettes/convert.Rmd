@@ -1,5 +1,9 @@
 ---
+<<<<<<< HEAD
 title: "Convert data between classification standards"
+=======
+title: "convert"
+>>>>>>> refs/stash
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{convert}
@@ -115,7 +119,54 @@ data_A %>%
                     weight_col = weight)
 ```
 
+## A simple conversion
+```{r simple}
 
 
+```
 
 
+## Complex transformations
+```{r complex}
+toy_AUS <- conformr:::toy_AB$data_map %>%
+  dplyr::filter(country == "AUS")
+
+## use tidy-select to convert multiple variables using the same weights
+toy_AUS %>% convert(., std_A, std_B, weight, starts_with("A"))
+```
+
+
+## Interpreting Errors and Warnings
+
+```{r error-warnings}
+## here's a data_map I prepared earlier
+toy_AB <- conformr:::toy_AB
+toy_AB$data_map
+```
+
+```{r, error=TRUE}
+## try convert on the data_map
+toy_AB$data_map %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+
+## oops, missing groups
+toy_AB$data_map %>%
+  dplyr::group_by(country) %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+
+## what if weights are wrong?
+toy_AB$data_map %>%
+  dplyr::group_by(country) %>%
+  conformr::convert(., std_A, std_B, weight_less, A_100)
+```
+
+```{r, error=TRUE}
+## what if value to be split are not duplicated?
+(bad_data_map <- toy_AB$data_map %>%
+  dplyr::filter(country == "AUS") %>%
+  dplyr::mutate(A_100 = case_when(std_B == "C3" ~ NA_real_,
+                                      TRUE ~ A_100)))
+
+bad_data_map %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+```

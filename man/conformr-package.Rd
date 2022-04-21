@@ -4,12 +4,13 @@
 \name{conformr-package}
 \alias{conformr}
 \alias{conformr-package}
-\title{conformr: What the Package Does (One Line, Title Case)}
+\title{conformr: Tools for conforming data across classifications and statistics}
 \description{
-What the package does (one paragraph).
+conformr provides tools for converting data between classification standards, 
+    and correcting discrepancies in reported and calculated statistics.
 }
 \author{
-\strong{Maintainer}: Cynthia Huang \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Cynthia Huang \email{29718979+cynthiahqy@users.noreply.github.com} (\href{https://orcid.org/0000-0002-9218-987X}{ORCID})
 
 }
 \keyword{internal}

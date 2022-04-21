@@ -5,40 +5,38 @@
 \title{Convert data between standards}
 \usage{
 convert(
-  data,
-  code_dict,
-  code_from,
-  code_to,
+  data_map,
+  code_in,
+  code_out,
+  weights,
   values_from,
-  values_to = NULL,
-  weight_col
+  names_suffix = "_out",
+  .check = TRUE,
+  .sum_na = TRUE
 )
 }
 \arguments{
-\item{data}{A data frame to convert. Can be grouped data.}
+\item{data_map}{A data frame with data to be converted,
+and correspondence and weights between codes, for every data value}
 
-\item{code_dict}{A data frame with code correspondence between standards.}
+\item{code_in}{Variable in \code{data_map} containing the codes to convert from}
 
-\item{code_from}{A string specifying the shared column name in \code{data} and \code{code_dict}
-with the codes to convert from.}
+\item{code_out}{Variable in \code{data_map} containing the destination codes to convert to.}
 
-\item{code_to}{A string specifying which column in \code{code_dict} contains the
-destination codes to convert to.}
+\item{weights}{Variable in \code{data_map} to get the
+weights to distribute \code{values_from} between \code{code_in} and \code{code_out}}
 
-\item{values_from}{A string specifying which column in \code{data} to get cell values from.}
+\item{values_from}{\verb{<tidy-select>} columns in \code{data-map} to get cell values from.}
 
-\item{values_to}{A string specifying the name of the new column created to store
-the distributed values. Defaults to "value_new"}
-
-\item{weight_col}{A string specifying which column in \code{code_dict} to get the
-weights to distribute \code{values_from} between \code{code_from} and \code{code_to}}
+\item{names_suffix}{A string appended to every \code{value_from} column name to create column names for transformed values.
+Defaults to "_out"}
 }
 \value{
 
 }
 \description{
-\code{convert()} maps numeric data from one category standard into another.
-It maintains the total "amount" of data across one-to-one, many-to-one,
+\code{convert()} maps numeric data from one category standard into another,
+and verifies that total "amount" of data across one-to-one, many-to-one,
 and one-to-many correspondences.
 
 Learn more in \code{vignette("convert")}

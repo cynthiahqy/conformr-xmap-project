@@ -23,7 +23,7 @@ cases <- list(
 )
 (data_A <- cases %>% dplyr::bind_rows(.id = "case"))
 
-# NOTE: code_dict_BA represents
+# NOTE: weights_BA represents
 # * ONE possible set of correspondences between two classification standards;
 # * and ONE set of weights for redistributing values
 #   that map to multiple destination codes.
@@ -43,7 +43,7 @@ codes_BA <- dplyr::tribble(~ code_B, ~ code_A,
 #  is a more "generic" representation of countrycode conversions
 #  (e.g. ISO2 to UN-M49) where the transformation weights
 #  are effectively 1.
-(code_dict_BA <- codes_BA %>%
+(weights_BA <- codes_BA %>%
     dplyr::group_by(code_A) %>%
     dplyr::mutate(n_dest = n_distinct(code_B),
            weight = 1 / n_dest) %>%
@@ -57,7 +57,7 @@ codes_BA <- dplyr::tribble(~ code_B, ~ code_A,
 (AB_merged <- data_A %>%
   dplyr::group_by(case) %>%
   dplyr::right_join(x = .,
-                    y = code_dict_BA,
+                    y = weights_BA,
                     by = c("code_A")) %>%
   dplyr::mutate(weight_value = weight * value_A)
 )
@@ -75,9 +75,9 @@ if (FALSE) {
   data_A %>%
     dplyr::group_by(case) %>%
     conformr::convert(data = .,
-                    code_dict = code_dict_BA,
-                    code_from = code_A,
-                    code_to = code_B,
+                    code_dict = weights_BA,
+                    code_in = code_A,
+                    code_out = code_B,
                     values_from = value_A,
                     values_to = "value_B",
                     weight_col = weight)
