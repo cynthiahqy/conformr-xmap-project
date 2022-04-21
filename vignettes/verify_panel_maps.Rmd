@@ -1,0 +1,23 @@
+---
+title: "Verification of Panel Maps"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Verification of Panel Maps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(conformr)
+```
+
+This vignettes provides additional detail on how Panel Maps are verified, and errors that might arises.
+
+## distinct code combinations
