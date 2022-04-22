@@ -1,0 +1,72 @@
+---
+title: "How to Make Panel Maps"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Making Panel Maps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(conformr)
+```
+
+# What are Panel maps? (Conceptual)
+
+_Panel Maps_ are the architectural blueprints of your combined dataset. It specifies instructions for combining and splitting values from source classification into a target classification.
+
+# How-to create Panel Maps from... (How to Guide)
+
+One of the key steps in the `{conformr}` workflow is the creation of _Panel Maps_. The following sections provide example code for generating _Panel Maps_ from a variety of sources. Familiarity with the specific classifications, which are chosen purely for illustration purposes, is not necessary.
+
+# Panel Maps, the tidy way
+
+Note that these examples use a number of external packages, in particular `{tidyverse}`. This is to demonstrate how easily `{conformr}` can fit into existing tidy workflows.
+
+## Correspondence Tables..
+
+Say you have a correspondence table which specifies the complete connections between two code structures, how do you turn that table into a _Panel Map_?
+
+Let's create a Panel Map to transform <<<<trade data>>>>> from version <<x>> of the [Harmonised System](https://en.wikipedia.org/wiki/Harmonized_System) (`HS1_6d`) to NAICS (`code_out`) at the 6 digit code level. First, we import the relevant correspondence table, and then select the columns with the source and target codes. 
+```{r HS1_to_NAICS_6d_panel_map}
+library(concordance)
+library(magrittr)
+library(dplyr)
+
+# import the correspondence table
+HS1_to_NAICS_code_dict <- concordance::hs1_naics %>%
+  distinct(HS1_6d, NAICS_6d)
+
+# make a panel map, with equal weight splits
+HS1_to_NAICS_6d_map <- HS1_to_NAICS_code_dict %>%
+  group_by(HS1_6d) %>%
+  mutate(n_dest = n(),
+         HS1_split = 1/n_dest) %>%
+  select(-n_dest)
+
+# check that it is a panel map
+HS1_to_NAICS_6d_map
+
+# TODO: conformr::is_panel_map(HS1_to_NAICS_6d_map)
+```
+Notice that we kept only the unique combinations of HS1 & NAICS using `dplyr::distinct()`. We use `distinct` ensure that we have the correct denominator for splitting up values that are part of a 1-to-many split. See the [Verification of Panel Maps]() vignette for more details.
+
+
+## Existing scripts
+
+```{r }
+
+```
+
+
+## Grouped Panel Maps
+
+In cases where
+

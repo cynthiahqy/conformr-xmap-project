@@ -21,3 +21,74 @@ library(conformr)
 This vignettes provides additional detail on how Panel Maps are verified, and errors that might arises.
 
 ## distinct code combinations
+
+## understanding the different transformation cases
+```{r load_panel_map}
+library(concordance)
+library(magrittr)
+library(dplyr)
+
+# import the correspondence table
+code_dict <- concordance::hs1_naics %>%
+  distinct(HS1_6d, NAICS_6d)
+
+# make a panel map, with equal weight splits
+panel_map <- code_dict %>%
+  group_by(HS1_6d) %>%
+  mutate(n_dest = n(),
+         HS1_split = 1/n_dest) %>%
+  select(-n_dest)
+
+# check that it is a panel map
+HS1_to_NAICS_6d_map
+```
+
+Now, let's do some data wrangling to see what kind of transformations will be included in our Panel Map:
+```{r generate-panel-map-with-case}
+panel_map_case <- code_dict %>%
+  # work out where the values from HS1 will go
+  group_by(HS1_6d) %>%
+  mutate(n_dest = n_distinct(NAICS_6d),
+         HS1_split = 1/n_dest) %>%
+  ungroup() %>%
+  # work out how many values are going to each destination NAICS code
+  group_by(NAICS_6d) %>%
+  mutate(dest_size = n_distinct(HS1_6d)) %>%
+  mutate(map_case = case_when(n_dest == 1 & dest_size == 1 ~ "1-to-1",
+                              n_dest == 1 & dest_size != 1 ~ "many-to-1",
+                              n_dest != 1 & dest_size == 1 ~ "1-to-many",
+                              n_dest != 1 & dest_size != 1 ~ "many-to-many")) %>%
+  mutate(value_trans = case_when(map_case == "1-to-1" ~ "no change",
+                                 map_case == "many-to-1" ~ "add up",
+                                 map_case == "1-to-many" ~ "split",
+                                 map_case == "many-to-many" ~ "split & add up"))
+
+# summary table
+panel_map_case %>%
+  group_by(HS1_6d, map_case, value_trans, HS1_split) %>%
+  mutate(NAICS_6d_w_split = paste0(NAICS_6d, " [", signif(HS1_split, 2), "]")) %>%
+  summarise(dest_code_split = paste(NAICS_6d_w_split, collapse = ", "),) %>%
+  select(HS1_6d, dest_code_split, map_case, value_trans)
+```
+
+We can visualise part of the panel map using an alluvial diagram made using `[{ggalluvial}`](https://cran.r-project.org/web/packages/ggalluvial/vignettes/ggalluvial.html):
+```{r alluvial-panel-map}
+library(ggplot2)
+library(ggalluvial)
+
+panel_map_case %>%
+  mutate(HS1_chapter = substr(HS1_6d, 1, 2)) %>%
+  filter(HS1_chapter == "01") %>%
+  ggplot(., 
+         aes(axis1 = HS1_6d, axis2 = NAICS_6d,
+             y = HS1_split)) +
+  scale_x_discrete(limits = c("HS1", "NAICS"), expand = c(.2, .05)) +
+  scale_fill_viridis_d() +
+  xlab("Classification") +
+  geom_alluvium(aes(fill = map_case)) +
+  geom_stratum() +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  theme_minimal()
+  #facet_grid(rows=vars(map_case))
+  #           scales = "free")
+```
