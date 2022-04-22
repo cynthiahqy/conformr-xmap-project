@@ -15,7 +15,7 @@ library(dplyr)
 ## [>] code_dict: include duplicate mapping in TEST
 
 set.seed(1832)
-code_in <- c("x1111", "x2222", "x3333", "x4444", "x5555")
+code_in <- c("x1111", "x2222", "x3333", "x4444", "x5555", "x6666")
 
 data_in <- tidyr::expand_grid(country = c("AUS", "JPN"),
                    std_A = code_in) %>%
@@ -31,6 +31,7 @@ codes_BA <- dplyr::tribble(~ std_B, ~ std_A,
                                 "B2", "x3333",
                                 "C3", "x4444", # one-to-many (4)
                                 "C4", "x4444",
+                                "C4", "x6666", # many-to-many
                                 "C5", "x4444",
                                 "C6", "x4444",
                                 "C7", "x5555", # one-to-many (3)

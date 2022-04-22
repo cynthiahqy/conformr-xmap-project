@@ -1,0 +1,66 @@
+---
+title: "Using Panel Maps to Transform Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Panel Maps to Transform Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(conformr)
+
+```
+
+Now you have a valid panel map, how can you use this to transform a single data series? 
+
+Choose an appropriate join, and remember to summarise by the output classification.
+
+```{r use_panel_map}
+library(dplyr)
+
+code_in <- sym("std_A")
+panel_map <- conformr:::toy_AB$codes_BA %>% 
+  make_panel_map_equal(.,  code_in = !!code_in, code_out = std_B, "split_in")
+data_in <- conformr:::toy_AB$data_in %>%
+  select(country, 
+         code_A = std_A,
+         A_100)
+
+panel_map %>%
+  use_panel_map(map = .,
+                data = group_by(data_in, country), values_from = A_100, 
+                from_code = c("std_A" = "code_A"), to_code = std_B, 
+                weights = split_in)
+```
+
+# Using the same panel map on multiple variables
+
+Motivating example: 
+* you have nominal and real gdp values, and want to apply the same concordance to both series
+
+Solution:
+* use LONG format!
+
+# Grouped transformations
+TODO: Example of how to use multi-column key instead of "code_in"; 
+e.g. unique panel map for each country or year? // EAST & WEST Germany GDP data
+```
+# http://svmiller.com/blog/2021/02/gank-world-bank-data-with-wdi-in-r/
+```
+```{r}
+gdp <- 
+
+tribble(~year, ~country_in, ~country_out,
+        
+        )
+
+
+```

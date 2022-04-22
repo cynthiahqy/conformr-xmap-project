@@ -18,7 +18,7 @@
 #' @seealso [dm_check_weights()], [dm_check_values()]
 #'
 #' @examples
-dm_check_codes <- function(data_map, code_in, code_out,
+pm_check_codes <- function(data_map, code_in, code_out,
                            success_fun = NULL, error_fun = NULL){
 
   # set-up success/failure functions

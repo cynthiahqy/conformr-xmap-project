@@ -50,36 +50,3 @@ verify_cd <- function(data, code_dict, code_in, code_out, weight_col, correct = 
   ## instruction is complete (weight check)
 }
 
-#' Create code map from code correspondence with equal weight splits
-#'
-#' Generate code map for transforming values between classification codes,
-#' using all distinct correspondence between two codes.
-#'
-#' @param codes df containing correspondence btween input and output codes
-#' @param code_in column name of input code
-#' @param code_out column name of output
-#'
-#' @return
-#' @export
-#'
-#' @examples
-make_cd_equal <- function(codes, code_in, code_out, name_weight_col = NULL){
-
-  ## get distinct correspondences
-  in_out <- codes %>%
-    dplyr::distinct({{code_in}}, {{code_out}})
-
-  ## code names as strings
-
-  ## make column name for weights
-  name_weight_col <- name_weight_col %||% paste("w", deparse(substitute(code_in)), sep = "_")
-
-  code_map <- in_out %>%
-    dplyr::group_by({{code_in}}) %>%
-    dplyr::mutate("n_dest" = dplyr::n(), ## faster than n_distinct()
-                  !!name_weight_col := 1 / n_dest) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(-n_dest)
-
-  return(code_map)
-}

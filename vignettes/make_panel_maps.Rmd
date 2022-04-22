@@ -32,6 +32,7 @@ Note that these examples use a number of external packages, in particular `{tidy
 
 ## Correspondence Tables..
 
+### Equal weight split
 Say you have a correspondence table which specifies the complete connections between two code structures, how do you turn that table into a _Panel Map_?
 
 Let's create a Panel Map to transform <<<<trade data>>>>> from version <<x>> of the [Harmonised System](https://en.wikipedia.org/wiki/Harmonized_System) (`HS1_6d`) to NAICS (`code_out`) at the 6 digit code level. First, we import the relevant correspondence table, and then select the columns with the source and target codes. 
@@ -41,15 +42,18 @@ library(magrittr)
 library(dplyr)
 
 # import the correspondence table
-HS1_to_NAICS_code_dict <- concordance::hs1_naics %>%
+code_dict <- concordance::hs1_naics %>%
   distinct(HS1_6d, NAICS_6d)
 
 # make a panel map, with equal weight splits
-HS1_to_NAICS_6d_map <- HS1_to_NAICS_code_dict %>%
+pm_df <- code_dict %>%
   group_by(HS1_6d) %>%
   mutate(n_dest = n(),
          HS1_split = 1/n_dest) %>%
   select(-n_dest)
+
+# OR use the built-in to_equal_panel_map() function
+panel_map <- make_equal_panel_map(code_dict, HS1_6d, NAICS_6d)
 
 # check that it is a panel map
 HS1_to_NAICS_6d_map
@@ -59,14 +63,35 @@ HS1_to_NAICS_6d_map
 Notice that we kept only the unique combinations of HS1 & NAICS using `dplyr::distinct()`. We use `distinct` ensure that we have the correct denominator for splitting up values that are part of a 1-to-many split. See the [Verification of Panel Maps]() vignette for more details.
 
 
-## Existing scripts
+### Weighted Split
 
+TODO: Example of population weighted splits
+```{r ASCO-ANZSCO}
+# remotes::install_github("runapp-aus/strayr")
+library(strayr)
+
+# download correspondence table from ABS
+## get(https://www.ausstats.abs.gov.au/ausstats/subscriber.nsf/0/F30E72E1516495BDCA2575DF001C7441/$File/12200%20anzsco%20first%20edition%20revision%201%20to%20asco%20second%20edition%20correspondence%20tables.xls)
+
+## 
+```
+
+
+## From existing scripts
+
+TODO: Example of extracting panel map from for loops
 ```{r }
+# scrub value_in to be 1
+input_data$value_in <-
+
+# pass through to script
+
+# output table will be a panel map
 
 ```
 
 
 ## Grouped Panel Maps
 
-In cases where
+TODO: add example with different map by group -- e.g. 8 digit HS to 6 digit international HS
 
