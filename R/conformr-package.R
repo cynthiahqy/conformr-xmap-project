@@ -6,7 +6,7 @@
 ## usethis namespace: start
 ## usethis namespace: end
 
-#' @importFrom rlang ":=" .data
+#' @import rlang
 #' @importFrom magrittr "%>%"
 
 NULL

@@ -22,7 +22,7 @@ library(conformr)
 
 _Panel Maps_ are the architectural blueprints of your combined dataset. It specifies instructions for combining and splitting values from source classification into a target classification.
 
-# How-to create Panel Maps from... (How to Guide)
+# How-to make valid Panel Maps from... (How to Guide)
 
 One of the key steps in the `{conformr}` workflow is the creation of _Panel Maps_. The following sections provide example code for generating _Panel Maps_ from a variety of sources. Familiarity with the specific classifications, which are chosen purely for illustration purposes, is not necessary.
 

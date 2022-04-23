@@ -7,12 +7,12 @@ Please follow me on twitter at [@cynthiahqy](https://twitter.com/cynthiahqy) for
 for harmonising multiple data across classifications or statistics 
 into a consistent validated dataset.
 
-It is not uncommon in empirical social sciences to encounter "panel" data that has been reported using different standards in different time periods. 
+It is not uncommon in empirical social sciences to encounter "pseudo" [panel data](https://en.wikipedia.org/wiki/Panel_data) (sometimes also called longitudinal data) that has been reported using different standards in different time periods. 
 Examples include occupation level labour statistics, or product level trade flows, whereby classification codes are updated periodically to reflect changes in category relevance. Over time categories may be added, removed or even split. 
 
 In order to combine this kind of data into a single panel dataset, researchers must first harmonise the data across classification standards. In particular, researchers must make decisions on how to redistribute values when categories don't have a one-to-one correspondence. These decisions are often hidden in nested for-loops and case statements over each old-new category correspondence. The nature of nested loops make it difficult to review the dataset design, or even validate the data cleaning has been performed as intended.
 
-## From nested-loops to Data Maps
+## From nested-loops to Panel Maps
 `conformr` provides a matrix framework for applying transforming data between standards to:
 - avoid loss or duplication of data when converting between classifications
 - resolve conflicts between reported and calculated statistics
@@ -22,7 +22,7 @@ In order to combine this kind of data into a single panel dataset, researchers m
 
 `conformr` is built upon the realisation that implicit in any transformation between classifications is an application of *weights* to the original values. For example, a transformation from 1 original category to 2 new categories, requires spliting the original value in 2, or alternatively, applying a weight of 0.5 to the original value twice (once each for the 2 new categories).
 
-`conformr` removes the need for nested loops by explicitly stating the weights in a *Data Map*, which contains both the data to be transformed, and "instructions" on how to transform that data. The "instructions" contain both the code correspondence, as well as what *weights* to use in the transfromation. *Data maps* can be thought of as an extension of standard concordance tables such as those provided in `{concordance}` and `{countrycode}` -- i.e. in addition to *which* target code to "transfer" value to, they also make explicit *how much* value should be assigned to each target code.
+`conformr` removes the need for nested loops by explicitly stating the weights in a *Panel Map*, which contains both the data to be transformed, and "instructions" on how to transform that data. The "instructions" contain both the code correspondence, as well as what *weights* to use in the transfromation. *Data maps* can be thought of as an extension of standard concordance tables such as those provided in `{concordance}` and `{countrycode}` -- i.e. in addition to *which* target code to "transfer" value to, they also make explicit *how much* value should be assigned to each target code.
 
 A simple workflow (on relatively clean data & code correspondences) would look something like:
 ```r
@@ -36,7 +36,7 @@ code_weights <- code_dict %>%
   dplyr::mutate(n_dest = n_distinct(code_out),
                 weight = 1/n_dest)
                 
-## make Data Map
+## make Panel Map
 data_map <- dplyr::left_join(x = data_in, y = code_weights,
                              by = "code_in")
                              
@@ -94,11 +94,11 @@ Some contrived snippets for further illustration (real datasets are much too lar
 ```
 ## Planned Features
 
-For implementing & using data maps:
-* single step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using data maps: `convert()`. Note that many-to-many transformations are just combinations of the above cases.
-* helpers for verifying and creating valid data maps
+For implementing & using Panel Maps:
+* single step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using Panel Maps: `convert()`. Note that many-to-many transformations are just combinations of the above cases.
+* helpers for verifying and creating valid Panel Maps
 * helpers for generating custom weights -- e.g. based off some reference dataset
-* TBD: an explicit _Data Map_ object, perhaps as an extension on _tibbles_ (though I have very little idea how to do this, or how to even assess the utility of such an object so any/all advice is welcome! Particularly if you are familar with existing object classes that might overlap with Data Maps)
+* TBD: an explicit _Panel Map_ object, perhaps as an extension on _tibbles_ (though I have very little idea how to do this, or how to even assess the utility of such an object so any/all advice is welcome! Particularly if you are familar with existing object classes that might overlap with Data Maps)
 
 In addition, to simplying and making explicit data concordance, I also hope to write some additional tools for making explict other design choices that other occur when curating datasets with data at different aggregations:
 * helpers for identifying discrepancies between reported and calculated statistics (e.g. `compare` reported category totals vs. calculated sum of category records)

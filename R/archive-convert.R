@@ -20,8 +20,6 @@
 #' @return
 #' @export
 #'
-#' @importFrom assertthat has_name
-#' @importFrom rlang .data
 #' @examples
 #'
 #'

@@ -19,7 +19,7 @@ library(conformr)
 
 ```
 
-Now you have a valid panel map, how can you use this to transform a single data series? 
+Assuming you have a valid panel map, how can you use this to transform a single data series? 
 
 Choose an appropriate join, and remember to summarise by the output classification.
 

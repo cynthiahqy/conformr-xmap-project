@@ -23,9 +23,11 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
     dplyr (>= 1.0.0),
-    rlang,
+    rlang (>= 0.4.6),
     assertr,
     assertthat,
     magrittr,
+    purrr,
+    tibble
 Depends: 
     R (>= 2.10)
