@@ -50,6 +50,12 @@ Motivating example:
 
 Solution:
 * use LONG format!
+* pivot_longer > apply map > pivot_wider
+
+```{r}
+
+```
+
 
 # Grouped transformations
 TODO: Example of how to use multi-column key instead of "code_in"; 

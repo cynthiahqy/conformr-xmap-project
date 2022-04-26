@@ -47,7 +47,7 @@ pm_df <- code_dict %>%
   select(-n_dest)
 
 # OR use the built-in to_equal_panel_map() function
-panel_map <- make_panel_map_equal(code_dict, HS1_6d, NAICS_6d)
+panel_map <- conformr::make_panel_map_equal(code_dict, HS1_6d, NAICS_6d)
 
 # check that it is a panel map
 panel_map
@@ -77,7 +77,7 @@ Panel maps are not usually invertible. More specifically, a valid transformation
 
 However, we can always extract the bi-directional code correspondence from an existing `panel_map` by dropping the weights column and filtering for distinct correspondences. We can then construct a new `panel_map` in the opposite direction with appropriate weights.
 
-## From existing scripts
+## From existing scripts (e.g STATA)
 
 TODO: Example of extracting panel map from for loops
 ```{r }

@@ -22,7 +22,7 @@ In order to combine this kind of data into a single panel dataset, researchers m
 
 `conformr` is built upon the realisation that implicit in any transformation between classifications is an application of *weights* to the original values. For example, a transformation from 1 original category to 2 new categories, requires spliting the original value in 2, or alternatively, applying a weight of 0.5 to the original value twice (once each for the 2 new categories).
 
-`conformr` removes the need for nested loops by explicitly stating the weights in a *Panel Map*, which contains both the data to be transformed, and "instructions" on how to transform that data. The "instructions" contain both the code correspondence, as well as what *weights* to use in the transfromation. *Data maps* can be thought of as an extension of standard concordance tables such as those provided in `{concordance}` and `{countrycode}` -- i.e. in addition to *which* target code to "transfer" value to, they also make explicit *how much* value should be assigned to each target code.
+`conformr` removes the need for nested loops by explicitly stating the weights in a *Panel Map*, which provide reusuable and easily shared "instructions" on how to transform that data in tabular form. The "instructions" contain both the code correspondence, as well as what *weights* to use in the transfromation. *Panel maps* can be thought of as an extension of standard concordance tables such as those provided in `{concordance}` and `{countrycode}` -- i.e. in addition to *which* target code to "transfer" value to, they also make explicit *how much* value should be assigned to each target code.
 
 A simple workflow (on relatively clean data & code correspondences) would look something like:
 ```r
@@ -30,23 +30,26 @@ A simple workflow (on relatively clean data & code correspondences) would look s
 data_in <- readr::read_csv("some_trade_data.csv")
 code_dict <- readr::read_csv("code_correlations.csv")
 
-## generate weights -- simple average in this case
-code_weights <- code_dict %>%
+## make a equal split panel_map
+# as_panel_map() will validate the map 
+panel_map <- code_dict %>%
   dplyr::group_by(code_in) %>%
   dplyr::mutate(n_dest = n_distinct(code_out),
-                weight = 1/n_dest)
+                weight = 1/n_dest) %>%
+  conformr::as_panel_map(., code_in, code_out, split_in=weight)
                 
-## make Panel Map
-data_map <- dplyr::left_join(x = data_in, y = code_weights,
-                             by = "code_in")
-                             
 ## generate transformed data
-data_out <- convert(data_map, code_in, code_out, weights, values_from)
+# .validate_coverage: 
+#    check panel_map covers every code-value case in data_in
+data_out <- conformr::concord(data_in, panel_map, 
+                              values_from = vars(exports), code_from = "code_in",
+                              .validate_coverage = TRUE) 
 ```
+
 
 Some contrived snippets for further illustration (real datasets are much too large to show the various cases):
 ```r
-## code_weights
+## valid panel_map 
 #> # A tibble: 10 x 4
 #>    code_B code_A n_dest weight
 #>    <chr>  <chr>   <int>  <dbl>.  ## A-to-B transformation cases
@@ -61,7 +64,7 @@ Some contrived snippets for further illustration (real datasets are much too lar
 #>  9 C8     x005        3  0.333
 #> 10 C9     x005        3  0.333
 
-## data_map 
+## inside concord() 
 ### weight_value shows 1-to-many as value "assignment/transfer"
 #> # A tibble: 10 x 7
 #>    case  code_A value_A code_B n_dest weight weight_value
@@ -94,12 +97,33 @@ Some contrived snippets for further illustration (real datasets are much too lar
 ```
 ## Planned Features
 
-For implementing & using Panel Maps:
-* single step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using Panel Maps: `convert()`. Note that many-to-many transformations are just combinations of the above cases.
-* helpers for verifying and creating valid Panel Maps
-* helpers for generating custom weights -- e.g. based off some reference dataset
-* TBD: an explicit _Panel Map_ object, perhaps as an extension on _tibbles_ (though I have very little idea how to do this, or how to even assess the utility of such an object so any/all advice is welcome! Particularly if you are familar with existing object classes that might overlap with Data Maps)
+Functions for implementing & using Panel Maps:
 
-In addition, to simplying and making explicit data concordance, I also hope to write some additional tools for making explict other design choices that other occur when curating datasets with data at different aggregations:
+* a `panel_map` S3 class built upon `tibble`, with helpers for verifying and creating valid `panel_map` objects 
+* tools for using `panel_maps` on data. This includes pipeline tools for multi-step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using Panel Maps. Note that many-to-many transformations are just combinations of the above cases.
+* helpers for generating custom weights -- e.g. splitting one-to-many values by historic share instead of equally 
+
+Vignettes: 
+
+* `panel_map` theory -- validation criteria and explainer
+* how-to code-chunks for making valid Panel Maps from different sources
+* step-by-step tutorial for transforming a pseudo panel into analysis ready tabular form, including multi-step transfomrations 
+* (architecture based on Megan Sullivan's [Docs for Everyone](https://meganesulli.com/blog/docs-for-everyone/) post)i
+
+Tools for exposing other dataset design choices:
+
 * helpers for identifying discrepancies between reported and calculated statistics (e.g. `compare` reported category totals vs. calculated sum of category records)
 * single step corrections of discrepancies (e.g. `distribute` difference between category members, or `replace` reported totals with calculated sums)
+
+## Related tools & packages
+
+Code Correspondences served straight into R:
+
+* [{concordance}](https://github.com/insongkim/concordance)
+* [{countrycode}](https://github.com/vincentarelbundock/countrycode)
+
+Panel Data wrangling tools:
+
+* [{overviewR}](https://github.com/cosimameyer/overviewR) for comparing datasets side-by-side and seeing where you might need transformations
+* [{panelr}](https://cran.r-project.org/web/packages/panelr/index.html) for `panel_data` object and methods
+
