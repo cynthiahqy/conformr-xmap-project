@@ -26,10 +26,6 @@ _Panel Maps_ are the architectural blueprints of your combined dataset. It speci
 
 One of the key steps in the `{conformr}` workflow is the creation of _Panel Maps_. The following sections provide example code for generating _Panel Maps_ from a variety of sources. Familiarity with the specific classifications, which are chosen purely for illustration purposes, is not necessary.
 
-# Panel Maps, the tidy way
-
-Note that these examples use a number of external packages, in particular `{tidyverse}`. This is to demonstrate how easily `{conformr}` can fit into existing tidy workflows.
-
 ## Correspondence Tables..
 
 ### Equal weight split
@@ -76,6 +72,12 @@ library(strayr)
 ## 
 ```
 
+
+## Inverting Panel Maps
+
+Panel maps are not usually invertible. More specifically, a valid transformation map from `code_in` to `code_out` will not, in general, have the same weights as a map from `code_out` to `code_in`. One case where the panel maps are invertible are when the transformation from one classification to another involves only one-to-one mappings.
+
+However, we can always extract the bi-directional code correspondence from an existing `panel_map` by dropping the weights column and filtering for distinct correspondences. We can then construct a new `panel_map` in the opposite direction with appropriate weights.
 
 ## From existing scripts
 

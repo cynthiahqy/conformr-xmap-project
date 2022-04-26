@@ -27,7 +27,7 @@ new_panel_map <- function(x, code_in, code_out, split_in, by = NA){
   tbl_pm
 }
 
-#' Test if the object is a panel.map
+#' Test if the object is a panel_map
 #'
 #' @param x
 #'
@@ -39,7 +39,7 @@ is_panel_map <- function(x){
   inherits(x, "pm_df")
 }
 
-## ---- Validation ----
+# ---- Validation ----
 #' A Validator for `panel_map` objects
 #'
 #' @param pm
@@ -66,15 +66,15 @@ check_pm_duplicates <- function(pm){
 
 }
 
-## errors ----
+# ---- Errors ----
 error_incomplete_split <- function(pm){
 
 }
 
 # ---- Helpers ----
-#' Create a panel_map object
+#' Create a panel_map from a data frame like object
 #'
-#' @param key Variable(s)
+#' @param x Data frame
 #' @param code_in Variable in `x` containing the source classification codes to convert from.
 #' @param code_out Variable in `x` containing the destination classification codes to convert to.
 #' @param split_in Variable in `x` containing the transformation weights to apply
@@ -85,16 +85,15 @@ error_incomplete_split <- function(pm){
 #'
 #' @examples
 #' panel_map
-panel_map <- function(x, code_in, code_out, split_in){
+as_panel_map <- function(x, code_in, code_out, split_in){
   ## TODO: implement internal pm class
   pm <- to_pm(x, code_in, code_out, split_in)
 
-  ## TODO: prioritise checks
+  ## TODO: validation
   check_pm_duplicates(pm)   # TRUE iff distinct() doesn't reduce no. of rows
   check_pm_NA(pm)           # FALSE if NA are found, they must be converted to 0?
   check_pm_split_sum(pm)    # TRUE iff split_in sums to 1 // FALSE if NA are found
 
   ## TODO: error messages
 }
-
 

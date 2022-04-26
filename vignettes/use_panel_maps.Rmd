@@ -27,14 +27,16 @@ Choose an appropriate join, and remember to summarise by the output classificati
 library(dplyr)
 
 code_in <- sym("std_A")
-panel_map <- conformr:::toy_AB$codes_BA %>% 
-  make_panel_map_equal(.,  code_in = !!code_in, code_out = std_B, "split_in")
+
 data_in <- conformr:::toy_AB$data_in %>%
   select(country, 
          code_A = std_A,
          A_100)
 
-panel_map %>%
+code_dict <- conformr:::toy_AB$codes_BA
+
+code_dict %>% 
+  make_panel_map_equal(.,  code_in = !!code_in, code_out = std_B, "split_in") %>%
   use_panel_map(map = .,
                 data = group_by(data_in, country), values_from = A_100, 
                 from_code = c("std_A" = "code_A"), to_code = std_B, 

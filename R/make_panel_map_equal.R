@@ -27,7 +27,7 @@ make_panel_map_equal <- function(code_dict, code_in, code_out, .split_in_name = 
                   !!.split_in_name := 1 / n_dest) %>%
     dplyr::ungroup() %>%
     dplyr::select(-n_dest) # %>%
-    # conformr::panel_map()
+    # TODO: conformr::as_panel_map()
 
   return(panel_map)
 }
