@@ -2,7 +2,7 @@
 % Please edit documentation in R/panel_map.R
 \name{is_panel_map}
 \alias{is_panel_map}
-\title{Test if the object is a panel.map}
+\title{Test if the object is a panel_map}
 \usage{
 is_panel_map(x)
 }
@@ -13,5 +13,5 @@ is_panel_map(x)
 
 }
 \description{
-Test if the object is a panel.map
+Test if the object is a panel_map
 }

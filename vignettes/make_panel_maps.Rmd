@@ -14,9 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(conformr)
-```
 
 # What are Panel maps? (Conceptual)
 
@@ -36,6 +33,7 @@ Let's create a Panel Map to transform <<<<trade data>>>>> from version <<x>> of 
 library(concordance)
 library(magrittr)
 library(dplyr)
+library(conformr)
 
 # import the correspondence table
 code_dict <- concordance::hs1_naics %>%
@@ -49,10 +47,10 @@ pm_df <- code_dict %>%
   select(-n_dest)
 
 # OR use the built-in to_equal_panel_map() function
-panel_map <- make_equal_panel_map(code_dict, HS1_6d, NAICS_6d)
+panel_map <- make_panel_map_equal(code_dict, HS1_6d, NAICS_6d)
 
 # check that it is a panel map
-HS1_to_NAICS_6d_map
+panel_map
 
 # TODO: conformr::is_panel_map(HS1_to_NAICS_6d_map)
 ```
@@ -84,7 +82,7 @@ However, we can always extract the bi-directional code correspondence from an ex
 TODO: Example of extracting panel map from for loops
 ```{r }
 # scrub value_in to be 1
-input_data$value_in <-
+## input_data$value_in <- 1
 
 # pass through to script
 

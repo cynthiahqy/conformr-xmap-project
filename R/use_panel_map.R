@@ -50,7 +50,7 @@ transform_data_by_map <- function(map, data, values_from, code_from,
 #' @examples
 use_panel_map <- function(map, data, values_from, code_from){
   # check argument types
-  abort(!is_panel_map(map))
+  ## abort(!is_panel_map(map))
 
   # match map$code_in and data$code_from
   code_in <- attr(map, "from", exact = TRUE)
