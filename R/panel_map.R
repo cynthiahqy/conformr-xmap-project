@@ -53,16 +53,20 @@ validate_panel_map <- function(x){
 }
 
 check_pm_split_sum <- function(x, code_in, split_in){
-  x %>%
-    dplyr::group_by(code_in) %>%
-    dplyr::summarise(split_total = sum(split_in))
+  bad_rows <- x %>%
+    dplyr::group_by({{code_in}}) %>%
+    dplyr::summarise(split_total = sum({{split_in}})) %>%
+    dplyr::filter(split_total != 1)
+
+  if (nrow(bad_rows) == 0){
+    return(x)
+  } else {
+    # TODO: add informative error message
+    return(bad_rows)
+  }
 }
 
-check_pm_NA <- function(pm){
-
-}
-
-check_pm_duplicates <- function(pm){
+check_pm_duplicates <- function(x){
 
 }
 
@@ -89,7 +93,7 @@ as_panel_map <- function(x, code_in, code_out, split_in){
   ## TODO: implement internal pm class
   pm <- to_pm(x, code_in, code_out, split_in)
 
-  ## TODO: validation
+  ## TODO: validation // sufficient conditions
   check_pm_duplicates(pm)   # TRUE iff distinct() doesn't reduce no. of rows
   check_pm_NA(pm)           # FALSE if NA are found, they must be converted to 0?
   check_pm_split_sum(pm)    # TRUE iff split_in sums to 1 // FALSE if NA are found
