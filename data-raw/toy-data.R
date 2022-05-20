@@ -55,6 +55,12 @@ weights_BA <- codes_BA %>%
                                           TRUE ~ weight)
                   )
 
+## generate panel_map_BA
+
+panel_map <- weights_BA %>%
+  select(std_B, std_A, weight)
+
+
 ## generate data_map
 data_map_BA <- dplyr::left_join(data_in, weights_BA, by = "std_A")
 
@@ -69,6 +75,7 @@ data_AB_out <- data_map_BA %>%
 toy_AB <- list("data_in" = data_in,
                 "codes_BA" = codes_BA,
                 "weights_BA" = weights_BA,
+               "pm_BA" = panel_map,
                 "data_map" = data_map_BA,
                 "data_out" = data_AB_out)
 
