@@ -20,9 +20,10 @@ library(conformr)
 
 This vignettes provides additional detail on how Panel Maps are verified, and errors that might arises.
 
-## distinct code combinations
+## Distinct code combinations
 
-## understanding the different transformation cases
+## Understanding the different transformation cases
+
 ```{r load_code_dict}
 library(magrittr)
 library(dplyr)
@@ -53,6 +54,7 @@ code_dict %>%
 ```
 
 Now, let's do some data wrangling to see what kind of transformations will be included in our Panel Map:
+
 ```{r panel-map-with-cases}
 panel_map_case <- code_dict %>%
   # work out where the values for each code_in will go
@@ -78,9 +80,11 @@ panel_map_case <- code_dict %>%
   #                                map_case == "many-to-many" ~ "split & add up"))
 ```
 
-By summarising by the source classification, we can see what will happen to any values corresponding to a particular source code. Let us define the following transformation cases:
-* 1-to-1: values for these source codes are "transferred" over to single code in the destination classification
-* 1-to-many: values in the source classification are "split" across multiple codes in the destination classification.
+By summarising by the source classification, we can see what will happen to any values corresponding to a particular source code. Let us define the following input transformation cases:
+
+-   1-to-1: values for these source codes are "transferred" over to single code in the destination classification
+-   1-to-many: values in the source classification are "split" across multiple codes in the destination classification.
+
 ```{r summary_in_to_out}
 # summary table of what happens to each value_in for every code_in
 panel_map_case %>%
@@ -90,9 +94,13 @@ panel_map_case %>%
             .groups = "drop") %>%
   select({{ code_in }}, value_in_split_to_out)
 ```
-Now pivoting our perspective to the target classification, we can see which destination codes have to "collect" values from multiple source codes. From here we can define following transformed cases:
-* many-to-1: multiple values from different source codes are "transferred" and then "aggregated" into a single destination code.
-* many-to-many: multiple values from different source codes are "split" and or "transferred" and then "aggregated" across multiple destination codes.
+
+Now pivoting our perspective to the target classification, we can see which destination codes have to "collect" values from multiple source codes. From here we can define following transformed output cases:
+
+-   1-to-1: a single value from a single source code is "transferred" into a single destination code.
+-   many-to-1: multiple values from different source codes are "transferred" and then "aggregated" into a single destination code.
+-   many-to-many: multiple values from different source codes are "split" and or "transferred" and then "aggregated" across multiple destination codes.
+
 ```{r summary_out_by_in}
 panel_map_case %>%
   mutate(source_w_split = paste0({{ code_in }}, " * [", signif(split_in, 2), "]")) %>%
@@ -102,7 +110,8 @@ panel_map_case %>%
   select({{ code_out }}, value_out_sum)
 ```
 
-We can visualise part of the panel map using an alluvial diagram made using `[{ggalluvial}`](https://cran.r-project.org/web/packages/ggalluvial/vignettes/ggalluvial.html):
+We can visualise part of the panel map using an alluvial diagram made using `[{ggalluvial}`](<https://cran.r-project.org/web/packages/ggalluvial/vignettes/ggalluvial.html>):
+
 ```{r alluvial-panel-map}
 library(ggplot2)
 library(ggalluvial)
@@ -123,3 +132,25 @@ panel_map_case %>%
   #facet_grid(rows=vars(map_case))
   #           scales = "free")
 ```
+
+## Necessary and Sufficient Conditions
+
+Code Correspondence has no duplicates for making panel map <!--# maybe move this to make_panel_maps.Rmd -->
+
+-   otherwise you inadvertently lower the share going to non-duplicated destinations
+-   `make_panel_mape_equal()` automatically clears duplicates
+
+```{r}
+## 
+library(tidyverse)
+
+toy_AB$codes_BA[5,] %>% 
+  dplyr::bind_rows(toy_AB$codes_BA) %>% 
+  ## TODO: show mistake in weights caused by duplicate codes
+  ## make_panel_map_equal(., std_A, std_B) %>% 
+  dplyr::arrange(std_A, std_B)
+```
+
+2.  Weights in a panel map sum to one based on input code
+
+<!--# TODO: INSERT DEMO CODE-->

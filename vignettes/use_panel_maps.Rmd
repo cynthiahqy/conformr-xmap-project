@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 library(conformr)
 ```
 
-Assuming you have a valid panel map, how can you use this to transform a single data series? 
+Assuming you have a valid panel map, how can you use this to transform a single data series?
 
 Choose an appropriate join, and remember to summarise by the output classification.
 
@@ -45,24 +45,20 @@ code_dict %>%
 
 # Using the same panel map on multiple variables
 
-Motivating example: 
-* you have nominal and real gdp values, and want to apply the same concordance to both series
+Motivating example: \* you have nominal and real gdp values, and want to apply the same concordance to both series
 
-Solution:
-* use LONG format!
-* pivot_longer > apply map > pivot_wider
+Solution: \* use LONG format! \* pivot_longer \> apply map \> pivot_wider
 
 ```{r}
 
 ```
 
-
 # Grouped transformations
-TODO: Example of how to use multi-column key instead of "code_in"; 
-e.g. unique panel map for each country or year? // EAST & WEST Germany GDP data
-```
-# http://svmiller.com/blog/2021/02/gank-world-bank-data-with-wdi-in-r/
-```
+
+TODO: Example of how to use multi-column key instead of "code_in"; e.g. unique panel map for each country or year? // EAST & WEST Germany GDP data
+
+    # http://svmiller.com/blog/2021/02/gank-world-bank-data-with-wdi-in-r/
+
 ```{r}
 gdp <- 
 
@@ -72,3 +68,24 @@ tribble(~year, ~country_in, ~country_out,
 
 
 ```
+
+# Verification
+
+## Coverage Check
+
+You should always check the coverage of panel map for data you want to transform.
+
+<!--# TODO: insert demo of coverage check fnc -->
+
+## Dealing with Missing Values at Aggregration
+
+-   doesn't matter at the "transformation" stage, but doesn't matter for aggregation stage for code_out
+
+    <!-- CH: need to add more detail about what each stage is, and how missingness impacts dataset creation -->
+
+### hierarchy of missingness
+
+-   `NA` + `NA` = `NA`
+-   `NA` + value = value
+
+<!--# TODO: add demo code for missingness -->
