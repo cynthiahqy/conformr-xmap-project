@@ -154,6 +154,21 @@ tribble(~year, ~country_in, ~country_out,
 
 ```
 
+## Multi-step Transformations
+
+Example: ISIC4 -> ISIC3 -> ISIC2
+-   be careful with handling of column names..
+
+<!--# TODO: write motivation/example -->
+
+<!--# TODO: include demo code -->
+```{r multi-step}
+# first conversion step
+
+
+# second conversion step
+```
+
 # Usage Notes
 
 ## Coverage Checks
