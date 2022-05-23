@@ -4,7 +4,7 @@
 \alias{make_panel_map_equal}
 \title{Helper to build equal split panel map}
 \usage{
-make_panel_map_equal(code_dict, code_in, code_out, .split_in_name = NULL)
+make_panel_map_equal(code_dict, code_in, code_out, .weights_to = NULL)
 }
 \arguments{
 \item{code_dict}{Data frame containing correspondence between source and destination codes}
@@ -12,6 +12,9 @@ make_panel_map_equal(code_dict, code_in, code_out, .split_in_name = NULL)
 \item{code_in}{Variable in \code{code_dict} containing source codes to convert from.}
 
 \item{code_out}{Variable in \code{code_dict} containing destination codes to convert to.}
+
+\item{.weights_to}{(optional) new column name for storing weights that will be applied to
+input values.}
 }
 \value{
 Returns panel map
