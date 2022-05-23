@@ -1,0 +1,111 @@
+---
+title: "How to Make Panel Maps"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Making Panel Maps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# What are Panel maps?
+
+<!-- conceptual explainer -->
+
+*Panel Maps* are the architectural blueprints of your combined dataset. It specifies instructions for combining and splitting values from source classification into a target classification.
+
+# How-to make valid Panel Maps (How to Guide)
+
+One of the key steps in the `{conformr}` workflow is the creation of *Panel Maps*. The following sections provide example code for generating *Panel Maps* from a variety of sources. Familiarity with the specific classifications, which are chosen purely for illustration purposes, is not necessary.
+
+## Equal Weights using Correspondence Table
+
+Say you have a correspondence table which specifies the complete connections between two code structures, how do you turn that table into a *Panel Map*?
+
+Let's create a Panel Map to transform data from version <!-- x --> of the [Harmonised System](https://en.wikipedia.org/wiki/Harmonized_System) (`HS1_6d`) to NAICS (`code_out`) at the 6 digit code level. First, we import the relevant correspondence table, and then select the columns with the source and target codes.
+
+```{r HS1_to_NAICS_6d_panel_map}
+library(concordance)
+library(magrittr)
+library(dplyr)
+library(conformr)
+
+# import the correspondence table
+code_dict <- concordance::hs1_naics %>%
+  distinct(HS1_6d, NAICS_6d)
+
+## "manual" way
+# make a panel map, with equal weight splits
+pm_df <- code_dict %>%
+  group_by(HS1_6d) %>%
+  mutate(n_dest = n(),
+         HS1_split = 1/n_dest) %>%
+  select(-n_dest)
+
+## conformr way with de-duplication internal
+# OR use the built-in to_equal_panel_map() function
+panel_map <- conformr::make_panel_map_equal(code_dict, HS1_6d, NAICS_6d)
+
+# check that it is a panel map
+panel_map
+
+# TODO: conformr::is_panel_map(HS1_to_NAICS_6d_map)
+```
+
+Notice that we kept only the unique combinations of HS1 & NAICS using `dplyr::distinct()`. We use `distinct` ensure that we have the correct denominator for splitting up values that are part of a 1-to-many split. See the [Verification of Panel Maps]() vignette for more details.
+
+## Non-Uniform Weights
+
+<!--# TODO: insert motivating example (e.g. BEL/LUX) -->
+
+In simple cases: 1. Generate equal weight map 2. manually edit cell values using assignment e.g. equal[3, 7] \<- 0.3 OR 2. replace using coalesce (more tractible) uneven_weights \<- tribble(\~code_in, \~weight_new) left_join(pm, uneven_weights) %\>% coalesce(weight_new, weight)
+
+<!--# TODO: Example of population weighted splits -->
+
+```{r ASCO-ANZSCO}
+# remotes::install_github("runapp-aus/strayr")
+library(strayr)
+
+# download correspondence table from ABS
+## get(https://www.ausstats.abs.gov.au/ausstats/subscriber.nsf/0/F30E72E1516495BDCA2575DF001C7441/$File/12200%20anzsco%20first%20edition%20revision%201%20to%20asco%20second%20edition%20correspondence%20tables.xls)
+
+## 
+```
+
+## Grouped Panel Maps
+
+<!-- CH: Could also call this Multi-Dimensional/Hierarchical Panel Maps -->
+
+Often when creating panel datasets, the required transformations might different between observational units. For example, <!--# TODO: add example with different map by group : e.g. isiccomb in INDSTAT4-->
+
+## Panel Maps are Non-Invertible
+
+Panel maps are not usually invertible. More specifically, a valid transformation map from `code_in` to `code_out` will not, in general, have the same weights as a map from `code_out` to `code_in`. One case where the panel maps are invertible are when the transformation from one classification to another involves only one-to-one mappings.
+
+However, we can always extract the bi-directional code correspondence from an existing `panel_map` by dropping the weights column and filtering for distinct correspondences. We can then construct a new `panel_map` in the opposite direction with appropriate weights.
+
+## TBC // From existing scripts (e.g STATA) //
+
+In general, not possible because the panel map weights are lost at aggregation. Maybe possible from an intermediate output.
+
+<!--# TODO: Example of extracting panel map from for loops – requires aggregation happens separately to splitting -->
+
+``` r
+# ---- make carbon paper for code/value_in ----
+
+# scrub value_in to be 1
+input_data$value_in <- 1
+
+# ---- pass through to script ----
+
+
+# ---- intermediate table **might** be panel map ----
+```
+
+## 

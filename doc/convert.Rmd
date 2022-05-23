@@ -1,0 +1,170 @@
+---
+title: "Convert data between classification standards"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{convert}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval=FALSE
+)
+```
+
+# Use Cases
+* labour/trade classifications
+* country-year panels
+
+# Demonstrated Workflows
+* creating code-dict from data in target standard -- // no match category?
+* verifying valid/complete code-dict / concordance mapping (`code-dict-tools` family)
+* multi-step conversion pipeline (e.g. ISIC4-3.1-2)
+
+# Demo dataset
+* comtrade (2012-2007, for two countries, import)
+```{r data-retrieval}
+library(comtradr)
+
+q <- list()
+
+q$Germany <- comtradr::ct_search(reporters = "Australia", 
+               partners = c("Germany"), 
+               start_date = 2016,
+               end_date = 2017,
+               type = "goods",
+               trade_direction = "imports",
+               commod_codes = c("All"))
+
+q$Indonesia <- comtradr::ct_search(reporters = "Australia", 
+               partners = c("Indonesia"), 
+               start_date = 2016,
+               end_date = 2017,
+               type = "goods",
+               trade_direction = "imports",
+               commod_codes = "All")
+```
+
+```{r}
+monthly <- ct_search(reporters = "Australia", 
+               partners = c("Indonesia"), 
+               start_date = 2016,
+               end_date = 2016,
+               freq = "monthly",
+               type = "goods",
+               trade_direction = "imports",
+               commod_codes = "Total")
+```
+
+
+```{r}
+library(dplyr)
+q$Indonesia %>% glimpse()
+
+q$Indonesia %>%
+  filter(aggregate_level == 4, trade_flow == "Import") %>%
+  select(classification, period, reporter_iso, partner_iso, commodity_code, trade_value_usd)
+```
+
+
+```{r get-concordance, eval=FALSE}
+concordance::hs5_hs4 %>% 
+  select(ends_with("_4d")) %>%
+  distinct() %>%
+  conformr::make_panel_map_equal(., HS5_4d, HS4_4d) %>%
+  filter(n_dest != 1)
+```
+
+
+```{r setup}
+library(dplyr)
+# TODO: highlight code, value 2D transformation.
+```
+
+## make code-dict (equal weights)
+```
+## from codes
+countrycode::<table> %>%
+  make_cd_equal(., code_A, code_B, direction = c("BA"))
+
+## from code columns in data table
+data %>%
+  distinct(code_A, code_B) %>%
+  make_cd_equal(., code_A, code_B, direction = c("AB")) %>%
+  check_cd_coverage(., data, code_from, code_to) ## should definitely pass
+```
+
+## verify existing code-dict
+```
+code_dict %>%
+  check_cd_weights(., code_from, code_to, weight_col) %>%
+  check_cd_coverage(., data, code_from, code_to)
+```
+
+## apply code-dict to data
+```
+data_A %>%
+    dplyr::group_by(case) %>%
+    conformr::convert(data = .,
+                    code_dict = code_dict_BA,
+                    code_from = code_A,
+                    code_to = code_B,
+                    values_from = value_A,
+                    values_to = "value_B",
+                    weight_col = weight)
+```
+
+## A simple conversion
+```{r simple}
+
+
+```
+
+
+## Complex transformations
+```{r complex}
+toy_AUS <- conformr:::toy_AB$data_map %>%
+  dplyr::filter(country == "AUS")
+
+## use tidy-select to convert multiple variables using the same weights
+toy_AUS %>% convert(., std_A, std_B, weight, starts_with("A"))
+```
+
+
+## Interpreting Errors and Warnings
+
+```{r error-warnings}
+## here's a data_map I prepared earlier
+toy_AB <- conformr:::toy_AB
+toy_AB$data_map
+```
+
+```{r, error=TRUE}
+## try convert on the data_map
+toy_AB$data_map %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+
+## oops, missing groups
+toy_AB$data_map %>%
+  dplyr::group_by(country) %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+
+## what if weights are wrong?
+toy_AB$data_map %>%
+  dplyr::group_by(country) %>%
+  conformr::convert(., std_A, std_B, weight_less, A_100)
+```
+
+```{r, error=TRUE}
+## what if value to be split are not duplicated?
+(bad_data_map <- toy_AB$data_map %>%
+  dplyr::filter(country == "AUS") %>%
+  dplyr::mutate(A_100 = case_when(std_B == "C3" ~ NA_real_,
+                                      TRUE ~ A_100)))
+
+bad_data_map %>%
+  conformr::convert(., std_A, std_B, weight, A_100)
+```

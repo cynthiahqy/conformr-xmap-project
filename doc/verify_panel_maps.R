@@ -1,30 +1,13 @@
----
-title: "Verification of Panel Maps"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Verification of Panel Maps}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-```{r, include = FALSE}
+## ---- include = FALSE---------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-```
 
-```{r setup}
+## ----setup--------------------------------------------------------------------
 library(conformr)
-```
 
-This vignettes provides additional detail on how Panel Maps are verified, and errors that might arises.
-
-## Distinct code combinations
-
-## Understanding the different transformation cases
-
-```{r load_code_dict}
+## ----load_code_dict-----------------------------------------------------------
 library(magrittr)
 library(dplyr)
 
@@ -51,11 +34,8 @@ code_out <- sym("std_B")
 code_dict %>%
   select({{code_in}}, {{code_out}}) %>%
   arrange({{code_in}}, {{code_out}})
-```
 
-Now, let's do some data wrangling to see what kind of transformations will be included in our Panel Map:
-
-```{r panel-map-with-cases}
+## ----panel-map-with-cases-----------------------------------------------------
 panel_map_case <- code_dict %>%
   # work out where the values for each code_in will go
   group_by({{ code_in }}) %>%
@@ -78,14 +58,8 @@ panel_map_case <- code_dict %>%
   #                                map_case == "many-to-1" ~ "add up",
   #                                map_case == "1-to-many" ~ "split",
   #                                map_case == "many-to-many" ~ "split & add up"))
-```
 
-By summarising by the source classification, we can see what will happen to any values corresponding to a particular source code. Let us define the following input transformation cases:
-
--   1-to-1: values for these source codes are "transferred" over to single code in the destination classification
--   1-to-many: values in the source classification are "split" across multiple codes in the destination classification.
-
-```{r summary_in_to_out}
+## ----summary_in_to_out--------------------------------------------------------
 # summary table of what happens to each value_in for every code_in
 panel_map_case %>%
   mutate(dest_w_split = paste0("", signif(split_in, 2) * 100, "%", " to ", {{ code_out }})) %>%
@@ -93,26 +67,16 @@ panel_map_case %>%
   summarise(value_in_split_to_out = paste(dest_w_split, collapse = ", "),
             .groups = "drop") %>%
   select({{ code_in }}, value_in_split_to_out)
-```
 
-Now pivoting our perspective to the target classification, we can see which destination codes have to "collect" values from multiple source codes. From here we can define following transformed output cases:
-
--   1-to-1: a single value from a single source code is "transferred" into a single destination code.
--   many-to-1: multiple values from different source codes are "transferred" and then "aggregated" into a single destination code.
--   many-to-many: multiple values from different source codes are "split" and or "transferred" and then "aggregated" across multiple destination codes.
-
-```{r summary_out_by_in}
+## ----summary_out_by_in--------------------------------------------------------
 panel_map_case %>%
   mutate(source_w_split = paste0({{ code_in }}, " * [", signif(split_in, 2), "]")) %>%
   group_by({{ code_out }}, case_out_sum) %>%
   summarise(value_out_sum = paste(source_w_split, collapse = " + "),
             .groups = "drop") %>%
   select({{ code_out }}, value_out_sum)
-```
 
-We can visualise part of the panel map using an alluvial diagram made using `[{ggalluvial}`](<https://cran.r-project.org/web/packages/ggalluvial/vignettes/ggalluvial.html>):
-
-```{r alluvial-panel-map}
+## ----alluvial-panel-map-------------------------------------------------------
 library(ggplot2)
 library(ggalluvial)
 
@@ -131,26 +95,14 @@ panel_map_case %>%
   theme_minimal()
   #facet_grid(rows=vars(map_case))
   #           scales = "free")
-```
 
-## Necessary and Sufficient Conditions
+## ---- eval=FALSE--------------------------------------------------------------
+#  ##
+#  library(tidyverse)
+#  
+#  toy_AB$codes_BA[5,] %>%
+#    dplyr::bind_rows(conformr:::toy_AB$codes_BA) %>%
+#    ## TODO: show mistake in weights caused by duplicate codes
+#    ## make_panel_map_equal(., std_A, std_B) %>%
+#    dplyr::arrange(std_A, std_B)
 
-Code Correspondence has no duplicates for making panel map <!--# maybe move this to make_panel_maps.Rmd -->
-
--   otherwise you inadvertently lower the share going to non-duplicated destinations
--   `make_panel_mape_equal()` automatically clears duplicates
-
-```{r, eval=FALSE}
-## 
-library(tidyverse)
-
-toy_AB$codes_BA[5,] %>% 
-  dplyr::bind_rows(conformr:::toy_AB$codes_BA) %>% 
-  ## TODO: show mistake in weights caused by duplicate codes
-  ## make_panel_map_equal(., std_A, std_B) %>% 
-  dplyr::arrange(std_A, std_B)
-```
-
-2.  Weights in a panel map sum to one based on input code
-
-<!--# TODO: INSERT DEMO CODE-->
