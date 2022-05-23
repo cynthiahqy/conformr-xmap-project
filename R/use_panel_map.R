@@ -34,12 +34,13 @@ transform_data_by_map <- function(map, data, values_from, code_from,
 #'
 #' @param map A data frame that contains a valid panel map for the transformation.
 #' @param data A data frame for transformation.
-#' @param values_from Variables in `data` containing the values to be converted.
-#' @param code_from A character string of the variable containing the codes to convert from.
-#' If the variables containing the source codes differ in `map` and `data`, use a named vector.
-#' For example, `from_code = c("a" = "b")` will match codes in `map$a` to `data$b`.
+#' @param value_from Variable in `data` containing the values to be converted.
+#' @param from_code A character string of the variable containing the codes to convert from.
+#' Must be the same in `map` and `data`.
 #' @param to_code Variable in `map` containing the codes to convert to.
 #' @param weights Variable in `map` containing the weights to split values by.
+#' @param .suffix A string appended to `value_from` column name to create column names for transformed values.
+#' Defaults to `to_code`
 #'
 #' @param
 #'
@@ -48,30 +49,30 @@ transform_data_by_map <- function(map, data, values_from, code_from,
 #' @export
 #'
 #' @examples
-use_panel_map <- function(map, data, values_from, code_from){
-  # check argument types
-  ## abort(!is_panel_map(map))
+use_panel_map <- function(map, data, value_from, from_code, to_code, weights,
+                          .suffix = NULL){
 
-  # match map$code_in and data$code_from
-  code_in <- attr(map, "from", exact = TRUE)
-  code_from <- as_string(enexpr(code_from))
-
-
-  data_from <- data %>%
-    dplyr::rename(code_in = code_from) %>%
-    dplyr::select(code_from, {{values_from}}) %>%
-    # pivot_longer to turn values_from into single column
-    tidyr::pivot_longer(., {{values_from}}, names_to = "from_name", values_to = "value_in")
+  # convert from_code to string
+  from_code <- as_string(enexpr(from_code))
+  # subset data for transformation
+  data_in <- data %>%
+    dplyr::select(from_code, {{value_from}})
 
   # merge map and data // use default by= argument
-  map_join_data <- dplyr::right_join(x = data_from,
-                                     y = map)
+  map_join_data <- dplyr::right_join(x = data_in,
+                                     y = map,
+                                     by = from_code)
 
   # apply transformation
   data_out <- map_join_data %>%
-    dplyr::mutate(dplyr::across({{ values_from }}, ~ .x * {{ weights }})) %>%
+    dplyr::mutate(dplyr::across({{ value_from }}, ~ .x * {{ weights }})) %>%
     dplyr::group_by({{ to_code }}, .add = TRUE) %>%
-    dplyr::summarise(dplyr::across({{ values_from }}, ~ sum(.x)), .groups = "drop_last")
+    dplyr::summarise(dplyr::across({{ value_from }}, ~ conformr::sum_greedy(.x)), .groups = "drop_last")
+
+  # rename
+  names_suffix <- .suffix %||% paste0("_", as_string(enexpr(to_code)))
+  data_out <- data_out %>%
+    dplyr::rename_with(., ~ paste0(.x, names_suffix), .cols = {{ value_from }})
 
   return(data_out)
 }
@@ -93,8 +94,6 @@ use_panel_map <- function(map, data, values_from, code_from){
 #'
 #' @examples
 check_cd_coverage <- function(map, data, code_in){
-
-
 
   ### every code in data has a destination instruction in code_dict
   # unique codes

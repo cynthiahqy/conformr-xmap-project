@@ -4,22 +4,32 @@
 \alias{use_panel_map}
 \title{Apply panel_map to data without checks}
 \usage{
-use_panel_map(map, data, values_from, code_from)
+use_panel_map(
+  map,
+  data,
+  value_from,
+  from_code,
+  to_code,
+  weights,
+  .suffix = NULL
+)
 }
 \arguments{
 \item{map}{A data frame that contains a valid panel map for the transformation.}
 
 \item{data}{A data frame for transformation.}
 
-\item{values_from}{Variables in \code{data} containing the values to be converted.}
+\item{value_from}{Variable in \code{data} containing the values to be converted.}
 
-\item{code_from}{A character string of the variable containing the codes to convert from.
-If the variables containing the source codes differ in \code{map} and \code{data}, use a named vector.
-For example, \code{from_code = c("a" = "b")} will match codes in \code{map$a} to \code{data$b}.}
+\item{from_code}{A character string of the variable containing the codes to convert from.
+Must be the same in \code{map} and \code{data}.}
 
 \item{to_code}{Variable in \code{map} containing the codes to convert to.}
 
 \item{weights}{Variable in \code{map} containing the weights to split values by.}
+
+\item{.suffix}{A string appended to \code{value_from} column name to create column names for transformed values.
+Defaults to \code{to_code}}
 }
 \value{
 The output has the following properties:
