@@ -80,6 +80,7 @@ For convenience, the package provides the wrapper function `use_panel_map()`, wh
 
 -   join your data and `panel_map` by a shared `code_in` column
 -   summarise by the output classification, retaining as many `NA` values as possible. <!-- add link to bottom section? -->
+-   retain any grouping variables in the source `data`
 
 but does (not?) check:
 
@@ -100,19 +101,20 @@ code_in <- sym("std_A")
 data_in <- conformr:::toy_AB$data_in %>%
   select(country, 
          std_A,
-         A_100)
+         A_100,
+         A_prod)
 
 # make panel_map
 code_dict <- conformr:::toy_AB$codes_BA
 toy_pm <- code_dict %>% 
-  make_panel_map_equal(.,  code_in = !!code_in, code_out = std_B, "split_in")
+  make_panel_map_equal(.,  code_in = !!code_in, code_out = std_B, "split_A")
 
 # use panel_map
-data_out <- 
+data_out <-
   use_panel_map(map = toy_pm,
-                data = group_by(data_in, country), value_from = A_100,
+                data = group_by(data_in, country), values_from = A_100,
                 from_code = std_A, to_code = std_B,
-                weights = split_in)
+                weights = split_A, .suffix = "_out")
 ```
 ## Multi-Variable Transformations
 
@@ -133,6 +135,16 @@ data %>%
     tidyr::pivot_longer(., {{values_from}}, names_to = "from_name", values_to = "value_in")
 
 ```
+
+Again, `use_panel_map()` handles the pivoting for you:
+```{r}
+use_panel_map(map = toy_pm,
+              data = group_by(data_in, country), 
+              values_from = c(A_100, A_prod),
+              from_code = std_A, to_code = std_B,
+              weights = split_A, .suffix = "_out")
+```
+
 
 ## Grouped Transformations
 
