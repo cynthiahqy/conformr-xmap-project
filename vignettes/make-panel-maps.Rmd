@@ -1,5 +1,5 @@
 ---
-title: "How to Make Panel Maps"
+title: "Making Panel Maps"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Making Panel Maps}

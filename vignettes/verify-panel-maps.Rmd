@@ -1,8 +1,8 @@
 ---
-title: "Verification of Panel Maps"
+title: "Verifying Panel Maps"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Verification of Panel Maps}
+  %\VignetteIndexEntry{Verifying Panel Maps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
