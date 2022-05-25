@@ -14,8 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message=FALSE}
 library(conformr)
+library(magrittr)
+library(dplyr)
 ```
 
 This vignettes provides additional detail on how Panel Maps are verified, and errors that might arises.
@@ -25,8 +27,6 @@ This vignettes provides additional detail on how Panel Maps are verified, and er
 ## Understanding the different transformation cases
 
 ```{r load_code_dict}
-library(magrittr)
-library(dplyr)
 
 # import correspondence table
 code_dict <- #conformr:::toy_AB$codes_BA 
