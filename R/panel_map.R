@@ -52,29 +52,6 @@ validate_panel_map <- function(x){
   x <- unclass(x)
 }
 
-check_pm_split_sum <- function(x, code_in, split_in){
-  bad_rows <- x %>%
-    dplyr::group_by({{code_in}}) %>%
-    dplyr::summarise(split_total = sum({{split_in}})) %>%
-    dplyr::filter(split_total != 1)
-
-  if (nrow(bad_rows) == 0){
-    return(x)
-  } else {
-    # TODO: add informative error message
-    return(bad_rows)
-  }
-}
-
-check_pm_duplicates <- function(x){
-
-}
-
-# ---- Errors ----
-error_incomplete_split <- function(pm){
-
-}
-
 # ---- Helpers ----
 #' Create a panel_map from a data frame like object
 #'
