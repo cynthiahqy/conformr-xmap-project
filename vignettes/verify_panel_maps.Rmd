@@ -135,22 +135,75 @@ panel_map_case %>%
 
 ## Necessary and Sufficient Conditions
 
-Code Correspondence has no duplicates for making panel map <!--# maybe move this to make_panel_maps.Rmd -->
+
+### Code Correspondence has no duplicates for making panel map 
+
+<!--# maybe move this to make_panel_maps.Rmd -->
 
 -   otherwise you inadvertently lower the share going to non-duplicated destinations
 -   `make_panel_mape_equal()` automatically clears duplicates
 
-```{r, eval=FALSE}
-## 
-library(tidyverse)
+Consider the example below:
 
-toy_AB$codes_BA[5,] %>% 
-  dplyr::bind_rows(conformr:::toy_AB$codes_BA) %>% 
-  ## TODO: show mistake in weights caused by duplicate codes
-  ## make_panel_map_equal(., std_A, std_B) %>% 
-  dplyr::arrange(std_A, std_B)
+```{r, cake-setup}
+cake_codes <- tribble(~item, ~plate,
+                 "cake", "plate_1",
+                 "cake", "plate_2",
+                 "cake", "plate_3",
+                 "cream","plate_3")
+
+cake_data <- tribble(~item, ~grams,
+                     "cake", 100,
+                     "cream", 15)
 ```
 
-2.  Weights in a panel map sum to one based on input code
+From the code dictionary, we would expect that each plate gets 1/3rd of the value associated with `cake`. However, notice what happens if we have a duplicate instruction:
+
+```{r cake-dupe}
+# duplicate the first instruction
+dupe_codes <- bind_rows(cake_codes[1,], cake_codes)
+
+# now create an "equal" weight panel map using row counts
+dupe_pm <- 
+  dupe_codes %>%
+  group_by(item) %>%
+  mutate(n_dest = n(),
+         weight = 1/n_dest) %>%
+  group_by(item, plate) %>%
+  summarise(item_weight = sum(weight), .groups = "drop")
+
+dupe_pm
+```
+
+Although we can produce a valid panel map, it doesn't reflect the instructions encoded in the code dictionary. For this reason, `make_panel_map_equal()` internally removes any duplicate `code_in` to `code_out` instructions
+
+```{r cake-distinct}
+# equal panel map using distinct instructions
+cake_pm <- make_panel_map_equal(
+  dupe_codes, 
+  code_in = item,
+  code_out = plate,
+  .weights_to = "item_weight")
+
+# compare
+waldo::compare(x = dupe_pm,
+               y = cake_pm,
+               x_arg = "dupe",
+               y_arg = "distinct")
+
+# which splits up neatly as expected
+cake_on_plates <-
+  use_panel_map(map = cake_pm,
+              data = cake_data,
+              values_from = grams,
+              from_code = item,
+              to_code = plate,
+              weights = item_weight,
+              .suffix = "")
+
+cake_on_plates
+```
+
+### Weights in a panel map sum to one based on input code
 
 <!--# TODO: INSERT DEMO CODE-->
