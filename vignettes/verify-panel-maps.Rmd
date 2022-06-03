@@ -135,8 +135,7 @@ panel_map_case %>%
 
 ## Necessary and Sufficient Conditions
 
-
-### Code Correspondence has no duplicates for making panel map 
+### Code Correspondence has no duplicates for making panel map
 
 <!--# maybe move this to make_panel_maps.Rmd -->
 
@@ -155,9 +154,21 @@ cake_codes <- tribble(~item, ~plate,
 cake_data <- tribble(~item, ~grams,
                      "cake", 100,
                      "cream", 15)
+
+cake_pm <- make_panel_map_equal(
+  cake_codes, 
+  code_in = item,
+  code_out = plate,
+  .weights_to = "expected_split")
 ```
 
-From the code dictionary, we would expect that each plate gets 1/3rd of the value associated with `cake`. However, notice what happens if we have a duplicate instruction:
+From the code dictionary, we would expect that each plate gets 1/3rd of the value associated with `cake`.
+
+```{r, cake-expected-split, echo=FALSE}
+cake_pm
+```
+
+However, notice what happens if we have a duplicate instruction:
 
 ```{r cake-dupe}
 # duplicate the first instruction
@@ -167,33 +178,43 @@ dupe_codes <- bind_rows(cake_codes[1,], cake_codes)
 dupe_pm <- 
   dupe_codes %>%
   group_by(item) %>%
-  mutate(n_dest = n(),
+  mutate(n_dest = n(), ## instead of n_distinct()
          weight = 1/n_dest) %>%
   group_by(item, plate) %>%
   summarise(item_weight = sum(weight), .groups = "drop")
-
-dupe_pm
 ```
 
-Although we can produce a valid panel map, it doesn't reflect the instructions encoded in the code dictionary. For this reason, `make_panel_map_equal()` internally removes any duplicate `code_in` to `code_out` instructions
+`plate_1` has received an inflated share of the original cake data, while `plate_2` and `plate_2` received less than expected:
+
+```{r, cake-pm-compare, echo=FALSE}
+dupe_pm %>%
+  left_join(cake_pm,
+            by = c("item", "plate"))
+```
+
+Although we can produce a valid panel map, it doesn't reflect the instructions encoded in the code dictionary. For this reason, `make_panel_map_equal()` internally removes any duplicate `code_in` to `code_out` instructions using `dplyr::n_distinct()`.
 
 ```{r cake-distinct}
-# equal panel map using distinct instructions
-cake_pm <- make_panel_map_equal(
+no_dupes_pm <- make_panel_map_equal(
   dupe_codes, 
   code_in = item,
   code_out = plate,
   .weights_to = "item_weight")
 
-# compare
+# compare the panel maps
 waldo::compare(x = dupe_pm,
-               y = cake_pm,
+               y = no_dupes_pm,
                x_arg = "dupe",
                y_arg = "distinct")
+```
 
-# which splits up neatly as expected
+Now for completeness, let's use `no_dupes_pm` to produce the final "plating" of `cake_data`:
+
+```{r}
+cake_data
+
 cake_on_plates <-
-  use_panel_map(map = cake_pm,
+  use_panel_map(map = no_dupes_pm,
               data = cake_data,
               values_from = grams,
               from_code = item,

@@ -1,31 +1,30 @@
 # conformr
 
-This package is in active development and not ready for use.
-Please follow me on twitter at [@cynthiahqy](https://twitter.com/cynthiahqy) for updates.
+This package is in active development and not ready for use. Please follow me on twitter at [\@cynthiahqy](https://twitter.com/cynthiahqy) for updates.
 
-`conformr` provides tools
-for harmonising multiple data across classifications or statistics 
-into a consistent validated dataset.
+`conformr` provides tools for harmonising multiple data across classifications or statistics into a consistent validated dataset.
 
-It is not uncommon in empirical social sciences to encounter "pseudo" [panel data](https://en.wikipedia.org/wiki/Panel_data) (sometimes also called longitudinal data) that has been reported using different standards in different time periods. 
-Examples include occupation level labour statistics, or product level trade flows, whereby classification codes are updated periodically to reflect changes in category relevance. Over time categories may be added, removed or even split. 
+It is not uncommon in empirical social sciences to encounter "pseudo" [panel data](https://en.wikipedia.org/wiki/Panel_data) (sometimes also called longitudinal data) that has been reported using different standards in different time periods. Examples include occupation level labour statistics, or product level trade flows, whereby classification codes are updated periodically to reflect changes in category relevance. Over time categories may be added, removed or even split.
 
 In order to combine this kind of data into a single panel dataset, researchers must first harmonise the data across classification standards. In particular, researchers must make decisions on how to redistribute values when categories don't have a one-to-one correspondence. These decisions are often hidden in nested for-loops and case statements over each old-new category correspondence. The nature of nested loops make it difficult to review the dataset design, or even validate the data cleaning has been performed as intended.
 
 ## From nested-loops to Panel Maps
+
 `conformr` provides a matrix framework for applying transforming data between standards to:
-- avoid loss or duplication of data when converting between classifications
-- resolve conflicts between reported and calculated statistics
-- improve reproducibilty and tractability of combined datasets by
-  - facilitating pipelines of multiple sequential concordances
-  - providing an tibble-based alternative to nested cases loops for handling one-to-one, one-to-many, and many-to-one correspondences
+
+-   avoid loss or duplication of data when converting between classifications
+-   resolve conflicts between reported and calculated statistics
+-   improve reproducibilty and tractability of combined datasets by
+    -   facilitating pipelines of multiple sequential concordances
+    -   providing an tibble-based alternative to nested cases loops for handling one-to-one, one-to-many, and many-to-one correspondences
 
 `conformr` is built upon the realisation that implicit in any transformation between classifications is an application of *weights* to the original values. For example, a transformation from 1 original category to 2 new categories, requires spliting the original value in 2, or alternatively, applying a weight of 0.5 to the original value twice (once each for the 2 new categories).
 
 `conformr` removes the need for nested loops by explicitly stating the weights in a *Panel Map*, which provide reusuable and easily shared "instructions" on how to transform that data in tabular form. The "instructions" contain both the code correspondence, as well as what *weights* to use in the transfromation. *Panel maps* can be thought of as an extension of standard concordance tables such as those provided in `{concordance}` and `{countrycode}` -- i.e. in addition to *which* target code to "transfer" value to, they also make explicit *how much* value should be assigned to each target code.
 
 A simple workflow (on relatively clean data & code correspondences) would look something like:
-```r
+
+``` r
 ## import the data and code correspondences
 data_in <- readr::read_csv("some_trade_data.csv")
 code_dict <- readr::read_csv("code_correlations.csv")
@@ -46,9 +45,9 @@ data_out <- conformr::concord(data_in, panel_map,
                               .validate_coverage = TRUE) 
 ```
 
-
 Some contrived snippets for further illustration (real datasets are much too large to show the various cases):
-```r
+
+``` r
 ## valid panel_map 
 #> # A tibble: 10 x 4
 #>    code_B code_A n_dest weight
@@ -95,35 +94,35 @@ Some contrived snippets for further illustration (real datasets are much too lar
 #>  8 AUS   C8        3.33
 #>  9 AUS   C9        3.33
 ```
+
 ## Planned Features
 
 Functions for implementing & using Panel Maps:
 
-* a `panel_map` S3 class built upon `tibble`, with helpers for verifying and creating valid `panel_map` objects 
-* tools for using `panel_maps` on data. This includes pipeline tools for multi-step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using Panel Maps. Note that many-to-many transformations are just combinations of the above cases.
-* helpers for generating custom weights -- e.g. splitting one-to-many values by historic share instead of equally 
+-   a `panel_map` S3 class built upon `tibble`, with helpers for verifying and creating valid `panel_map` objects
+-   tools for using `panel_maps` on data. This includes pipeline tools for multi-step transformation of numeric data between classifications across one-to-one, one-to-many and many-to-one cases (with validation) using Panel Maps. Note that many-to-many transformations are just combinations of the above cases.
+-   helpers for generating custom weights -- e.g. splitting one-to-many values by historic share instead of equally
 
-Vignettes: 
+Vignettes:
 
-* `panel_map` theory -- validation criteria and explainer
-* how-to code-chunks for making valid Panel Maps from different sources
-* step-by-step tutorial for transforming a pseudo panel into analysis ready tabular form, including multi-step transfomrations 
-* (architecture based on Megan Sullivan's [Docs for Everyone](https://meganesulli.com/blog/docs-for-everyone/) post)i
+-   `panel_map` theory -- validation criteria and explainer
+-   how-to code-chunks for making valid Panel Maps from different sources
+-   step-by-step tutorial for transforming a pseudo panel into analysis ready tabular form, including multi-step transfomrations
+-   (architecture based on Megan Sullivan's [Docs for Everyone](https://meganesulli.com/blog/docs-for-everyone/) post)i
 
 Tools for exposing other dataset design choices:
 
-* helpers for identifying discrepancies between reported and calculated statistics (e.g. `compare` reported category totals vs. calculated sum of category records)
-* single step corrections of discrepancies (e.g. `distribute` difference between category members, or `replace` reported totals with calculated sums)
+-   helpers for identifying discrepancies between reported and calculated statistics (e.g. `compare` reported category totals vs. calculated sum of category records)
+-   single step corrections of discrepancies (e.g. `distribute` difference between category members, or `replace` reported totals with calculated sums)
 
 ## Related tools & packages
 
 Code Correspondences served straight into R:
 
-* [{concordance}](https://github.com/insongkim/concordance)
-* [{countrycode}](https://github.com/vincentarelbundock/countrycode)
+-   [{concordance}](https://github.com/insongkim/concordance)
+-   [{countrycode}](https://github.com/vincentarelbundock/countrycode)
 
 Panel Data wrangling tools:
 
-* [{overviewR}](https://github.com/cosimameyer/overviewR) for comparing datasets side-by-side and seeing where you might need transformations
-* [{panelr}](https://cran.r-project.org/web/packages/panelr/index.html) for `panel_data` object and methods
-
+-   [{overviewR}](https://github.com/cosimameyer/overviewR) for comparing datasets side-by-side and seeing where you might need transformations
+-   [{panelr}](https://cran.r-project.org/web/packages/panelr/index.html) for `panel_data` object and methods
