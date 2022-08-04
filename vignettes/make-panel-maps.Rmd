@@ -26,6 +26,7 @@ knitr::opts_chunk$set(
 
 One of the key steps in the `{conformr}` workflow is the creation of *Panel Maps*. The following sections provide example code for generating *Panel Maps* from a variety of sources. Familiarity with the specific classifications, which are chosen purely for illustration purposes, is not necessary.
 
+TEST LINE: TOday we are meeting to discuss our work going forward
 ## Equal Weights using Correspondence Table
 
 Say you have a correspondence table which specifies the complete connections between two code structures, how do you turn that table into a *Panel Map*?
