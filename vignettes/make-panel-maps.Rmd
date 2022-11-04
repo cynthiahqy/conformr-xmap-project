@@ -22,6 +22,12 @@ knitr::opts_chunk$set(
 
 *Panel Maps* are the architectural blueprints of your combined dataset. It specifies instructions for combining and splitting values from source classification into a target classification.
 
+```{r}
+dplyr::tribble(~col1, ~col2,
+               "value11", "value21",
+               "value12", "value2",)
+```
+
 # How-to make valid Panel Maps (How to Guide)
 
 One of the key steps in the `{conformr}` workflow is the creation of *Panel Maps*. The following sections provide example code for generating *Panel Maps* from a variety of sources. Familiarity with the specific classifications, which are chosen purely for illustration purposes, is not necessary.

@@ -29,28 +29,29 @@ This vignettes provides additional detail on how Panel Maps are verified, and er
 ```{r load_code_dict}
 
 # import correspondence table
-code_dict <- #conformr:::toy_AB$codes_BA 
-  dplyr::tribble(~ std_B, ~ std_A,
-                                "A1", "x1111", # one-to-one
-                                "B2", "x2222", # many-to-one
-                                "B2", "x3333",
-                                "C3", "x4444", # one-to-many (4)
-                                "C4", "x4444",
-                                "C4", "x6666", # many-to-many
-                                "C5", "x4444",
-                                "C6", "x4444",
-                                "C7", "x5555", # one-to-many (3)
-                                "C8", "x5555",
-                                "C9", "x5555"
-                                )
+code_dict <- # conformr:::toy_AB$codes_BA
+  dplyr::tribble(
+    ~std_B, ~std_A,
+    "A1", "x1111", # one-to-one
+    "B2", "x2222", # many-to-one
+    "B2", "x3333",
+    "C3", "x4444", # one-to-many (4)
+    "C4", "x4444",
+    "C4", "x6666", # many-to-many
+    "C5", "x4444",
+    "C6", "x4444",
+    "C7", "x5555", # one-to-many (3)
+    "C8", "x5555",
+    "C9", "x5555"
+  )
 
 # define code_in & code_out references
 code_in <- sym("std_A")
 code_out <- sym("std_B")
 
 code_dict %>%
-  select({{code_in}}, {{code_out}}) %>%
-  arrange({{code_in}}, {{code_out}})
+  select({{ code_in }}, {{ code_out }}) %>%
+  arrange({{ code_in }}, {{ code_out }})
 ```
 
 Now, let's do some data wrangling to see what kind of transformations will be included in our Panel Map:
@@ -59,25 +60,33 @@ Now, let's do some data wrangling to see what kind of transformations will be in
 panel_map_case <- code_dict %>%
   # work out where the values for each code_in will go
   group_by({{ code_in }}) %>%
-  mutate(n_dest = n_distinct({{ code_out }}),
-         split_in = 1/n_dest) %>%
+  mutate(
+    n_dest = n_distinct({{ code_out }}),
+    split_in = 1 / n_dest
+  ) %>%
   ungroup() %>%
   # work out how many values are going to each destination code_out
   group_by({{ code_out }}) %>%
   mutate(dest_size = n_distinct({{ code_in }})) %>%
   # label each case
-  mutate(case_in_to_out = case_when(n_dest == 1 ~ "no split",
-                                    n_dest != 1 ~ "split")) %>%
-  mutate(case_out_sum = case_when(dest_size == 1 ~ "no sum",
-                                  dest_size != 1 ~ "sum up")) %>%
-  mutate(map_case = case_when(n_dest == 1 & dest_size == 1 ~ "1-to-1",
-                              n_dest != 1 & dest_size == 1 ~ "1-to-many",
-                              n_dest == 1 & dest_size != 1 ~ "many-to-1",
-                              n_dest != 1 & dest_size != 1 ~ "many-to-many"))
-  # mutate(value_trans = case_when(map_case == "1-to-1" ~ "no change",
-  #                                map_case == "many-to-1" ~ "add up",
-  #                                map_case == "1-to-many" ~ "split",
-  #                                map_case == "many-to-many" ~ "split & add up"))
+  mutate(case_in_to_out = case_when(
+    n_dest == 1 ~ "no split",
+    n_dest != 1 ~ "split"
+  )) %>%
+  mutate(case_out_sum = case_when(
+    dest_size == 1 ~ "no sum",
+    dest_size != 1 ~ "sum up"
+  )) %>%
+  mutate(map_case = case_when(
+    n_dest == 1 & dest_size == 1 ~ "1-to-1",
+    n_dest != 1 & dest_size == 1 ~ "1-to-many",
+    n_dest == 1 & dest_size != 1 ~ "many-to-1",
+    n_dest != 1 & dest_size != 1 ~ "many-to-many"
+  ))
+# mutate(value_trans = case_when(map_case == "1-to-1" ~ "no change",
+#                                map_case == "many-to-1" ~ "add up",
+#                                map_case == "1-to-many" ~ "split",
+#                                map_case == "many-to-many" ~ "split & add up"))
 ```
 
 By summarising by the source classification, we can see what will happen to any values corresponding to a particular source code. Let us define the following input transformation cases:
@@ -88,10 +97,15 @@ By summarising by the source classification, we can see what will happen to any 
 ```{r summary_in_to_out}
 # summary table of what happens to each value_in for every code_in
 panel_map_case %>%
-  mutate(dest_w_split = paste0("", signif(split_in, 2) * 100, "%", " to ", {{ code_out }})) %>%
+  mutate(dest_w_split = paste0(
+    "", signif(split_in, 2) * 100,
+    "%", " to ", {{ code_out }}
+  )) %>%
   group_by({{ code_in }}, case_in_to_out) %>%
-  summarise(value_in_split_to_out = paste(dest_w_split, collapse = ", "),
-            .groups = "drop") %>%
+  summarise(
+    value_in_split_to_out = paste(dest_w_split, collapse = ", "),
+    .groups = "drop"
+  ) %>%
   select({{ code_in }}, value_in_split_to_out)
 ```
 
@@ -103,10 +117,15 @@ Now pivoting our perspective to the target classification, we can see which dest
 
 ```{r summary_out_by_in}
 panel_map_case %>%
-  mutate(source_w_split = paste0({{ code_in }}, " * [", signif(split_in, 2), "]")) %>%
+  mutate(source_w_split = paste0(
+    {{ code_in }},
+    " * [", signif(split_in, 2), "]"
+  )) %>%
   group_by({{ code_out }}, case_out_sum) %>%
-  summarise(value_out_sum = paste(source_w_split, collapse = " + "),
-            .groups = "drop") %>%
+  summarise(
+    value_out_sum = paste(source_w_split, collapse = " + "),
+    .groups = "drop"
+  ) %>%
   select({{ code_out }}, value_out_sum)
 ```
 
@@ -117,20 +136,27 @@ library(ggplot2)
 library(ggalluvial)
 
 # TODO: fix these cases to be exclusive
-# TODO: color 
+# TODO: color
 panel_map_case %>%
-  ggplot(., 
-         aes(axis1 = {{code_in}}, axis2 = {{code_out}},
-             y = n_dest)) +
-  scale_x_discrete(limits = c(deparse(code_in), deparse(code_out)), expand = c(.2, .05)) +
+  ggplot(
+    .,
+    aes(
+      axis1 = {{ code_in }}, axis2 = {{ code_out }},
+      y = n_dest
+    )
+  ) +
+  scale_x_discrete(
+    limits = c(deparse(code_in), deparse(code_out)),
+    expand = c(.2, .05)
+  ) +
   scale_fill_viridis_d() +
   xlab("Classification") +
-  geom_alluvium(aes(fill = map_case)) +
-  geom_stratum() +
+  geom_alluvium(aes(fill = map_case), color = "black") +
+  geom_stratum(style = "linear") +
   geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
   theme_minimal()
-  #facet_grid(rows=vars(map_case))
-  #           scales = "free")
+# facet_grid(rows=vars(map_case))
+#           scales = "free")
 ```
 
 ## Necessary and Sufficient Conditions
@@ -145,21 +171,26 @@ panel_map_case %>%
 Consider the example below:
 
 ```{r, cake-setup}
-cake_codes <- tribble(~item, ~plate,
-                 "cake", "plate_1",
-                 "cake", "plate_2",
-                 "cake", "plate_3",
-                 "cream","plate_3")
+cake_codes <- tribble(
+  ~item, ~plate,
+  "cake", "plate_1",
+  "cake", "plate_2",
+  "cake", "plate_3",
+  "cream", "plate_3"
+)
 
-cake_data <- tribble(~item, ~grams,
-                     "cake", 100,
-                     "cream", 15)
+cake_data <- tribble(
+  ~item, ~grams,
+  "cake", 100,
+  "cream", 15
+)
 
 cake_pm <- make_panel_map_equal(
-  cake_codes, 
+  cake_codes,
   code_in = item,
   code_out = plate,
-  .weights_to = "expected_split")
+  .weights_to = "expected_split"
+)
 ```
 
 From the code dictionary, we would expect that each plate gets 1/3rd of the value associated with `cake`.
@@ -172,14 +203,16 @@ However, notice what happens if we have a duplicate instruction:
 
 ```{r cake-dupe}
 # duplicate the first instruction
-dupe_codes <- bind_rows(cake_codes[1,], cake_codes)
+dupe_codes <- bind_rows(cake_codes[1, ], cake_codes)
 
 # now create an "equal" weight panel map using row counts
-dupe_pm <- 
+dupe_pm <-
   dupe_codes %>%
   group_by(item) %>%
-  mutate(n_dest = n(), ## instead of n_distinct()
-         weight = 1/n_dest) %>%
+  mutate(
+    n_dest = n(), ## instead of n_distinct()
+    weight = 1 / n_dest
+  ) %>%
   group_by(item, plate) %>%
   summarise(item_weight = sum(weight), .groups = "drop")
 ```
@@ -189,23 +222,27 @@ dupe_pm <-
 ```{r, cake-pm-compare, echo=FALSE}
 dupe_pm %>%
   left_join(cake_pm,
-            by = c("item", "plate"))
+    by = c("item", "plate")
+  )
 ```
 
 Although we can produce a valid panel map, it doesn't reflect the instructions encoded in the code dictionary. For this reason, `make_panel_map_equal()` internally removes any duplicate `code_in` to `code_out` instructions using `dplyr::n_distinct()`.
 
 ```{r cake-distinct}
 no_dupes_pm <- make_panel_map_equal(
-  dupe_codes, 
+  dupe_codes,
   code_in = item,
   code_out = plate,
-  .weights_to = "item_weight")
+  .weights_to = "item_weight"
+)
 
 # compare the panel maps
-waldo::compare(x = dupe_pm,
-               y = no_dupes_pm,
-               x_arg = "dupe",
-               y_arg = "distinct")
+waldo::compare(
+  x = dupe_pm,
+  y = no_dupes_pm,
+  x_arg = "dupe",
+  y_arg = "distinct"
+)
 ```
 
 Now for completeness, let's use `no_dupes_pm` to produce the final "plating" of `cake_data`:
@@ -214,13 +251,15 @@ Now for completeness, let's use `no_dupes_pm` to produce the final "plating" of 
 cake_data
 
 cake_on_plates <-
-  use_panel_map(map = no_dupes_pm,
-              data = cake_data,
-              values_from = grams,
-              from_code = item,
-              to_code = plate,
-              weights = item_weight,
-              .suffix = "")
+  use_panel_map(
+    map = no_dupes_pm,
+    data = cake_data,
+    values_from = grams,
+    from_code = item,
+    to_code = plate,
+    weights = item_weight,
+    .suffix = ""
+  )
 
 cake_on_plates
 ```
