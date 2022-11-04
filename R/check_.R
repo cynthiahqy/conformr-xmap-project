@@ -17,7 +17,22 @@ check_code_duplicates <- function(codes, code_in, code_out){
 
 }
 
+check_coverage <- function(pm, data_in, code_in){
+  missing_links <- data_in %>%
+    distinct(code_in) %>%
+    antijoin(pm, by = code_in)
+  
+  if (nrow(missing_links) == 0){
+    return(pm)
+  } else {
+    # TODO: message
+    return(missing_links)  
+  }    
+
+}
+
 # ---- Errors ----
 error_incomplete_split <- function(pm){
 
 }
+
