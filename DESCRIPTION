@@ -1,6 +1,6 @@
 Package: conformr
 Title: Tools for conforming data across classifications and statistics
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person(given = "Cynthia",
            family = "Huang",
