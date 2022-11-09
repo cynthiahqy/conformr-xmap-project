@@ -15,9 +15,6 @@ pm_check_codes(
 \arguments{
 \item{code_out}{}
 }
-\value{
-
-}
 \description{
 Check that every unique \code{code_in} has a \code{code_out}
 }

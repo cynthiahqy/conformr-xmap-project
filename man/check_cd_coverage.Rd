@@ -13,9 +13,6 @@ check_cd_coverage(map, data, code_in)
 
 \item{code_in}{A named character vector specifying the columns in \code{data} and \code{map}}
 }
-\value{
-
-}
 \description{
 Checks if every \code{code_in} in \code{data} has
 at least one destination (row) in \code{panel_map}.

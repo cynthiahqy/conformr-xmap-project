@@ -16,9 +16,6 @@ as_panel_map(x, code_in, code_out, split_in)
 \item{split_in}{Variable in \code{x} containing the transformation weights to apply
 to source data for each source code.}
 }
-\value{
-
-}
 \description{
 Create a panel_map from a data frame like object
 }

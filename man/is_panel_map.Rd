@@ -9,9 +9,6 @@ is_panel_map(x)
 \arguments{
 \item{x}{}
 }
-\value{
-
-}
 \description{
 Test if the object is a panel_map
 }

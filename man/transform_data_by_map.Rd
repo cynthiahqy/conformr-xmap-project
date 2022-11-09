@@ -15,9 +15,6 @@ transform_data_by_map(
 \arguments{
 \item{code_from}{}
 }
-\value{
-
-}
 \description{
 Check and apply panel_map transformation to data
 }

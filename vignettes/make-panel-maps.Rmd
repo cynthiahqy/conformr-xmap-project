@@ -76,7 +76,7 @@ In simple cases: 1. Generate equal weight map 2. manually edit cell values using
 
 <!--# TODO: Example of population weighted splits -->
 
-```{r ASCO-ANZSCO}
+```{r ASCO-ANZSCO, eval=FALSE}
 # remotes::install_github("runapp-aus/strayr")
 library(strayr)
 

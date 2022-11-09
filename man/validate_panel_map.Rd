@@ -9,9 +9,6 @@ validate_panel_map(x)
 \arguments{
 \item{pm}{}
 }
-\value{
-
-}
 \description{
 A Validator for \code{panel_map} objects
 }

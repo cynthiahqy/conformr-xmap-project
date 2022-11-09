@@ -31,17 +31,10 @@ weights to distribute \code{values_from} between \code{code_in} and \code{code_o
 \item{names_suffix}{A string appended to every \code{value_from} column name to create column names for transformed values.
 Defaults to "_out"}
 }
-\value{
-
-}
 \description{
 \code{convert()} maps numeric data from one category standard into another,
 and verifies that total "amount" of data across one-to-one, many-to-one,
 and one-to-many correspondences.
 
 Learn more in \code{vignette("convert")}
-}
-\examples{
-
-
 }

@@ -7,7 +7,7 @@
 use_panel_map(
   map,
   data,
-  value_from,
+  values_from,
   from_code,
   to_code,
   weights,
@@ -19,7 +19,7 @@ use_panel_map(
 
 \item{data}{A data frame for transformation.}
 
-\item{value_from}{Variable in \code{data} containing the values to be converted.}
+\item{values_from}{Variable in \code{data} containing the values to be converted.}
 
 \item{from_code}{A character string of the variable containing the codes to convert from.
 Must be the same in \code{map} and \code{data}.}

@@ -9,9 +9,6 @@ dm_check_values(data_map, code_in, code_out, weights, values_from)
 \arguments{
 \item{values_from}{}
 }
-\value{
-
-}
 \description{
 Check that every \code{code_in}-\code{code_out} correspondence has appropriate \code{values_from}
 to apply \code{weights} to.
