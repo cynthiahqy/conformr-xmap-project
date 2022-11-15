@@ -1,0 +1,214 @@
+# Toy Objects 
+
+
+## Ideal Case
+---- Toy data for convert() ----
+IDEAL CASE
+- [x] code_dict: cover all mapping types
+- [x] data_in: include case variable (country)
+- [x] group_in: data_in grouped by case
+- [x] multiple values
+
+### Basic Panel Map: `equal_pm_from_codes()`
+
+In the most simple case, to make a panel map, we need only a correspondence between a source nomenclature (`std_A`) and target nomenclature (`std_B`), which doesn't have any duplicate rows.
+
+```{r manual-pm-equal}
+set.seed(1832)
+
+## correspondence/concordance table
+codes_BA <- dplyr::tribble(~ std_B, ~ std_A,
+                                "A1", "x1111", # one-to-one
+                                "B2", "x2222", # many-to-one
+                                "B2", "x3333",
+                                "C3", "x4444", # one-to-many (4)
+                                "C4", "x4444",
+                                "C4", "x6666", # many-to-many
+                                "C5", "x4444",
+                                "C6", "x4444",
+                                "C7", "x5555", # one-to-many (3)
+                                "C8", "x5555",
+                                "C9", "x5555"
+                           )
+
+## panel_map
+weights_BA <- codes_BA |>
+  dplyr::distinct(std_B, std_A) |>
+  dplyr::group_by(std_A) |>
+  dplyr::mutate(n_dest = dplyr::n(),
+                weight = 1 / n_dest) |>
+  dplyr::ungroup()
+
+pm_BA <- weights_BA |>
+  dplyr::select(std_B, std_A, weight)
+```
+
+We can visualise the addition of weights as follows:
+```{r viz-matrix-pm-equal}
+library(ggplot2)
+
+inc_mtx_long <- tidyr::expand_grid(std_A = unique(codes_BA$std_A),
+                                   std_B = unique(codes_BA$std_B)) |>
+  dplyr::left_join(pm_BA, by = c("std_A", "std_B")) |>
+  dplyr::transmute(to = std_B, from = std_A, weight = weight)
+
+gg_inc_mtx <- inc_mtx_long |>
+  dplyr::mutate(src_case = dplyr::case_when(weight==1 ~ "one-to-one",
+                                     is.na(weight) ~ "none",
+                                     weight < 1 ~ "one-to-many")) |>
+  ggplot(aes(x=to, y=from)) +
+  geom_tile(aes(fill=src_case), col="grey") +
+  scale_y_discrete(limits=rev) +
+  scale_fill_brewer() +
+  coord_fixed()  +
+  labs(x = element_blank(), y = element_blank(), fill="source-to-target") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Concordance as Incidence Matrix")
+
+gg_pm_mtx <- gg_inc_mtx + 
+  geom_text(data = dplyr::filter(inc_mtx_long, !is.na(weight)), aes(label=weight)) +
+  ggtitle("adding equal weights for Valid Panel Map")
+```
+
+:::: {style="display: flex;"}
+
+::: {}
+
+```{r gg-no-weight-martix, echo = FALSE}
+gg_inc_mtx
+```
+
+:::
+
+::: {}
+
+```{r gg-equal-weight-matrix, echo=FALSE}
+gg_pm_mtx
+```
+:::
+
+::::
+
+
+
+
+
+Write this data into the package for testing purposes
+```{r internal-toy-AB}
+equal_pm <- list("codes_BA" = codes_BA,
+                 "weights_BA" = weights_BA,
+                 "pm_BA" = pm_BA)
+```
+
+
+
+
+### Single Source Variable
+
+In the most simple case, we have one source variable which we are trying to apply the concordance to.
+
+```{r single-data-in}
+## source data
+code_in <- dplyr::distinct(codes_BA, std_A)
+data_in <- code_in |>
+  dplyr::mutate(A_100 = 100)
+
+```
+
+
+### Basic Panel Map, Multiple Source Variables
+data_in <- tidyr::expand_grid(country = c("AUS", "JPN"),
+                   std_A = code_in) %>%
+  dplyr::mutate(A_100 = 100,
+                A_prod = abs(rnorm(nrow(.))) * 10000) %>%
+  dplyr::mutate(value_str = stringi::stri_rand_strings(nrow(.), 5)) ## bad value!)
+
+
+
+## generate code_dict with weights
+eps <- 0.001 # small "dust" to mess up weights
+
+weights_BA <- codes_BA %>%
+    dplyr::group_by(std_A) %>%
+    dplyr::mutate(n_dest = dplyr::n_distinct(std_B),
+                  weight = 1 / n_dest) %>%
+    dplyr::ungroup() %>%
+  # add bad weights
+    dplyr::mutate(weight_more = dplyr::case_when(weight == 1 ~ weight,
+                                         TRUE ~ weight + eps),
+                  weight_less = dplyr::case_when(n_dest == 3 ~ 0.33,
+                                          n_dest == 4 ~ 0.2,
+                                          TRUE ~ weight)
+                  )
+
+## generate panel_map_BA
+
+panel_map <- weights_BA %>%
+  select(std_B, std_A, weight)
+
+
+## generate data_map
+data_map_BA <- dplyr::left_join(data_in, weights_BA, by = "std_A")
+
+## final data // collapse destination codes with multiple transfers
+data_AB_out <- data_map_BA %>%
+  dplyr::group_by(country) %>%
+  dplyr::mutate(across(starts_with("A_"), ~ .x * weight)) %>%
+  dplyr::group_by(std_B, .add = TRUE) %>%
+  dplyr::summarise(dplyr::across(starts_with("A_"), ~ sum(.x), .names = "{.col}_out"),
+                   .groups = "drop_last")
+
+toy_AB <- list("data_in" = data_in,
+                "codes_BA" = codes_BA,
+                "weights_BA" = weights_BA,
+               "pm_BA" = panel_map,
+                "data_map" = data_map_BA,
+                "data_out" = data_AB_out)
+
+```
+
+
+## Breaking Cases
+BREAKING CASES for tests
+[x] data_in: include BAD non-numeric value column
+[x] code_dict: include BAD weights -- sum > 1
+[x] code_dict: include BAD weights -- sum < 1?
+[>] code_dict: remove mapping for one origin code in TEST
+[>] code_dict: include duplicate mapping in TEST
+
+
+
+Let's define a function for our R package:
+
+```{r}
+#' Say hello to someone
+#' 
+#' @param name Name of a person
+#' @param exclamation Whether to include an exclamation mark
+#' @export 
+say_hello <- function(name, exclamation = TRUE) {
+  paste0("Hello ", name, ifelse(exclamation, "!", "."))
+}
+```
+
+Code chunks whose first line starts with `#'` are added to the package.
+
+We can try running it.
+
+```{r}
+say_hello("Jacob")
+```
+
+That code chunk does not start with `#'`, so it is not added to the package.
+
+Let's write some tests to make sure the function behaves as desired:
+
+```{r}
+testthat::test_that("say_hello works", {
+  testthat::expect_equal(say_hello("Jacob"), "Hello Jacob!")
+  testthat::expect_equal(say_hello("Jacob", exclamation = FALSE), "Hello Jacob.")
+})
+```
+
+Code chunks that have one or more lines starting with `test_that(` (or `testthat::test_that(`) are added to the package as tests.
