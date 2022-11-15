@@ -2,14 +2,15 @@
 
 
 ## Ideal Case
----- Toy data for convert() ----
+
 IDEAL CASE
+
 - [x] code_dict: cover all mapping types
 - [x] data_in: include case variable (country)
 - [x] group_in: data_in grouped by case
 - [x] multiple values
 
-### Basic Panel Map: `equal_pm_from_codes()`
+## Basic Panel Map
 
 In the most simple case, to make a panel map, we need only a correspondence between a source nomenclature (`std_A`) and target nomenclature (`std_B`), which doesn't have any duplicate rows.
 
@@ -43,12 +44,20 @@ pm_BA <- weights_BA |>
   dplyr::select(std_B, std_A, weight)
 ```
 
-We can visualise the addition of weights as follows:
+Write this data into the package for testing purposes
+```{r internal-toy-AB, echo=TRUE}
+equal_pm <- list("codes_BA" = codes_BA,
+                 "weights_BA" = weights_BA,
+                 "pm_BA" = pm_BA)
+
+usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
+```
+
+We can visualise a panel map as the addition of weights to the concordance:
 ```{r viz-matrix-pm-equal}
 library(ggplot2)
 
-inc_mtx_long <- tidyr::expand_grid(std_A = unique(codes_BA$std_A),
-                                   std_B = unique(codes_BA$std_B)) |>
+inc_mtx_long <- tidyr::expand(codes_BA, std_A, std_B) |>
   dplyr::left_join(pm_BA, by = c("std_A", "std_B")) |>
   dplyr::transmute(to = std_B, from = std_A, weight = weight)
 
@@ -67,40 +76,87 @@ gg_inc_mtx <- inc_mtx_long |>
   ggtitle("Concordance as Incidence Matrix")
 
 gg_pm_mtx <- gg_inc_mtx + 
-  geom_text(data = dplyr::filter(inc_mtx_long, !is.na(weight)), aes(label=weight)) +
+  geom_text(data = dplyr::filter(inc_mtx_long, !is.na(weight)), aes(label=round(weight, 2))) +
   ggtitle("adding equal weights for Valid Panel Map")
 ```
 
 :::: {style="display: flex;"}
-
 ::: {}
-
 ```{r gg-no-weight-martix, echo = FALSE}
 gg_inc_mtx
 ```
 
 :::
-
 ::: {}
 
 ```{r gg-equal-weight-matrix, echo=FALSE}
 gg_pm_mtx
 ```
 :::
-
 ::::
 
 
+### Helper Function: Make an equal weight panel map
 
+This is a helper function for making a valid panel map.
 
+```{r}
+#' Helper to build equal split panel map
+#'
+#' Generate panel map using all *distinct* correspondences between two classifications.
+#'
+#' @param code_dict Data frame containing correspondence between source and destination codes
+#' @param code_in Variable in `code_dict` containing source codes to convert from.
+#' @param code_out Variable in `code_dict` containing destination codes to convert to.
+#' @param .weights_to (optional) new column name for storing weights that will be applied to
+#' input values.
+#'
+#' @return Returns panel map
+#' @export
+#'
+#' @examples
+make_pm_equal <- function(code_dict, code_in, code_out, .weights_to = NULL){
+  ## check for duplicates
+  if (any(duplicated(code_dict))) {
+    message("Removing duplicate code_in/code_out rows")
+    code_dict <- code_dict %>%
+    dplyr::distinct({{code_in}}, {{code_out}})
+  } else {
+    
+  }
 
-Write this data into the package for testing purposes
-```{r internal-toy-AB}
-equal_pm <- list("codes_BA" = codes_BA,
-                 "weights_BA" = weights_BA,
-                 "pm_BA" = pm_BA)
+  ## code names as strings
+  ## make column name for weights
+  .weights_to <- .weights_to %||% paste("split", deparse(substitute(code_in)), sep = "_")
+
+  panel_map <- code_dict |>
+    dplyr::group_by({{code_in}}) |>
+    dplyr::mutate("n_dest" = dplyr::n(), ## no need for n_distinct after duplicates removed
+                  !!.weights_to := 1 / n_dest) |>
+    dplyr::ungroup() |>
+    dplyr::select(-n_dest)
+
+  return(panel_map)
+}
 ```
 
+#### Tests
+
+```{r test-make-pm-equal}
+testthat::test_that(
+  "make_pm_equal() works",
+  {
+    testthat::expect_identical(
+      make_pm_equal(equal_pm$codes_BA, std_A, std_B, .weights_to = "weight"),
+      equal_pm$pm_BA)
+  }
+)
+  
+```
+
+
+
+## Valid Panel Maps
 
 
 
