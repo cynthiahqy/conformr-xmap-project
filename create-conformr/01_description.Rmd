@@ -30,3 +30,22 @@ Although it's not required, it can be nice to add some package-level documentati
 #' 
 #' @docType package
 ```
+
+## Dependencies
+
+```{r dependencies}
+## imports
+usethis::use_package("dplyr")
+
+## suggests
+
+##
+```
+
+## Utilities
+```{r utils}
+#' Defaults for NULL values
+`%||%` <- function(x, y) if (is.null(x)) y else x
+```
+
+
