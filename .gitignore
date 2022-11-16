@@ -1,3 +1,11 @@
+## litr
+
+frombookdown/
+bdconformr/
+_book/
+_bookdown_files/
+
+## R
 .Rproj.user
 .Rhistory
 .Rdata
