@@ -19,6 +19,8 @@ BREAKING CASES for tests
 
 ## Basic Panel Map
 
+### Concepts
+
 In the most simple case, to make a panel map, we need only a correspondence between a source nomenclature (`std_A`) and target nomenclature (`std_B`), which doesn't have any duplicate rows.
 
 ```{r manual-pm-equal}
@@ -34,7 +36,6 @@ codes_BA <- dplyr::tribble(~ std_B, ~ std_A,
                                 "C6", "x4444",
                                 "C7", "x5555", # one-to-many (3)
                                 "C8", "x5555",
-                                "C9", "x5555"
                            )
 
 ## panel_map
@@ -62,11 +63,11 @@ We can visualise a panel map as the addition of weights to the concordance:
 ```{r viz-matrix-pm-equal}
 library(ggplot2)
 
-inc_mtx_long <- tidyr::expand(codes_BA, std_A, std_B) |>
+inc_long <- tidyr::expand(codes_BA, std_A, std_B) |>
   dplyr::left_join(pm_BA, by = c("std_A", "std_B")) |>
   dplyr::transmute(to = std_B, from = std_A, weight = weight)
 
-gg_inc_mtx <- inc_mtx_long |>
+gg_inc_mtx <- inc_long |>
   dplyr::mutate(src_case = dplyr::case_when(weight==1 ~ "one-to-one",
                                      is.na(weight) ~ "none",
                                      weight < 1 ~ "one-to-many")) |>
@@ -81,7 +82,7 @@ gg_inc_mtx <- inc_mtx_long |>
   ggtitle("Concordance as Incidence Matrix")
 
 gg_pm_mtx <- gg_inc_mtx + 
-  geom_text(data = dplyr::filter(inc_mtx_long, !is.na(weight)), aes(label=round(weight, 2))) +
+  geom_text(data = dplyr::filter(inc_long, !is.na(weight)), aes(label=round(weight, 2))) +
   ggtitle("adding equal weights for Valid Panel Map")
 ```
 
@@ -101,9 +102,11 @@ gg_pm_mtx
 ::::
 
 
-## Function: Make an equal weight panel map (Helper)
+### Helper Function for equal Mapping Weights
 
-This is a helper function for making a valid panel map from a concordance table.
+#### Definition
+
+This is a helper function for making a valid Panel Map with equal Mapping Weights from a concordance table.
 
 ```{r}
 #' Helper to build equal split panel map
@@ -116,7 +119,7 @@ This is a helper function for making a valid panel map from a concordance table.
 #' @param .weights_to (optional) new column name for storing weights that will be applied to. The default name is `split_<<code_in>>`.
 #' input values.
 #'
-#' @return Returns panel map
+#' @return Returns panel map as tibble
 #' @export
 #'
 #' @examples
@@ -149,7 +152,7 @@ Use this helper on the concordance table defined above:
 ```{r use-make-pm-equal}
 make_pm_equal(codes_BA, std_A, std_B, "weights")
 ```
-
+#### Conditionals
 
 This function uses the `no_dup_links` flag to removes any duplicate instructions/links, to avoid assigning unequal shares to each target code/category (shown as `naive_share`):
 
@@ -179,8 +182,7 @@ codes |>
 )
 ```
 
-### Tests
-
+#### Tests
 ```{r test-make-pm-equal}
 testthat::test_that(
   "make_pm_equal() works",
@@ -188,7 +190,7 @@ testthat::test_that(
     testthat::expect_identical(
       make_pm_equal(equal_pm$codes_BA, std_A, std_B, .weights_to = "weight"), equal_pm$pm_BA)
     testthat::expect_no_message(
-      make_pm_equal(equal_pm$codes_BA, std_A, std_B, .weights_to = "weight"), equal_pm$pm_BA)
+      make_pm_equal(equal_pm$codes_BA, std_A, std_B, .weights_to = "weight"))
   }
 )
 testthat::test_that(
@@ -207,17 +209,238 @@ testthat::test_that(
 
 ## Valid Panel Maps
 
+### Concepts
 
+A valid panel map is an mapping from source to target nomenclatures which when applied to suitably dimensioned source data, transforms that data into the target nomenclature without creation or loss of value (beyond floating point rounding). This can also be thought of as a condition whereby the sum total of a variable remains the same before and after the transformation.
+
+The following condition is necessary and sufficient for a set of Source Codes, Target Codes and Mapping Weights to be a valid panel map:
+
+> The sum of all Mapping Weights associated with any given Source Code totals to 1
+
+To demonstrate, let us generate some source data:
+```{r}
+## generate some data
+set.seed(1832)
+std_A_codes <- unique(codes_BA$std_A)
+(data_in <- 
+    dplyr::tibble(std_A = std_A_codes,
+                  A_100   = 100,
+                  A_prod  = round(abs(rnorm(length(std_A_codes)) * 10000),2)
+                  )
+  )
+```
+Now let's switch to using the matrix representation of panel maps:
+```{r fnc-pm-to-mtx}
+inc_long_to_mtx <- function(inc_long, to, weights){
+  inc_wide <- inc_long |>
+    tidyr::pivot_wider(names_from = {{to}}, values_from = {{weights}})
+  
+  inc_mtx <- as.matrix(inc_wide[,-1])
+  dimnames(inc_mtx)[[1]] <- inc_wide[,1, drop=TRUE]
+  
+  return(inc_mtx)
+}
+```
+
+Let $\bf{C}$ be a $n \times m$ matrix showing the incidence between two disjoint sets (`inc_mtx`), and let $\bf{X}$ be the source variables (`x_mtx`) requiring transformation. Then, the transformed data is $\bf{Z} = \bf{C'X}$:
+
+```{r pm-to-mtx}
+## incidence matrix
+inc_mtx <- inc_long |>
+  tidyr::replace_na(list(weight=0)) |>
+  inc_long_to_mtx(to, weight)
+
+## source data matrix
+x_mtx <- as.matrix(data_in[,-1])
+dimnames(x_mtx)[[1]] <- std_A_codes
+
+## transformed data
+z_mtx <- t(inc_mtx) %*% x_mtx
+```
+::::{style="display: flex;"}
+:::{}
+```{r print-inc-mtx}
+round(t(inc_mtx), 2)
+```
+:::
+
+:::{}
+```{r print-data-in-mtx}
+print(x_mtx)
+```
+:::
+::::
+
+```{r print-data-out-mtx}
+print(z_mtx)
+```
+
+Notice that the sum total of `A_100` is the same before and after the transformation.
+
+::::{style="display: flex;"}
+:::{}
+```{r}
+colSums(x_mtx)
+```
+:::
+
+:::{}
+```{r}
+colSums(z_mtx)
+```
+:::
+::::
+
+Now, let's edit the panel map such that the weights no longer sum to one:
+
+```{r bad-weights-pm}
+## edit weights
+bad_pm <- pm_BA |> 
+  dplyr::mutate(weight = dplyr::case_when(
+                           weight == 1 ~ weight,
+                           weight < 0.5 ~ weight - 0.03,
+                           weight >= 0.5 ~ weight + 0.01,
+                           T ~ weight))
+
+## incidence matrix
+bad_mtx <- bad_pm |>
+  inc_long_to_mtx(std_B, weight)
+bad_mtx[is.na(bad_mtx)] <- 0
+
+## transform data badly
+bad_z <- t(bad_mtx) %*% x_mtx
+```
+
+Notice what happens when we apply the transformation:
+
+::::{style="display: flex;"}
+:::{}
+```{r print-bad-mtx}
+round(t(bad_mtx), 2)
+```
+:::
+
+:::{}
+```{r print-bad-data-in}
+print(x_mtx)
+```
+:::
+::::
+
+```{r print-bad-data-out}
+print(bad_z)
+```
+
+Notice that the sum totals are no longer the same before and after the transformation:
+
+::::{style="display: flex;"}
+:::{}
+```{r}
+colSums(x_mtx)
+```
+:::
+
+:::{}
+```{r}
+colSums(bad_z)
+```
+:::
+::::
+
+Hence, the validity condition can also be expressed as follows:
+> A given incidence matrix $\bf{K}$ with dimensions $n \times m$ is a valid panel map if and only if $\bf{K}\boldsymbol{1} = \boldsymbol{1}$ where $\boldsymbol{1}$ is a unit vector of length $m$:
+
+```{r valid-weights-mtx}
+ones <- rep_len(1, ncol(inc_mtx))
+```
+
+::::{style="display: flex;"}
+:::{}
+```{r}
+round(inc_mtx, 2)
+```
+:::
+
+:::{}
+```{r}
+inc_mtx %*% ones
+```
+:::
+::::
+
+### Checking Function
+
+#### Definition
+```{r weight-fncs}
+#' Flag Bad Mapping Weights
+#' 
+has_bad_weights <- function(pm, code_in, code_out, weights){
+  bad_rows <- pm %>%
+    dplyr::group_by({{code_in}}) %>%
+    dplyr::summarise(total = sum({{weights}}),
+                     weights = paste({{weights}}, collapse=",")) %>%
+    dplyr::filter(total != 1)
+  
+  is_bad <- !(nrow(bad_rows) == 0)
+  
+  result <- list(bool = is_bad,
+                 table = bad_rows)
+  return(result)
+}
+
+#' Check panel map weights are valid
+#' 
+#' for use in pipes
+#' 
+#' @param pm Data Frame containing weighted links `weights` between `code_in` and `code_out`.
+#' @inherit make_pm_equal
+#' @param weights Column containing weights for transforming values from `code_in` to `code_out`
+#'
+#' @exports 
+#' 
+#' @returns 
+check_pm_weights <- function(pm, code_in, code_out, weights){
+  
+  has_result <- has_bad_weights(pm, {{code_in}}, {{code_out}}, {{weights}})
+  
+  if (!has_result$bool){
+    return(pm)
+  } else {
+    # TODO: add informative error message
+    return(has_result$table)
+  }
+}
+```
+
+#### Tests
+
+- flag function returns expected output
+- check function works as expected:
+  - returns informative error message
+  - returns unchanged panel map
+
+```r
+testthat::testthat(
+  "has_bad_weights returns expected lists",
+  {
+    
+  }
+)
+```
+
+
+## Valid Transformations
+
+### Concepts
+
+
+## Other
 ### Single Source Variable
 
 In the most simple case, we have one source variable which we are trying to apply the concordance to.
 
 ```{r single-data-in}
-set.seed(1832)
-## source data
-code_in <- dplyr::distinct(codes_BA, std_A)
-data_in <- code_in |>
-  dplyr::mutate(A_100 = 100)
+
 
 ```
 
