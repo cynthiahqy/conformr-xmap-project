@@ -45,8 +45,9 @@ usethis::use_package("dplyr")
 
 These functions are not exported.
 
-```{r utils}
+```{r utils, send_to="R/utils.R"}
 #' Defaults for NULL values
+#'
 `%||%` <- function(x, y) if (is.null(x)) y else x
 ```
 
