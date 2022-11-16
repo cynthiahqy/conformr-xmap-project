@@ -7,9 +7,9 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9000",
-    Title = "A Package Defined in a Bookdown",
-    Description = "This package uses litr to define an R package through writing a bookdown.",
+    Version = "0.0.0.9002",
+    Title = "Cpnformr Package Defined in a Bookdown",
+    Description = "This version of conformr uses litr to define an R package through writing a bookdown.",
     `Authors@R` = person(
       given = "Cynthia",
       family = "Huang",
@@ -24,9 +24,9 @@ usethis::use_mit_license(copyright_holder = "C. Huang")
 Although it's not required, it can be nice to add some package-level documentation.  This is what will show up when someone types `package?<your-package-name>` in the console.
 
 ```{package_doc}
-#' A Package Defined in a Bookdown
+#' Conformr Package Defined in a Bookdown
 #'
-#' This package uses `litr` to define an R package through writing a `bookdown`.
+#' This package uses `litr` to define the `conformr` R package through writing a `bookdown`.
 #' 
 #' @docType package
 ```
@@ -39,10 +39,12 @@ usethis::use_package("dplyr")
 
 ## suggests
 
-##
 ```
 
 ## Utilities
+
+These functions are not exported.
+
 ```{r utils}
 #' Defaults for NULL values
 `%||%` <- function(x, y) if (is.null(x)) y else x

@@ -1,7 +1,6 @@
-# Toy Objects 
+# Functions
 
-
-## Ideal Case
+## Inbox
 
 IDEAL CASE
 
@@ -9,6 +8,13 @@ IDEAL CASE
 - [x] data_in: include case variable (country)
 - [x] group_in: data_in grouped by case
 - [x] multiple values
+
+BREAKING CASES for tests
+[x] data_in: include BAD non-numeric value column
+[x] code_dict: include BAD weights -- sum > 1
+[x] code_dict: include BAD weights -- sum < 1?
+[>] code_dict: remove mapping for one origin code in TEST
+[>] code_dict: include duplicate mapping in TEST
 
 ## Basic Panel Map
 
@@ -221,50 +227,3 @@ toy_AB <- list("data_in" = data_in,
                "pm_BA" = panel_map,
                 "data_map" = data_map_BA,
                 "data_out" = data_AB_out)
-
-```
-
-
-## Breaking Cases
-BREAKING CASES for tests
-[x] data_in: include BAD non-numeric value column
-[x] code_dict: include BAD weights -- sum > 1
-[x] code_dict: include BAD weights -- sum < 1?
-[>] code_dict: remove mapping for one origin code in TEST
-[>] code_dict: include duplicate mapping in TEST
-
-
-
-Let's define a function for our R package:
-
-```{r}
-#' Say hello to someone
-#' 
-#' @param name Name of a person
-#' @param exclamation Whether to include an exclamation mark
-#' @export 
-say_hello <- function(name, exclamation = TRUE) {
-  paste0("Hello ", name, ifelse(exclamation, "!", "."))
-}
-```
-
-Code chunks whose first line starts with `#'` are added to the package.
-
-We can try running it.
-
-```{r}
-say_hello("Jacob")
-```
-
-That code chunk does not start with `#'`, so it is not added to the package.
-
-Let's write some tests to make sure the function behaves as desired:
-
-```{r}
-testthat::test_that("say_hello works", {
-  testthat::expect_equal(say_hello("Jacob"), "Hello Jacob!")
-  testthat::expect_equal(say_hello("Jacob", exclamation = FALSE), "Hello Jacob.")
-})
-```
-
-Code chunks that have one or more lines starting with `test_that(` (or `testthat::test_that(`) are added to the package as tests.
