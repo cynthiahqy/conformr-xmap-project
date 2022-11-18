@@ -1,0 +1,45 @@
+# Workflows and Extensions
+
+## Multiple Transformations
+
+### Multi-Step Transformation (WIP)
+
+Consider the task of transforming some data from classification A to C, and imagine you only have panel maps for the steps A-to-B and B-to-C. It is straightforward to chain these transformations together.
+
+#### Stylized Code
+
+#### Functions
+
+#### Tests
+
+### Multi-Group Transformations (WIP)
+
+Consider the workflow where you want to apply the same transformation to multiple subsets of a larger dataframe. For example, trade data grouped by country.
+
+### Mutli-Map-Group Transformations (WIP)
+
+Consider datasets where you might want to apply variations of the same map to distinct subsets of a larger dataframe.
+
+## Visualising Panel Map Representations
+
+See [viz-panel-maps](https://cynthiahqy.github.io/viz-panel-maps/stylised-example.html#Define_and_visualise_concordances) for more:
+
+### Panel Maps as Graphs
+
+```{r}
+pm_BA |> plt_pm_sigmoid(std_A, std_B, weight) +
+  scale_fill_brewer(palette="RdPu", direction = -1)
+```
+
+
+## Custom Mapping Weights
+
+Mapping weights could be based on:
+
+- Reference data -- e.g. population share, past/future proportions
+- Domain expertise
+- ???
+
+### Manual Design and Encoding
+
+### Use Reference Proportions
