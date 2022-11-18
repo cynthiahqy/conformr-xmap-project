@@ -431,4 +431,91 @@ testthat::test_that(
 )
 ```
 
+## Use Panel Map on Data
+
+### Single Step Transformation
+
+#### Stylized Code
+Assuming all the validity conditions are met, we want a simple and concise way to apply a panel map to data which looks something like:
+
+```r
+## --- encode your transformation --- ##
+df_pm <- read_csv("your-panel-map.csv") |>
+  conform::validate_panel_map()
+
+## --- prepare source data --- ##
+df_data_in <-
+  read_csv("your-source-data.csv") |>
+  drop_na() |>
+  conform::validate_coverage()
+
+## --- apply (valid) transformation --- ##
+conformr::use_panel_map(map = df_pm,
+                        data_in = df_data_in,
+                        values_from = value_in,
+                        from_code = source_code,
+                        to_code = target_code,
+                        weights = weight,
+                        suffix="_out")
+
+```
+
+#### Functions
+
+This function takes a valid panel map and data with matching names for the Source Code columns and transforms the data to the Target Classification.
+
+```{r fnc-use-panel-map}
+#' Apply panel_map to data without checks
+#'
+#' A wrapper around a `{dplyr}` pipeline that takes a panel_map,
+#' joins it with data, and transforms selected variables in that data according to
+#' instructions in the panel map. Any groups in `data` are preserved.
+#'
+#' @param map A data frame that contains a valid panel map for the transformation.
+#' @param data A data frame for transformation.
+#' @param values_from Variable in `data` containing the values to be converted.
+#' @param from_code A character string of the variable containing the codes to convert from.
+#' Must be the same in `map` and `data`.
+#' @param to_code Variable in `map` containing the codes to convert to.
+#' @param weights Variable in `map` containing the weights to split values by.
+#' @param .suffix A string appended to `value_from` column name to create column names for transformed values.
+#' Defaults to `to_code`
+#'
+#' @param
+#'
+#' @return The output has the following properties:
+#' * Groups are taken from `data_in`
+#' @export
+#'
+#' @examples
+use_panel_map <- function(map, data_in, values_from, from_code, to_code, weights,
+                          .suffix = NULL){
+
+  # convert from_code to string
+  from_code <- as_string(enexpr(from_code))
+  # subset data for transformation
+  data_in <- data_in %>%
+    dplyr::select(dplyr::all_of(from_code), {{values_from}})
+
+  # merge map and data // use default by= argument
+  map_join_data <- dplyr::right_join(x = data_in,
+                                     y = map,
+                                     by = from_code)
+
+  # apply transformation
+  data_out <- map_join_data %>%
+    dplyr::mutate(dplyr::across({{ values_from }}, ~ .x * {{ weights }})) %>%
+    dplyr::group_by({{ to_code }}, .add = TRUE) %>%
+    dplyr::summarise(dplyr::across({{ values_from }}, ~ sum(.x)), .groups = "drop_last")
+
+  # rename
+  names_suffix <- .suffix %||% paste0("_", as_string(enexpr(to_code)))
+  data_out <- data_out %>%
+    dplyr::rename_with(., ~ paste0(.x, names_suffix), .cols = {{ values_from }})
+
+  return(data_out)
+}
+```
+
+#### Tests
 
