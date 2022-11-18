@@ -164,3 +164,19 @@ return(plt_uw)
 
 ```
 
+## Inbox
+
+IDEAL CASE
+
+- [x] code_dict: cover all mapping types
+- [x] data_in: include case variable (country)
+- [x] group_in: data_in grouped by case
+- [x] multiple values
+
+BREAKING CASES for tests
+
+- [x] data_in: include BAD non-numeric value column
+- [x] code_dict: include BAD weights -- sum > 1
+- [x] code_dict: include BAD weights -- sum < 1?
+- [>] code_dict: remove mapping for one origin code in TEST
+- [>] code_dict: include duplicate mapping in TEST
