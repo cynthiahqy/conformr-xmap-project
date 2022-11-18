@@ -48,18 +48,8 @@ inc_long <- tidyr::expand(codes_BA, std_A, std_B) |>
   dplyr::left_join(pm_BA, by = c("std_A", "std_B")) |>
   dplyr::transmute(to = std_B, from = std_A, weight = weight)
 
-gg_inc_mtx <- inc_long |>
-  dplyr::mutate(src_case = dplyr::case_when(weight==1 ~ "one-to-one",
-                                     is.na(weight) ~ "none",
-                                     weight < 1 ~ "one-to-many")) |>
-  ggplot(aes(x=to, y=from)) +
-  geom_tile(aes(fill=src_case), col="grey") +
-  scale_y_discrete(limits=rev) +
-  scale_fill_brewer() +
-  coord_fixed()  +
-  labs(x = element_blank(), y = element_blank(), fill="source-to-target") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+gg_inc_mtx <- inc_long |> 
+  plt_inc_long_mtx(to, from, weight) +
   ggtitle("Concordance as Incidence Matrix")
 
 gg_pm_mtx <- gg_inc_mtx + 
@@ -105,17 +95,6 @@ std_A_codes <- unique(codes_BA$std_A)
   )
 ```
 Now let's switch to using the matrix representation of panel maps:
-```{r fnc-pm-to-mtx}
-inc_long_to_mtx <- function(inc_long, to, weights){
-  inc_wide <- inc_long |>
-    tidyr::pivot_wider(names_from = {{to}}, values_from = {{weights}})
-  
-  inc_mtx <- as.matrix(inc_wide[,-1])
-  dimnames(inc_mtx)[[1]] <- inc_wide[,1, drop=TRUE]
-  
-  return(inc_mtx)
-}
-```
 
 Let $\bf{C}$ be a $n \times m$ matrix showing the incidence between two disjoint sets (`inc_mtx`), and let $\bf{X}$ be the source variables (`x_mtx`) requiring transformation. Then, the transformed data is $\bf{Z} = \bf{C'X}$:
 
@@ -303,7 +282,46 @@ testthat::testthat(
 
 ## Valid Transformations
 
-### Concepts
+### Source Code Coverage
+
+A Panel Map must cover all Source Codes present in the Source Data. In other words, for a transformation to be valid, no Source Data should be left behind.
+
+```{r gg-data-in-mtx}
+gg_x_mtx <- plt_df_mtx(data_in, A_100:A_prod, std_A)
+
+library(patchwork)
+gg_pm_mtx + 
+  guides(fill="none") +
+  ggtitle("") + gg_x_mtx +
+  scale_y_discrete(position="right", limits=rev) +
+patchwork::plot_annotation(title="Panel Map covers Source Data")
+```
+
+```{r gg-no-coverage}
+gg_x_bad <- data_in |>
+  dplyr::add_row(std_A = "x7285!", 
+          A_100 = 100, 
+          A_prod = 3895.3) |>
+  plt_df_mtx(A_100:A_prod, std_A)
+
+gg_pm_bad <- tidyr::expand_grid(from=c(NA), to=unique(codes_BA$std_B)) |>
+  dplyr::mutate(weight=NA) |>
+  bind_rows(inc_long) |>
+  plt_inc_long_mtx(to, from, weight) +
+  geom_text(data = dplyr::filter(inc_long, !is.na(weight)), aes(label=round(weight, 2)))
+
+
+library(patchwork)
+gg_pm_bad + 
+  guides(fill="none") +
+  ggtitle("") + 
+gg_x_bad +
+  scale_y_discrete(position="right", limits=rev) +
+  scale_fill_brewer(palette="Purples") +
+patchwork::plot_annotation(title="Panel Map does not cover fully Source Data")
+```
+Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so this package implements transformations using database operations.
+
 
 ## Mapping Weights
 
