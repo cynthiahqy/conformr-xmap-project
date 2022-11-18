@@ -235,7 +235,7 @@ has_bad_weights <- function(pm, code_in, code_out, weights){
   
   is_bad <- !(nrow(bad_rows) == 0)
   
-  result <- list(bool = is_bad,
+  result <- list(fail = is_bad,
                  table = bad_rows)
   return(result)
 }
@@ -255,11 +255,11 @@ check_pm_weights <- function(pm, code_in, code_out, weights){
   
   has_result <- has_bad_weights(pm, {{code_in}}, {{code_out}}, {{weights}})
   
-  if (!has_result$bool){
-    return(pm)
-  } else {
+  if (has_result$fail){
     # TODO: add informative error message
     return(has_result$table)
+  } else {
+    return(pm)
   }
 }
 ```
@@ -281,6 +281,57 @@ testthat::testthat(
 ```
 
 ## Valid Transformations
+
+### No Missing Data Values
+
+Except for a one-to-one transfer between classifications, there is no way for NA values in the Source Data to be preserved when transformed into the Target Classification. It doesn't make sense to split NA into smaller parts, or to aggregate NA into a sum.
+
+Hence, any missing values need to be explicitly dealt with before applying a Panel Map transformation. Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. 
+
+```{r gg-na-data-in}
+pm_BA |>
+  plt_pm_sigmoid(from=std_A, to=std_B, weights = weight) +
+  scale_fill_brewer(palette="RdPu", direction=-1)
+```
+
+#### Functions
+
+This function flags if the variables you want to transform have any missing values.
+```{r fnc-na-flag}
+#' Flags NA in Source Data
+#'
+has_na_values <- function(data_in, values_from){
+  is_miss <- data_in |>
+    dplyr::select({{values_from}}) |>
+    anyNA()
+
+  result <- list(fail=is_miss)
+
+  return(result)
+}
+```
+
+This function tells the user to fix the NAs in their data
+```{r fnc-na-check}
+#' Checks Source Data for Missing Values
+#'
+#' 
+check_miss_val <- function(data_in, values_from){
+  has_result <- has_na_values(data_in, {{values_from}})
+  
+  if(has_result$fail){
+    error("Missing values found. Clean your data and try again.")
+  } else {
+    return(data_in)
+  }
+}
+```
+
+#### Tests
+
+Feed in data with missing values and expect:
+- TRUE flag
+- Error message
 
 ### Source Code Coverage
 
@@ -321,6 +372,15 @@ gg_x_bad +
 patchwork::plot_annotation(title="Panel Map does not cover fully Source Data")
 ```
 Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so this package implements transformations using database operations.
+
+#### Functions
+
+```{r}
+#is_data_covered(data_in, pm, code_in, code_out, )
+```
+
+#### Tests
+
 
 
 ## Mapping Weights
@@ -457,7 +517,6 @@ conformr::use_panel_map(map = df_pm,
                         to_code = target_code,
                         weights = weight,
                         suffix="_out")
-
 ```
 
 #### Functions

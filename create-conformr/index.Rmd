@@ -89,6 +89,7 @@ To plot a sigmoid plot of a panel map:
 library(ggbump)
 library(cowplot)
 library(dplyr)
+library(ggplot2)
 
 # Plot an incidence table (expanded panel map) as a ggplot sigmoid plot
 plt_pm_sigmoid <- function(pm, from, to, weights){
