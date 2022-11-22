@@ -98,7 +98,7 @@ std_A_codes <- unique(codes_BA$std_A)
 Write this data into the package for testing purposes.
 ```{r internal-data-in}
 equal_pm$data_A <- data_in |>
-  dplyr::select(code_in = std_A,
+  dplyr::select(std_A,
                 value_in = A_100)
 
 usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
@@ -239,8 +239,8 @@ Internal switching function for flow control and error messages
 ```{r fnc-flag-weights}
 #' Flag Bad Mapping Weights
 #' 
-has_bad_weights <- function(.data, code_in, code_out, weights){
-  bad_rows <- .data |>
+has_bad_weights <- function(.map, code_in, code_out, weights){
+  bad_rows <- .map |>
     dplyr::group_by({{code_in}}) |>
     dplyr::summarise(total = sum({{weights}}),
                      weights = paste({{weights}}, collapse=",")) |>
@@ -321,8 +321,7 @@ testthat::test_that(
     
     # bad weights
     testthat::expect_true(
-      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail
-    )
+      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail)
   }
 )
 testthat::test_that(
@@ -401,15 +400,28 @@ Feed in data with missing values and expect:
 - Error message
 
 Add testing data
-```{r internal-data-in}
+```{r internal-data-bad}
 equal_pm$bad_data <- equal_pm$data_A
 equal_pm$bad_data[1, 2] <- NA
 
 usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
 ```
 
-
 ```{r testthat-na}
+testthat::test_that(
+  "has_missing() returns expected flags",
+  {
+    # good weights
+    testthat::expect_false(
+      has_missing(equal_pm$data_A)$fail
+      )
+    
+    # bad weights
+    testthat::expect_true(
+      has_missing(equal_pm$bad_data)$fail
+      )
+  }
+)
 testthat::test_that(
   "check_missing() works as expected",
   {
@@ -465,13 +477,14 @@ Depending on how the transformation is implemented, coverage mismatches can resu
 
 #### Functions
 
+This flags coverage issues
 ```{r fnc-coverage-flag}
-#' Flag incomplete coverage
+#' Flag if data set is not completely cover by panel map
 #' 
-is_covered <- function(data_in, pm, code_in, code_out){
-  missing_links <- data_in %>%
-    dplyr::distinct({{code_in}}) %>%
-    dplyr::antijoin(pm, by = code_in)
+has_coverage <- function(.data, .map, code_in, code_out){
+  missing_links <- .data |>
+    dplyr::distinct({{code_in}}) |>
+    dplyr::anti_join(.map, by = "{{code_in}}")
 
   is_covered <- (nrow(missing_links) == 0)
 
