@@ -8,7 +8,7 @@ usethis::create_package(
   fields = list(
     Package = params$package_name,
     Version = "0.0.0.9002",
-    Title = "Cpnformr Package Defined in a Bookdown",
+    Title = "Creating the Conformr Package",
     Description = "This version of conformr uses litr to define an R package through writing a bookdown.",
     `Authors@R` = person(
       given = "Cynthia",
