@@ -229,16 +229,17 @@ Internal switching function for flow control and error messages
 #' Flag Bad Mapping Weights
 #' 
 has_bad_weights <- function(pm, code_in, code_out, weights){
-  bad_rows <- pm %>%
-    dplyr::group_by({{code_in}}) %>%
+  bad_rows <- pm |>
+    dplyr::group_by({{code_in}}) |>
     dplyr::summarise(total = sum({{weights}}),
-                     weights = paste({{weights}}, collapse=",")) %>%
+                     weights = paste({{weights}}, collapse=",")) |>
     dplyr::filter(total != 1)
   
   is_bad <- !(nrow(bad_rows) == 0)
   
   result <- list(fail = is_bad,
                  table = bad_rows)
+
   return(result)
 }
 ```
@@ -256,7 +257,7 @@ new_pm <- old_pm |>
 ```{r fnc-check-weights}
 #' Check panel map weights are valid
 #' 
-#' Checks if a dataframe forms a valid panel map. Returns the panel map if successful, otherwise warning?
+#' Checks if `code_in`, `code_out` and `weights` columns of data frame forms a valid panel map.
 #' 
 #' @param pm Data Frame containing weighted links `weights` between `code_in` and `code_out`.
 #' @inherit make_pm_equal
@@ -264,14 +265,15 @@ new_pm <- old_pm |>
 #'
 #' @exports 
 #' 
-#' @returns 
-check_pm_weights <- function(pm, code_in, code_out, weights){
+#' @returns The original data frame if the check is passed and an error if not.
+check_weights <- function(pm, code_in, code_out, weights){
   
   has_result <- has_bad_weights(pm, {{code_in}}, {{code_out}}, {{weights}})
   
   if (has_result$fail){
-    # TODO: add informative error/warning message
-    return(has_result$table)
+    cli::cli_abort(c(
+        "{.var weights} for each {.var code_in} must sum to 1:"
+        ))
   } else {
     return(pm)
   }
@@ -285,11 +287,43 @@ check_pm_weights <- function(pm, code_in, code_out, weights){
   - returns informative error message
   - returns unchanged panel map
 
-```r
-testthat::testthat(
-  "has_bad_weights returns expected lists",
+Add testing data
+```{r internal-test-good}
+equal_pm$bad_weights <- equal_pm$pm_BA |>
+  dplyr::mutate(weight = dplyr::case_when(
+                           weight == 1 ~ weight,
+                           weight < 0.5 ~ weight - 0.03,
+                           weight >= 0.5 ~ weight + 0.01,
+                           T ~ weight))
+
+usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
+```
+
+Write tests:
+```{r}
+testthat::test_that(
+  "has_bad_weights() returns correct flags",
   {
+    # good weights
+    testthat::expect_false(
+      has_bad_weights(equal_pm$pm_BA, std_A, std_B, weight)$fail)
     
+    # bad weights
+    testthat::expect_true(
+      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail
+    )
+  }
+)
+testthat::test_that(
+  "check_weights() works as expected",
+  {
+    # good weights
+    testthat::expect_identical(
+      check_weights(equal_pm$pm_BA, std_A, std_B, weight), equal_pm$pm_BA)
+
+    # bad weights
+    testthat::expect_error(
+      check_weights(equal_pm$bad_weights, std_A, std_B, weight))
   }
 )
 ```
