@@ -431,6 +431,10 @@ make_pm_equal <- function(code_dict, code_in, code_out, .weights_to = NULL){
 
   return(panel_map)
 }
+
+#' @rdname make_pm_equal
+#' @export
+make_panel_map_equal <- make_pm_equal
 ```
 
 Use this helper on the concordance table defined above:
@@ -523,6 +527,18 @@ conformr::use_panel_map(map = df_pm,
 
 This function takes a valid panel map and data with matching names for the Source Code columns and transforms the data to the Target Classification.
 
+```{r fnc-transform}
+#' Perform valid transformation
+#'
+#'
+transform <- function(map, data_in, from_code, to_code, values_from, weights_from){
+  ## check conditions
+  
+  ## apply transformation
+}
+```
+
+
 ```{r fnc-use-panel-map}
 #' Apply panel_map to data without checks
 #'
@@ -531,7 +547,7 @@ This function takes a valid panel map and data with matching names for the Sourc
 #' instructions in the panel map. Any groups in `data` are preserved.
 #'
 #' @param map A data frame that contains a valid panel map for the transformation.
-#' @param data A data frame for transformation.
+#' @param data_in A data frame for transformation.
 #' @param values_from Variable in `data` containing the values to be converted.
 #' @param from_code A character string of the variable containing the codes to convert from.
 #' Must be the same in `map` and `data`.
@@ -544,7 +560,6 @@ This function takes a valid panel map and data with matching names for the Sourc
 #'
 #' @return The output has the following properties:
 #' * Groups are taken from `data_in`
-#' @export
 #'
 #' @examples
 use_panel_map <- function(map, data_in, values_from, from_code, to_code, weights,
