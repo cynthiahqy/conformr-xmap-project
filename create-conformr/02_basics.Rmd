@@ -72,9 +72,9 @@ gg_pm_mtx
 
 ::::
 
-## Valid Panel Maps
+## Valid Transformations
 
-### Complete Weights
+### Complete Mapping Weights
 
 A valid panel map is an mapping from source to target nomenclatures which when applied to suitably dimensioned source data, transforms that data into the target nomenclature without creation or loss of value (beyond floating point rounding). This can also be thought of as a condition whereby the sum total of a variable remains the same before and after the transformation.
 
@@ -94,6 +94,17 @@ std_A_codes <- unique(codes_BA$std_A)
                   )
   )
 ```
+
+Write this data into the package for testing purposes.
+```{r internal-data-in}
+equal_pm$data_A <- data_in |>
+  dplyr::select(code_in = std_A,
+                value_in = A_100)
+
+usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
+```
+
+
 Now let's switch to using the matrix representation of panel maps:
 
 Let $\bf{C}$ be a $n \times m$ matrix showing the incidence between two disjoint sets (`inc_mtx`), and let $\bf{X}$ be the source variables (`x_mtx`) requiring transformation. Then, the transformed data is $\bf{Z} = \bf{C'X}$:
@@ -228,8 +239,8 @@ Internal switching function for flow control and error messages
 ```{r fnc-flag-weights}
 #' Flag Bad Mapping Weights
 #' 
-has_bad_weights <- function(pm, code_in, code_out, weights){
-  bad_rows <- pm |>
+has_bad_weights <- function(.data, code_in, code_out, weights){
+  bad_rows <- .data |>
     dplyr::group_by({{code_in}}) |>
     dplyr::summarise(total = sum({{weights}}),
                      weights = paste({{weights}}, collapse=",")) |>
@@ -288,7 +299,7 @@ check_weights <- function(pm, code_in, code_out, weights){
   - returns unchanged panel map
 
 Add testing data
-```{r internal-test-good}
+```{r internal-test-weights}
 equal_pm$bad_weights <- equal_pm$pm_BA |>
   dplyr::mutate(weight = dplyr::case_when(
                            weight == 1 ~ weight,
@@ -300,7 +311,7 @@ usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
 ```
 
 Write tests:
-```{r}
+```{r testthat-weight-fncs}
 testthat::test_that(
   "has_bad_weights() returns correct flags",
   {
@@ -328,7 +339,6 @@ testthat::test_that(
 )
 ```
 
-## Valid Transformations
 
 ### No Missing Data Values
 
@@ -350,7 +360,6 @@ This function flags if the variables you want to transform have any missing valu
 #'
 has_missing <- function(.data){
   is_miss <- .data |>
-    dplyr::select({{values_from}}) |>
     anyNA()
 
   result <- list(fail=is_miss)
@@ -372,17 +381,17 @@ data_in <- all_df |>
 #' Checks Source Data for Missing Values
 #'
 #' @export
-check_missing <- function(.data){
-  has_result <- has_na_values(.data)
+check_missing <- function(data_in){
+  has_result <- has_missing(data_in)
   
   if(has_result$fail){
-    error("Missing values found. Clean your data and try again.")
+    cli::cli_abort(
+      "{.var data_in} should not have any NA"
+    )
   } else {
-    return(.data)
+    return(data_in)
   }
 }
-
-#' 
 ```
 
 #### Tests
@@ -390,6 +399,29 @@ check_missing <- function(.data){
 Feed in data with missing values and expect:
 - TRUE flag
 - Error message
+
+Add testing data
+```{r internal-data-in}
+equal_pm$bad_data <- equal_pm$data_A
+equal_pm$bad_data[1, 2] <- NA
+
+usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
+```
+
+
+```{r testthat-na}
+testthat::test_that(
+  "check_missing() works as expected",
+  {
+    ## good data
+    testthat::expect_identical(check_missing(equal_pm$data_A), equal_pm$data_A)
+    
+    ## bad data
+    testthat::expect_error(check_missing(equal_pm$bad_data))
+  }
+)
+```
+
 
 ### Source Code Coverage
 
@@ -549,7 +581,7 @@ codes |>
 ```
 
 #### Tests
-```{r test-make-pm-equal}
+```{r testthat-make-pm-equal}
 testthat::test_that(
   "make_pm_equal() works",
   {
