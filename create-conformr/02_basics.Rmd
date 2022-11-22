@@ -236,7 +236,7 @@ has_bad_weights <- function(pm, code_in, code_out, weights){
     dplyr::filter(total != 1)
   
   is_bad <- !(nrow(bad_rows) == 0)
-  
+
   result <- list(fail = is_bad,
                  table = bad_rows)
 
@@ -434,7 +434,27 @@ Depending on how the transformation is implemented, coverage mismatches can resu
 #### Functions
 
 ```{r fnc-coverage-flag}
-is_data_covered(data_in, pm, code_in, code_out, )
+#' Flag incomplete coverage
+#' 
+is_covered <- function(data_in, pm, code_in, code_out){
+  missing_links <- data_in %>%
+    dplyr::distinct({{code_in}}) %>%
+    dplyr::antijoin(pm, by = code_in)
+
+  is_covered <- (nrow(missing_links) == 0)
+
+  results <- list(fail=!is_covered,
+                  table=missing_links)
+
+  return(results)
+}
+
+#' Check coverage of panel map over source data
+#' 
+#' 
+check_coverage <- function(data_in, pm, code_in, code_out, values_from){
+  is_results <- is_covered(data_in, pm, {{code_in}}, {{code_out}})
+}
 ```
 
 #### Tests
