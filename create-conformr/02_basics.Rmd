@@ -484,7 +484,7 @@ This flags coverage issues
 has_coverage <- function(.data, .map, code_in, code_out){
   missing_links <- .data |>
     dplyr::distinct({{code_in}}) |>
-    dplyr::anti_join(.map, by = "{{code_in}}")
+    dplyr::anti_join(.map, by = rlang::as_name(rlang::enquo(code_in)))
 
   is_covered <- (nrow(missing_links) == 0)
 
@@ -498,12 +498,23 @@ has_coverage <- function(.data, .map, code_in, code_out){
 #' 
 #' 
 check_coverage <- function(data_in, pm, code_in, code_out, values_from){
-  is_results <- is_covered(data_in, pm, {{code_in}}, {{code_out}})
+  has_results <- is_covered(data_in, pm, {{code_in}}, {{code_out}})
 }
 ```
 
 #### Tests
 
+```{r testthat-coverage}
+testthat::test_that(
+  "has_coverage() returns expected flags",
+  {
+    ## complete coverage
+    testthat::expect_false(has_coverage(equal_pm$data_A, equal_pm$pm_BA, std_A, std_B))
+    
+    ## incomplete coverage
+  }
+)
+```
 
 
 ## Mapping Weights
