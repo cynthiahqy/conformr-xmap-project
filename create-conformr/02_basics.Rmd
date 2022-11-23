@@ -102,14 +102,13 @@ std_A_codes <- unique(codes_BA$std_A)
 ```
 
 Write this data into the package for testing purposes.
+
 ```{r internal-data-in}
 equal_pm$data_A <- data_A |>
-  dplyr::select(std_A,
-                value_in = A_100)
+  dplyr::select(std_A, A_100)
 
 usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
 ```
-
 
 Now let's switch to using the matrix representation of panel maps:
 
@@ -266,8 +265,8 @@ Internal switching function for flow control and error messages
 ```{r fnc-flag-weights}
 #' Flag Bad Mapping Weights
 #' 
-has_bad_weights <- function(.map, code_in, code_out, weights){
-  bad_rows <- .map |>
+has_bad_weights <- function(df, code_in, code_out, weights){
+  bad_rows <- df |>
     dplyr::group_by({{code_in}}) |>
     dplyr::summarise(total = sum({{weights}}),
                      weights = paste({{weights}}, collapse=",")) |>
@@ -284,7 +283,7 @@ has_bad_weights <- function(.map, code_in, code_out, weights){
 
 This function checks if the panel map has valid weights and returns the panel map if it does. It can be used to validate a panel map after editing or modifications. For example:
 
-```r
+``` r
 ## prepare panel map
 new_pm <- old_pm |>
   mutate() |>
@@ -297,37 +296,41 @@ new_pm <- old_pm |>
 #' 
 #' Checks if `code_in`, `code_out` and `weights` columns of data frame forms a valid panel map.
 #' 
-#' @param pm Data Frame containing weighted links `weights` between `code_in` and `code_out`.
-#' @inherit make_pm_equal
+#' @param df Data Frame containing weighted links `weights` between `code_in` and `code_out`.
+#' @param code_in Variable in `code_dict` containing source codes to convert from.
+#' @param code_out Variable in `code_dict` containing destination codes to convert to.
 #' @param weights Column containing weights for transforming values from `code_in` to `code_out`
 #'
-#' @exports 
+#' @exports
 #' 
 #' @returns The original data frame if the check is passed and an error if not.
-check_weights <- function(pm, code_in, code_out, weights){
+check_weights <- function(df, code_in, code_out, weights){
   
-  has_result <- has_bad_weights(pm, {{code_in}}, {{code_out}}, {{weights}})
+  has_result <- has_bad_weights(df, {{code_in}}, {{code_out}}, {{weights}})
   
   if (has_result$fail){
     
     cli::cli_abort(c(
         "{.var weights} for each {.var code_in} must sum to 1",
         ""
-        ))
+        ),
+        class="invalid_weights"
+        )
   } else {
-    return(pm)
+    return(df)
   }
 }
 ```
 
 #### Tests
 
-- flag function returns expected output
-- check function works as expected:
-  - returns informative error message
-  - returns unchanged panel map
+-   flag function returns expected output
+-   check function works as expected:
+    -   returns informative error message
+    -   returns unchanged panel map
 
 Add testing data
+
 ```{r internal-test-weights}
 equal_pm$bad_weights <- equal_pm$pm_BA |>
   dplyr::mutate(weight = dplyr::case_when(
@@ -340,17 +343,19 @@ usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
 ```
 
 Write tests:
+
 ```{r testthat-weight-fncs}
 testthat::test_that(
   "has_bad_weights() returns correct flags",
   {
     # good weights
     testthat::expect_false(
-      has_bad_weights(equal_pm$pm_BA, std_A, std_B, weight)$fail)
-    
+      has_bad_weights(equal_pm$pm_BA, std_A, std_B, weight)$fail
+      )
     # bad weights
     testthat::expect_true(
-      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail)
+      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail
+      )
   }
 )
 testthat::test_that(
@@ -362,17 +367,18 @@ testthat::test_that(
 
     # bad weights
     testthat::expect_error(
-      check_weights(equal_pm$bad_weights, std_A, std_B, weight))
+      check_weights(equal_pm$bad_weights, std_A, std_B, weight),
+      class="invalid_weights"
+      )
   }
 )
 ```
-
 
 ### No Missing Data Values
 
 Except for a one-to-one transfer between classifications, there is no way for NA values in the Source Data to be preserved when transformed into the Target Classification. It doesn't make sense to split NA into smaller parts, or to aggregate NA into a sum.
 
-Hence, any missing values need to be explicitly dealt with before applying a Panel Map transformation. Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. 
+Hence, any missing values need to be explicitly dealt with before applying a Panel Map transformation. Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely.
 
 ```{r gg-na-data-in}
 pm_BA |>
@@ -409,13 +415,16 @@ data_in <- all_df |>
 ```{r fnc-check-na}
 #' Checks Source Data for Missing Values
 #'
+#' @inheritParams concord
+#'
 #' @export
 check_missing <- function(data_in){
   has_result <- has_missing(data_in)
   
   if(has_result$fail){
     cli::cli_abort(
-      "{.var data_in} should not have any NA"
+      "{.var data_in} should not have any NA",
+      class="vals_na"
     )
   } else {
     return(data_in)
@@ -425,11 +434,10 @@ check_missing <- function(data_in){
 
 #### Tests
 
-Feed in data with missing values and expect:
-- TRUE flag
-- Error message
+Feed in data with missing values and expect: - TRUE flag - Error message
 
 Add testing data
+
 ```{r internal-data-bad}
 equal_pm$bad_data <- equal_pm$data_A
 equal_pm$bad_data[1, 2] <- NA
@@ -459,7 +467,8 @@ testthat::test_that(
     testthat::expect_identical(check_missing(equal_pm$data_A), equal_pm$data_A)
     
     ## bad data
-    testthat::expect_error(check_missing(equal_pm$bad_data))
+    testthat::expect_error(check_missing(equal_pm$bad_data),
+                           class = "vals_na")
   }
 )
 ```
@@ -502,20 +511,22 @@ gg_x_bad +
   scale_fill_brewer(palette="Purples") +
 patchwork::plot_annotation(title="Panel Map does not cover fully Source Data")
 ```
+
 Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so this package implements transformations using database operations.
 
 #### Functions
 
-This flags coverage issues
+These functions are not currently exported
+
 ```{r fnc-coverage-flag}
 #' Flag if data set is not completely cover by panel map
 #' 
-has_coverage <- function(.data, .map, code_in, code_out){
+has_coverage <- function(data, pm, code_in, code_out){
   str_code_in <- rlang::as_string(rlang::enexpr(code_in))
   
-  missing_links <- .data |>
+  missing_links <- data |>
     dplyr::distinct({{code_in}}) |>
-    dplyr::anti_join(.map, by = str_code_in)
+    dplyr::anti_join(pm, by = str_code_in)
 
   is_covered <- (nrow(missing_links) == 0)
 
@@ -527,6 +538,8 @@ has_coverage <- function(.data, .map, code_in, code_out){
 
 #' Check coverage of panel map over source data
 #' 
+#' @inheritParams check_weights
+#' @inheritParams check_missing
 #' 
 check_coverage <- function(data_in, pm, code_in, code_out, values_from){
   has_results <- is_covered(data_in, pm, {{code_in}}, {{code_out}})
@@ -544,171 +557,170 @@ testthat::test_that(
     
     ## incomplete coverage
     data_extra <- equal_pm$data_A |>
-      dplyr::add_row(std_A = "x7777", value_in = 100)
+      dplyr::add_row(std_A = "x7777", A_100 = 100)
     testthat::expect_true(has_coverage(data_extra, equal_pm$pm_BA, std_A, std_B)$fail)
   }
 )
 ```
-
 
 ## Use Panel Map on Data
 
 ### Single Step Concordance
 
 #### Stylized Code
+
 Assuming all the validity conditions are met, we want a simple and concise way to apply a panel map to data which looks something like:
 
-```r
+``` r
 ## --- prepare panel map -------------------- ##
 # by importing a manually encoded map
 df_pm <- read_csv("your-panel-map.csv")
-
 # or creating one from a concordance table
 df_pm <- read_csv("concordance-table.csv") |>
   conformr::make_panel_map_equal(
-    code_in = isic3,
-    code_out = isic2,
-    .weights_to = "split_isic3"
-)
+    code_in = source, code_out = target,
+    .weights_to = "weight")
 
 ## --- prepare source data ------------------ ##
 # example using {dplyr}:
 df_data_in <-
   read_csv("your-source-data.csv") |>
   drop_na() |>
-  group_by(code_in) |>
+  group_by(source) |>
   summarise(value_in = sum(gdp))
 
 ## --- apply (valid) transformation --------- ##
-conformr::use_panel_map(map = df_pm,
-                        data_in = df_data_in,
-                        values_from = value_in,
-                        from_code = source_code,
-                        to_code = target_code,
-                        weights = weight,
-                        suffix="_out")
+conformr::concord(
+  data_in = df_data_in, pm = df_pm,
+  from_code = source, to_code = target,
+  m_weights = weight, values_from = value_in,
+  .suffix = "_out"
+)
 ```
 
 #### Warnings and Errors
 
 The concordance function should throw error when:
 
-- panel map (`pm`) has invalid weights
-- source data (`data_in`) column has missing values
+-   panel map (`pm`) has invalid weights
+-   source data (`data_in`) column has missing values
 
 The concordance function should warn users about data prep?:
 
-- multiple rows for a given `code_in` in `data_in`; should only have one set of `value_in` for each `code_in`
+-   multiple rows for a given `code_in` in `data_in`; should only have one set of `value_in` for each `code_in`
 
 #### Functions
 
 This function takes a valid panel map and data with matching names for the Source Code columns and transforms the data to the Target Classification.
 
+Add informative error messages later:
+
+``` r
+  in_data_in <- (str.vals %in% colnames(data_in))
+  if (!all(in_data_in)){
+    cli::cli_abort(
+      "{.code {names(dots)[!in_data_in]}} cannot be found in {.var data_in}",
+      class = "cols_not_found")
+  }
+```
+
 ```{r fnc-concord}
-#' Title
+#' Transform data from Source to Target classification using Panel Map
+#' 
+#' Currently checks for valid Mapping weights, missing values, but not coverage.
 #'
-#' @param .data_in A data frame containining `from_code` and 
-#' @param .map 
-#' @param from_code 
-#' @param to_code 
-#' @param m_weights
-#' @param ... variables to transform
-#'
+#' @param data_in A Data Frame containing the values you want to transform
+#' @param pm A Data Frame containing valid Mapping Weights between `from_code` and `to_code`.
+#' @param from_code Variable containing Source Codes. Must be present in both `data_in` and `pm`
+#' @param to_code Variable in `pm` containing Target Codes.
+#' @param m_weights Variable in `pm` containing Mapping Weights.
+#' @param values_from A vector of variables in `data_in` to be transformed. E.g. `c(var1, var2)`
+#' @param .suffix An (optional) string appended to each `values_from` name to create column names for transformed values.
+#' Defaults to `"_out"`
+#' 
 #' @return
 #' @export
 #'
 #' @examples
-concord <- function(.data_in, .map, from_code, to_code, m_weights, ...){
-  
-  ## wrangle inputs
-  dots <- rlang::enquos(..., .named = TRUE)
+#' \dontrun{
+#' concord(data_in = equal_pm$data_A,
+#'        pm = equal_pm$pm_BA,
+#'        from_code = std_A,
+#'        to_code = std_B,
+#'        m_weights = weight,
+#'        values_from = c(A_100),
+#'        .suffix = "_out")
+#' }
+#' 
+concord <- function(data_in, pm, from_code, to_code, m_weights, values_from, .suffix=NULL){
   
   ## check conditions
+  pm |> 
+    check_weights(code_in = {{from_code}},
+                  code_out = {{to_code}},
+                  weights = {{m_weights}})
   
-  in_data_in <- (names(dots) %in% colnames(.data_in))
-  if (!all(in_data_in)){
-    cli::cli_abort(
-      "{.code {names(dots)[!in_data_in]}} cannot be found in {.var .data_in}",
-      class = "cols_not_found")
-  }
+  subset_in <- tryCatch(
+    data_in |>
+    dplyr::select({{from_code}}, {{values_from}}), 
+    error = function(cnd) {
+      cli::cli_abort(
+      "{.var from_code} or {.var values_from} could not be found in {.var data_in}",
+      class = "vals_not_found")
+    }
+  )
+    
   
-  .data_in |>
+  subset_in |>
     check_missing()
-  .map |> 
-    check_weights()
-  
-  has_coverage()
   
   ## apply transformation
+  # -- create suffix --
+  out_suffix <- .suffix %||% paste0("_", rlang::as_string(rlang::enexpr(to_code)))
+  join_by <- rlang::as_string(rlang::enexpr(from_code))
   
+  data_out <- use_panel_map(.data = subset_in, .map = pm, 
+                .from = {{from_code}}, .to = {{to_code}}, .weights = {{m_weights}},
+                .vals = {{values_from}}, .suffix = out_suffix,
+                .by = join_by)
+  
+  return(data_out)
 }
 ```
 
-```{r testthat-concord}
-testthat::test_that(
-  "concord() raises expected errors",
-  {
-    ## column missing from data_in
-    testthat::expect_error(concord(.data_in = equal_pm$data_A,
-                                   .map = equal_pm$pm_BA,
-                                   from_code = std_A,
-                                   to_code = std_B,
-                                   m_weights = weight,
-                                   missing_col1, missing_col2),
-                           class = "cols_not_found")
-  }
-)
-```
-
-
+Internal function without checks
 
 ```{r fnc-use-panel-map}
 #' Apply panel_map to data without checks
 #'
 #' A wrapper around a `{dplyr}` pipeline that takes a panel_map,
 #' joins it with data, and transforms selected variables in that data according to
-#' instructions in the panel map. Any groups in `data` are preserved.
-#'
-#' @param .data A data frame for transformation.
-#' @param .map A data frame that contains a valid panel map for the transformation.
-#' @param values_from Variable in `data` containing the values to be converted.
-#' @param from_code A character string of the variable containing the codes to convert from.
-#' Must be the same in `map` and `data`.
-#' @param to_code Variable in `map` containing the codes to convert to.
-#' @param weights Variable in `map` containing the weights to split values by.
-#' @param .suffix A string appended to `value_from` column name to create column names for transformed values.
-#' Defaults to `to_code`
-#'
-#' @param
+#' instructions in the panel map. Any groups in `data_in` are preserved.
 #'
 #' @return The output has the following properties:
-#' * Groups are taken from `.data`
+#' * Groups are taken from `data_in`
 #'
-#' @examples
-use_panel_map <- function(.data, .map, from_code, to_code, weights,
-                          .suffix = NULL){
-
-  # convert from_code to string
-  str_from_code <- as_string(enexpr(from_code))
+use_panel_map <- function(.data, .map, .from, .to, .weights, .vals,
+                          .suffix, .by){
+  
   # subset data for transformation
-  .data_in <- .data %>%
-    dplyr::select({{from_code}}, {{values_from}})
+  data_in <- .data %>%
+    dplyr::select({{.from}}, {{.vals}})
 
   # merge map and data // use default by= argument
-  map_join_data <- dplyr::right_join(x = .data_in,
+  map_join_data <- dplyr::right_join(x = data_in,
                                      y = .map,
-                                     by = str_from_code)
+                                     by = .by)
 
   # apply transformation
-  .data_out <- map_join_data %>%
-    dplyr::mutate(dplyr::across({{ values_from }}, ~ .x * {{ weights }})) %>%
-    dplyr::group_by({{ to_code }}, .add = TRUE) %>%
-    dplyr::summarise(dplyr::across({{ values_from }}, ~ sum(.x)), .groups = "drop_last")
+  data_out <- map_join_data %>%
+    dplyr::mutate(dplyr::across({{ .vals }}, ~ .x * {{ .weights }})) %>%
+    dplyr::group_by({{ .to }}, .add = TRUE) %>%
+    dplyr::summarise(dplyr::across({{ .vals }}, ~ sum(.x)), .groups = "drop_last")
 
   # rename
-  names_suffix <- .suffix %||% paste0("_", as_string(enexpr(to_code)))
-  .data_out <- .data_out %>%
-    dplyr::rename_with(., ~ paste0(.x, names_suffix), .cols = {{ values_from }})
+  data_out <- data_out %>%
+    dplyr::rename_with(., ~ paste0(.x, .suffix), .cols = {{.vals}})
 
   return(data_out)
 }
