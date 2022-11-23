@@ -16,7 +16,8 @@ usethis::create_package(
       family = "Huang",
       email = "cynthia@gmail.com",
       role = c("aut", "cre")
-      )
+      ),
+    `Config/testthat/edition` = 3
   )
 )
 usethis::use_mit_license(copyright_holder = "C. Huang")
