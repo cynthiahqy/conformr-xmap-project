@@ -6,7 +6,7 @@ site: bookdown::bookdown_site
 knit: bookdown::render_book
 output: litr::litr_gitbook
 params:
-  package_name: "bdconformr" # <-- change this to your package name
+  package_name: "conformr" # <-- change this to your package name
   package_parent_dir: ".." # <-- relative to this file's location
 documentclass: book
 ---
@@ -161,23 +161,4 @@ plt_uw <- df |>
 
 return(plt_uw)
 }
-
-
 ```
-
-## Inbox
-
-IDEAL CASE
-
-- [x] code_dict: cover all mapping types
-- [x] data_in: include case variable (country)
-- [x] group_in: data_in grouped by case
-- [x] multiple values
-
-BREAKING CASES for tests
-
-- [x] data_in: include BAD non-numeric value column
-- [x] code_dict: include BAD weights -- sum > 1
-- [x] code_dict: include BAD weights -- sum < 1?
-- [>] code_dict: remove mapping for one origin code in TEST
-- [>] code_dict: include duplicate mapping in TEST
