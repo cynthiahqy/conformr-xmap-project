@@ -24,7 +24,7 @@ Using the `conformr` workflow helps you:
 To install the latest development version of `conformr`:
 
 ``` r
-remotes::install_github("cynthiahqy/conformr-project", subdir = "litr")
+remotes::install_github("cynthiahqy/conformr-project", subdir = "conformr")
 ```
 
 ### Background
