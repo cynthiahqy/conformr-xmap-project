@@ -1,6 +1,6 @@
 Package: conformr
 Title: An opinionated toolkit for harmonising data
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: 
     person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre"))
 Description: conformr provides tools and workflows for converting data
@@ -20,4 +20,4 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 LitrVersionUsed: 0.6.0
-LitrId: 5487ee2b8c42d08e758b9a4cea40aeb3
+LitrId: a0750c4d0b4e05f372cedc12e94589f4
