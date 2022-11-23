@@ -4,11 +4,12 @@ testthat::test_that(
   {
     # good weights
     testthat::expect_false(
-      has_bad_weights(equal_pm$pm_BA, std_A, std_B, weight)$fail)
-    
+      has_bad_weights(equal_pm$pm_BA, std_A, std_B, weight)$fail
+      )
     # bad weights
     testthat::expect_true(
-      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail)
+      has_bad_weights(equal_pm$bad_weights, std_A, std_B, weight)$fail
+      )
   }
 )
 testthat::test_that(
@@ -20,7 +21,9 @@ testthat::test_that(
 
     # bad weights
     testthat::expect_error(
-      check_weights(equal_pm$bad_weights, std_A, std_B, weight))
+      check_weights(equal_pm$bad_weights, std_A, std_B, weight),
+      class="invalid_weights"
+      )
   }
 )
 
@@ -45,7 +48,8 @@ testthat::test_that(
     testthat::expect_identical(check_missing(equal_pm$data_A), equal_pm$data_A)
     
     ## bad data
-    testthat::expect_error(check_missing(equal_pm$bad_data))
+    testthat::expect_error(check_missing(equal_pm$bad_data),
+                           class = "vals_na")
   }
 )
 
@@ -57,22 +61,66 @@ testthat::test_that(
     
     ## incomplete coverage
     data_extra <- equal_pm$data_A |>
-      dplyr::add_row(std_A = "x7777", value_in = 100)
+      dplyr::add_row(std_A = "x7777", A_100 = 100)
     testthat::expect_true(has_coverage(data_extra, equal_pm$pm_BA, std_A, std_B)$fail)
+  }
+)
+
+testthat::test_that(
+  "use_panel_map() works as expected", {
+    testthat::expect_identical(
+      use_panel_map(.data = equal_pm$data_A,
+              .map = equal_pm$pm_BA,
+              .from = std_A,
+              .to = std_B,
+              .weights = weight,
+              .vals = c(A_100),
+              .suffix = "_out",
+              .by = "std_A"),
+      equal_pm$data_B
+    )
   }
 )
 
 testthat::test_that(
   "concord() raises expected errors",
   {
-    ## column missing from data_in
-    testthat::expect_error(concord(.data_in = equal_pm$data_A,
-                                   .map = equal_pm$pm_BA,
+    ## columns not in data_in
+    testthat::expect_error(concord(data_in = equal_pm$data_A,
+                                   pm = equal_pm$pm_BA,
                                    from_code = std_A,
                                    to_code = std_B,
                                    m_weights = weight,
-                                   missing_col1, missing_col2),
-                           class = "cols_not_found")
+                                   values_from = c(missing_col1, missing_col2)
+                                   ),
+                           class="vals_not_found")
+    ## missing values in data_in
+    testthat::expect_error(concord(equal_pm$bad_data, equal_pm$pm_BA, std_A, std_B, weight,
+                                   values_from = c(A_100)
+                                   ),
+                           class="vals_na"
+                           )
+    ## invalid weights are flagged
+    testthat::expect_error(concord(equal_pm$data_A, equal_pm$bad_weights, std_A, std_B, weight,
+                                   values_from = c(A_100)
+                                   ),
+                           class="invalid_weights"
+                           )
+  }
+)
+
+testthat::test_that(
+  "concord() works as expected",
+  {
+    testthat::expect_identical(concord(data_in = equal_pm$data_A,
+                             pm = equal_pm$pm_BA,
+                             from_code = std_A,
+                             to_code = std_B,
+                             m_weights = weight,
+                             values_from = c(A_100),
+                             .suffix = "_out"),
+                     equal_pm$data_B
+                     )
   }
 )
 

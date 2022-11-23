@@ -4,7 +4,7 @@
 \alias{has_bad_weights}
 \title{Flag Bad Mapping Weights}
 \usage{
-has_bad_weights(.map, code_in, code_out, weights)
+has_bad_weights(df, code_in, code_out, weights)
 }
 \description{
 Flag Bad Mapping Weights

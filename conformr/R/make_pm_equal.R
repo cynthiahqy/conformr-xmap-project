@@ -5,8 +5,7 @@
 #' Generate panel map using all *distinct* correspondences between two classifications.
 #'
 #' @param code_dict Data frame containing correspondence between source and destination codes
-#' @param code_in Variable in `code_dict` containing source codes to convert from.
-#' @param code_out Variable in `code_dict` containing destination codes to convert to.
+#' @inheritParams check_weights
 #' @param .weights_to (optional) new column name for storing weights that will be applied to. The default name is `split_<<code_in>>`.
 #' input values.
 #'

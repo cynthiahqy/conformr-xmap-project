@@ -4,33 +4,16 @@
 \alias{use_panel_map}
 \title{Apply panel_map to data without checks}
 \usage{
-use_panel_map(.data, .map, from_code, to_code, weights, .suffix = NULL)
-}
-\arguments{
-\item{.data}{A data frame for transformation.}
-
-\item{.map}{A data frame that contains a valid panel map for the transformation.}
-
-\item{from_code}{A character string of the variable containing the codes to convert from.
-Must be the same in \code{map} and \code{data}.}
-
-\item{to_code}{Variable in \code{map} containing the codes to convert to.}
-
-\item{weights}{Variable in \code{map} containing the weights to split values by.}
-
-\item{.suffix}{A string appended to \code{value_from} column name to create column names for transformed values.
-Defaults to \code{to_code}}
-
-\item{values_from}{Variable in \code{data} containing the values to be converted.}
+use_panel_map(.data, .map, .from, .to, .weights, .vals, .suffix, .by)
 }
 \value{
 The output has the following properties:
 \itemize{
-\item Groups are taken from \code{.data}
+\item Groups are taken from \code{data_in}
 }
 }
 \description{
 A wrapper around a \code{{dplyr}} pipeline that takes a panel_map,
 joins it with data, and transforms selected variables in that data according to
-instructions in the panel map. Any groups in \code{data} are preserved.
+instructions in the panel map. Any groups in \code{data_in} are preserved.
 }
