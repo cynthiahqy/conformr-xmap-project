@@ -1,4 +1,4 @@
-# conformr
+# Creating `conformr` using `litr`
 
 This package is in active development and not ready for use. Please follow me on twitter at [\@cynthiahqy](https://twitter.com/cynthiahqy) for updates.
 
