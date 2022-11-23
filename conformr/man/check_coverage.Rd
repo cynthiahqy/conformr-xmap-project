@@ -6,6 +6,13 @@
 \usage{
 check_coverage(data_in, pm, code_in, code_out, values_from)
 }
+\arguments{
+\item{data_in}{A Data Frame containing the values you want to transform}
+
+\item{code_in}{Variable in \code{code_dict} containing source codes to convert from.}
+
+\item{code_out}{Variable in \code{code_dict} containing destination codes to convert to.}
+}
 \description{
 Check coverage of panel map over source data
 }

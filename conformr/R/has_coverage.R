@@ -2,12 +2,12 @@
 
 #' Flag if data set is not completely cover by panel map
 #' 
-has_coverage <- function(.data, .map, code_in, code_out){
+has_coverage <- function(data, pm, code_in, code_out){
   str_code_in <- rlang::as_string(rlang::enexpr(code_in))
   
-  missing_links <- .data |>
+  missing_links <- data |>
     dplyr::distinct({{code_in}}) |>
-    dplyr::anti_join(.map, by = str_code_in)
+    dplyr::anti_join(pm, by = str_code_in)
 
   is_covered <- (nrow(missing_links) == 0)
 
@@ -19,6 +19,8 @@ has_coverage <- function(.data, .map, code_in, code_out){
 
 #' Check coverage of panel map over source data
 #' 
+#' @inheritParams check_weights
+#' @inheritParams check_missing
 #' 
 check_coverage <- function(data_in, pm, code_in, code_out, values_from){
   has_results <- is_covered(data_in, pm, {{code_in}}, {{code_out}})

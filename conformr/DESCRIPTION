@@ -7,6 +7,7 @@ Description: conformr provides tools and workflows for converting data
     between classification standards, and correcting discrepancies in
     reported and calculated statistics.
 License: MIT + file LICENSE
+Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
@@ -18,6 +19,5 @@ Depends:
     R (>= 2.10)
 Suggests: 
     testthat (>= 3.0.0)
-Config/testthat/edition: 3
 LitrVersionUsed: 0.6.0
-LitrId: a0750c4d0b4e05f372cedc12e94589f4
+LitrId: ba95431c2c56d9efc6091362e3e4fa26

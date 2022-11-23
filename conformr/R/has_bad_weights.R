@@ -2,8 +2,8 @@
 
 #' Flag Bad Mapping Weights
 #' 
-has_bad_weights <- function(.map, code_in, code_out, weights){
-  bad_rows <- .map |>
+has_bad_weights <- function(df, code_in, code_out, weights){
+  bad_rows <- df |>
     dplyr::group_by({{code_in}}) |>
     dplyr::summarise(total = sum({{weights}}),
                      weights = paste({{weights}}, collapse=",")) |>

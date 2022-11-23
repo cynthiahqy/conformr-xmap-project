@@ -4,7 +4,7 @@
 \alias{has_coverage}
 \title{Flag if data set is not completely cover by panel map}
 \usage{
-has_coverage(.data, .map, code_in, code_out)
+has_coverage(data, pm, code_in, code_out)
 }
 \description{
 Flag if data set is not completely cover by panel map

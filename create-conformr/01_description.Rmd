@@ -7,7 +7,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9004",
+    Version = "0.0.0.9005",
     Title = "An opinionated toolkit for harmonising data",
     Description = "conformr provides tools and workflows for converting data between classification standards, 
     and correcting discrepancies in reported and calculated statistics.",

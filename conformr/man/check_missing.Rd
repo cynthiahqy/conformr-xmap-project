@@ -6,6 +6,9 @@
 \usage{
 check_missing(data_in)
 }
+\arguments{
+\item{data_in}{A Data Frame containing the values you want to transform}
+}
 \description{
 Checks Source Data for Missing Values
 }

@@ -4,10 +4,10 @@
 \alias{check_weights}
 \title{Check panel map weights are valid}
 \usage{
-check_weights(pm, code_in, code_out, weights)
+check_weights(df, code_in, code_out, weights)
 }
 \arguments{
-\item{pm}{Data Frame containing weighted links \code{weights} between \code{code_in} and \code{code_out}.}
+\item{df}{Data Frame containing weighted links \code{weights} between \code{code_in} and \code{code_out}.}
 
 \item{code_in}{Variable in \code{code_dict} containing source codes to convert from.}
 
