@@ -87,7 +87,7 @@ To demonstrate, let us generate some source data:
 ## generate some data
 set.seed(1832)
 std_A_codes <- unique(codes_BA$std_A)
-(data_in <- 
+(data_A <- 
     dplyr::tibble(std_A = std_A_codes,
                   A_100   = 100,
                   A_prod  = round(abs(rnorm(length(std_A_codes)) * 10000),2)
@@ -97,7 +97,7 @@ std_A_codes <- unique(codes_BA$std_A)
 
 Write this data into the package for testing purposes.
 ```{r internal-data-in}
-equal_pm$data_A <- data_in |>
+equal_pm$data_A <- data_A |>
   dplyr::select(std_A,
                 value_in = A_100)
 
@@ -116,7 +116,7 @@ inc_mtx <- inc_long |>
   inc_long_to_mtx(to, weight)
 
 ## source data matrix
-x_mtx <- as.matrix(data_in[,-1])
+x_mtx <- as.matrix(data_A[,-1])
 dimnames(x_mtx)[[1]] <- std_A_codes
 
 ## transformed data
@@ -434,13 +434,12 @@ testthat::test_that(
 )
 ```
 
-
 ### Source Code Coverage
 
 A Panel Map must cover all Source Codes present in the Source Data. In other words, for a transformation to be valid, no Source Data should be left behind.
 
 ```{r gg-data-in-mtx}
-gg_x_mtx <- plt_df_mtx(data_in, A_100:A_prod, std_A)
+gg_x_mtx <- plt_df_mtx(data_A, A_100:A_prod, std_A)
 
 library(patchwork)
 gg_pm_mtx + 
@@ -451,7 +450,7 @@ patchwork::plot_annotation(title="Panel Map covers Source Data")
 ```
 
 ```{r gg-no-coverage}
-gg_x_bad <- data_in |>
+gg_x_bad <- data_A |>
   dplyr::add_row(std_A = "x7285!", 
           A_100 = 100, 
           A_prod = 3895.3) |>
