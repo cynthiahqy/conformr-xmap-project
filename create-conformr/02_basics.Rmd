@@ -282,8 +282,10 @@ check_weights <- function(pm, code_in, code_out, weights){
   has_result <- has_bad_weights(pm, {{code_in}}, {{code_out}}, {{weights}})
   
   if (has_result$fail){
+    
     cli::cli_abort(c(
-        "{.var weights} for each {.var code_in} must sum to 1:"
+        "{.var weights} for each {.var code_in} must sum to 1",
+        ""
         ))
   } else {
     return(pm)
@@ -523,23 +525,33 @@ testthat::test_that(
 
 ## Use Panel Map on Data
 
-### Single Step Transformation
+### Single Step Concordance
 
 #### Stylized Code
 Assuming all the validity conditions are met, we want a simple and concise way to apply a panel map to data which looks something like:
 
 ```r
-## --- encode your transformation --- ##
-df_pm <- read_csv("your-panel-map.csv") |>
-  conform::validate_panel_map()
+## --- prepare panel map -------------------- ##
+# by importing a manually encoded map
+df_pm <- read_csv("your-panel-map.csv")
 
-## --- prepare source data --- ##
+# or creating one from a concordance table
+df_pm <- read_csv("concordance-table.csv") |>
+  conformr::make_panel_map_equal(
+    code_in = isic3,
+    code_out = isic2,
+    .weights_to = "split_isic3"
+)
+
+## --- prepare source data ------------------ ##
+# example using {dplyr}:
 df_data_in <-
   read_csv("your-source-data.csv") |>
   drop_na() |>
-  conform::validate_data_in()
+  group_by(code_in) |>
+  summarise(value_in = sum(gdp))
 
-## --- apply (valid) transformation --- ##
+## --- apply (valid) transformation --------- ##
 conformr::use_panel_map(map = df_pm,
                         data_in = df_data_in,
                         values_from = value_in,
@@ -549,20 +561,77 @@ conformr::use_panel_map(map = df_pm,
                         suffix="_out")
 ```
 
+#### Warnings and Errors
+
+The concordance function should throw error when:
+
+- panel map (`pm`) has invalid weights
+- source data (`data_in`) column has missing values
+
+The concordance function should warn users about data prep?:
+
+- multiple rows for a given `code_in` in `data_in`; should only have one set of `value_in` for each `code_in`
+
 #### Functions
 
 This function takes a valid panel map and data with matching names for the Source Code columns and transforms the data to the Target Classification.
 
-```{r fnc-transform}
-#' Perform valid transformation
+```{r fnc-concord}
+#' Title
 #'
+#' @param .data_in A data frame containining `from_code` and 
+#' @param .map 
+#' @param from_code 
+#' @param to_code 
+#' @param m_weights
+#' @param ... variables to transform
 #'
-transform <- function(map, data_in, from_code, to_code, values_from, weights_from){
+#' @return
+#' @export
+#'
+#' @examples
+concord <- function(.data_in, .map, from_code, to_code, m_weights, ...){
+  
+  ## wrangle inputs
+  dots <- rlang::enquos(..., .named = TRUE)
+  
   ## check conditions
   
+  in_data_in <- (names(dots) %in% colnames(.data_in))
+  if (!all(in_data_in)){
+    cli::cli_abort(
+      "{.code {names(dots)[!in_data_in]}} cannot be found in {.var .data_in}",
+      class = "cols_not_found")
+  }
+  
+  .data_in |>
+    check_missing()
+  .map |> 
+    check_weights()
+  
+  has_coverage()
+  
   ## apply transformation
+  
 }
 ```
+
+```{r testthat-concord}
+testthat::test_that(
+  "concord() raises expected errors",
+  {
+    ## column missing from data_in
+    testthat::expect_error(concord(.data_in = equal_pm$data_A,
+                                   .map = equal_pm$pm_BA,
+                                   from_code = std_A,
+                                   to_code = std_B,
+                                   m_weights = weight,
+                                   missing_col1, missing_col2),
+                           class = "cols_not_found")
+  }
+)
+```
+
 
 
 ```{r fnc-use-panel-map}
@@ -572,8 +641,8 @@ transform <- function(map, data_in, from_code, to_code, values_from, weights_fro
 #' joins it with data, and transforms selected variables in that data according to
 #' instructions in the panel map. Any groups in `data` are preserved.
 #'
-#' @param map A data frame that contains a valid panel map for the transformation.
-#' @param data_in A data frame for transformation.
+#' @param .data A data frame for transformation.
+#' @param .map A data frame that contains a valid panel map for the transformation.
 #' @param values_from Variable in `data` containing the values to be converted.
 #' @param from_code A character string of the variable containing the codes to convert from.
 #' Must be the same in `map` and `data`.
@@ -585,32 +654,32 @@ transform <- function(map, data_in, from_code, to_code, values_from, weights_fro
 #' @param
 #'
 #' @return The output has the following properties:
-#' * Groups are taken from `data_in`
+#' * Groups are taken from `.data`
 #'
 #' @examples
-use_panel_map <- function(map, data_in, values_from, from_code, to_code, weights,
+use_panel_map <- function(.data, .map, from_code, to_code, weights,
                           .suffix = NULL){
 
   # convert from_code to string
-  from_code <- as_string(enexpr(from_code))
+  str_from_code <- as_string(enexpr(from_code))
   # subset data for transformation
-  data_in <- data_in %>%
-    dplyr::select(dplyr::all_of(from_code), {{values_from}})
+  .data_in <- .data %>%
+    dplyr::select({{from_code}}, {{values_from}})
 
   # merge map and data // use default by= argument
-  map_join_data <- dplyr::right_join(x = data_in,
-                                     y = map,
-                                     by = from_code)
+  map_join_data <- dplyr::right_join(x = .data_in,
+                                     y = .map,
+                                     by = str_from_code)
 
   # apply transformation
-  data_out <- map_join_data %>%
+  .data_out <- map_join_data %>%
     dplyr::mutate(dplyr::across({{ values_from }}, ~ .x * {{ weights }})) %>%
     dplyr::group_by({{ to_code }}, .add = TRUE) %>%
     dplyr::summarise(dplyr::across({{ values_from }}, ~ sum(.x)), .groups = "drop_last")
 
   # rename
   names_suffix <- .suffix %||% paste0("_", as_string(enexpr(to_code)))
-  data_out <- data_out %>%
+  .data_out <- .data_out %>%
     dplyr::rename_with(., ~ paste0(.x, names_suffix), .cols = {{ values_from }})
 
   return(data_out)
