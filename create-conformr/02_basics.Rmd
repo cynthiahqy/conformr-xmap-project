@@ -32,6 +32,7 @@ pm_BA <- weights_BA |>
 ```
 
 Write this data into the package for testing purposes.
+
 ```{r internal-toy-AB, echo=TRUE}
 equal_pm <- list("codes_BA" = codes_BA,
                  "weights_BA" = weights_BA,
@@ -41,6 +42,7 @@ usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
 ```
 
 We can visualise a panel map as the addition of weights to the concordance:
+
 ```{r viz-matrix-pm-equal}
 library(ggplot2)
 
@@ -57,20 +59,23 @@ gg_pm_mtx <- gg_inc_mtx +
   ggtitle("adding equal weights for Valid Panel Map")
 ```
 
-::::{style="display: flex;"}
-:::{}
+::: {style="display: flex;"}
+<div>
+
 ```{r gg-no-weight-martix}
 gg_inc_mtx
 ```
-:::
 
-:::{}
+</div>
+
+<div>
+
 ```{r gg-equal-weight-matrix}
 gg_pm_mtx
 ```
-:::
 
-::::
+</div>
+:::
 
 ## Valid Transformations
 
@@ -83,6 +88,7 @@ The following condition is necessary and sufficient for a set of Source Codes, T
 > The sum of all Mapping Weights associated with any given Source Code totals to 1
 
 To demonstrate, let us generate some source data:
+
 ```{r}
 ## generate some data
 set.seed(1832)
@@ -122,19 +128,24 @@ dimnames(x_mtx)[[1]] <- std_A_codes
 ## transformed data
 z_mtx <- t(inc_mtx) %*% x_mtx
 ```
-::::{style="display: flex;"}
-:::{}
+
+::: {style="display: flex;"}
+<div>
+
 ```{r print-inc-mtx}
 round(t(inc_mtx), 2)
 ```
-:::
 
-:::{}
+</div>
+
+<div>
+
 ```{r print-data-in-mtx}
 print(x_mtx)
 ```
+
+</div>
 :::
-::::
 
 ```{r print-data-out-mtx}
 print(z_mtx)
@@ -142,19 +153,23 @@ print(z_mtx)
 
 Notice that the sum total of `A_100` is the same before and after the transformation.
 
-::::{style="display: flex;"}
-:::{}
+::: {style="display: flex;"}
+<div>
+
 ```{r}
 colSums(x_mtx)
 ```
-:::
 
-:::{}
+</div>
+
+<div>
+
 ```{r}
 colSums(z_mtx)
 ```
+
+</div>
 :::
-::::
 
 Now, let's edit the panel map such that the weights no longer sum to one:
 
@@ -178,19 +193,23 @@ bad_z <- t(bad_mtx) %*% x_mtx
 
 Notice what happens when we apply the transformation:
 
-::::{style="display: flex;"}
-:::{}
+::: {style="display: flex;"}
+<div>
+
 ```{r print-bad-mtx}
 round(t(bad_mtx), 2)
 ```
-:::
 
-:::{}
+</div>
+
+<div>
+
 ```{r print-bad-data-in}
 print(x_mtx)
 ```
+
+</div>
 :::
-::::
 
 ```{r print-bad-data-out}
 print(bad_z)
@@ -198,44 +217,52 @@ print(bad_z)
 
 Notice that the sum totals are no longer the same before and after the transformation:
 
-::::{style="display: flex;"}
-:::{}
+::: {style="display: flex;"}
+<div>
+
 ```{r}
 colSums(x_mtx)
 ```
-:::
 
-:::{}
+</div>
+
+<div>
+
 ```{r}
 colSums(bad_z)
 ```
-:::
-::::
 
-Hence, the validity condition can also be expressed as follows:
-> A given incidence matrix $\bf{K}$ with dimensions $n \times m$ is a valid panel map if and only if $\bf{K}\boldsymbol{1} = \boldsymbol{1}$ where $\boldsymbol{1}$ is a unit vector of length $m$:
+</div>
+:::
+
+Hence, the validity condition can also be expressed as follows: \> A given incidence matrix $\bf{K}$ with dimensions $n \times m$ is a valid panel map if and only if $\bf{K}\boldsymbol{1} = \boldsymbol{1}$ where $\boldsymbol{1}$ is a unit vector of length $m$:
 
 ```{r valid-weights-mtx}
 ones <- rep_len(1, ncol(inc_mtx))
 ```
 
-::::{style="display: flex;"}
-:::{}
+::: {style="display: flex;"}
+<div>
+
 ```{r}
 round(inc_mtx, 2)
 ```
-:::
 
-:::{}
+</div>
+
+<div>
+
 ```{r}
 inc_mtx %*% ones
 ```
+
+</div>
 :::
-::::
 
 #### Functions
 
 Internal switching function for flow control and error messages
+
 ```{r fnc-flag-weights}
 #' Flag Bad Mapping Weights
 #' 
@@ -356,6 +383,7 @@ pm_BA |>
 #### Functions
 
 This function flags if the variables you want to transform have any missing values.
+
 ```{r fnc-flag-na}
 #' Flags NA in Source Data
 #'
@@ -371,7 +399,7 @@ has_missing <- function(.data){
 
 This function checks the dataframe for missing values, and returns the original dataframe or tells the user to fix the NAs in their data. The dataframe should already be subsetted to contain only the Source Code and Source Value columns:
 
-```r
+``` r
 ## prepare data for transformation
 data_in <- all_df |>
   select(code_in, x1, x2) |>
