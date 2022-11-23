@@ -1,22 +1,45 @@
-# Creating `conformr` using `litr`
+---
+output: github_document
+---
 
-This package is in active development and not ready for use. Please follow me on twitter at [\@cynthiahqy](https://twitter.com/cynthiahqy) for updates.
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-`conformr` provides tools for harmonising multiple data across classifications or statistics into a consistent validated dataset.
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# `conformr`: An Opinionated Toolkit for Data Harmonisation
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+## Overview
+
+`conformr` provides tools for harmonising multiple data across classifications or nomenclatures into a single consistent validated dataset.
+
+Using the `conformr` workflow helps you:
+
+-   avoid common but subtle error such as loss or duplication of data when converting between classifications
+-   clearly document the process by which your dataset is constructed, and any assumptions used.
+
+### Installation
+
+To install the latest development version of `conformr`:
+```r
+remotes::install_github("cynthiahqy/conformr-project", subdir = "litr")
+```
+
+### Background
 
 It is not uncommon in empirical social sciences to encounter "pseudo" [panel data](https://en.wikipedia.org/wiki/Panel_data) (sometimes also called longitudinal data) that has been reported using different standards in different time periods. Examples include occupation level labour statistics, or product level trade flows, whereby classification codes are updated periodically to reflect changes in category relevance. Over time categories may be added, removed or even split.
 
 In order to combine this kind of data into a single panel dataset, researchers must first harmonise the data across classification standards. In particular, researchers must make decisions on how to redistribute values when categories don't have a one-to-one correspondence. These decisions are often hidden in nested for-loops and case statements over each old-new category correspondence. The nature of nested loops make it difficult to review the dataset design, or even validate the data cleaning has been performed as intended.
 
-## From nested-loops to Panel Maps
-
-`conformr` provides a matrix framework for applying transforming data between standards to:
-
--   avoid loss or duplication of data when converting between classifications
--   resolve conflicts between reported and calculated statistics
--   improve reproducibilty and tractability of combined datasets by
-    -   facilitating pipelines of multiple sequential concordances
-    -   providing an tibble-based alternative to nested cases loops for handling one-to-one, one-to-many, and many-to-one correspondences
+### Solution: From nested-loops to Panel Maps
 
 `conformr` is built upon the realisation that implicit in any transformation between classifications is an application of *weights* to the original values. For example, a transformation from 1 original category to 2 new categories, requires spliting the original value in 2, or alternatively, applying a weight of 0.5 to the original value twice (once each for the 2 new categories).
 
@@ -30,19 +53,16 @@ data_in <- readr::read_csv("some_trade_data.csv")
 code_dict <- readr::read_csv("code_correlations.csv")
 
 ## make a equal split panel_map
-# as_panel_map() will validate the map 
-panel_map <- code_dict %>%
-  dplyr::group_by(code_in) %>%
+panel_map <- code_dict |>
+  dplyr::group_by(code_in) |>
   dplyr::mutate(n_dest = n_distinct(code_out),
-                weight = 1/n_dest) %>%
-  conformr::as_panel_map(., code_in, code_out, split_in=weight)
+                weight = 1/n_dest)
                 
 ## generate transformed data
-# .validate_coverage: 
-#    check panel_map covers every code-value case in data_in
 data_out <- conformr::concord(data_in, panel_map, 
-                              values_from = vars(exports), code_from = "code_in",
-                              .validate_coverage = TRUE) 
+                              from_code = code_in, to_code = code_out,
+                              m_weights = weight,
+                              var1, var2) 
 ```
 
 Some contrived snippets for further illustration (real datasets are much too large to show the various cases):
