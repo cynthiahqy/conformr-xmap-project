@@ -481,9 +481,11 @@ This flags coverage issues
 #' Flag if data set is not completely cover by panel map
 #' 
 has_coverage <- function(.data, .map, code_in, code_out){
+  str_code_in <- rlang::as_string(rlang::enexpr(code_in))
+  
   missing_links <- .data |>
     dplyr::distinct({{code_in}}) |>
-    dplyr::anti_join(.map, by = rlang::as_name(rlang::enquo(code_in)))
+    dplyr::anti_join(.map, by = str_code_in)
 
   is_covered <- (nrow(missing_links) == 0)
 
@@ -508,9 +510,12 @@ testthat::test_that(
   "has_coverage() returns expected flags",
   {
     ## complete coverage
-    testthat::expect_false(has_coverage(equal_pm$data_A, equal_pm$pm_BA, std_A, std_B))
+    testthat::expect_false(has_coverage(equal_pm$data_A, equal_pm$pm_BA, std_A, std_B)$fail)
     
     ## incomplete coverage
+    data_extra <- equal_pm$data_A |>
+      dplyr::add_row(std_A = "x7777", value_in = 100)
+    testthat::expect_true(has_coverage(data_extra, equal_pm$pm_BA, std_A, std_B)$fail)
   }
 )
 ```
