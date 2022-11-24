@@ -513,7 +513,7 @@ Internal checking function -- assumes `.map` is a valid map. Note this could be 
 ```{r fnc-coverage-flag}
 #' Flag if data set is not completely cover by panel map
 #' 
-#' @inheritParams use_panel_map()
+#' @inheritParams use_panel_map
 #'  
 has_coverage <- function(.data, .map, .from){
   
@@ -536,13 +536,19 @@ Error constructing function, also used in `concord()`
 #' Check coverage of panel map over source data
 #' 
 #' @inheritParams concord
+#' @inheritParams use_panel_map
 #' 
 #' @returns `data_in` if check is successful, throws error otherwise.
+#' @examples
 #' 
-check_coverage <- function(data_in, pm, from_code, to_code){
+#' /notrun{
+#' check_coverage(df, pm, "std_A")
+#' }
+#' 
+#' 
+check_coverage <- function(data_in, pm, .from){
   # call flag function
-  str.from <- rlang::as_string(rlang::enexpr(from_code))
-  has_result <- has_coverage(data_in, pm, str.from)
+  has_result <- has_coverage(data_in, pm, .from)
   
   # conditionals
   if(has_result$fail){
@@ -585,9 +591,9 @@ testthat::test_that(
   "check_coverage() works as expected",
   {
     ## complete coverage
-    testthat::expect_identical(check_coverage(equal_pm$data_A, equal_pm$pm_BA, std_A, std_B), equal_pm$data_A)
+    testthat::expect_identical(check_coverage(equal_pm$data_A, equal_pm$pm_BA, "std_A"), equal_pm$data_A)
     ## incomplete coverage
-    testthat::expect_error(check_coverage(equal_pm$data_extra, equal_pm$pm_BA, std_A, std_B),
+    testthat::expect_error(check_coverage(equal_pm$data_extra, equal_pm$pm_BA, "std_A"),
                            class = "not_covered")
   }
 )
@@ -706,6 +712,10 @@ Add informative error messages later:
 #' 
 concord <- function(data_in, pm, from_code, to_code, m_weights, values_from, .suffix=NULL){
   
+  ## defuse arugments
+  str.to <- rlang::as_string(rlang::enexpr(to_code))
+  str.from <- rlang::as_string(rlang::enexpr(from_code))
+  
   ## check conditions
   pm |> 
     check_weights(code_in = {{from_code}},
@@ -725,10 +735,12 @@ concord <- function(data_in, pm, from_code, to_code, m_weights, values_from, .su
   subset_in |>
     check_missing()
   
+  check_coverage(subset_in, pm, str.from)
+  
   ## apply transformation
   # -- create suffix --
-  out_suffix <- .suffix %||% paste0("_", rlang::as_string(rlang::enexpr(to_code)))
-  join_by <- rlang::as_string(rlang::enexpr(from_code))
+  out_suffix <- .suffix %||% paste0("_", str.to)
+  join_by <- str.from
   
   data_out <- use_panel_map(.data = subset_in, .map = pm, 
                 .from = {{from_code}}, .to = {{to_code}}, .weights = {{m_weights}},
@@ -750,7 +762,6 @@ Internal function without checks
 #'
 #' @param .data a Data Frame assumed to meet Source Data conditions
 #' @param .map a Data Frame assumed to meet Panel Map conditions
-#' @param .from a String containing column name of Source Code
 #'
 #' @return The output has the following properties:
 #' * Groups are taken from `data_in`

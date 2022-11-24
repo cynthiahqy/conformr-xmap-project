@@ -31,7 +31,7 @@ concord(
 Defaults to \code{"_out"}}
 }
 \description{
-Currently checks for valid Mapping weights, missing values, but not coverage.
+Currently checks for valid Mapping weights, missing values, and coverage.
 }
 \examples{
 \dontrun{

@@ -8,7 +8,6 @@
 #'
 #' @param .data a Data Frame assumed to meet Source Data conditions
 #' @param .map a Data Frame assumed to meet Panel Map conditions
-#' @param .from a String containing column name of Source Code
 #'
 #' @return The output has the following properties:
 #' * Groups are taken from `data_in`

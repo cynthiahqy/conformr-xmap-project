@@ -68,9 +68,9 @@ testthat::test_that(
   "check_coverage() works as expected",
   {
     ## complete coverage
-    testthat::expect_identical(check_coverage(equal_pm$data_A, equal_pm$pm_BA, std_A, std_B), equal_pm$data_A)
+    testthat::expect_identical(check_coverage(equal_pm$data_A, equal_pm$pm_BA, "std_A"), equal_pm$data_A)
     ## incomplete coverage
-    testthat::expect_error(check_coverage(equal_pm$data_extra, equal_pm$pm_BA, std_A, std_B),
+    testthat::expect_error(check_coverage(equal_pm$data_extra, equal_pm$pm_BA, "std_A"),
                            class = "not_covered")
   }
 )
