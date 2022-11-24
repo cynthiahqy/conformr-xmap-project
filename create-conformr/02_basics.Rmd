@@ -569,6 +569,30 @@ testthat::test_that(
 
 #### Stylized Code
 
+This shows how conformr can catch errors before they occur:
+
+``` r
+# --- prepare panel map --------------------
+df_pm <- read_csv("concordance-table.csv") |>
+  conformr::make_panel_map_equal(...) |>
+  conformr::validate_panel_map(...)
+  
+# --- prepare data ---------------------------
+df_data_in <-
+  read_csv("your-source-data.csv") |>
+  conformr::validate_data_in(...)
+  
+## --- apply (valid) transformation -----------
+conformr::concord(
+  data_in = df_data_in, pm = df_pm,
+  from_code = source, to_code = target,
+  m_weights = weight, values_from = value_in,
+  .suffix = "_out"
+)
+```
+
+
+
 Assuming all the validity conditions are met, we want a simple and concise way to apply a panel map to data which looks something like:
 
 ``` r
