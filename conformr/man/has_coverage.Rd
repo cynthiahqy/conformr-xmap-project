@@ -6,6 +6,11 @@
 \usage{
 has_coverage(.data, .map, .from)
 }
+\arguments{
+\item{.data}{a Data Frame assumed to meet Source Data conditions}
+
+\item{.map}{a Data Frame assumed to meet Panel Map conditions}
+}
 \description{
 Flag if data set is not completely cover by panel map
 }

@@ -2,7 +2,7 @@
 
 #' Transform data from Source to Target classification using Panel Map
 #' 
-#' Currently checks for valid Mapping weights, missing values, but not coverage.
+#' Currently checks for valid Mapping weights, missing values, and coverage.
 #'
 #' @param data_in A Data Frame containing the values you want to transform
 #' @param pm A Data Frame containing valid Mapping Weights between `from_code` and `to_code`.
@@ -29,6 +29,10 @@
 #' 
 concord <- function(data_in, pm, from_code, to_code, m_weights, values_from, .suffix=NULL){
   
+  ## defuse arugments
+  str.to <- rlang::as_string(rlang::enexpr(to_code))
+  str.from <- rlang::as_string(rlang::enexpr(from_code))
+  
   ## check conditions
   pm |> 
     check_weights(code_in = {{from_code}},
@@ -48,10 +52,12 @@ concord <- function(data_in, pm, from_code, to_code, m_weights, values_from, .su
   subset_in |>
     check_missing()
   
+  check_coverage(subset_in, pm, str.from)
+  
   ## apply transformation
   # -- create suffix --
-  out_suffix <- .suffix %||% paste0("_", rlang::as_string(rlang::enexpr(to_code)))
-  join_by <- rlang::as_string(rlang::enexpr(from_code))
+  out_suffix <- .suffix %||% paste0("_", str.to)
+  join_by <- str.from
   
   data_out <- use_panel_map(.data = subset_in, .map = pm, 
                 .from = {{from_code}}, .to = {{to_code}}, .weights = {{m_weights}},

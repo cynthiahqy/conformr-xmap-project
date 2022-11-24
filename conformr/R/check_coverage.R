@@ -3,13 +3,19 @@
 #' Check coverage of panel map over source data
 #' 
 #' @inheritParams concord
+#' @inheritParams use_panel_map
 #' 
 #' @returns `data_in` if check is successful, throws error otherwise.
+#' @examples
 #' 
-check_coverage <- function(data_in, pm, from_code, to_code){
+#' /notrun{
+#' check_coverage(df, pm, "std_A")
+#' }
+#' 
+#' 
+check_coverage <- function(data_in, pm, .from){
   # call flag function
-  str.from <- rlang::as_string(rlang::enexpr(from_code))
-  has_result <- has_coverage(data_in, pm, str.from)
+  has_result <- has_coverage(data_in, pm, .from)
   
   # conditionals
   if(has_result$fail){

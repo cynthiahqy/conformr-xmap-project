@@ -2,7 +2,7 @@
 
 #' Flag if data set is not completely cover by panel map
 #' 
-#' @inheritParams use_panel_map()
+#' @inheritParams use_panel_map
 #'  
 has_coverage <- function(.data, .map, .from){
   
