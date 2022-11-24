@@ -44,7 +44,6 @@ concord <- function(data_in, pm, from_code, to_code, m_weights, values_from, .su
       class = "vals_not_found")
     }
   )
-    
   
   subset_in |>
     check_missing()

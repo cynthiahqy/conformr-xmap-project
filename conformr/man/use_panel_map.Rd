@@ -6,6 +6,13 @@
 \usage{
 use_panel_map(.data, .map, .from, .to, .weights, .vals, .suffix, .by)
 }
+\arguments{
+\item{.data}{a Data Frame assumed to meet Source Data conditions}
+
+\item{.map}{a Data Frame assumed to meet Panel Map conditions}
+
+\item{.from}{a String containing column name of Source Code}
+}
 \value{
 The output has the following properties:
 \itemize{

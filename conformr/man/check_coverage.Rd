@@ -4,14 +4,19 @@
 \alias{check_coverage}
 \title{Check coverage of panel map over source data}
 \usage{
-check_coverage(data_in, pm, code_in, code_out, values_from)
+check_coverage(data_in, pm, from_code, to_code)
 }
 \arguments{
 \item{data_in}{A Data Frame containing the values you want to transform}
 
-\item{code_in}{Variable in \code{code_dict} containing source codes to convert from.}
+\item{pm}{A Data Frame containing valid Mapping Weights between \code{from_code} and \code{to_code}.}
 
-\item{code_out}{Variable in \code{code_dict} containing destination codes to convert to.}
+\item{from_code}{Variable containing Source Codes. Must be present in both \code{data_in} and \code{pm}}
+
+\item{to_code}{Variable in \code{pm} containing Target Codes.}
+}
+\value{
+\code{data_in} if check is successful, throws error otherwise.
 }
 \description{
 Check coverage of panel map over source data

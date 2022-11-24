@@ -113,6 +113,8 @@ testthat::test_that(
 
 ### Get Bad Weights (TBC)
 
+- Helper for errors in panel map weights
+
 ## Data Preparation for Concordance Transformation
 
 Things that are checked for:

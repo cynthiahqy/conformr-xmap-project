@@ -6,6 +6,10 @@
 #' joins it with data, and transforms selected variables in that data according to
 #' instructions in the panel map. Any groups in `data_in` are preserved.
 #'
+#' @param .data a Data Frame assumed to meet Source Data conditions
+#' @param .map a Data Frame assumed to meet Panel Map conditions
+#' @param .from a String containing column name of Source Code
+#'
 #' @return The output has the following properties:
 #' * Groups are taken from `data_in`
 #'

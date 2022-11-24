@@ -1,5 +1,13 @@
 # Conclusion {#conclude}
 
+## Write internal data to package
+
+```{r}
+## defined in 02_basics.Rmd
+usethis::use_data(equal_pm, internal = TRUE, overwrite = TRUE)
+```
+
+
 ## Document the package
 
 When you are done defining the package, it remains to convert the Roxygen to documentation.
