@@ -15,9 +15,9 @@ Imports:
     cli,
     dplyr,
     rlang
-Depends: 
-    R (>= 2.10)
 Suggests: 
     testthat (>= 3.0.0)
+Depends: 
+    R (>= 2.10)
 LitrVersionUsed: 0.6.0
-LitrId: c6256a765b5edc8c1bfd881aa8c6c6bc
+LitrId: b5d7d7adf116ac4b676e7c4f50384842
