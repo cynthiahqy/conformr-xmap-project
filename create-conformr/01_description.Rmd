@@ -23,7 +23,7 @@ usethis::create_package(
 usethis::use_mit_license(copyright_holder = "C. Huang")
 ```
 
-Although it's not required, it can be nice to add some package-level documentation.  This is what will show up when someone types `package?<your-package-name>` in the console.
+Although it's not required, it can be nice to add some package-level documentation. This is what will show up when someone types `package?<your-package-name>` in the console.
 
 ```{package_doc}
 #' Validated Data Harmonisation
@@ -54,4 +54,3 @@ These functions are not exported.
 #'
 `%||%` <- function(x, y) if (is.null(x)) y else x
 ```
-
