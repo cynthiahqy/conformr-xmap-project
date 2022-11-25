@@ -57,12 +57,21 @@ testthat::test_that(
   "has_coverage() returns expected flags",
   {
     ## complete coverage
-    testthat::expect_false(has_coverage(equal_pm$data_A, equal_pm$pm_BA, std_A, std_B)$fail)
+    testthat::expect_false(has_coverage(equal_pm$data_A, equal_pm$pm_BA, "std_A")$fail)
     
     ## incomplete coverage
-    data_extra <- equal_pm$data_A |>
-      dplyr::add_row(std_A = "x7777", A_100 = 100)
-    testthat::expect_true(has_coverage(data_extra, equal_pm$pm_BA, std_A, std_B)$fail)
+    testthat::expect_true(has_coverage(equal_pm$data_extra, equal_pm$pm_BA, "std_A")$fail)
+  }
+)
+
+testthat::test_that(
+  "check_coverage() works as expected",
+  {
+    ## complete coverage
+    testthat::expect_identical(check_coverage(equal_pm$data_A, equal_pm$pm_BA, "std_A"), equal_pm$data_A)
+    ## incomplete coverage
+    testthat::expect_error(check_coverage(equal_pm$data_extra, equal_pm$pm_BA, "std_A"),
+                           class = "not_covered")
   }
 )
 
