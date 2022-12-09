@@ -21,7 +21,7 @@ litr::render("create-conformr/index.Rmd", output_format = litr::litr_gitbook())
 
 ## Documentation Functions
 
-These functions are used to generate plots and other explanatory assets.
+These functions are used to generate plots and other explanatory assets. They should not really live here.
 
 To convert a panel map into a Matrix
 ```{r doc-fnc-pm-to-mtx}

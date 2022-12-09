@@ -1,6 +1,6 @@
 # Core Functions
 
-## Setup Testing Example
+## Setup Testing Data
 
 Define a toy example to use in development:
 
@@ -75,7 +75,7 @@ gg_pm_mtx
 </div>
 :::
 
-## Valid Transformations
+## Valid Transformation Conditions
 
 ### Complete Mapping Weights
 
