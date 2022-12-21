@@ -8,6 +8,12 @@ bibliography: references.bib
 
 This section collects and/or defines example datasets, concordances and transformations from different domains.
 
+Types of crosswalks/concordances include:
+
+-   Classification changes - HS, ISIC etc.
+
+-   Geographic (administrative/survey) area changes -- [Queensland Government Statistician's Office](https://www.qgso.qld.gov.au/about-statistics/analysing-data/concordance-information)
+
 ### INDSTAT across ISIC standards
 
 -   Initial reproducible approach: <https://cynthiahqy.github.io/indstat-TPP/>
