@@ -1,0 +1,124 @@
+---
+title: "Creating the ``r params$package_name`` R package"
+author: "Cynthia Huang"
+date: 2022-12-21
+output: litr::litr_html_document
+params:
+  package_name: "xmap" # <-- change this to your package name
+  package_parent_dir: "." # <-- relative to this file's location
+---
+
+```{=html}
+<!-- This Rmd file contains all the code needed to define an R package.  Press "Knit" in RStudio or more generally run `litr::render("name-of-this-file.Rmd")` to generate the R package.  Remember that when you want to modify anything about the R package, you should modify this document rather than the package that is outputted.
+-->
+```
+## Package Setup
+
+### DESCRIPTION file
+
+```{r package-setup, message=FALSE, results='hide'}
+usethis::create_package(
+  path = ".",
+  fields = list(
+    Package = params$package_name,
+    Version = "0.0.0.9000",
+    Title = "Extended Schema Crosswalks",
+    Description = "Provides a 'xmap' S3 class (the 'Cross Map') based on 'tbl_df' class for use in {conformr} package.",
+    `Authors@R` = person(
+      given = "Cynthia",
+      family = "Huang",
+      email = "cynthiahqy@gmail.com",
+      role = c("aut", "cre")
+      )
+  )
+)
+usethis::use_mit_license(copyright_holder = "C. Huang")
+```
+
+## Package Design Notes
+
+### Crossmap and Crosswalk tables
+
+<!--# define crosswalks -->
+
+Crosswalks are used in many different applications and domains, and generally refer to a table showing equivalent or related elements in two distinct nomenclature, schema or standards. Crosswalks are used to encode one-to-one, one-to-many, many-to-one, and many-to-many relations. Except for cases where there are only one-to-one relations, Crosswalks are "lateral" (one-way) mappings.
+
+<!--# define crossmaps -->
+
+Crossmaps extends the standard Crosswalk format to explictly encode the weights used when mapping data from one scheme to another. A crosswalk table generally consists of two columns, one each for the two schemes, and each row specifies a relation between elements of the disjoint schemes. A crossmap adds an additional column specifying transition weights for mapping data belonging to class elements in the source (initial) scheme into class elements in target scheme.
+
+<!--# insert image of crosswalk & crossmap TABLES (generate ggxmap/gt?) -->
+
+### Graph and Matrix Representations
+
+<!--# relation to graph & incidence matrix representation -->
+
+Crosswalked datasets are often visualised using Sankey flow diagrams. These diagrams hint at the fact that, when considered independently of the data they are applied to, crosswalks can be represented as directed (one-way/signed?) bipartite graphs. Recall that a bipartite graph must have two disjoint sets of nodes. The class elements of the source and target classifications naturally form two disjoint sets of nodes.
+
+<!--# INSERT image of crosswalk GRAPH (generate using ggxmap) -->
+
+Noting that crossmaps are essentially lateral crosswalks with weights attached to each relation, we find that crossmaps can be represented as weighted directed bipartite graphs. A crossmap fully captures all the information needed to "transition" or "translate" numeric and/or categorical data between the source and target classes (nodes).
+
+<!--# INSERT image of crossmap as graph (generate using ggxmap) -->
+
+Furthermore, the explicit weights make clear why mappings are generally "lateral". Consider the case <!--# above? --> where you have a many-to-one relation between source and target schemes.
+
+### Application to Ex-Post Data Harmonisation
+
+<!--# define ex-post data harmonisation -->
+
+Crossmaps have features which are especially useful when using a Crosswalk approach to ex-post data harmonisation. Ex-post data harmonisation refers to the integration of data from ....
+
+<!--# related but distinct requirements compared to crosswalks in metadata / data mapping -->
+
+Although both processes use crosswalks, the requirements of an ex-post harmonisation workflow have some important differences to crosswalking between database schemas ("metadata translation using schema crosswalks [(Wikipedia)](https://en.wikipedia.org/wiki/Schema_crosswalk)")[^1], and are more specific than "data mapping" [(Wikipedia)](https://en.wikipedia.org/wiki/Data_mapping) between distinct data models. In particular, for the latter two cases, there are often more obvious constraints on candidate crosswalks (agreed upon standards etc., translation between legacy systems etc., more obvious connection between the two databases, harmonising data flows), and fewer classes (fields).
+
+[^1]: Schema crosswalks show equivalent elements or "fields" between database schema, and are used to "translate" data from one format into another in "metadata mapping".
+
+On the other hand, ex-post harmonisation is often a "last resort" attempt to bring together data from different sources to answer difficult questions (social sciences). The data is often scarce, expensive to collect, and as a result the semantic ties between the datasets are not so obvious, and much more subjective opinion is applied when designing crosswalks (and the implicit weights).
+
+### Crosswalk vs. Crossmap Transformation
+
+<!--# applying crosswalks vs. crossmaps -->
+
+A crossmap transformation can be performed by passing a valid crossmap table and validated input data can be passed as inputs into "generic" transformation function, which implements a (left join, mutate, and aggregate), to produce the target dataset without generating any additional code. The specific conditions for source data are discussed in `{conformr}`.
+
+<!--# insert image of transformation -- JOIN -->
+
+On the other hand, crosswalks need to be translated into procedural code (ETL, graphical manuals, for-loops). <!--# short list of drawbacks -->. The drawbacks and limitation of these approaches are discussed in more detail in `{conformr}`.
+
+<!--# ETL, graphical methods not so relevant (because we're not generally looking at data stored in database schema) -->
+
+<!--# common practice is for-loops; drawbacks // maybe point people to conformr pkg -->
+
+For-loops must be coded from either the source-code or target-code perspective (i.e. you iterate over the source classes or target classes, dealing with each set of relations one by one). The most obvious drawback to this approach is the number of lines of code grows with the number of classes in the classifications, decreasing the readability of the code.
+
+For-loops are often used when generating data-driven weights <!--# (are they? they are natural fit for it, especially for social science data) -->. However,
+
+<!--# benefits of crosswalks for ex-post harmonisation -->
+
+Crossmaps provide a systematic structure for validating candidate mappings, and can enable tractable experimentation with different processes for generating mappings[^2] and conducting sensitivity analysis.
+
+[^2]: e.g. using data-driven mapping ([Wikipedia, no reference](https://en.wikipedia.org/wiki/Data_mapping))
+
+## S3 Class
+
+Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes):
+
+### Constructor
+
+### Validator
+
+### Helper
+
+## Package Creation
+
+We finish by running commands that will document, build, and install the package. It may also be a good idea to check the package from within this file.
+
+```{r}
+rm(list = ls())
+litr::document() # <-- use instead of devtools::document()
+# devtools::build()
+# devtools::install()
+# devtools::check(document = FALSE)
+```
