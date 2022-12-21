@@ -11,5 +11,10 @@ Provides an opinionated toolkit for harmonising data from related nomenclature o
 \author{
 \strong{Maintainer}: Cynthia Huang \email{cynthia@gmail.com}
 
+Authors:
+\itemize{
+  \item Laura Puzzello [funder]
+}
+
 }
 \keyword{internal}

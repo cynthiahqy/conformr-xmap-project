@@ -1,8 +1,10 @@
 Package: conformr
 Title: An opinionated toolkit for harmonising data
-Version: 0.0.0.9005
-Authors@R: 
-    person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre"))
+Version: 0.0.0.9006
+Authors@R: c(
+    person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre")),
+    person("Laura", "Puzzello", role = c("aut", "fnd"))
+  )
 Description: conformr provides tools and workflows for converting data
     between classification standards, and correcting discrepancies in
     reported and calculated statistics.
@@ -20,4 +22,4 @@ Suggests:
 Depends: 
     R (>= 2.10)
 LitrVersionUsed: 0.6.0
-LitrId: 86e44f42f7425a1ea17945d014352550
+LitrId: 857e43ac8bb6277b06cab66d2f6e5621

@@ -7,23 +7,21 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9005",
+    Version = "0.0.0.9006",
     Title = "An opinionated toolkit for harmonising data",
     Description = "conformr provides tools and workflows for converting data between classification standards, 
     and correcting discrepancies in reported and calculated statistics.",
-    `Authors@R` = person(
-      given = "Cynthia",
-      family = "Huang",
-      email = "cynthia@gmail.com",
-      role = c("aut", "cre")
-      ),
+    `Authors@R` = c(
+      person(given = "Cynthia", family = "Huang", email = "cynthia@gmail.com", role = c("aut", "cre")),
+      person(given = "Laura", family = "Puzzello", role = c("aut", "fnd"))
+    ),
     `Config/testthat/edition` = 3
   )
 )
 usethis::use_mit_license(copyright_holder = "C. Huang")
 ```
 
-Although it's not required, it can be nice to add some package-level documentation.  This is what will show up when someone types `package?<your-package-name>` in the console.
+Although it's not required, it can be nice to add some package-level documentation. This is what will show up when someone types `package?<your-package-name>` in the console.
 
 ```{package_doc}
 #' Validated Data Harmonisation
@@ -54,4 +52,3 @@ These functions are not exported.
 #'
 `%||%` <- function(x, y) if (is.null(x)) y else x
 ```
-
