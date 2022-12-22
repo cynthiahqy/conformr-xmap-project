@@ -21,7 +21,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9001",
+    Version = "0.0.0.9002",
     Title = "Extended Schema Crosswalks",
     Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df' class for use in {conformr} package.",
     `Authors@R` = person(
@@ -67,7 +67,9 @@ Furthermore, the explicit weights make clear why mappings are generally "lateral
 
 <!--# define ex-post data harmonisation -->
 
-Crossmaps have features which are especially useful when using a Crosswalk approach to ex-post data harmonisation. Ex-post data harmonisation refers to the integration of data from ....
+Crossmaps have features which are especially useful when using a Crosswalk approach to ex-post data harmonisation requiring one-to-many splits. Ex-post data harmonisation refers to the integration of data from ....
+
+Continuing with the graph representation, we can attach arbitary numeric values (such as counts, or monetary amounts) to each source node as additional properties of each node. <!--# brings us back to sankey diagram representation -->
 
 <!--# related but distinct requirements compared to crosswalks in metadata / data mapping -->
 
@@ -128,8 +130,10 @@ Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#
 
 The low-level constructor has:
 
--   one data argument (`x`) and,
--   three descriptors (`from`, `to`, `weights`) which are stored as attributes
+-   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
+-   three descriptors (`from`, `to`, `weights`) which are stored as attributes, accepts character strings only.
+
+Only checks base object and attribute types.
 
 ```{r}
 #' Low Level Constructor for xmap
@@ -147,17 +151,39 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
 }
 ```
 
-### Validator
+### Validation
 
--   only works with data.frames (and subclasses)
--   assumes:
+-   order checks from cheapest to most expensive
+-   validates data.frame element types:
     -   source, target, weights columns are present, and other columns can be dropped
+    -   source/target columns are / can be coerced into factors
+    -   weights is numeric
 -   checks for:
     -   duplicate source-target rows (weights should be collapsed into a single row)
 
     -   `NA` values in the weights column
 
     -   `sum()` of values in weights column by source-code is `1` (or close..?)
+
+```{r}
+#' A Validator for `xmap` objects
+#'
+#' @param x An `xmap` to be validated
+#'
+#' @return `x` if validation passes. Throws error otherwise.
+#' @export
+#'
+#' @examples
+validate_xmap <- function(x){
+  x <- unclass(x)
+  
+  ## type validation
+  
+  ## duplication and missingness checks
+  
+  ## complete weight check
+}
+```
 
 ### Helpers
 
@@ -167,6 +193,8 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
     -   existence of columns
 -   warns for:
     -   dropping extra columns
+-   throws errors for:
+    -   any validation failures
 
 ```{r}
 #' `xmap` data.frame
@@ -204,7 +232,7 @@ is_xmap <- function(x) {
 
 ### print.xmap()
 
-Can I make it print like:
+Can I make it print like?
 
     src_node -- weights --> target_node
 

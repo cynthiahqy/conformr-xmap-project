@@ -368,7 +368,7 @@ package</h1>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9001&quot;,
+    Version = &quot;0.0.0.9002&quot;,
     Title = &quot;Extended Schema Crosswalks&quot;,
     Description = &quot;Provides a &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) based on &#39;tbl_df&#39; class for use in {conformr} package.&quot;,
     `Authors@R` = person(
@@ -430,8 +430,13 @@ many-to-one relation between source and target schemes.</p>
 <h3>Application to Ex-Post Data Harmonisation</h3>
 <!--# define ex-post data harmonisation -->
 <p>Crossmaps have features which are especially useful when using a
-Crosswalk approach to ex-post data harmonisation. Ex-post data
-harmonisation refers to the integration of data from ….</p>
+Crosswalk approach to ex-post data harmonisation requiring one-to-many
+splits. Ex-post data harmonisation refers to the integration of data
+from ….</p>
+<p>Continuing with the graph representation, we can attach arbitary
+numeric values (such as counts, or monetary amounts) to each source node
+as additional properties of each node.
+<!--# brings us back to sankey diagram representation --></p>
 <!--# related but distinct requirements compared to crosswalks in metadata / data mapping -->
 <p>Although both processes use crosswalks, the requirements of an
 ex-post harmonisation workflow have some important differences to
@@ -509,10 +514,13 @@ processes for generating mappings<a href="#fn2" class="footnote-ref" id="fnref2"
 <h3>Constructor</h3>
 <p>The low-level constructor has:</p>
 <ul>
-<li>one data argument (<code>x</code>) and,</li>
+<li>one data argument (<code>x</code>), accepts base objects of type
+data.frames (and subclasses)</li>
 <li>three descriptors (<code>from</code>, <code>to</code>,
-<code>weights</code>) which are stored as attributes</li>
+<code>weights</code>) which are stored as attributes, accepts character
+strings only.</li>
 </ul>
+<p>Only checks base object and attribute types.</p>
 <pre class="r"><code>#&#39; Low Level Constructor for xmap
 <span id='new_xmap'>new_xmap</span> &lt;- function(x = data.frame(), from, to, weights) {
   stopifnot(is.data.frame(x))
@@ -527,14 +535,16 @@ processes for generating mappings<a href="#fn2" class="footnote-ref" id="fnref2"
             link_weights = weights)
 }</code></pre>
 </div>
-<div id="validator" class="section level3">
-<h3>Validator</h3>
+<div id="validation" class="section level3">
+<h3>Validation</h3>
 <ul>
-<li>only works with data.frames (and subclasses)</li>
-<li>assumes:
+<li>order checks from cheapest to most expensive</li>
+<li>validates data.frame element types:
 <ul>
 <li>source, target, weights columns are present, and other columns can
 be dropped</li>
+<li>source/target columns are / can be coerced into factors</li>
+<li>weights is numeric</li>
 </ul></li>
 <li>checks for:
 <ul>
@@ -545,6 +555,23 @@ single row)</p></li>
 <code>1</code> (or close..?)</p></li>
 </ul></li>
 </ul>
+<pre class="r"><code>#&#39; A Validator for `xmap` objects
+#&#39;
+#&#39; @param x An `xmap` to be validated
+#&#39;
+#&#39; @return `x` if validation passes. Throws error otherwise.
+#&#39; @export
+#&#39;
+#&#39; @examples
+<span id='validate_xmap'>validate_xmap</span> &lt;- function(x){
+  x &lt;- unclass(x)
+  
+  ## type validation
+  
+  ## duplication and missingness checks
+  
+  ## complete weight check
+}</code></pre>
 </div>
 <div id="helpers" class="section level3">
 <h3>Helpers</h3>
@@ -558,6 +585,10 @@ single row)</p></li>
 <li>warns for:
 <ul>
 <li>dropping extra columns</li>
+</ul></li>
+<li>throws errors for:
+<ul>
+<li>any validation failures</li>
 </ul></li>
 </ul>
 <pre class="r"><code>#&#39; `xmap` data.frame
@@ -594,7 +625,7 @@ single row)</p></li>
 <h2>S3 Methods</h2>
 <div id="print.xmap" class="section level3">
 <h3>print.<a href='create-xmap.html#xmap'>xmap</a>()</h3>
-<p>Can I make it print like:</p>
+<p>Can I make it print like?</p>
 <pre><code>src_node -- weights --&gt; target_node</code></pre>
 </div>
 </div>
@@ -609,10 +640,14 @@ litr::document() # &lt;-- use instead of devtools::document()
 # devtools::install()
 # devtools::check(document = FALSE)</code></pre>
 <pre><code>## ℹ Updating xmap documentation
-## ℹ Loading xmap
-## Writing &#39;]8;;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/NAMESPACENAMESPACE]8;;&#39;
+## ℹ Loading xmap</code></pre>
+<pre><code>## Warning: []8;line = 10:col = 1;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/
+## conformr-project/xmap/R/validate_xmap.Rvalidate_xmap.R:10]8;;] @examples
+## requires a value</code></pre>
+<pre><code>## Writing &#39;]8;;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/NAMESPACENAMESPACE]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;is_xmap&#39;)xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap&#39;)new_xmap.Rd]8;;&#39;</code></pre>
+## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap&#39;)new_xmap.Rd]8;;&#39;
+## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;validate_xmap&#39;)validate_xmap.Rd]8;;&#39;</code></pre>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />
