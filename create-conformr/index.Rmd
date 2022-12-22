@@ -13,7 +13,7 @@ documentclass: book
 
 # Introduction
 
-**Note:** If you are working in RStudio, you can simply press "Knit" to render this bookdown (and open `_book/index.html` to see the result).  More generally, in a console you can run the following:
+**Note:** If you are working in RStudio, you can simply press "Knit" to render this bookdown (and open `_book/index.html` to see the result). More generally, in a console you can run the following:
 
 ```{r, eval = FALSE}
 litr::render("create-conformr/index.Rmd", output_format = litr::litr_gitbook())
@@ -24,6 +24,7 @@ litr::render("create-conformr/index.Rmd", output_format = litr::litr_gitbook())
 These functions are used to generate plots and other explanatory assets. They should not really live here.
 
 To convert a panel map into a Matrix
+
 ```{r doc-fnc-pm-to-mtx}
 # Convert an incidence table from long form to an incidence matrix
 inc_long_to_mtx <- function(inc_long, to, weights){
@@ -38,6 +39,7 @@ inc_long_to_mtx <- function(inc_long, to, weights){
 ```
 
 To plot an incidence matrix (without weights):
+
 ```{r doc-fnc-inc-long-plts}
 plt_inc_long_mtx <- function(inc_long, to, from, weights) {
   gg <- inc_long |>
@@ -58,11 +60,13 @@ plt_inc_long_mtx <- function(inc_long, to, from, weights) {
 ```
 
 To add labels for weights:
-```r
+
+``` r
 geom_text(data = dplyr::filter(inc_long, !is.na(weight)), aes(label=round(weight, 2)))
 ```
 
 To plot dataframe as ggplot "matrix":
+
 ```{r doc-fnc-plt-data-mtx}
 plt_df_mtx <- function(x, cols_from, row_names){
   x |>
@@ -82,9 +86,8 @@ plt_df_mtx <- function(x, cols_from, row_names){
 }
 ```
 
-
-
 To plot a sigmoid plot of a panel map:
+
 ```{r doc-fnc-plt-pm-sigmoid}
 library(ggbump)
 library(cowplot)
@@ -162,3 +165,4 @@ plt_uw <- df |>
 return(plt_uw)
 }
 ```
+

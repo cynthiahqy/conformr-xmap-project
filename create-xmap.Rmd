@@ -101,7 +101,7 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 
 [^2]: e.g. using data-driven mapping ([Wikipedia, no reference](https://en.wikipedia.org/wiki/Data_mapping))
 
-## S3 Class
+## S3 Class: xmap
 
 Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes):
 
