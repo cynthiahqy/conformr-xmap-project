@@ -21,9 +21,9 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9000",
+    Version = "0.0.0.9001",
     Title = "Extended Schema Crosswalks",
-    Description = "Provides a 'xmap' S3 class (the 'Cross Map') based on 'tbl_df' class for use in {conformr} package.",
+    Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df' class for use in {conformr} package.",
     `Authors@R` = person(
       given = "Cynthia",
       family = "Huang",
@@ -53,11 +53,11 @@ Crossmaps extends the standard Crosswalk format to explictly encode the weights 
 
 <!--# relation to graph & incidence matrix representation -->
 
-Crosswalked datasets are often visualised using Sankey flow diagrams. These diagrams hint at the fact that, when considered independently of the data they are applied to, crosswalks can be represented as directed (one-way/signed?) bipartite graphs. Recall that a bipartite graph must have two disjoint sets of nodes. The class elements of the source and target classifications naturally form two disjoint sets of nodes.
+Crosswalked datasets are often visualised using Sankey flow diagrams. These diagrams hint at the fact that, when considered independently of the data they are applied to, crosswalks can be represented as directed acyclic bipartite graphs. Recall that for a bipartite graph, the nodes $N$ can be subdivided into two disjoint sets ($N_1, N_2$), and links are only allowed between these two sets. The class elements of the source and target classifications naturally form two disjoint sets of nodes.
 
 <!--# INSERT image of crosswalk GRAPH (generate using ggxmap) -->
 
-Noting that crossmaps are essentially lateral crosswalks with weights attached to each relation, we find that crossmaps can be represented as weighted directed bipartite graphs. A crossmap fully captures all the information needed to "transition" or "translate" numeric and/or categorical data between the source and target classes (nodes).
+Noting that crossmaps are essentially lateral crosswalks with weights attached to each relation, we find that crossmaps can be represented as weighted acyclic bipartite digraphs. A crossmap fully captures all the information needed to "transition" or "translate" numeric and/or categorical data between the source and target classes (nodes).
 
 <!--# INSERT image of crossmap as graph (generate using ggxmap) -->
 
@@ -101,15 +101,112 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 
 [^2]: e.g. using data-driven mapping ([Wikipedia, no reference](https://en.wikipedia.org/wiki/Data_mapping))
 
+## Toy Example
+
+```{r ideal-xmap}
+## define some test data here
+
+
+```
+
 ## S3 Class: xmap
 
-Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes):
+Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
+
+### xmap properties
+
+-   has class attributes: `data.frame`, `xmap`
+-   has additional attributes named using graph terminology:
+    -   `src_nodes` source key/codes column
+
+    -   `tar_nodes` target codes/labels
+
+    -   `link_weights`
+-   has `ncol = 3`
 
 ### Constructor
 
+The low-level constructor has:
+
+-   one data argument (`x`) and,
+-   three descriptors (`from`, `to`, `weights`) which are stored as attributes
+
+```{r}
+#' Low Level Constructor for xmap
+new_xmap <- function(x = data.frame(), from, to, weights) {
+  stopifnot(is.data.frame(x))
+  stopifnot(is.character(from))
+  stopifnot(is.character(to))
+  stopifnot(is.character(weights))
+  
+  structure(x, 
+            class = "crossmap_xmap",
+            src_nodes = from,
+            tar_nodes = to,
+            link_weights = weights)
+}
+```
+
 ### Validator
 
-### Helper
+-   only works with data.frames (and subclasses)
+-   assumes:
+    -   source, target, weights columns are present, and other columns can be dropped
+-   checks for:
+    -   duplicate source-target rows (weights should be collapsed into a single row)
+
+    -   `NA` values in the weights column
+
+    -   `sum()` of values in weights column by source-code is `1` (or close..?)
+
+### Helpers
+
+#### User Friendly Constructor
+
+-   checks for:
+    -   existence of columns
+-   warns for:
+    -   dropping extra columns
+
+```{r}
+#' `xmap` data.frame
+#' 
+#' This creates a valid crossmap which can be used to map numeric values `from` a set of source nodes `to` a set of target nodes.
+#' 
+#' @param x
+#'  * For `xmap()`: A data.frame or data.frame-like object
+#'  * For `is_xmap()`: An object to test.
+#' @param from,to Columns in `.df` specifying the source and target nodes
+#' @param weights Column in `.df` specifying the weight applied to data passed along the directed link between source and target node
+#' 
+#' @return An `xmap` S3 object.
+#' 
+xmap <- function(x) {
+  ## coercions
+  
+  ## construction
+  
+  ## validation
+}
+```
+
+#### Class Test
+
+```{r}
+#' @export
+#' @rdname xmap
+is_xmap <- function(x) {
+  inherits(x, "crossmap_xmap")
+}
+```
+
+## S3 Methods
+
+### print.xmap()
+
+Can I make it print like:
+
+    src_node -- weights --> target_node
 
 ## Package Creation
 
