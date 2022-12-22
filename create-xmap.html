@@ -361,16 +361,16 @@ package</h1>
 <!-- This Rmd file contains all the code needed to define an R package.  Press "Knit" in RStudio or more generally run `litr::render("name-of-this-file.Rmd")` to generate the R package.  Remember that when you want to modify anything about the R package, you should modify this document rather than the package that is outputted.
 -->
 <div id="package-setup" class="section level2">
-<h2>Package setup</h2>
-<p>We start by specifying the information needed in the DESCRIPTION file
-of the R package.</p>
+<h2>Package Setup</h2>
+<div id="description-file" class="section level3">
+<h3>DESCRIPTION file</h3>
 <pre class="r"><code>usethis::create_package(
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9000&quot;,
+    Version = &quot;0.0.0.9001&quot;,
     Title = &quot;Extended Schema Crosswalks&quot;,
-    Description = &quot;Provides a &#39;xmap&#39; S3 class (the &#39;Cross Map&#39;) based on &#39;tbl_df&#39; class for use in {conformr} package.&quot;,
+    Description = &quot;Provides a &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) based on &#39;tbl_df&#39; class for use in {conformr} package.&quot;,
     `Authors@R` = person(
       given = &quot;Cynthia&quot;,
       family = &quot;Huang&quot;,
@@ -380,6 +380,7 @@ of the R package.</p>
   )
 )
 usethis::use_mit_license(copyright_holder = &quot;C. Huang&quot;)</code></pre>
+</div>
 </div>
 <div id="package-design-notes" class="section level2">
 <h2>Package Design Notes</h2>
@@ -408,13 +409,16 @@ source (initial) scheme into class elements in target scheme.</p>
 <p>Crosswalked datasets are often visualised using Sankey flow diagrams.
 These diagrams hint at the fact that, when considered independently of
 the data they are applied to, crosswalks can be represented as directed
-(one-way/signed?) bipartite graphs. Recall that a bipartite graph must
-have two disjoint sets of nodes. The class elements of the source and
-target classifications naturally form two disjoint sets of nodes.</p>
+acyclic bipartite graphs. Recall that for a bipartite graph, the nodes
+<span class="math inline">\(N\)</span> can be subdivided into two
+disjoint sets (<span class="math inline">\(N_1, N_2\)</span>), and links
+are only allowed between these two sets. The class elements of the
+source and target classifications naturally form two disjoint sets of
+nodes.</p>
 <!--# INSERT image of crosswalk GRAPH (generate using ggxmap) -->
 <p>Noting that crossmaps are essentially lateral crosswalks with weights
 attached to each relation, we find that crossmaps can be represented as
-weighted directed bipartite graphs. A crossmap fully captures all the
+weighted acyclic bipartite digraphs. A crossmap fully captures all the
 information needed to “transition” or “translate” numeric and/or
 categorical data between the source and target classes (nodes).</p>
 <!--# INSERT image of crossmap as graph (generate using ggxmap) -->
@@ -477,20 +481,125 @@ mappings, and can enable tractable experimentation with different
 processes for generating mappings<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> and conducting sensitivity analysis.</p>
 </div>
 </div>
-<div id="functions" class="section level2">
-<h2>Functions</h2>
+<div id="toy-example" class="section level2">
+<h2>Toy Example</h2>
+<pre class="r"><code>## define some test data here
+
+</code></pre>
+</div>
+<div id="s3-class-xmap" class="section level2">
+<h2>S3 Class: xmap</h2>
+<p>Follow the advice given in <a href="https://adv-r.hadley.nz/s3.html#s3-classes">13.3 of Advanced R</a>
+&amp; Tidyverse Design Guide</p>
+<div id="xmap-properties" class="section level3">
+<h3>xmap properties</h3>
+<ul>
+<li>has class attributes: <code>data.frame</code>,
+<code>xmap</code></li>
+<li>has additional attributes named using graph terminology:
+<ul>
+<li><p><code>src_nodes</code> source key/codes column</p></li>
+<li><p><code>tar_nodes</code> target codes/labels</p></li>
+<li><p><code>link_weights</code></p></li>
+</ul></li>
+<li>has <code>ncol = 3</code></li>
+</ul>
+</div>
 <div id="constructor" class="section level3">
 <h3>Constructor</h3>
+<p>The low-level constructor has:</p>
+<ul>
+<li>one data argument (<code>x</code>) and,</li>
+<li>three descriptors (<code>from</code>, <code>to</code>,
+<code>weights</code>) which are stored as attributes</li>
+</ul>
+<pre class="r"><code>#&#39; Low Level Constructor for xmap
+<span id='new_xmap'>new_xmap</span> &lt;- function(x = data.frame(), from, to, weights) {
+  stopifnot(is.data.frame(x))
+  stopifnot(is.character(from))
+  stopifnot(is.character(to))
+  stopifnot(is.character(weights))
+  
+  structure(x, 
+            class = &quot;crossmap_xmap&quot;,
+            src_nodes = from,
+            tar_nodes = to,
+            link_weights = weights)
+}</code></pre>
 </div>
 <div id="validator" class="section level3">
 <h3>Validator</h3>
+<ul>
+<li>only works with data.frames (and subclasses)</li>
+<li>assumes:
+<ul>
+<li>source, target, weights columns are present, and other columns can
+be dropped</li>
+</ul></li>
+<li>checks for:
+<ul>
+<li><p>duplicate source-target rows (weights should be collapsed into a
+single row)</p></li>
+<li><p><code>NA</code> values in the weights column</p></li>
+<li><p><code>sum()</code> of values in weights column by source-code is
+<code>1</code> (or close..?)</p></li>
+</ul></li>
+</ul>
 </div>
-<div id="helper" class="section level3">
-<h3>Helper</h3>
+<div id="helpers" class="section level3">
+<h3>Helpers</h3>
+<div id="user-friendly-constructor" class="section level4">
+<h4>User Friendly Constructor</h4>
+<ul>
+<li>checks for:
+<ul>
+<li>existence of columns</li>
+</ul></li>
+<li>warns for:
+<ul>
+<li>dropping extra columns</li>
+</ul></li>
+</ul>
+<pre class="r"><code>#&#39; `xmap` data.frame
+#&#39; 
+#&#39; This creates a valid crossmap which can be used to map numeric values `from` a set of source nodes `to` a set of target nodes.
+#&#39; 
+#&#39; @param x
+#&#39;  * For `<a href='create-xmap.html#xmap'>xmap</a>()`: A data.frame or data.frame-like object
+#&#39;  * For `<a href='create-xmap.html#is_xmap'>is_xmap</a>()`: An object to test.
+#&#39; @param from,to Columns in `.df` specifying the source and target nodes
+#&#39; @param weights Column in `.df` specifying the weight applied to data passed along the directed link between source and target node
+#&#39; 
+#&#39; @return An `xmap` S3 object.
+#&#39; 
+<span id='xmap'>xmap</span> &lt;- function(x) {
+  ## coercions
+  
+  ## construction
+  
+  ## validation
+}</code></pre>
+</div>
+<div id="class-test" class="section level4">
+<h4>Class Test</h4>
+<pre class="r"><code>#&#39; @export
+#&#39; @rdname xmap
+<span id='is_xmap'>is_xmap</span> &lt;- function(x) {
+  inherits(x, &quot;crossmap_xmap&quot;)
+}</code></pre>
 </div>
 </div>
-<div id="package-creation-documentation-and-build" class="section level2">
-<h2>Package Creation, Documentation and Build</h2>
+</div>
+<div id="s3-methods" class="section level2">
+<h2>S3 Methods</h2>
+<div id="print.xmap" class="section level3">
+<h3>print.<a href='create-xmap.html#xmap'>xmap</a>()</h3>
+<p>Can I make it print like:</p>
+<pre><code>src_node -- weights --&gt; target_node</code></pre>
+</div>
+</div>
+<div id="package-creation" class="section level2">
+<h2>Package Creation</h2>
 <p>We finish by running commands that will document, build, and install
 the package. It may also be a good idea to check the package from within
 this file.</p>
@@ -500,7 +609,10 @@ litr::document() # &lt;-- use instead of devtools::document()
 # devtools::install()
 # devtools::check(document = FALSE)</code></pre>
 <pre><code>## ℹ Updating xmap documentation
-## ℹ Loading xmap</code></pre>
+## ℹ Loading xmap
+## Writing &#39;]8;;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/NAMESPACENAMESPACE]8;;&#39;
+## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;is_xmap&#39;)xmap.Rd]8;;&#39;
+## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap&#39;)new_xmap.Rd]8;;&#39;</code></pre>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />
