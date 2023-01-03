@@ -21,7 +21,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9002",
+    Version = "0.0.0.9003",
     Title = "Extended Schema Crosswalks",
     Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df' class for use in {conformr} package.",
     `Authors@R` = person(
@@ -33,6 +33,12 @@ usethis::create_package(
   )
 )
 usethis::use_mit_license(copyright_holder = "C. Huang")
+```
+
+### Dependencies
+
+```{r}
+usethis::use_package("rlang")
 ```
 
 ## Package Design Notes
@@ -143,11 +149,12 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
   stopifnot(is.character(to))
   stopifnot(is.character(weights))
   
+  class(x) <- append("xmap_xmap", class(x))
+
   structure(x, 
-            class = "crossmap_xmap",
-            src_nodes = from,
-            tar_nodes = to,
-            link_weights = weights)
+            src_node = from,
+            tar_node = to,
+            link_weight = weights)
 }
 ```
 
@@ -155,7 +162,6 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
 
 -   order checks from cheapest to most expensive
 -   validates data.frame element types:
-    -   source, target, weights columns are present, and other columns can be dropped
     -   source/target columns are / can be coerced into factors
     -   weights is numeric
 -   checks for:
@@ -179,14 +185,38 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
 #'
 #' @examples
 validate_xmap <- function(x){
-  x <- unclass(x)
+  xmap <- data.frame(x) # unclass(x)
+  src_col <- attr(x, "src_node")
+  tar_col <- attr(x, "tar_node")
+  weight_col <- attr(x, "link_weight")
   
-  ## type validation
+  ## dimension check
+  if (ncol(xmap) != 3) {
+    rlang::abort(
+      message = "`x` must only have the three columns: from, to, weights",
+      class = "xmap_ncol"
+    )
+  }
   
   ## duplication and missingness checks
   
   ## complete weight check
 }
+```
+
+#### Tests
+
+```{r}
+testthat::test_that(
+  "validate_xmap() rejects df with too few/many columns",
+  {
+    big_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 4))
+    little_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 2))
+
+    testthat::expect_error(validate_xmap(big_x), class = "xmap_ncol")
+    testthat::expect_error(validate_xmap(little_x), class = "xmap_ncol")
+  }
+)
 ```
 
 ### Helpers
@@ -196,7 +226,7 @@ validate_xmap <- function(x){
 -   checks for:
     -   existence of columns
 -   warns for:
-    -   dropping extra columns
+    -   dropping extra columns (anything other than `from`, `to`, `weights`)
 -   throws errors for:
     -   any validation failures
 
