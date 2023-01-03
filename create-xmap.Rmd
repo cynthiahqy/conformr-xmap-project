@@ -111,7 +111,7 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 
 ```
 
-## S3 Class: xmap
+## Class: Crossmap
 
 Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
 
@@ -159,11 +159,15 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
     -   source/target columns are / can be coerced into factors
     -   weights is numeric
 -   checks for:
-    -   duplicate source-target rows (weights should be collapsed into a single row)
+    -   A: duplicate source-target rows (weights should be collapsed into a single row)
 
-    -   `NA` values in the weights column
+    -   B: `NA` values in the weights column
 
-    -   `sum()` of values in weights column by source-code is `1` (or close..?)
+        -   precondition for C, independent of A
+
+    -   C: `sum()` of values in weights column by source-code is `1` (or close..?)
+
+        -   will also fail if B fails, but not if A fails.
 
 ```{r}
 #' A Validator for `xmap` objects
@@ -227,6 +231,10 @@ is_xmap <- function(x) {
   inherits(x, "crossmap_xmap")
 }
 ```
+
+## Class: Grouped Crossmap
+
+A grouped variant of `xmap` is needed to facilitate multi-map workflows. However, it is not obvious how such a class should be implemented. Any implemented experiments should go here, otherwise discussion lives in this [GitHub Issue](https://github.com/cynthiahqy/conformr-project/issues/53).
 
 ## S3 Methods
 
