@@ -114,7 +114,14 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 ```{r ideal-xmap}
 ## define some test data here
 
+input_df <- tibble::tribble(~node_A, ~node_B, ~w_AB,
+                           "A1", "B01", 1,
+                           "A2", "B02", 1,
+                           "A3", "B02", 1,
+                           "A4", "B03", 0.25,
+                           "A4", "B04", 0.75)
 
+int_dat <- list("input_df" = input_df)
 ```
 
 ## Class: Crossmap
@@ -149,7 +156,7 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
   stopifnot(is.character(to))
   stopifnot(is.character(weights))
   
-  class(x) <- append("xmap_xmap", class(x))
+  class(x) <- append("xmap_df", class(x))
 
   structure(x, 
             src_node = from,
@@ -189,6 +196,7 @@ validate_xmap <- function(x){
   src_col <- attr(x, "src_node")
   tar_col <- attr(x, "tar_node")
   weight_col <- attr(x, "link_weight")
+  col_attrs <- c(src_col, tar_col, weight_col)
   
   ## dimension check
   if (ncol(xmap) != 3) {
@@ -197,7 +205,17 @@ validate_xmap <- function(x){
       class = "xmap_ncol"
     )
   }
-  
+
+  ## cols present
+  if (length(setdiff(names(xmap), col_attrs)) != 0){
+    rlang::abort(
+      message = "`src_node`, `tar_node` or `link_weight` column not found in `x`.",
+      class = "xmap_col_not_found"
+    )
+  }
+
+  ## type validation
+
   ## duplication and missingness checks
   
   ## complete weight check
@@ -215,6 +233,18 @@ testthat::test_that(
 
     testthat::expect_error(validate_xmap(big_x), class = "xmap_ncol")
     testthat::expect_error(validate_xmap(little_x), class = "xmap_ncol")
+  }
+)
+
+testthat::test_that(
+  "validate_xmap() rejects df if named columns are not found",
+  {
+    x <- new_xmap(int_dat$input_df,
+                  from = "wrong_name",
+                  to = "node_B",
+                  weights = "w_AB")
+    testthat::expect_error(validate_xmap(x),
+                           class = "xmap_col_not_found")
   }
 )
 ```
@@ -284,4 +314,10 @@ litr::document() # <-- use instead of devtools::document()
 # devtools::build()
 # devtools::install()
 # devtools::check(document = FALSE)
+```
+
+Write internal data to package:
+
+```{r}
+usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 ```
