@@ -122,6 +122,8 @@ input_df <- tibble::tribble(~node_A, ~node_B, ~w_AB,
                            "A4", "B04", 0.75)
 
 int_dat <- list("input_df" = input_df)
+
+usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 ```
 
 ## Class: Crossmap
@@ -314,10 +316,4 @@ litr::document() # <-- use instead of devtools::document()
 # devtools::build()
 # devtools::install()
 # devtools::check(document = FALSE)
-```
-
-Write internal data to package:
-
-```{r}
-usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 ```

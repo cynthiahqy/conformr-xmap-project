@@ -7,9 +7,10 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
   stopifnot(is.character(to))
   stopifnot(is.character(weights))
   
+  class(x) <- append("xmap_df", class(x))
+
   structure(x, 
-            class = "crossmap_xmap",
-            src_nodes = from,
-            tar_nodes = to,
-            link_weights = weights)
+            src_node = from,
+            tar_node = to,
+            link_weight = weights)
 }
