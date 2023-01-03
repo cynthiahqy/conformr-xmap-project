@@ -172,7 +172,7 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
 -   order checks from cheapest to most expensive
 -   validates data.frame element types:
     -   source/target columns are / can be coerced into factors
-    -   weights is numeric
+    -   weights is `numeric`
 -   checks for:
     -   A: duplicate source-target rows (weights should be collapsed into a single row)
 
@@ -183,6 +183,10 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
     -   C: `sum()` of values in weights column by source-code is `1` (or close..?)
 
         -   will also fail if B fails, but not if A fails.
+
+#### Validation Helpers
+
+#### Master Validator
 
 ```{r}
 #' A Validator for `xmap` objects
@@ -217,9 +221,15 @@ validate_xmap <- function(x){
   }
 
   ## type validation
+  if (!is.numeric(xmap[, weight_col])) {
+    rlang::abort(
+      message = "`link_weight` should be numeric",
+      class = "xmap_col_type"
+    )
+  }
 
   ## duplication and missingness checks
-  
+
   ## complete weight check
 }
 ```
@@ -227,6 +237,7 @@ validate_xmap <- function(x){
 #### Tests
 
 ```{r}
+## dimension check
 testthat::test_that(
   "validate_xmap() rejects df with too few/many columns",
   {
@@ -238,6 +249,7 @@ testthat::test_that(
   }
 )
 
+## columns present
 testthat::test_that(
   "validate_xmap() rejects df if named columns are not found",
   {
@@ -247,6 +259,20 @@ testthat::test_that(
                   weights = "w_AB")
     testthat::expect_error(validate_xmap(x),
                            class = "xmap_col_not_found")
+  }
+)
+
+## column type
+testthat::test_that(
+  "validate_map() rejects non-numeric weight columns",
+  {
+    x <- new_xmap(int_dat$input_df,
+                  from = "node_A",
+                  to = "node_B",
+                  weights = "w_AB") |>
+      dplyr::mutate(w_AB = as.character(w_AB))
+    testthat::expect_error(validate_xmap(x),
+                           class = "xmap_col_type")
   }
 )
 ```
@@ -259,6 +285,7 @@ testthat::test_that(
     -   existence of columns
 -   warns for:
     -   dropping extra columns (anything other than `from`, `to`, `weights`)
+    -   coercing `from` and `to` columns into factor
 -   throws errors for:
     -   any validation failures
 
