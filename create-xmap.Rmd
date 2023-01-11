@@ -284,7 +284,14 @@ validate_xmap <- function(x){
 testthat::test_that(
   "validate_xmap() accepts well-formed xmaps",
   {
-    
+    df <- tibble::tribble(~node_A, ~node_B, ~w_AB,
+                           "A1", "B01", 1,
+                           "A2", "B02", 1,
+                           "A3", "B02", 1,
+                           "A4", "B03", 0.25,
+                           "A4", "B04", 0.75)
+    x <- new_xmap(df, from = "node_A", to = "node_B", weights = "w_AB")
+    testthat::expect_invisible(validate_xmap(x))
   }
 )
 ```
