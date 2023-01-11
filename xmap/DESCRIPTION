@@ -1,20 +1,21 @@
 Package: xmap
 Title: Extended Schema Crosswalks
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: 
     person("Cynthia", "Huang", , "cynthiahqy@gmail.com", role = c("aut", "cre"))
 Description: Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df'
     class for use in {conformr} package.
 License: MIT + file LICENSE
+Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
 Imports: 
+    cli,
     rlang
 Depends: 
     R (>= 2.10)
 Suggests: 
     testthat (>= 3.0.0)
-Config/testthat/edition: 3
 LitrVersionUsed: 0.6.0
-LitrId: 6fb5ee75bc20e64d90c8185ca02138b6
+LitrId: f0a617e6c089267a4becd59793bbee83
