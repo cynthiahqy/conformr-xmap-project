@@ -231,6 +231,55 @@ testthat::test_that(
 
 ### Validation Helpers
 
+#### No missing values
+
+```{r}
+#' df has no missing values
+#' 
+has_no_NA <- function(df){
+  !anyNA(df)
+}
+```
+
+#### No Duplicate Node Pairs
+
+```{r}
+#' df has no duplicate links
+has_no_dup_links <- function(df, from, to){
+  links <- df[c(from, to)]
+  dup_idx <- anyDuplicated(links)
+
+  !as.logical(dup_idx)
+}
+```
+
+#### Complete Mapping Weights
+
+```{r fnc-flag-weights}
+#' df has complete weights
+#'
+has_complete_weights <- function(df, from, weights){
+  sum_w <- tapply(df[[weights]], df[[from]], sum, simplify = TRUE)
+
+  all(sum_w == 1)
+}
+```
+
+interactive checks:
+
+```{r}
+df <- tibble::tribble(~from, ~to, ~weights,
+                           "A1", "B01", 1,
+                           "A2", "B02", 1,
+                           "A3", "B02", 1,
+                           "A4", "B03", 0.67,
+                           "A4", "B04", 0.33)
+
+has_no_NA(df)
+has_no_dup_links(df, "from", "to")
+has_complete_weights(df, "from", "weights")
+```
+
 ### Master Validator
 
 ```{r xmap-validator}
