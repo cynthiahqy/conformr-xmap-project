@@ -29,7 +29,8 @@ usethis::create_package(
       family = "Huang",
       email = "cynthiahqy@gmail.com",
       role = c("aut", "cre")
-      )
+      ),
+    `Config/testthat/edition` = 3
   )
 )
 usethis::use_mit_license(copyright_holder = "C. Huang")
@@ -147,24 +148,45 @@ The low-level constructor has:
 
 -   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
 -   three descriptors (`from`, `to`, `weights`) which are stored as attributes, accepts character strings only.
+-   one vector argument (`from_set`) of type character
 
-Only checks base object and attribute types.
+It does the following:
+
+-   checks base object and attribute types.
 
 ```{r}
 #' Low Level Constructor for xmap
-new_xmap <- function(x = data.frame(), from, to, weights) {
+new_xmap <- function(x = data.frame(), from, to, weights, from_set) {
   stopifnot(is.data.frame(x))
-  stopifnot(is.character(from))
-  stopifnot(is.character(to))
-  stopifnot(is.character(weights))
+  stopifnot(length(from) == 1 && is.character(from))
+  stopifnot(length(to) == 1 && is.character(to))
+  stopifnot(length(weights) == 1 && is.character(weights))
+  stopifnot(is.vector(from_set, mode = "character"))
   
   class(x) <- append("xmap_df", class(x))
 
   structure(x, 
-            src_node = from,
-            tar_node = to,
-            link_weight = weights)
+            col_from = from,
+            col_to = to,
+            col_weights = weights,
+            from_set = from_set)
 }
+```
+
+#### Tests
+
+```{r}
+testthat::test_that(
+  "new_xmap() rejects incorrect object types",
+  {
+    testthat::local_edition(3)
+    testthat::expect_snapshot(error = TRUE, new_xmap(x = "not a data.frame"))
+    testthat::expect_snapshot(error = TRUE, new_xmap(from = 33))
+    testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = expression(5 + 9)))
+    testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = "char", weights = c("dsf", "3925")))
+    testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = "char", weights = "ch", from_set = c(4, 45)))
+  }
+)
 ```
 
 ### Validation
