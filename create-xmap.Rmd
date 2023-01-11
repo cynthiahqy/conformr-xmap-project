@@ -140,33 +140,38 @@ Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#
     -   `col_to` target codes/labels
     -   `col_weights`
     -   `from_set`
--   has exactly `3` columns
+-   has exactly non-empty `3` columns.
 
 ### Constructor
 
-The low-level constructor has:
+The low-level constructor takes in:
 
 -   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
--   three descriptors (`from`, `to`, `weights`) which are stored as attributes, accepts character strings only.
+-   three descriptor arguments (`from`, `to`, `weights`) which are stored as attributes, and must be character strings only.
 
 It does the following:
 
 -   checks base object and attribute types.
+-   checks column type restrictions. `from` should be coercible into character (from factor, numeric etc.), and `weights` should be numeric. This is also an implicit check that the columns `from` and `weights` exist in `x`.
 -   naively generates the `from_set` of unique `from` values
 -   returns an S3 object with the class `xmap_df`
 
 ```{r}
 #' Low Level Constructor for xmap
 new_xmap <- function(x = data.frame(), from, to, weights) {
+  ## argument type checks
   stopifnot(is.data.frame(x))
   stopifnot(length(from) == 1 && is.character(from))
   stopifnot(length(to) == 1 && is.character(to))
   stopifnot(length(weights) == 1 && is.character(weights))
   
-  class(x) <- append("xmap_df", class(x))
-
+  ## column type checks
   from_set <- unique(x[[from]])
+  stopifnot(is.vector(from_set, mode = "character"))
+  stopifnot(is.vector(x[[weights]], mode = "numeric"))
 
+  ## class constructor
+  class(x) <- append("xmap_df", class(x))
   structure(x, 
             col_from = from,
             col_to = to,
@@ -179,15 +184,18 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
 
 ```{r}
 testthat::test_that(
-  "new_xmap() works as expected",
+  "new_xmap() accepts arbitrary data.frames with correct from argument",
   {
-    xmap <- new_xmap(x = int_dat$input_df, from = "node_A", to = "node_B", weights = "w_AB")
+    df <- data.frame(x = letters[1:5],
+                     y = 1:5,
+                     z = runif(5))
+    xmap <- new_xmap(x = df, from = "x", to = "y", weights = "z")
     xmap_attrs <- attributes(xmap)
     testthat::expect_s3_class(xmap, "xmap_df")
-    testthat::expect_identical(xmap_attrs$col_from, "node_A")
-    testthat::expect_identical(xmap_attrs$col_to, "node_B")
-    testthat::expect_identical(xmap_attrs$col_weights, "w_AB")
-    testthat::expect_identical(xmap_attrs$from_set, unique(int_dat$input_df$node_A))
+    testthat::expect_identical(xmap_attrs$col_from, "x")
+    testthat::expect_identical(xmap_attrs$col_to, "y")
+    testthat::expect_identical(xmap_attrs$col_weights, "z")
+    testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )
 
@@ -263,9 +271,6 @@ validate_xmap <- function(x){
     )
   }
 
-  ## from_set validation
-  # stopifnot(is.vector(from_set, mode = "character"))
-
   ## duplication and missingness checks
 
   ## complete weight check
@@ -273,6 +278,15 @@ validate_xmap <- function(x){
 ```
 
 #### Tests
+
+```{r}
+testthat::test_that(
+  "validate_xmap() accepts well-formed xmaps",
+  {
+    
+  }
+)
+```
 
 ```{r}
 ## dimension check
@@ -292,8 +306,8 @@ testthat::test_that(
   "validate_xmap() rejects missing columns",
   {
     x <- new_xmap(int_dat$input_df,
-                  from = "wrong_name",
-                  to = "node_B",
+                  from = "node_A",
+                  to = "missing",
                   weights = "w_AB")
     testthat::expect_error(validate_xmap(x),
                            class = "xmap_col_not_found")
