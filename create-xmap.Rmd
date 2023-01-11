@@ -161,6 +161,7 @@ It does the following:
 new_xmap <- function(x = data.frame(), from, to, weights) {
   ## argument type checks
   stopifnot(is.data.frame(x))
+  stopifnot(ncol(x) == 3)
   stopifnot(length(from) == 1 && is.character(from))
   stopifnot(length(to) == 1 && is.character(to))
   stopifnot(length(weights) == 1 && is.character(weights))
