@@ -116,7 +116,7 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 ```{r ideal-xmap}
 ## define some test data here
 
-input_df <- tibble::tribble(~node_A, ~node_B, ~w_AB,
+input_df <- tibble::tribble(~from, ~to, ~weights,
                            "A1", "B01", 1,
                            "A2", "B02", 1,
                            "A3", "B02", 1,
@@ -317,9 +317,9 @@ testthat::test_that(
   "validate_xmap() rejects missing columns",
   {
     x <- new_xmap(int_dat$input_df,
-                  from = "node_A",
-                  to = "missing",
-                  weights = "w_AB")
+                  from = "from",
+                  to = "missing_col",
+                  weights = "weights")
     testthat::expect_error(validate_xmap(x),
                            class = "xmap_col_not_found")
   }
@@ -330,10 +330,10 @@ testthat::test_that(
   "validate_xmap() rejects non-numeric weight columns",
   {
     x <- new_xmap(int_dat$input_df,
-                  from = "node_A",
-                  to = "node_B",
-                  weights = "w_AB") |>
-      dplyr::mutate(w_AB = as.character(w_AB))
+                  from = "from",
+                  to = "to",
+                  weights = "weights") |>
+      dplyr::mutate(weights = as.character(weights))
     testthat::expect_error(validate_xmap(x),
                            class = "xmap_col_type")
   }
