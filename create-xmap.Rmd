@@ -265,19 +265,23 @@ has_complete_weights <- function(df, from, weights){
 }
 ```
 
-interactive checks:
+#### Tests
 
 ```{r}
-df <- tibble::tribble(~from, ~to, ~weights,
+testthat::test_that(
+  "validation helpers work as expected",
+  {
+    df <- tibble::tribble(~from, ~to, ~weights,
                            "A1", "B01", 1,
                            "A2", "B02", 1,
                            "A3", "B02", 1,
                            "A4", "B03", 0.67,
                            "A4", "B04", 0.33)
-
-has_no_NA(df)
-has_no_dup_links(df, "from", "to")
-has_complete_weights(df, "from", "weights")
+    testthat::expect_true(has_no_NA(df))
+    testthat::expect_true(has_no_dup_links(df, "from", "to"))
+    testthat::expect_true(has_complete_weights(df, "from", "weights"))
+  }
+)
 ```
 
 ### Master Validator
