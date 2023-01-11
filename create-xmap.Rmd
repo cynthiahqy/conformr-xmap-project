@@ -40,6 +40,7 @@ usethis::use_mit_license(copyright_holder = "C. Huang")
 
 ```{r}
 usethis::use_package("rlang")
+usethis::use_package("cli")
 ```
 
 ## Package Design Notes
@@ -131,16 +132,15 @@ usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 
 Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
 
-### xmap properties
+### xmap_df properties
 
--   has class attributes: `data.frame`, `xmap`
+-   has class attributes: `data.frame`, `xmap_df`
 -   has additional attributes named using graph terminology:
-    -   `src_nodes` source key/codes column
-
-    -   `tar_nodes` target codes/labels
-
-    -   `link_weights`
--   has `ncol = 3`
+    -   `col_from` source key/codes column
+    -   `col_to` target codes/labels
+    -   `col_weights`
+    -   `from_set`
+-   has exactly `3` columns
 
 ### Constructor
 
@@ -148,22 +148,24 @@ The low-level constructor has:
 
 -   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
 -   three descriptors (`from`, `to`, `weights`) which are stored as attributes, accepts character strings only.
--   one vector argument (`from_set`) of type character
 
 It does the following:
 
 -   checks base object and attribute types.
+-   naively generates the `from_set` of unique `from` values
+-   returns an S3 object with the class `xmap_df`
 
 ```{r}
 #' Low Level Constructor for xmap
-new_xmap <- function(x = data.frame(), from, to, weights, from_set) {
+new_xmap <- function(x = data.frame(), from, to, weights) {
   stopifnot(is.data.frame(x))
   stopifnot(length(from) == 1 && is.character(from))
   stopifnot(length(to) == 1 && is.character(to))
   stopifnot(length(weights) == 1 && is.character(weights))
-  stopifnot(is.vector(from_set, mode = "character"))
   
   class(x) <- append("xmap_df", class(x))
+
+  from_set <- unique(x[[from]])
 
   structure(x, 
             col_from = from,
@@ -177,6 +179,19 @@ new_xmap <- function(x = data.frame(), from, to, weights, from_set) {
 
 ```{r}
 testthat::test_that(
+  "new_xmap() works as expected",
+  {
+    xmap <- new_xmap(x = int_dat$input_df, from = "node_A", to = "node_B", weights = "w_AB")
+    xmap_attrs <- attributes(xmap)
+    testthat::expect_s3_class(xmap, "xmap_df")
+    testthat::expect_identical(xmap_attrs$col_from, "node_A")
+    testthat::expect_identical(xmap_attrs$col_to, "node_B")
+    testthat::expect_identical(xmap_attrs$col_weights, "w_AB")
+    testthat::expect_identical(xmap_attrs$from_set, unique(int_dat$input_df$node_A))
+  }
+)
+
+testthat::test_that(
   "new_xmap() rejects incorrect object types",
   {
     testthat::local_edition(3)
@@ -184,7 +199,6 @@ testthat::test_that(
     testthat::expect_snapshot(error = TRUE, new_xmap(from = 33))
     testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = expression(5 + 9)))
     testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = "char", weights = c("dsf", "3925")))
-    testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = "char", weights = "ch", from_set = c(4, 45)))
   }
 )
 ```
