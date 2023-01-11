@@ -111,7 +111,7 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 
 [^2]: e.g. using data-driven mapping ([Wikipedia, no reference](https://en.wikipedia.org/wiki/Data_mapping))
 
-## Toy Example
+## Toy Examples
 
 ```{r ideal-xmap}
 ## define some test data here
@@ -128,11 +128,11 @@ int_dat <- list("input_df" = input_df)
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 ```
 
-## Class: Crossmap
+## Class Constructor
 
-Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
+Following the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
 
-### xmap_df properties
+### `xmap_df` properties
 
 -   has class attributes: `data.frame`, `xmap_df`
 -   has additional attributes named using graph terminology:
@@ -141,8 +141,6 @@ Follow the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#
     -   `col_weights`
     -   `from_set`
 -   has exactly non-empty `3` columns.
-
-### Constructor
 
 The low-level constructor takes in:
 
@@ -156,7 +154,7 @@ It does the following:
 -   naively generates the `from_set` of unique `from` values
 -   returns an S3 object with the class `xmap_df`
 
-```{r}
+```{r xmap-constructor}
 #' Low Level Constructor for xmap
 new_xmap <- function(x = data.frame(), from, to, weights) {
   ## argument type checks
@@ -181,9 +179,9 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
 }
 ```
 
-#### Tests
+Tests:
 
-```{r}
+```{r test-constructor-success}
 testthat::test_that(
   "new_xmap() accepts arbitrary data.frames with correct from argument",
   {
@@ -199,7 +197,9 @@ testthat::test_that(
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )
+```
 
+```{r test-constructor-snapshot}
 testthat::test_that(
   "new_xmap() rejects incorrect object types",
   {
@@ -212,7 +212,7 @@ testthat::test_that(
 )
 ```
 
-### Validation
+## Class Validation
 
 -   order checks from cheapest to most expensive
 -   validates data.frame element types:
@@ -229,11 +229,11 @@ testthat::test_that(
 
         -   will also fail if B fails, but not if A fails.
 
-#### Validation Helpers
+### Validation Helpers
 
-#### Master Validator
+### Master Validator
 
-```{r}
+```{r xmap-validator}
 #' A Validator for `xmap` objects
 #'
 #' @param x An `xmap` to be validated
@@ -247,6 +247,7 @@ validate_xmap <- function(x){
   xmap_attrs <- attributes(x)
   col_attrs <- simplify2array(xmap_attrs[startsWith(names(xmap_attrs), "col")])
   
+  ## ---- df attributes ----
   ## dimension check
   if (ncol(df) != 3) {
     rlang::abort(
@@ -272,15 +273,17 @@ validate_xmap <- function(x){
     )
   }
 
+  ## ---- xmap graph properties ----
+
   ## duplication and missingness checks
 
   ## complete weight check
 }
 ```
 
-#### Tests
+Tests go here:
 
-```{r}
+```{r test-validator-success}
 testthat::test_that(
   "validate_xmap() accepts well-formed xmaps",
   {
@@ -296,7 +299,7 @@ testthat::test_that(
 )
 ```
 
-```{r}
+```{r test-validator-malformed}
 ## dimension check
 testthat::test_that(
   "validate_xmap() rejects too few/many columns",
