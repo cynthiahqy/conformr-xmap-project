@@ -54,6 +54,7 @@ make_panel_map_equal <- make_pm_equal
 ```
 
 Use this helper on the concordance table defined above:
+
 ```{r use-make-pm-equal}
 make_pm_equal(codes_BA, std_A, std_B, "weights")
 ```
@@ -87,6 +88,7 @@ codes |>
 ```
 
 #### Tests
+
 ```{r testthat-make-pm-equal}
 testthat::test_that(
   "make_pm_equal() works",
@@ -113,21 +115,39 @@ testthat::test_that(
 
 ### Get Bad Weights (TBC)
 
-- Helper for errors in panel map weights
+-   Helper for errors in panel map weights
 
 ## Data Preparation for Concordance Transformation
 
 Things that are checked for:
 
-- missing values
-- `code_in` and `value_in` columns
+-   missing values
+-   `code_in` and `value_in` columns
 
 Probably good practice things, but too much hassle to check, so maybe put in vignette?
 
-- `data_in` should only have one row/obs per `code_in`,
-- ideally `data_in` has only the `code_in` and `values_in` columns... the rest get dropped (like with `dplyr::summarise()`)
+-   `data_in` should only have one row/obs per `code_in`,
+-   ideally `data_in` has only the `code_in` and `values_in` columns... the rest get dropped (like with `dplyr::summarise()`)
 
 # Workflows and Extensions
+
+## Related Nomenclature Variables
+
++-------------------------+:---------------------------------------------------------------:+:------------------------------------------------------:+
+|                         | **Same** Measure                                                | **Diff** Measure                                       |
++-------------------------+-----------------------------------------------------------------+--------------------------------------------------------+
+| **Same** Classification | **1: Already harmonised**                                       | **3: Distinct but related variables**                  |
+|                         |                                                                 |                                                        |
+|                         | Could be row-concatenated together                              | Share `xmap` `from_set`, but not necessarily `weights` |
+|                         |                                                                 |                                                        |
+|                         | Likely different observation units                              |                                                        |
++-------------------------+-----------------------------------------------------------------+--------------------------------------------------------+
+| **Diff** Classification | **2: Ex-post harmonisation**                                    | **4: Distinct variables**                              |
+|                         |                                                                 |                                                        |
+|                         | Related observational units (e.g same country, different years) | No harmonisation possible                              |
+|                         |                                                                 |                                                        |
+|                         | Data must be transformed before concatenation                   |                                                        |
++-------------------------+-----------------------------------------------------------------+--------------------------------------------------------+
 
 ## Multiple Transformations
 
@@ -160,14 +180,13 @@ pm_BA |> plt_pm_sigmoid(std_A, std_B, weight) +
   scale_fill_brewer(palette="RdPu", direction = -1)
 ```
 
-
 ## Custom Mapping Weights
 
 Mapping weights could be based on:
 
-- Reference data -- e.g. population share, past/future proportions
-- Domain expertise
-- ???
+-   Reference data -- e.g. population share, past/future proportions
+-   Domain expertise
+-   ???
 
 ### Manual Design and Encoding
 
