@@ -21,7 +21,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9005",
+    Version = "0.0.0.9006",
     Title = "Extended Schema Crosswalks",
     Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df' class for use in {conformr} package.",
     `Authors@R` = person(
@@ -533,19 +533,21 @@ is_xmap <- function(x) {
 }
 ```
 
-## Class: Grouped Crossmap
+## Enhancements (Planned)
+
+### Class: Grouped Crossmap
 
 A grouped variant of `xmap` is needed to facilitate multi-map workflows. However, it is not obvious how such a class should be implemented. Any implemented experiments should go here, otherwise discussion lives in this [GitHub Issue](https://github.com/cynthiahqy/conformr-project/issues/53).
 
-## S3 Methods
+### S3 Methods
 
-### print.xmap()
+See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
 
-Can I make it print like?
+#### print.xmap()
 
-    src_node -- weights --> target_node
+#### plot.xmap()
 
-## Package Creation
+### Package Creation
 
 We finish by running commands that will document, build, and install the package. It may also be a good idea to check the package from within this file.
 
