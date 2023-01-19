@@ -1,6 +1,6 @@
 Package: xmap
 Title: Extended Schema Crosswalks
-Version: 0.0.0.9005
+Version: 0.0.0.9006
 Authors@R: 
     person("Cynthia", "Huang", , "cynthiahqy@gmail.com", role = c("aut", "cre"))
 Description: Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df'
@@ -18,4 +18,4 @@ Depends:
 Suggests: 
     testthat (>= 3.0.0)
 LitrVersionUsed: 0.6.0
-LitrId: c5ac47a7543666ebacd0ad6614c06d1b
+LitrId: 80986e72a177e945a65ea1271bbe5076

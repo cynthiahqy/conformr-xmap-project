@@ -8,7 +8,7 @@ new_xmap <- function(x = data.frame(), from, to, weights) {
   stopifnot(length(from) == 1 && is.character(from))
   stopifnot(length(to) == 1 && is.character(to))
   stopifnot(length(weights) == 1 && is.character(weights))
-  
+
   ## column type checks
   from_set <- unique(x[[from]])
   stopifnot(is.vector(from_set, mode = "character"))   ## validate 

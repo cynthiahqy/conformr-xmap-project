@@ -7,7 +7,6 @@
 #' @return `x` if validation passes. Throws error otherwise.
 #' @export
 #'
-#' @examples
 validate_xmap <- function(x){
   df <- data.frame(x) # unclass(x)
   x_attrs <- attributes(x)
