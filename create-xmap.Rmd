@@ -254,7 +254,7 @@ testthat::test_that(
 
 ### Validation Helpers
 
-#### No missing values
+#### No Missing values
 
 ```{r}
 #' df has no missing values
@@ -264,7 +264,7 @@ has_no_NA <- function(df){
 }
 ```
 
-#### No Duplicate Node Pairs
+#### No Duplicate Node Pairs (links)
 
 ```{r}
 #' df has no duplicate links
@@ -512,6 +512,7 @@ testthat::test_that(
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #' 
 #' @return A crossmap `xmap_df` S3 object.
+#' @export
 #' 
 #' @examples
 #' # For a well formed crossmap:
@@ -556,7 +557,7 @@ as_xmap <- function(x, from, to, weights) {
 
 ```{r}
 #' @export
-#' @rdname xmap
+#' @rdname as_xmap
 is_xmap <- function(x) {
   inherits(x, "crossmap_xmap")
 }
@@ -583,6 +584,7 @@ We finish by running commands that will document, build, and install the package
 ```{r}
 rm(list = ls())
 litr::document() # <-- use instead of devtools::document()
+devtools::run_examples()
 # devtools::build()
 # devtools::install()
 # devtools::check(document = FALSE)
