@@ -43,7 +43,7 @@ usethis::use_package("rlang")
 usethis::use_package("cli")
 ```
 
-## Package Design Notes
+## Package Concepts
 
 ### Crossmap and Crosswalk tables
 
@@ -111,7 +111,29 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 
 [^2]: e.g. using data-driven mapping ([Wikipedia, no reference](https://en.wikipedia.org/wiki/Data_mapping))
 
-## Toy Examples
+## Package Design Notes
+
+### Reference Index
+
+Draft [pkgdown function reference](https://pkgdown.r-lib.org/articles/pkgdown.html#reference) to be placed in `_pkgdown.yml`
+
+``` yml
+reference:
+- title: "Overview"
+  - "xmap-package"
+  - "xmap_df-class"
+- title: "Creation and Coercion"
+  desc: >
+    Functions for constructing a `xmap_df`.
+  - xmap
+  - as_xmap
+- title: "Helpers and Validation"
+  - new_xmap
+  - validate_xmap
+  - starts_with("has", internal = TRUE)
+```
+
+### Toy Examples
 
 ```{r ideal-xmap}
 ## define some test data here
