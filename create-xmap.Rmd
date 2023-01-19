@@ -159,15 +159,15 @@ It does the following:
 new_xmap <- function(x = data.frame(), from, to, weights) {
   ## argument type checks
   stopifnot(is.data.frame(x))
-  stopifnot(ncol(x) == 3)
+  stopifnot(ncol(x) == 3) ## validate
   stopifnot(length(from) == 1 && is.character(from))
   stopifnot(length(to) == 1 && is.character(to))
   stopifnot(length(weights) == 1 && is.character(weights))
   
   ## column type checks
   from_set <- unique(x[[from]])
-  stopifnot(is.vector(from_set, mode = "character"))
-  stopifnot(is.vector(x[[weights]], mode = "numeric"))
+  stopifnot(is.vector(from_set, mode = "character"))   ## validate 
+  stopifnot(is.vector(x[[weights]], mode = "numeric")) ## validate
 
   ## class constructor
   class(x) <- append("xmap_df", class(x))
@@ -269,7 +269,7 @@ has_complete_weights <- function(df, from, weights){
 
 ```{r}
 testthat::test_that(
-  "validation helpers work as expected",
+  "xmap validation helpers work as expected on valid df",
   {
     df <- tibble::tribble(~from, ~to, ~weights,
                            "A1", "B01", 1,
@@ -280,6 +280,20 @@ testthat::test_that(
     testthat::expect_true(has_no_NA(df))
     testthat::expect_true(has_no_dup_links(df, "from", "to"))
     testthat::expect_true(has_complete_weights(df, "from", "weights"))
+  }
+)
+
+testthat::test_that(
+  "xmap validation helpers catch invalid df",
+  {
+    df <- tibble::tribble(~from, ~to, ~weights,
+                          "A1", "B01", 1,
+                          "A2", "B02", 0.3,
+                          "A2", "B02", 0.5)
+    testthat::expect_false(has_complete_weights(df, "from", "weights"))
+    testthat::expect_false(has_no_dup_links(df, "from", "to"))
+    df <- tibble::add_row(df, from = "A3", to = NA, weights = NA)
+    testthat::expect_false(has_no_NA(df))
   }
 )
 ```
