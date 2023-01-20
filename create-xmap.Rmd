@@ -22,7 +22,7 @@ usethis::create_package(
   fields = list(
     Package = params$package_name,
     Version = "0.0.0.9007",
-    Title = "Extended Schema Crosswalks",
+    Title = "xmap: A data-structure for extending crosswalks",
     Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df'
     class for use in {conformr} package.",
     `Authors@R` = person(
@@ -40,8 +40,13 @@ usethis::use_mit_license(copyright_holder = "C. Huang")
 ### Dependencies
 
 ```{r}
-usethis::use_package("rlang")
+# Imports
+usethis::use_package("rlang", min_version = "1.0.0")
 usethis::use_package("cli")
+
+# Suggests
+usethis::use_package("tibble", type = "Suggests")
+usethis::use_package("testthat", type = "Suggests")
 ```
 
 ### Utilities
@@ -50,6 +55,19 @@ usethis::use_package("cli")
 #' Defaults for NULL values
 #'
 `%||%` <- function(x, y) if (is.null(x)) y else x
+```
+
+### Package Level Documentation
+
+``` {package-doc}
+#' xmap: A data-structure for extending crosswalks
+#'
+#' @description
+#' Provides 'xmap' S3 class (the 'Crossmap') for use in {conformr} package.
+#'
+#' @keywords internal
+#' @import rlang
+"_PACKAGE"
 ```
 
 ## Package Concepts
