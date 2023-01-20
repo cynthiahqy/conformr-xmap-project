@@ -318,10 +318,10 @@ df_check_ncol3 <- function(df) {
 #' @rdname df_check
 df_check_cols <- function(df, col_attrs) {
   stopifnot(length(col_attrs) == 3)
-  missing_cols <- setdiff(names(df), col_attrs)
+  missing_cols <- setdiff(col_attrs, names(df))
   if (length(missing_cols) != 0) {
     cli::cli_abort(
-      message = "The column{?s} `{missing_cols}` {?was/were} not found in `x`.",
+      message = "The column{?s} {.arg {missing_cols}} {?was/were} not found.",
       class = "abort_missing_cols"
     )
   }
