@@ -321,7 +321,7 @@ df_check_cols <- function(df, col_attrs) {
   missing_cols <- setdiff(col_attrs, names(df))
   if (length(missing_cols) != 0) {
     cli::cli_abort(
-      message = "The column{?s} {.arg {missing_cols}} {?was/were} not found.",
+      message = "The column{?s} {.var {missing_cols}} {?was/were} not found.",
       class = "abort_missing_cols"
     )
   }
@@ -337,7 +337,7 @@ df_check_cols <- function(df, col_attrs) {
 df_check_na <- function(df) {
   if (base::anyNA(df)) {
     cli::cli_abort(
-      message = "NA values found. Please enter missing data and/or convert NA weights",
+      message = "NA values found. Please enter missing `from` or `to` node labels and/or convert NA weights",
       class = "abort_na"
     )
   }
@@ -352,8 +352,8 @@ df_check_na <- function(df) {
 #'
 df_check_col_type <- function(df, col_weights) {
   if (!is.numeric(df[[col_weights]])) {
-    rlang::abort(
-      message = "`col_weights` column in `x` should be numeric",
+    cli::cli_abort(
+      message = "The column `{col_weights}` should be of type numeric",
       class = "abort_col_type"
     )
   }
@@ -579,7 +579,7 @@ testthat::test_that(
       NA, "B2", NA,
       "A3", "B1", 1
     )
-    x <- new_xmap_df(df, from = "from", to = "to", weights = "weights")
+    x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_na")
   }
 )
