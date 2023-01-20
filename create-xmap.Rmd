@@ -44,6 +44,14 @@ usethis::use_package("rlang")
 usethis::use_package("cli")
 ```
 
+### Utilities
+
+```{r send_to="R/utils.R"}
+#' Defaults for NULL values
+#'
+`%||%` <- function(x, y) if (is.null(x)) y else x
+```
+
 ## Package Concepts
 
 ### Crossmap and Crosswalk tables
@@ -151,49 +159,51 @@ int_dat <- list("input_df" = input_df)
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 ```
 
-## Class Constructor
+## `xmap_df` Class Constructor
 
 Following the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
 
 ### `xmap_df` properties
 
--   has class attributes: `data.frame`, `xmap_df`
+An object of class `xmap_df`:
+
+-   inherits from classes: `data.frame`, `xmap_df`, `xmap`
 -   has additional attributes named using graph terminology:
-    -   `col_from` source key/codes column
-    -   `col_to` target codes/labels
-    -   `col_weights`
-    -   `from_set`
--   has exactly non-empty `3` columns.
+    -   `col_from`: source nodes
+    -   `col_to`: target nodes
+    -   `col_weights`: link weights
+    -   `from_set`: source node set
 
 The low-level constructor takes in:
 
 -   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
--   three descriptor arguments (`from`, `to`, `weights`) which are stored as attributes, and must be character strings only.
+-   three required descriptor arguments (`from`, `to`, `weights`) which are stored as attributes, and must be character strings only.
+-   one optional descriptor arugment (`from_set`) which is stored as an attribute, and must be a character vector.
 
-It does the following:
+The constructor does the following:
 
 -   checks base object and attribute types.
 -   checks column type restrictions. `from` should be coercible into character (from factor, numeric etc.), and `weights` should be numeric. This is also an implicit check that the columns `from` and `weights` exist in `x`.
 -   naively generates the `from_set` of unique `from` values
--   returns an S3 object with the class `xmap_df`
+-   returns an S3 object with the class `xmap_df` and `xmap`
 
 ```{r xmap-constructor}
-#' Low Level Constructor for xmap
-new_xmap <- function(x = data.frame(), from, to, weights) {
-  ## argument type checks
+#' Low Level Constructor for xmap_df
+#'
+new_xmap_df <- function(x = data.frame(), from, to, weights, from_set = NULL) {
+  #' checks argument types
   stopifnot(is.data.frame(x))
-  stopifnot(ncol(x) == 3) ## validate
   stopifnot(length(from) == 1 && is.character(from))
   stopifnot(length(to) == 1 && is.character(to))
   stopifnot(length(weights) == 1 && is.character(weights))
 
-  ## column type checks
-  from_set <- unique(x[[from]])
-  stopifnot(is.vector(from_set, mode = "character"))   ## validate 
-  stopifnot(is.vector(x[[weights]], mode = "numeric")) ## validate
+  #' naively generates `from_set` if it is missing
+  from_set <- from_set %||% as.character(unique(x[[from]]))
+  stopifnot(is.vector(from_set, mode = "character"))
 
-  ## class constructor
-  class(x) <- append("xmap_df", class(x))
+  #' @return `x` with additional subclasses `xmap` and `xmap_df`
+
+  class(x) <- append(c("xmap_df", "xmap"), class(x))
   structure(x, 
             col_from = from,
             col_to = to,
@@ -206,14 +216,15 @@ Tests:
 
 ```{r test-constructor-success}
 testthat::test_that(
-  "new_xmap() accepts arbitrary data.frames with correct from argument",
+  "new_xmap_df() accepts arbitrary data.frames with correct from argument",
   {
     df <- data.frame(x = letters[1:5],
                      y = 1:5,
                      z = runif(5))
-    xmap <- new_xmap(x = df, from = "x", to = "y", weights = "z")
+    xmap <- new_xmap_df(x = df, from = "x", to = "y", weights = "z")
     xmap_attrs <- attributes(xmap)
     testthat::expect_s3_class(xmap, "xmap_df")
+    testthat::expect_s3_class(xmap, "xmap")
     testthat::expect_identical(xmap_attrs$col_from, "x")
     testthat::expect_identical(xmap_attrs$col_to, "y")
     testthat::expect_identical(xmap_attrs$col_weights, "z")
@@ -222,15 +233,17 @@ testthat::test_that(
 )
 ```
 
-```{r test-constructor-snapshot}
+Snapshot tests don't work in litr
+
+``` r
 testthat::test_that(
-  "new_xmap() rejects incorrect object types",
+  "new_xmap_df() rejects incorrect object types",
   {
     testthat::local_edition(3)
-    testthat::expect_snapshot(error = TRUE, new_xmap(x = "not a data.frame"))
-    testthat::expect_snapshot(error = TRUE, new_xmap(from = 33))
-    testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = expression(5 + 9)))
-    testthat::expect_snapshot(error = TRUE, new_xmap(from = "chr", to = "char", weights = c("dsf", "3925")))
+    testthat::expect_snapshot(error = TRUE, new_xmap_df(x = "not a data.frame"))
+    testthat::expect_snapshot(error = TRUE, new_xmap_df(from = 33))
+    testthat::expect_snapshot(error = TRUE, new_xmap_df(from = "chr", to = expression(5 + 9)))
+    testthat::expect_snapshot(error = TRUE, new_xmap_df(from = "chr", to = "char", weights = c("dsf", "3925")))
   }
 )
 ```
@@ -556,10 +569,13 @@ as_xmap <- function(x, from, to, weights) {
 #### Class Test
 
 ```{r}
+#' Test if object is a crossmap
+#'
+#' This function returns `TRUE` for crossmaps `xmap` or subclasses thereof (`xmap_df`), and `FALSE` for all other objects, including regular data.frames or tibbles.
 #' @export
 #' @rdname as_xmap
 is_xmap <- function(x) {
-  inherits(x, "crossmap_xmap")
+  inherits(x, "xmap")
 }
 ```
 
