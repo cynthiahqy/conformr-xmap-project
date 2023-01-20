@@ -30,7 +30,7 @@ usethis::create_package(
       family = "Huang",
       email = "cynthiahqy@gmail.com",
       role = c("aut", "cre")
-      ),
+    ),
     `Config/testthat/edition` = 3
   )
 )
@@ -147,12 +147,14 @@ reference:
 ```{r ideal-xmap}
 ## define some test data here
 
-input_df <- tibble::tribble(~from, ~to, ~weights,
-                           "A1", "B01", 1,
-                           "A2", "B02", 1,
-                           "A3", "B02", 1,
-                           "A4", "B03", 0.25,
-                           "A4", "B04", 0.75)
+input_df <- tibble::tribble(
+  ~from, ~to, ~weights,
+  "A1", "B01", 1,
+  "A2", "B02", 1,
+  "A3", "B02", 1,
+  "A4", "B03", 0.25,
+  "A4", "B04", 0.75
+)
 
 int_dat <- list("input_df" = input_df)
 
@@ -204,12 +206,15 @@ new_xmap_df <- function(x = data.frame(), from, to, weights, from_set = NULL) {
   #' @return `x` with additional subclasses `xmap` and `xmap_df`
 
   class(x) <- append(c("xmap_df", "xmap"), class(x))
-  structure(x, 
-            col_from = from,
-            col_to = to,
-            col_weights = weights,
-            from_set = from_set)
+  structure(x,
+    col_from = from,
+    col_to = to,
+    col_weights = weights,
+    from_set = from_set
+  )
 }
+
+new_xmap <- new_xmap_df
 ```
 
 Tests:
@@ -218,9 +223,11 @@ Tests:
 testthat::test_that(
   "new_xmap_df() accepts arbitrary data.frames with correct from argument",
   {
-    df <- data.frame(x = letters[1:5],
-                     y = 1:5,
-                     z = runif(5))
+    df <- data.frame(
+      x = letters[1:5],
+      y = 1:5,
+      z = runif(5)
+    )
     xmap <- new_xmap_df(x = df, from = "x", to = "y", weights = "z")
     xmap_attrs <- attributes(xmap)
     testthat::expect_s3_class(xmap, "xmap_df")
@@ -248,88 +255,220 @@ testthat::test_that(
 )
 ```
 
-## Class Validation
+## `xmap_df` Validation
 
 -   order checks from cheapest to most expensive
--   validates data.frame element types:
-    -   source/target columns are / can be coerced into factors
-    -   weights is `numeric`
--   checks for:
+-   validates data.frame properties:
+    -   has exactly non-empty `3` columns
+    -   contains columns named in attributes
+    -   has no missing values in ANY column
+    -   from_set attributes matches
+    -   weights column is `numeric`
+-   checks graph properties:
     -   A: duplicate source-target rows (weights should be collapsed into a single row)
+    -   B: no missing weights (checked above with missing values)
+    -   C: `sum()` of values in weights column by source-code is `1` (or subject to floating point tolerance)
+        -   C will also fail if B fails, but not if A fails.
 
-    -   B: `NA` values in the weights column
+### Validation Helpers & Error Messages
 
-        -   precondition for C, independent of A
+The conventions for validation helpers:
 
-    -   C: `sum()` of values in weights column by source-code is `1` (or close..?)
+`df_check_*(df,...)` all take an data.frame for first argument, and character values or vectors for the remaining arguments. They throw an error if the validation condition does not pass, and `NULL` otherwise.
 
-        -   will also fail if B fails, but not if A fails.
+```{r send_to="R/validate-helpers.R"}
+#' xmap_df validation helpers
+#'
+#' @description
+#' Checks issues with an xmap_df object.
+#'
+#' @param df a data.frame-like object containing an crossmap
+#' @param col_* character vector or values naming columns from `df`
+#'
+#' @returns An error if the validation condition fails,
+#' and invisibly returns `df` otherwise.
+#'
+#' @name df_check
+NULL
+```
 
-### Validation Helpers
+`has_*(x_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
 
-#### No Missing values
+#### Dimension Check
 
-```{r}
-#' df has no missing values
-#' 
-has_no_NA <- function(df){
-  !anyNA(df)
+```{r send_to="R/validate-helpers.R"}
+#' @describeIn df_check Abort if `df` does not have exactly three columns
+#'
+df_check_ncol3 <- function(df) {
+  if (ncol(df) != 3) {
+    rlang::abort(
+      message = "`x` must only have the three columns: from, to, weights",
+      class = "abort_ncol3"
+    )
+  }
+  invisible(df)
+}
+```
+
+#### Missing Columns Check
+
+```{r send_to="R/validate-helpers.R"}
+#' Abort if named columns can't be found in xmap_df
+#'
+#' @rdname df_check
+df_check_cols <- function(df, col_attrs) {
+  stopifnot(length(col_attrs) == 3)
+  missing_cols <- setdiff(names(df), col_attrs)
+  if (length(missing_cols) != 0) {
+    cli::cli_abort(
+      message = "The column{?s} `{missing_cols}` {?was/were} not found in `x`.",
+      class = "abort_missing_cols"
+    )
+  }
+  invisible(df)
+}
+```
+
+#### Missing Value Check
+
+```{r send_to="R/validate-helpers.R"}
+#' Abort if xmap_df has missing values
+#'
+df_check_na <- function(df) {
+  if (base::anyNA(df)) {
+    cli::cli_abort(
+      message = "NA values found. Please enter missing data and/or convert NA weights",
+      class = "abort_na"
+    )
+  }
+  invisible(df)
+}
+```
+
+#### Column Type Check
+
+```{r send_to="R/validate-helpers.R"}
+#' Abort if xmap_df has wrong column types
+#'
+df_check_col_type <- function(df, col_weights) {
+  if (!is.numeric(df[[col_weights]])) {
+    rlang::abort(
+      message = "`col_weights` column in `x` should be numeric",
+      class = "abort_col_type"
+    )
+  }
+  invisible(df)
+}
+```
+
+#### From Set Check
+
+```{r send_to="R/validate-helpers.R"}
+#' Abort if from_set attribute doesn't match xmap_df values
+#'
+df_check_from_set <- function(df, col_from, from_set) {
+  col_from_set <- as.character(unique(df[[col_from]]))
+  stopifnot(identical(col_from_set, from_set))
+
+  invisible(df)
 }
 ```
 
 #### No Duplicate Node Pairs (links)
 
-```{r}
-#' df has no duplicate links
-has_no_dup_links <- function(df, from, to){
-  links <- df[c(from, to)]
+```{r send_to="R/validate-helpers.R"}
+#' Flag if xmap has duplicate links
+#'
+#' @param x_from,x_to equal length vectors containing the source-target node pairs
+#' of a given xmap.
+has_dup_links <- function(x_from, x_to) {
+  stopifnot(is.vector(x_from))
+  stopifnot(is.vector(x_to))
+  stopifnot(identical(length(x_from), length(x_to)))
+  links <- data.frame(x_from, x_to)
   dup_idx <- anyDuplicated(links)
+  as.logical(dup_idx)
+}
 
-  !as.logical(dup_idx)
+#' Abort if xmap_df has duplicate links
+#'
+df_check_links <- function(df, col_from, col_to) {
+  if (has_dup_links(df[[col_from]], df[[col_to]])) {
+    cli::cli_abort(
+      message = "Duplicate `from`-`to` links were found.
+      Please remove or collapse duplicates.",
+      class = "abort_dup"
+    )
+  }
+  invisible(df)
 }
 ```
 
 #### Complete Mapping Weights
 
-```{r fnc-flag-weights}
-#' df has complete weights
+```{r fnc-flag-weights, send_to="R/validate-helpers.R"}
+#' Flag that df has complete weights
 #'
-has_complete_weights <- function(df, from, weights){
-  sum_w <- tapply(df[[weights]], df[[from]], sum, simplify = TRUE)
-
+#' @param x_from,x_weights equal length vectors containing the source node and
+#' weight on the outgoing links.
+has_complete_weights <- function(x_from, x_weights) {
+  stopifnot(is.vector(x_from))
+  stopifnot(is.vector(x_weights))
+  stopifnot(identical(length(x_from), length(x_weights)))
+  sum_w <- tapply(
+    X = x_weights,
+    INDEX = x_from,
+    FUN = sum,
+    simplify = TRUE
+  )
   all(sum_w == 1)
+}
+
+#' Abort if df has invalid mapping weights
+#'
+df_check_weights <- function(df, col_from, col_weights) {
+  if (!has_complete_weights(df[[col_from]], df[[col_weights]])) {
+    cli::cli_abort(
+      message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
+      class = "abort_weights"
+    )
+  }
+  invisible(df)
 }
 ```
 
 #### Tests
 
-```{r test-validate-helpers}
+`df_check*` fncs are currently checked along with the Master Validator.
+
+```{r test-has-flags}
 testthat::test_that(
-  "xmap validation helpers work as expected on valid df",
+  "has_* validation helpers work as expected on valid df",
   {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                           "A1", "B01", 1,
-                           "A2", "B02", 1,
-                           "A3", "B02", 1,
-                           "A4", "B03", 0.67,
-                           "A4", "B04", 0.33)
-    testthat::expect_true(has_no_NA(df))
-    testthat::expect_true(has_no_dup_links(df, "from", "to"))
-    testthat::expect_true(has_complete_weights(df, "from", "weights"))
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A2", "B02", 1,
+      "A3", "B02", 1,
+      "A4", "B03", 0.67,
+      "A4", "B04", 0.33
+    )
+    testthat::expect_false(has_dup_links(df$from, df$to))
+    testthat::expect_true(has_complete_weights(df$from, df$weights))
   }
 )
 
 testthat::test_that(
-  "xmap validation helpers catch invalid df",
+  "has_* validation helpers catch invalid df",
   {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                          "A1", "B01", 1,
-                          "A2", "B02", 0.3,
-                          "A2", "B02", 0.5)
-    testthat::expect_false(has_complete_weights(df, "from", "weights"))
-    testthat::expect_false(has_no_dup_links(df, "from", "to"))
-    df <- tibble::add_row(df, from = "A3", to = NA, weights = NA)
-    testthat::expect_false(has_no_NA(df))
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A2", "B02", 0.3,
+      "A2", "B02", 0.5
+    )
+    testthat::expect_false(has_complete_weights(df$from, df$weights))
+    testthat::expect_true(has_dup_links(df$from, df$to))
   }
 )
 ```
@@ -337,86 +476,60 @@ testthat::test_that(
 ### Master Validator
 
 ```{r xmap-validator}
-#' A Validator for `xmap` objects
+#' Validator for xmap_df objects
+#'
+#' @rdname validate_xmap
+validate_xmap_df <- function(x) {
+  stopifnot(inherits(x, "xmap_df"))
+
+  df <- data.frame(x) # unclass(x)
+  x_attrs <- attributes(x)
+  col_attrs <- simplify2array(x_attrs[startsWith(names(x_attrs), "col")])
+
+  ## ---- df attributes ----
+  df_check_ncol3(df)
+  df_check_cols(df, col_attrs)
+  df_check_na(df)
+  df_check_col_type(df, x_attrs$col_weights)
+  df_check_from_set(df, x_attrs$col_from, x_attrs$from_set)
+
+
+  ## ---- xmap graph properties ----
+  df_check_links(df, x_attrs$col_from, x_attrs$col_to)
+  df_check_weights(df, x_attrs$col_from, x_attrs$col_weights)
+
+  ## return original object
+  invisible(x)
+}
+
+#' Validator for `xmap` objects
 #'
 #' @param x An `xmap` to be validated
 #'
 #' @return `x` if validation passes. Throws error otherwise.
 #' @export
+#' @name validate_xmap
 #'
-validate_xmap <- function(x){
-  df <- data.frame(x) # unclass(x)
-  x_attrs <- attributes(x)
-  col_attrs <- simplify2array(x_attrs[startsWith(names(x_attrs), "col")])
-  
-  ## ---- df attributes ----
-  ## dimension check
-  if (ncol(df) != 3) {
-    rlang::abort(
-      message = "`x` must only have the three columns: from, to, weights",
-      class = "xmap_ncol"
-    )
-  }
-
-  ## cols present
-  missing_cols <- setdiff(names(df), col_attrs)
-  if (length(missing_cols) != 0){
-    cli::cli_abort(
-      message = "The column{?s} `{missing_cols}` {?was/were} not found in `x`.",
-      class = "xmap_col_not_found"
-    )
-  }
-
-  ## col type validation
-  if (!is.numeric(df[, x_attrs$col_weights])) {
-    rlang::abort(
-      message = "`col_weights` column in `x` should be numeric",
-      class = "xmap_col_type"
-    )
-  }
-
-  ## ---- xmap graph properties ----
-
-  ## no missingness
-  if (!has_no_NA(df)){
-    cli::cli_abort(
-      message = "NA values found. Please enter missing data and/or convert NA weights",
-      class = "xmap_missing"
-    )
-  }
-
-  ## no duplicate links
-  if (!has_no_dup_links(df, x_attrs$col_from, x_attrs$col_to)){
-    cli::cli_abort(
-      message = "Duplicate `from`-`to` links were found. Please remove or collapse duplicates.",
-      class = "xmap_dup"
-    )
-  }
-
-  ## complete weight check
-  if(!has_complete_weights(df, x_attrs$col_from, x_attrs$col_weights)){
-    cli::cli_abort(
-      message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
-      class = "xmap_weights"
-    )
-  }
-}
+validate_xmap <- validate_xmap_df
 ```
 
-Tests go here:
+#### Tests
 
 ```{r test-validator-success}
 testthat::test_that(
-  "validate_xmap() accepts well-formed xmaps",
+  "validate_xmap_df() accepts well-formed xmaps",
   {
-    df <- tibble::tribble(~node_A, ~node_B, ~w_AB,
-                           "A1", "B01", 1,
-                           "A2", "B02", 1,
-                           "A3", "B02", 1,
-                           "A4", "B03", 0.25,
-                           "A4", "B04", 0.75)
+    df <- tibble::tribble(
+      ~node_A, ~node_B, ~w_AB,
+      "A1", "B01", 1,
+      "A2", "B02", 1,
+      "A3", "B02", 1,
+      "A4", "B03", 0.25,
+      "A4", "B04", 0.75
+    )
     x <- new_xmap(df, from = "node_A", to = "node_B", weights = "w_AB")
-    testthat::expect_invisible(validate_xmap(x))
+    out <- testthat::expect_invisible(validate_xmap_df(x))
+    testthat::expect_identical(out, x)
   }
 )
 ```
@@ -424,80 +537,121 @@ testthat::test_that(
 ```{r test-validator-malformed}
 ## dimension check
 testthat::test_that(
-  "validate_xmap() rejects too few/many columns",
+  "validate_xmap_df() rejects too few/many columns",
   {
-    big_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 4))
-    little_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 2))
+    big_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 4)) |>
+      new_xmap_df("from", "to", "weights")
+    little_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 2)) |>
+      new_xmap_df("from", "to", "weights")
 
-    testthat::expect_error(validate_xmap(big_x), class = "xmap_ncol")
-    testthat::expect_error(validate_xmap(little_x), class = "xmap_ncol")
+    testthat::expect_error(df_check_ncol3(big_x), class = "abort_ncol3")
+    testthat::expect_error(df_check_ncol3(little_x), class = "abort_ncol3")
+    testthat::expect_error(validate_xmap_df(big_x), class = "abort_ncol3")
+    testthat::expect_error(validate_xmap_df(little_x), class = "abort_ncol3")
   }
 )
 
 ## columns present
 testthat::test_that(
-  "validate_xmap() rejects missing columns",
+  "validate_xmap_df() rejects missing columns",
   {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                           "A1", "B01", 1)
-    x <- new_xmap(df,
-                  from = "from",
-                  to = "missing_col",
-                  weights = "weights")
-    testthat::expect_error(validate_xmap(x),
-                           class = "xmap_col_not_found")
-  }
-)
-
-## column type
-testthat::test_that(
-  "validate_xmap() rejects non-numeric weight columns",
-  {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                           "A1", "B01", 1,
-                           "A4", "B03", 0.25,
-                           "A4", "B04", 0.75)
-    x <- new_xmap(df,from = "from",to = "to",weights = "weights") |>
-      dplyr::mutate(weights = as.character(weights))
-    testthat::expect_error(validate_xmap(x),
-                           class = "xmap_col_type")
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1
+    )
+    x <- new_xmap_df(df, "from", "missing_col", "weights")
+    testthat::expect_error(df_check_cols(df, c("from", "missing_col", "weights")),
+      class = "abort_missing_cols"
+    )
+    testthat::expect_error(validate_xmap_df(x),
+      class = "abort_missing_cols"
+    )
   }
 )
 
 ## any NA values
 testthat::test_that(
-  "validate_xmap() rejects missing values",
+  "validate_xmap_df() rejects missing values",
   {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                          "A1", "B2", NA,
-                          NA, "B2", NA,
-                          "A3", "B1", 1)
-    x <- new_xmap(df,from = "from",to = "to",weights = "weights")
-    testthat::expect_error(validate_xmap(x), class = "xmap_missing")
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B2", NA,
+      NA, "B2", NA,
+      "A3", "B1", 1
+    )
+    x <- new_xmap_df(df, from = "from", to = "to", weights = "weights")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_na")
+  }
+)
+
+
+## column type
+testthat::test_that(
+  "validate_xmap_df() rejects non-numeric weight columns",
+  {
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A4", "B03", 0.25,
+      "A4", "B04", 0.75
+    ) |>
+      dplyr::mutate(weights = as.character(weights))
+    testthat::expect_error(df_check_col_type(df, "weights"),
+      class = "abort_col_type"
+    )
+    x <- new_xmap_df(df, "from", "to", "weights")
+    testthat::expect_error(validate_xmap_df(x),
+      class = "abort_col_type"
+    )
+  }
+)
+
+## from set check
+testthat::test_that(
+  "validate_xmap_df() rejects mismatching from_set",
+  {
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A4", "B03", 0.25,
+      "A4", "B04", 0.75
+    )
+    bad_set <- c("bad set", "of", "nodes")
+    testthat::expect_error(df_check_from_set(df, "from", bad_set))
+    x <- new_xmap_df(df, "from", "to", "weights", from_set = bad_set)
+    testthat::expect_error(validate_xmap_df(x))
   }
 )
 
 ## duplicate links
 testthat::test_that(
-  "validate_xmap() rejects duplicate from-to links",
+  "validate_xmap_df() rejects duplicate from-to links",
   {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                          "A1", "B02", 0.3,
-                          "A1", "B02", 1)
-    x <- new_xmap(df, from="from", to="to", weights="weights")
-    testthat::expect_error(validate_xmap(x), class = "xmap_dup")
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B02", 0.3,
+      "A1", "B02", 1
+    )
+    testthat::expect_error(df_check_links(df, "from", "to"))
+    x <- new_xmap_df(df, from = "from", to = "to", weights = "weights")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_dup")
   }
 )
 
 ## complete weights
 testthat::test_that(
-  "validate_xmap() rejects invalid weights",
+  "validate_xmap_df() rejects invalid weights",
   {
-    df <- tibble::tribble(~from, ~to, ~weights,
-                          "A1", "B01", 0.4,
-                          "A1", "B02", 0.59)
-    x <- new_xmap(df, from="from", to="to", weights="weights")
-    testthat::expect_error(validate_xmap(x), class = "xmap_weights")
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 0.4,
+      "A1", "B02", 0.59
+    )
+    testthat::expect_error(df_check_weights(df, "from", "weights"),
+      class = "abort_weights"
+    )
+    x <- new_xmap_df(df, "from", "to", "weights")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_weights")
   }
 )
 ```
