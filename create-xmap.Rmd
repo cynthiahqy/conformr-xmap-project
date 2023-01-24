@@ -138,6 +138,12 @@ Crossmaps provide a systematic structure for validating candidate mappings, and 
 
 [^2]: e.g. using data-driven mapping ([Wikipedia, no reference](https://en.wikipedia.org/wiki/Data_mapping))
 
+### Sharing Dataset Harmonisation Designs and Transformations
+
+In addition to standard data cleaning tasks, researchers and analysts invest considerable time and effort into integrating datasets from different sources. Unfortunately, harmonisation designs are generally embedded in custom transformation scripts, or provided in non-machine readable formats like user manuals and classification standard handbooks.
+
+The `xmap` construct, and `xmap_df`, `xmap_graph` & `xmap_matrix` formats provide a standard framework for encoding harmonisation decisions as a machine-readable input to a data transformation workflow. The format allows researchers to easily share, modify and/or reuse harmonisation designs -- saving time, improving reproducibility, and data consistency.
+
 ## Package Design Notes
 
 ### Reference Index
