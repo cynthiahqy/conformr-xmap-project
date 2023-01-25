@@ -281,19 +281,6 @@ testthat::test_that(
 
 ## `xmap_df` Validation
 
--   order checks from cheapest to most expensive
--   validates data.frame properties:
-    -   has exactly non-empty `3` columns
-    -   contains columns named in attributes
-    -   has no missing values in ANY column
-    -   from_set attributes matches
-    -   weights column is `numeric`
--   checks graph properties:
-    -   A: duplicate source-target rows (weights should be collapsed into a single row)
-    -   B: no missing weights (checked above with missing values)
-    -   C: `sum()` of values in weights column by source-code is `1` (or subject to floating point tolerance)
-        -   C will also fail if B fails, but not if A fails.
-
 ### Validation Helpers & Error Messages
 
 The conventions for validation helpers:
@@ -499,6 +486,19 @@ testthat::test_that(
 
 ### Master Validator
 
+-   order checks from cheapest to most expensive
+-   validates data.frame properties:
+    -   contains columns named in attributes
+        -   (implies df has at least `3` columns) -- ncol3 check removed as discussed in [conformr-project #57](https://github.com/cynthiahqy/conformr-project/issues/57#issuecomment-1401239494)
+    -   has no missing values in ANY column
+    -   from_set attributes matches
+    -   weights column is `numeric`
+-   checks graph properties:
+    -   A: duplicate source-target rows (weights should be collapsed into a single row)
+    -   B: no missing weights (checked above with missing values)
+    -   C: `sum()` of values in weights column by source-code is `1` (or subject to floating point tolerance)
+        -   C will also fail if B fails, but not if A fails.
+
 ```{r xmap-validator}
 #' Validator for xmap_df objects
 #'
@@ -511,7 +511,6 @@ validate_xmap_df <- function(x) {
   col_attrs <- simplify2array(x_attrs[startsWith(names(x_attrs), "col")])
 
   ## ---- df attributes ----
-  df_check_ncol3(df)
   df_check_cols(df, col_attrs)
   df_check_na(df)
   df_check_col_type(df, x_attrs$col_weights)
@@ -685,40 +684,41 @@ testthat::test_that(
 #### User Friendly Constructor
 
 -   checks for:
-    -   existence of columns
+    -   [x] existence of columns via `validate_xmap_df()`
 -   warns for:
-    -   dropping extra columns (anything other than `from`, `to`, `weights`)
+    -   [x] dropping extra columns (anything other than `from`, `to`, `weights`) as controlled by `.drop` argument
 -   throws errors for:
-    -   any validation failures
+    -   [x] any validation failures via `validate_xmap_df()`
 
 ```{r}
-#' Coerce a data.frame-like object to `xmap` 
-#' 
+#' Coerce a data.frame-like object to `xmap`
+#'
 #' This creates a valid crossmap which can be used to map numeric values `from` a set of source nodes `to` a set of target nodes.
-#' 
+#'
 #' @param x
 #'  * For `as_xmap()`: A data.frame or data.frame-like object
 #'  * For `is_xmap()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
-#' 
+#' @param .drop Logical indicating whether or not to drop additional columns in `x`. Defaults to FALSE.
+#'
 #' @return A crossmap `xmap_df` S3 object.
 #' @export
-#' 
+#'
 #' @examples
 #' # For a well formed crossmap:
 #' links <- data.frame(
 #'   a = "AUS",
 #'   b = c("VIC", "NSW", "WA", "OTHER"),
 #'   w = c(0.1, 0.15, 0.25, 0.5)
-#'   )
+#' )
 #' as_xmap(links, from = a, to = b, weights = w)
 #'
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap(links, from = a, to = b, weights = w)
 #'
-as_xmap <- function(x, from, to, weights) {
+as_xmap <- function(x, from, to, weights, .drop = FALSE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -728,10 +728,12 @@ as_xmap <- function(x, from, to, weights) {
   col_weights <- deparse(substitute(weights))
   col_strings <- c(col_from, col_to, col_weights)
 
-  # subset to xmap columns
-  df <- x[col_strings]
-  if (ncol(df) < ncol(x)) {
+  if (.drop) {
+    df_check_cols(df, col_strings)
+    df <- x[col_strings]
+    if (ncol(df) < ncol(x)) {
     cli::cli_warn("Dropped additional columns in `x`")
+  }
   }
 
   ## construction
