@@ -705,7 +705,7 @@ xmap_validate.xmap_df <- function(x){
 }
 ```
 
-### Helpers
+## User Helpers
 
 #### User Friendly Constructor
 
@@ -774,7 +774,7 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
 }
 ```
 
-#### Class Test
+#### Class Tests
 
 ```{r}
 #' Test if object is a crossmap
@@ -787,21 +787,23 @@ is_xmap <- function(x) {
 }
 ```
 
-## Enhancements (Planned)
-
-### Class: Grouped Crossmap
-
-A grouped variant of `xmap` is needed to facilitate multi-map workflows. However, it is not obvious how such a class should be implemented. Any implemented experiments should go here, otherwise discussion lives in this [GitHub Issue](https://github.com/cynthiahqy/conformr-project/issues/53).
-
-### S3 Methods
+## S3 Enhancements
 
 See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
 
-#### print.xmap()
+### Print Method
 
-#### plot.xmap()
+[conformr-project #60](https://github.com/cynthiahqy/conformr-project/issues/60)
 
-### Package Creation
+### Read / Write Methods
+
+Discussed here: [conformr-project #62](https://github.com/cynthiahqy/conformr-project/issues/62)
+
+### Plot Method
+
+Suggested in [confomr-project #43](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
+
+## Package Creation
 
 We finish by running commands that will document, build, and install the package. It may also be a good idea to check the package from within this file.
 
