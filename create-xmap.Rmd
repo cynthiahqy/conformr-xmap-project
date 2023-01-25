@@ -184,13 +184,58 @@ int_dat <- list("input_df" = input_df)
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 ```
 
-## `xmap_df` Class Constructor
+## Class Structure
 
-Following the advice given in [13.3 of Advanced R](https://adv-r.hadley.nz/s3.html#s3-classes) & Tidyverse Design Guide
+The package uses the class `xmap` as the superclass for all representations of a crossmaps, and subclasses: `xmap_df`
 
-### `xmap_df` properties
+### `xmap` parent class properties
 
-An object of class `xmap_df`:
+`xmap` is a virtual parent class indicating the object is a "crossmap", and satisfies the mathematical properties of a "crossmap" shared by all representations.
+
+Let `g` be an object of class `xmap`. Then `g`:
+
+-   has only one weighted link between each source-target pair of form:
+-   `{source: "A1", target: "B01", weight: 1}`
+-   for every source node, the weights on all (outgoing) links sum to 1 (subject to some floating point tolerance?)
+
+### `xmap_df` subclass properties
+
+`xmap_df` is a concrete subclass for encoding crossmaps as lists of graph edges with attributes indicating the node sets and direction of the map.
+
+Let `X` be an **validated** object of class `xmap_df`. Then:
+
+-   `X` inherits from the class `xmap_df`
+-   `X` is a data.frame-like object and:
+    -   contains the columns named in the `col_from`, `col_to`, `col_weights` attributes
+    -   has no missing values - the character vector of all unique values in the `col_from` variable exactly match the `from_set` attribute - the `col_weights` column is a numeric vector - `X` inherits from the class `xmap`
+    -   (each row represents a single weighted link)
+
+## Construction
+
+The naming convention for constructors is: `new_<subclass>()`. For example: `new_xmap_df()`
+
+### `xmap_df` Constructor
+
+The low-level constructor takes in:
+
+-   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
+-   three required descriptor arguments (`from`, `to`, `weights`) which are stored as attributes, and must be character strings only.
+-   one optional descriptor argument (`from_set`) which is stored as an attribute, and must be a character vector.
+
+The constructor does the following:
+
+-   checks base object and attribute types.
+-   checks the descriptor argument types.
+-   if `from_set` is not provided, naively generates the `from_set` of unique `from` values
+-   appends the class attributes: `xmap_df` and `xmap`
+
+It assumed, but not checked that:
+
+-   (`x` contains the column named in `from`, `to`, `weights` arguments?)
+-   (the `from_set` vector attributes contains all unique values of `from` column in `x`)
+-   (the `weights` column contains numeric weights)
+
+The constructor returns an object of class `xmap_df` which:
 
 -   inherits from classes: `data.frame`, `xmap_df`, `xmap`
 -   has additional attributes named using graph terminology:
@@ -198,19 +243,6 @@ An object of class `xmap_df`:
     -   `col_to`: target nodes
     -   `col_weights`: link weights
     -   `from_set`: source node set
-
-The low-level constructor takes in:
-
--   one data argument (`x`), accepts base objects of type data.frames (and subclasses)
--   three required descriptor arguments (`from`, `to`, `weights`) which are stored as attributes, and must be character strings only.
--   one optional descriptor arugment (`from_set`) which is stored as an attribute, and must be a character vector.
-
-The constructor does the following:
-
--   checks base object and attribute types.
--   checks column type restrictions. `from` should be coercible into character (from factor, numeric etc.), and `weights` should be numeric. This is also an implicit check that the columns `from` and `weights` exist in `x`.
--   naively generates the `from_set` of unique `from` values
--   returns an S3 object with the class `xmap_df` and `xmap`
 
 ```{r xmap-constructor}
 #' Low Level Constructor for xmap_df
@@ -236,8 +268,6 @@ new_xmap_df <- function(x = data.frame(), from, to, weights, from_set = NULL) {
     from_set = from_set
   )
 }
-
-new_xmap <- new_xmap_df
 ```
 
 Tests:
@@ -549,7 +579,7 @@ testthat::test_that(
       "A4", "B03", 0.25,
       "A4", "B04", 0.75
     )
-    x <- new_xmap(df, from = "node_A", to = "node_B", weights = "w_AB")
+    x <- new_xmap_df(df, from = "node_A", to = "node_B", weights = "w_AB")
     out <- testthat::expect_invisible(validate_xmap_df(x))
     testthat::expect_identical(out, x)
   }
