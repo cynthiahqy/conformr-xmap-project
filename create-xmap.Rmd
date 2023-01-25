@@ -308,9 +308,9 @@ testthat::test_that(
 )
 ```
 
-## `xmap_df` Validation
+## Validation
 
-### Validation Helpers & Error Messages
+### Error Helpers (`validate-helpers.R`)
 
 The conventions for validation helpers:
 
@@ -513,7 +513,7 @@ testthat::test_that(
 )
 ```
 
-### Master Validator
+### Method: `xmap_df`
 
 -   order checks from cheapest to most expensive
 -   validates data.frame properties:
@@ -529,9 +529,8 @@ testthat::test_that(
         -   C will also fail if B fails, but not if A fails.
 
 ```{r xmap-validator}
-#' Validator for xmap_df objects
+#' Validator for `xmap_df` objects
 #'
-#' @rdname validate_xmap
 validate_xmap_df <- function(x) {
   stopifnot(inherits(x, "xmap_df"))
 
@@ -553,16 +552,6 @@ validate_xmap_df <- function(x) {
   ## return original object
   invisible(x)
 }
-
-#' Validator for `xmap` objects
-#'
-#' @param x An `xmap` to be validated
-#'
-#' @return `x` if validation passes. Throws error otherwise.
-#' @export
-#' @name validate_xmap
-#'
-validate_xmap <- validate_xmap_df
 ```
 
 #### Tests
@@ -690,6 +679,30 @@ testthat::test_that(
     testthat::expect_error(validate_xmap_df(x), class = "abort_weights")
   }
 )
+```
+
+### Generic: `xmap_validate()`
+
+```{r}
+#' Validator for `xmap` objects
+#'
+#' @param x An `xmap` to be validated
+#'
+#' @return `x` if validation passes. Throws error otherwise.
+#'
+#' @section Methods:
+#' \Sexpr[stage=render,results=rd]{generics:::methods_rd("xmap_validate")}
+#'
+#' @export
+#'
+xmap_validate <- function(x) {
+  UseMethod("xmap_validate")
+}
+
+#' @export
+xmap_validate.xmap_df <- function(x){
+  validate_xmap_df(x)
+}
 ```
 
 ### Helpers
