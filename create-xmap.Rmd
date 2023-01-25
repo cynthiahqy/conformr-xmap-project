@@ -51,10 +51,9 @@ usethis::use_package("testthat", type = "Suggests")
 
 ### Utilities
 
-```{r send_to="R/utils.R"}
-#' Defaults for NULL values
-#'
-`%||%` <- function(x, y) if (is.null(x)) y else x
+```{r}
+# kept for interactive dev
+library(rlang)
 ```
 
 ### Package Level Documentation
