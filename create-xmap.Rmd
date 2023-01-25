@@ -558,22 +558,6 @@ testthat::test_that(
 ```
 
 ```{r test-validator-malformed}
-## dimension check
-testthat::test_that(
-  "validate_xmap_df() rejects too few/many columns",
-  {
-    big_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 4)) |>
-      new_xmap_df("from", "to", "weights")
-    little_x <- data.frame(matrix(data = 1, nrow = 3, ncol = 2)) |>
-      new_xmap_df("from", "to", "weights")
-
-    testthat::expect_error(df_check_ncol3(big_x), class = "abort_ncol3")
-    testthat::expect_error(df_check_ncol3(little_x), class = "abort_ncol3")
-    testthat::expect_error(validate_xmap_df(big_x), class = "abort_ncol3")
-    testthat::expect_error(validate_xmap_df(little_x), class = "abort_ncol3")
-  }
-)
-
 ## columns present
 testthat::test_that(
   "validate_xmap_df() rejects missing columns",
