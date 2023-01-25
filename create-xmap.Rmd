@@ -717,7 +717,9 @@ as_xmap <- function(x, from, to, weights, .drop = FALSE) {
     df <- x[col_strings]
     if (ncol(df) < ncol(x)) {
     cli::cli_warn("Dropped additional columns in `x`")
-  }
+      }
+  } else {
+    df <- x
   }
 
   ## construction
