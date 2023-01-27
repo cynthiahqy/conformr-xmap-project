@@ -390,6 +390,34 @@ df_check_na <- function(df) {
 }
 ```
 
+#### Column Order Check
+
+```{r send_to="R/validate-helpers.R"}
+#' @describeIn df_check Abort if xmap_df columns are not in order
+df_check_col_order <- function(df, col_from, col_to, col_weights){
+  correct_order <- c(col_from, col_to, col_weights)
+  first_three <- names(df[1:3])
+  if(!identical(first_three, correct_order)){
+    rlang::abort(
+      message = "columns are not sorted in order `from`, `to`, `weights`",
+      class = "abort_col_order"
+    )
+  }
+  invisible(df)
+}
+```
+
+```{r}
+testthat::test_that("df_check_col_order() works as expected",
+                    {
+                      df <- data.frame(a = 1, b = 2, c = 3)
+                      testthat::expect_invisible(df_check_col_order(df, "a", "b", "c"))
+                      testthat::expect_identical(df_check_col_order(df, "a", "b", "c"), df)
+                      testthat::expect_error(df_check_col_order(df, "b", "a", "c"),
+                                             class = "abort_col_order")
+                    })
+```
+
 #### Column Type Check
 
 ```{r send_to="R/validate-helpers.R"}
@@ -558,6 +586,7 @@ validate_xmap_df <- function(x) {
 
   ## ---- df attributes ----
   df_check_cols(df, col_attrs)
+  df_check_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
   df_check_na(df)
   df_check_col_type(df, x_attrs$col_weights)
   df_check_from_set(df, x_attrs$col_from, x_attrs$from_set)
