@@ -145,6 +145,13 @@ The `xmap` construct, and `xmap_df`, `xmap_graph` & `xmap_matrix` formats provid
 
 ## Package Design Notes
 
+### Naming conventions
+
+For column names:
+
+-   construction and validation take string arguments
+-   user helpers take expression arguments (NSE)
+
 ### Reference Index
 
 Draft [pkgdown function reference](https://pkgdown.r-lib.org/articles/pkgdown.html#reference) to be placed in `_pkgdown.yml`
