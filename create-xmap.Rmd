@@ -359,9 +359,8 @@ NULL
 #### Missing Columns Check
 
 ```{r send_to="R/validate-helpers.R"}
-#' Abort if named columns can't be found in xmap_df
+#' @describeIn df_check Abort if named columns can't be found in xmap_df
 #'
-#' @rdname df_check
 df_check_cols <- function(df, col_attrs) {
   stopifnot(length(col_attrs) == 3)
   missing_cols <- setdiff(col_attrs, names(df))
@@ -378,7 +377,7 @@ df_check_cols <- function(df, col_attrs) {
 #### Missing Value Check
 
 ```{r send_to="R/validate-helpers.R"}
-#' Abort if xmap_df has missing values
+#' @describeIn df_check Abort if xmap_df has missing values
 #'
 df_check_na <- function(df) {
   if (base::anyNA(df)) {
@@ -394,7 +393,7 @@ df_check_na <- function(df) {
 #### Column Type Check
 
 ```{r send_to="R/validate-helpers.R"}
-#' Abort if xmap_df has wrong column types
+#' @describeIn df_check Abort if xmap_df has wrong column types
 #'
 df_check_col_type <- function(df, col_weights) {
   if (!is.numeric(df[[col_weights]])) {
@@ -410,7 +409,7 @@ df_check_col_type <- function(df, col_weights) {
 #### From Set Check
 
 ```{r send_to="R/validate-helpers.R"}
-#' Abort if from_set attribute doesn't match xmap_df values
+#' @describeIn df_check Abort if from_set attribute doesn't match xmap_df values
 #'
 df_check_from_set <- function(df, col_from, from_set) {
   col_from_set <- as.character(unique(df[[col_from]]))
@@ -436,7 +435,7 @@ has_dup_links <- function(x_from, x_to) {
   as.logical(dup_idx)
 }
 
-#' Abort if xmap_df has duplicate links
+#' @describeIn df_check Abort if xmap_df has duplicate links
 #'
 df_check_links <- function(df, col_from, col_to) {
   if (has_dup_links(df[[col_from]], df[[col_to]])) {
@@ -472,7 +471,7 @@ has_complete_weights <- function(x_from, x_weights) {
   all(isTRUE(all.equal(sum_w, ones)))
 }
 
-#' Abort if df has invalid mapping weights
+#' @describeIn df_check Abort if df has invalid mapping weights
 #'
 df_check_weights <- function(df, col_from, col_weights) {
   if (!has_complete_weights(df[[col_from]], df[[col_weights]])) {
