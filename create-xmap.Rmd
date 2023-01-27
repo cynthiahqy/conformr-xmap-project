@@ -147,10 +147,25 @@ The `xmap` construct, and `xmap_df`, `xmap_graph` & `xmap_matrix` formats provid
 
 ### Naming conventions
 
-For column names:
+For `xmap` functions:
 
--   construction and validation take string arguments
--   user helpers take expression arguments (NSE)
+-   functions specific to subclass end with the `_<subclass>` suffix, and/or named as S3 dispatch method (i.e. `<generic>.<subclass>`). For example `validate_xmap_df()` and `xmap_validate.xmap_df()`
+
+-   "internal" construction and validation functions take string arguments for column selection
+
+-   user helpers take expression arguments (NSE) for column selection
+
+-   functions should probably never end in `_xmap()` because it's not clear which subclass they act on.
+
+For functions accepting `xmap` as inputs:
+
+-   any function that accepts any subclass of `xmap` should be named using the `xmap_` prefix convention -- e.g. `xmap_validate()`
+
+-   generics that will form part of a user workflow should follow the `xmap_` prefix convention (e.g. `xmap_validate()`). This makes reduces ambiguity when using these functions in a conformr workflow.
+
+For functions return `xmap` subclasses as output:
+
+-   any function that returns a specific subclass of `xmap` should end with the suffice `_<subclass>`. For example `as_xmap_df()` and `new_xmap_df()`
 
 ### Reference Index
 
