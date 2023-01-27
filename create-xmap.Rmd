@@ -809,6 +809,10 @@ is_xmap <- function(x) {
 }
 ```
 
+#### Diagnostic Tools
+
+See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues/63)
+
 ## S3 Enhancements
 
 See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
