@@ -482,8 +482,10 @@ has_complete_weights <- function(x_from, x_weights) {
     INDEX = x_from,
     FUN = sum,
     simplify = TRUE
-  )
-  all(sum_w == 1)
+  ) |> as.vector()
+  names(sum_w) <- NULL
+  ones <- rep(1, length(sum_w))
+  all(isTRUE(all.equal(sum_w, ones)))
 }
 
 #' Abort if df has invalid mapping weights
@@ -531,6 +533,17 @@ testthat::test_that(
     )
     testthat::expect_false(has_complete_weights(df$from, df$weights))
     testthat::expect_true(has_dup_links(df$from, df$to))
+  }
+)
+
+testthat::test_that(
+  "has_complete_weights() works on recurring fractional weights",
+  {
+    df <- data.frame(key1 = rep("A1", 3),
+                     key2 = c("B01", "B02", "B03"),
+                     share = rep(1/3, 3))
+
+    testthat::expect_true(has_complete_weights(df$key1, df$share))
   }
 )
 ```
