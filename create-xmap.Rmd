@@ -356,22 +356,6 @@ NULL
 
 `has_*(x_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
 
-#### Dimension Check
-
-```{r send_to="R/validate-helpers.R"}
-#' @describeIn df_check Abort if `df` does not have exactly three columns
-#'
-df_check_ncol3 <- function(df) {
-  if (ncol(df) != 3) {
-    rlang::abort(
-      message = "`x` must only have the three columns: from, to, weights",
-      class = "abort_ncol3"
-    )
-  }
-  invisible(df)
-}
-```
-
 #### Missing Columns Check
 
 ```{r send_to="R/validate-helpers.R"}
