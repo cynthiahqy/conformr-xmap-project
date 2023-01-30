@@ -18,6 +18,15 @@ testthat::test_that(
   }
 )
 
+testthat::test_that("df_check_col_order() works as expected",
+                    {
+                      df <- data.frame(a = 1, b = 2, c = 3)
+                      testthat::expect_invisible(df_check_col_order(df, "a", "b", "c"))
+                      testthat::expect_identical(df_check_col_order(df, "a", "b", "c"), df)
+                      testthat::expect_error(df_check_col_order(df, "b", "a", "c"),
+                                             class = "abort_col_order")
+                    })
+
 testthat::test_that(
   "has_* validation helpers work as expected on valid df",
   {
@@ -49,6 +58,17 @@ testthat::test_that(
 )
 
 testthat::test_that(
+  "has_complete_weights() works on recurring fractional weights",
+  {
+    df <- data.frame(key1 = rep("A1", 3),
+                     key2 = c("B01", "B02", "B03"),
+                     share = rep(1/3, 3))
+
+    testthat::expect_true(has_complete_weights(df$key1, df$share))
+  }
+)
+
+testthat::test_that(
   "validate_xmap_df() accepts well-formed xmaps",
   {
     df <- tibble::tribble(
@@ -59,7 +79,7 @@ testthat::test_that(
       "A4", "B03", 0.25,
       "A4", "B04", 0.75
     )
-    x <- new_xmap(df, from = "node_A", to = "node_B", weights = "w_AB")
+    x <- new_xmap_df(df, from = "node_A", to = "node_B", weights = "w_AB")
     out <- testthat::expect_invisible(validate_xmap_df(x))
     testthat::expect_identical(out, x)
   }
@@ -166,6 +186,37 @@ testthat::test_that(
     )
     x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_weights")
+  }
+)
+
+testthat::test_that(
+  "has_* split, recode, collapse checkers work as expected",
+  {
+    w_1to1 <- rep(1, 10)
+    w_1toM <- rep(1/6, 6)
+    to_1fromM <- rep("country", 4)
+    testthat::expect_true(has_recode(w_1to1))
+    testthat::expect_false(has_recode(w_1toM))
+    testthat::expect_true(has_split(w_1toM))
+    testthat::expect_false(has_split(w_1to1))
+    testthat::expect_true(has_collapse(to_1fromM))
+  }
+)
+
+testthat::test_that(
+  "split, recode, collapse type checkers work as expected",
+  {
+    links_recode <- data.frame(from = letters, to = LETTERS, weights = 1)
+    links_split <- data.frame(from = rep("cake", 6),
+                              to = paste0("piece_", 1:6),
+                              weights = rep(1/6, 6))
+    links_collapse <- data.frame(from = paste0("state_", 1:4),
+                                 to = rep("country", 4),
+                                 weights = 1)
+
+    testthat::expect_true(has_recode_only(links_recode$weights, links_recode$to))
+    testthat::expect_true(has_split_recode_only(links_split$weights, links_split$to))
+    testthat::expect_true(has_collapse_recode_only(links_collapse$weights, links_collapse$to))
   }
 )
 

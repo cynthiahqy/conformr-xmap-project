@@ -23,5 +23,3 @@ new_xmap_df <- function(x = data.frame(), from, to, weights, from_set = NULL) {
     from_set = from_set
   )
 }
-
-new_xmap <- new_xmap_df
