@@ -971,21 +971,14 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
   x_weights <- xmap_df[[x_attrs$col_weights]]
   x_to <- xmap_df[[x_attrs$col_to]]
   
-  if (has_recode_only(x_weights, x_to)) {
-    type <- "recode only"
-  } else if (has_collapse_recode_only(x_weights, x_to)) {
-    type <- "recode and collapse only"
-  } else if (has_split_recode_only(x_weights, x_to)) {
-    type <- "recode and split only"
-  } else {
-    flags <- c(
+  flags <- c(
       "recode" = has_recode(x_weights),
       "split" = has_split(x_weights),
       "collapse" = has_collapse(x_to)
     )
-    types <- names(flags[flags == TRUE])
-    type <- cli::pluralize("{types} {? }")
-  }
+  types <- names(flags[flags == TRUE])
+  type <- cli::pluralize("{types} {? }")
+
   return(type)
 }
 
