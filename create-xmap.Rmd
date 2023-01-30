@@ -336,6 +336,26 @@ testthat::test_that(
 )
 ```
 
+### Class Tests
+
+```{r send_to="R/is_xmap.R"}
+#' Test if object is a crossmap
+#'
+#' This function returns `TRUE` for crossmaps `xmap` or subclasses thereof (`xmap_df`), and `FALSE` for all other objects, including regular data.frames or tibbles.
+#' @export
+#' @rdname as_xmap_df
+is_xmap <- function(x) {
+  base::inherits(x, "xmap")
+}
+
+#' Test if object is `xmap_df`
+#' @export
+#' @rdname as_xmap_df
+is_xmap_df <- function(x) {
+  rlang::inherits_all(x, c("xmap_df", "xmap"))
+}
+```
+
 ## Validation
 
 ### Error Helpers (`validate-helpers.R`)
@@ -455,11 +475,19 @@ df_check_from_set <- function(df, col_from, from_set) {
 
 #### No Duplicate Node Pairs (links)
 
-```{r send_to="R/validate-helpers.R"}
-#' Flag if xmap has duplicate links
+```{r send_to="R/xmap-has.R"}
+#' Boolean flags for xmap properties
 #'
-#' @param x_from,x_to equal length vectors containing the source-target node pairs
-#' of a given xmap.
+#' @description
+#' `has_*()` and `is_*()` functions check properties used to validate and/or print xmaps.
+#' The functions only accepts equal length vector inputs to support all subclasses of `xmap`,
+#' but does not check if the inputs are from the same xmap.
+#' @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
+#' @name xmap-has
+NULL
+
+#' @describeIn xmap-has Returns TRUE if xmap has duplicate links
+#'
 has_dup_links <- function(x_from, x_to) {
   stopifnot(is.vector(x_from))
   stopifnot(is.vector(x_to))
@@ -468,7 +496,9 @@ has_dup_links <- function(x_from, x_to) {
   dup_idx <- anyDuplicated(links)
   as.logical(dup_idx)
 }
+```
 
+```{r send_to="R/validate-helpers.R"}
 #' @describeIn df_check Abort if xmap_df has duplicate links
 #'
 df_check_links <- function(df, col_from, col_to) {
@@ -485,11 +515,8 @@ df_check_links <- function(df, col_from, col_to) {
 
 #### Complete Mapping Weights
 
-```{r fnc-flag-weights, send_to="R/validate-helpers.R"}
-#' Flag that df has complete weights
-#'
-#' @param x_from,x_weights equal length vectors containing the source node and
-#' weight on the outgoing links.
+```{r send_to="R/xmap-has.R"}
+#' @describeIn xmap-has Returns TRUE if xmap has valid weights
 has_complete_weights <- function(x_from, x_weights) {
   stopifnot(is.vector(x_from))
   stopifnot(is.vector(x_weights))
@@ -504,7 +531,9 @@ has_complete_weights <- function(x_from, x_weights) {
   ones <- rep(1, length(sum_w))
   all(isTRUE(all.equal(sum_w, ones)))
 }
+```
 
+```{r fnc-check-weights, send_to="R/validate-helpers.R"}
 #' @describeIn df_check Abort if df has invalid mapping weights
 #'
 df_check_weights <- function(df, col_from, col_weights) {
@@ -806,9 +835,11 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
   col_to <- deparse(substitute(to))
   col_weights <- deparse(substitute(weights))
   col_strings <- c(col_from, col_to, col_weights)
+  ## check columns exist
+  df_check_cols(x, col_strings)
 
+  ## drop additional columns
   if (.drop) {
-    df_check_cols(df, col_strings)
     df <- x[col_strings]
     if (ncol(df) < ncol(x)) {
     cli::cli_warn("Dropped additional columns in `x`")
@@ -817,6 +848,10 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
     df <- x
   }
 
+  ## rearrange columns
+  col_order <- c(col_strings, setdiff(names(df), col_strings))
+  df <- df[col_order]
+
   ## construction
   xmap <- new_xmap_df(df, from = col_from, to = col_to, weights = col_weights)
 
@@ -824,26 +859,6 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
   validate_xmap_df(xmap)
 
   return(xmap)
-}
-```
-
-#### Class Tests
-
-```{r send_to="R/is_xmap.R"}
-#' Test if object is a crossmap
-#'
-#' This function returns `TRUE` for crossmaps `xmap` or subclasses thereof (`xmap_df`), and `FALSE` for all other objects, including regular data.frames or tibbles.
-#' @export
-#' @rdname as_xmap_df
-is_xmap <- function(x) {
-  base::inherits(x, "xmap")
-}
-
-#' Test if object is `xmap_df`
-#' @export
-#' @rdname as_xmap_df
-is_xmap_df <- function(x) {
-  rlang::inherits_all(x, c("xmap_df", "xmap"))
 }
 ```
 
@@ -856,6 +871,92 @@ See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues
 See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
 
 ### Print Method
+
+[conformr-project #60](https://github.com/cynthiahqy/conformr-project/issues/60)
+
+#### Print Helpers
+
+```{r print-helpers, send_to="R/xmap-has.R"}
+#' @describeIn xmap-has Return TRUE if xmap recodes labels between `from` and `to`
+has_1to1 <- function(x_weights) {
+  stopifnot(is.vector(x_weights))
+  any(x_weights == 1)
+}
+#'
+has_recode <- has_1to1
+
+#' @describeIn xmap-has Return TRUE if xmap has splitting links between `from` and `to`
+has_1toM <- function(x_weights) {
+  stopifnot(is.vector(x_weights))
+  any(x_weights < 1)
+}
+#'
+has_split <- has_1toM
+
+#' @describeIn xmap-has Return TRUE if xmap has collapsing links between `from` and `to`
+has_1fromM <- function(x_to){
+  stopifnot(is.vector(x_to))
+  as.logical(anyDuplicated(x_to))
+}
+#'
+has_collapse <- has_1fromM
+```
+
+```{r}
+testthat::test_that(
+  "has_* split, recode, collapse checkers work as expected",
+  {
+    w_1to1 <- rep(1, 10)
+    w_1toM <- rep(1/6, 6)
+    to_1fromM <- rep("country", 4)
+    testthat::expect_true(has_recode(w_1to1))
+    testthat::expect_false(has_recode(w_1toM))
+    testthat::expect_true(has_split(w_1toM))
+    testthat::expect_false(has_split(w_1to1))
+    testthat::expect_true(has_collapse(to_1fromM))
+  }
+)
+```
+
+```{r send_to="R/xmap-has.R"}
+#' @describeIn xmap-has Return TRUE if xmap ONLY recodes labels between `from` and `to`. Return FALSE if there is even one collapsing or splitting link
+#'
+has_recode_only <- function(x_weights, x_to){
+  stopifnot(identical(length(x_weights), length(x_to)))
+  has_recode(x_weights) && !has_split(x_weights) && !has_collapse(x_to)
+}
+
+#' @describeIn xmap-has Return TRUE if xmap has at least one set of collapsing links, any number of recoding links, and no splitting links.
+has_collapse_recode_only <- function(x_weights, x_to){
+  stopifnot(identical(length(x_weights), length(x_to)))
+  has_collapse(x_to) && !has_split(x_weights)
+}
+
+#' @describeIn xmap-has Return TRUE if xmap has at least one set of splitting links, any number of recoding links (or none), and no splitting
+has_split_recode_only <- function(x_weights, x_to){
+  stopifnot(identical(length(x_weights), length(x_to)))
+  has_split(x_weights) && !has_collapse(x_to)
+}
+```
+
+```{r}
+testthat::test_that(
+  "is_* split, recode, collapse checkers work as expected",
+  {
+    links_recode <- data.frame(from = letters, to = LETTERS, weights = 1)
+    links_split <- data.frame(from = rep("cake", 6),
+                              to = paste0("piece_", 1:6),
+                              weights = rep(1/6, 6))
+    links_collapse <- data.frame(from = paste0("state_", 1:4),
+                                 to = rep("country", 4),
+                                 weights = 1)
+
+    testthat::expect_true(has_recode_only(links_recode$weights, links_recode$to))
+    testthat::expect_true(has_split_recode_only(links_split$weights, links_split$to))
+    testthat::expect_true(has_collapse_recode_only(links_collapse$weights, links_collapse$to))
+  }
+)
+```
 
 [conformr-project #60](https://github.com/cynthiahqy/conformr-project/issues/60)
 
