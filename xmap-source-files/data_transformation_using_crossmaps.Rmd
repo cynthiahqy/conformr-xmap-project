@@ -1,0 +1,13 @@
+---
+title: "Dataset Integration Using Crossmaps"
+author: "Cynthia Huang"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+bibliography: data_transformations_using_crossmaps.bib
+link-citations: yes
+vignette: >
+  %\VignetteIndexEntry{Dataset Integration Using Crossmaps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---

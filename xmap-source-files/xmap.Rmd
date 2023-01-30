@@ -1,0 +1,10 @@
+---
+title: "Intro to Crossmaps for Data Transformation in R"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Intro to Crossmaps for Data Transformation in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
