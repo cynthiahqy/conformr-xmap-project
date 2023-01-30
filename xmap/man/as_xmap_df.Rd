@@ -3,11 +3,14 @@
 \name{as_xmap_df}
 \alias{as_xmap_df}
 \alias{is_xmap}
-\title{Coerce a data.frame-like object to \code{xmap}}
+\alias{is_xmap_df}
+\title{Coerce a data.frame-like object to \code{xmap_df}}
 \usage{
 as_xmap_df(x, from, to, weights, .drop = FALSE)
 
 is_xmap(x)
+
+is_xmap_df(x)
 }
 \arguments{
 \item{x}{\itemize{

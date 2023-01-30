@@ -1,6 +1,6 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' Coerce a data.frame-like object to `xmap`
+#' Coerce a data.frame-like object to `xmap_df`
 #'
 #' This creates a valid crossmap which can be used to map numeric values `from` a set of source nodes `to` a set of target nodes.
 #'
@@ -36,9 +36,11 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
   col_to <- deparse(substitute(to))
   col_weights <- deparse(substitute(weights))
   col_strings <- c(col_from, col_to, col_weights)
+  ## check columns exist
+  df_check_cols(x, col_strings)
 
+  ## drop additional columns
   if (.drop) {
-    df_check_cols(df, col_strings)
     df <- x[col_strings]
     if (ncol(df) < ncol(x)) {
     cli::cli_warn("Dropped additional columns in `x`")
@@ -46,6 +48,10 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
   } else {
     df <- x
   }
+
+  ## rearrange columns
+  col_order <- c(col_strings, setdiff(names(df), col_strings))
+  df <- df[col_order]
 
   ## construction
   xmap <- new_xmap_df(df, from = col_from, to = col_to, weights = col_weights)

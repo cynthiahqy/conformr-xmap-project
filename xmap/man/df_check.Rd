@@ -2,13 +2,28 @@
 % Please edit documentation in R/validate-helpers.R
 \name{df_check}
 \alias{df_check}
-\alias{df_check_ncol3}
 \alias{df_check_cols}
+\alias{df_check_na}
+\alias{df_check_col_order}
+\alias{df_check_col_type}
+\alias{df_check_from_set}
+\alias{df_check_links}
+\alias{df_check_weights}
 \title{xmap_df validation helpers}
 \usage{
-df_check_ncol3(df)
-
 df_check_cols(df, col_attrs)
+
+df_check_na(df)
+
+df_check_col_order(df, col_from, col_to, col_weights)
+
+df_check_col_type(df, col_weights)
+
+df_check_from_set(df, col_from, from_set)
+
+df_check_links(df, col_from, col_to)
+
+df_check_weights(df, col_from, col_weights)
 }
 \arguments{
 \item{df}{a data.frame-like object containing an crossmap}
@@ -24,6 +39,18 @@ Checks issues with an xmap_df object.
 }
 \section{Functions}{
 \itemize{
-\item \code{df_check_ncol3()}: Abort if \code{df} does not have exactly three columns
+\item \code{df_check_cols()}: Abort if named columns can't be found in xmap_df
+
+\item \code{df_check_na()}: Abort if xmap_df has missing values
+
+\item \code{df_check_col_order()}: Abort if xmap_df columns are not in order
+
+\item \code{df_check_col_type()}: Abort if xmap_df has wrong column types
+
+\item \code{df_check_from_set()}: Abort if from_set attribute doesn't match xmap_df values
+
+\item \code{df_check_links()}: Abort if xmap_df has duplicate links
+
+\item \code{df_check_weights()}: Abort if df has invalid mapping weights
 
 }}
