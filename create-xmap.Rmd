@@ -787,9 +787,9 @@ xmap_validate.xmap_df <- function(x){
 }
 ```
 
-## User Helpers
+## Coercion
 
-#### User Friendly Constructor
+### `as_xmap_df()`
 
 -   checks for:
     -   [x] existence of columns via `validate_xmap_df()`
@@ -799,7 +799,7 @@ xmap_validate.xmap_df <- function(x){
     -   [x] any validation failures via `validate_xmap_df()`
 
 ```{r}
-#' Coerce a data.frame-like object to `xmap`
+#' Coerce a data.frame-like object to `xmap_df`
 #'
 #' This creates a valid crossmap which can be used to map numeric values `from` a set of source nodes `to` a set of target nodes.
 #'
@@ -862,19 +862,13 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
 }
 ```
 
-#### Diagnostic Tools
+## Diagnostic Tools
 
 See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues/63)
 
-## S3 Enhancements
+### Helper: xmap link classification
 
-See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
-
-### Print Method
-
-[conformr-project #60](https://github.com/cynthiahqy/conformr-project/issues/60)
-
-#### Xmap Type Helpers
+-   used for print methods
 
 ```{r print-helpers, send_to="R/xmap-has.R"}
 #' @describeIn xmap-has Return TRUE if xmap recodes labels between `from` and `to`
@@ -918,6 +912,8 @@ testthat::test_that(
 )
 ```
 
+### Helper: xmap type classification
+
 ```{r send_to="R/xmap-has.R"}
 #' @describeIn xmap-has Return TRUE if xmap ONLY recodes labels between `from` and `to`. Return FALSE if there is even one collapsing or splitting link
 #'
@@ -958,7 +954,15 @@ testthat::test_that(
 )
 ```
 
-#### Print Functions
+## S3 Enhancements
+
+See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
+
+### Printing
+
+[conformr-project #60](https://github.com/cynthiahqy/conformr-project/issues/60)
+
+#### Method: `xmap_df`
 
 ```{r print-xmap-df, send_to="R/print.R", results='asis', paged.print=FALSE}
 #'
