@@ -1,0 +1,131 @@
+---
+title: "Making Valid Crossmaps"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Making Valid Crossmaps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Creating Valid Crossmaps
+
+A (Nomenclature) Crossmap encodes a complete redistribution of values between a source and target classifications as a directed, bipartite, weighted graph. Numeric values transformed using a valid Crossmap will sum to the same total in both the source and target classifications. A valid Crossmap satisfies the following conditions:
+
+1.  There is at most one link between each distinct source and target node
+2.  For each source node, the sum of weights attached to outgoing links sums to one.
+
+### Coercing a weighted edgelist into a `xmap_df`
+
+An `xmap_df` is a data.frame where each row represents a weighted link between the source and target classifications. You can create an `xmap_df` from a data.frame or tibble of weighted edges using `as_xmap_df()`.
+
+Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
+
+-   `from`: source classification labels.
+-   `to`: target classification labels
+-   `weights`: applied to values in the source classification
+
+Additional columns (e.g. for label descriptions etc.) can be retained using the `.keep_all` argument.
+
+`as_xmap_df()` will validate that for `x`:
+
+1.  There are no duplicates `from`-`to` pairs,
+2.  Every group of `weights` associated with a distinct `from` value sums to 1 (subject to minor floating point errors).
+
+### Manually encoding an `xmap_df`
+
+The following example shows how to encode one-to-one, many-to-one and one-to-many links and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
+
+```{r}
+simple_x <- tibble::tribble(
+  ~source, ~target, ~share,
+  "equal", "EQUAL", 1,       # one-to-one
+  "member_1", "GROUP", 1,    # many-to-one
+  "member_2", "GROUP", 1,
+  "whole", "PART_1", 0.3,    # one-to-many
+  "whole", "PART_2", 0.6,
+  "whole", "PART_3", 0.1
+)
+
+simple_xmap <- simple_x |>
+  as_xmap_df(from = source, to = target, weights = share)
+
+simple_xmap
+```
+
+### Recoding
+
+It is more common that you will want to convert an existing correspondence into a crossmap. Consider the first five country codes in the ISO 3166 international standard and the one-to-one correspondence between the 2-digit, 2-digit and numeric codes.
+
+```{r}
+iso_codes <- tibble::tribble(
+              ~country, ~ISO2, ~ISO3, ~ISONumeric,
+         "Afghanistan",          "AF",         "AFG",    "004",
+             "Albania",          "AL",         "ALB",    "008",
+             "Algeria",          "DZ",         "DZA",    "012",
+      "American Samoa",          "AS",         "ASM",    "016",
+             "Andorra",          "AD",         "AND",    "020"
+      )
+```
+
+To create a crossmap between `ISONumeric` and `ISO2`, we simply add a weights columns and coerce to `xmap_df`:
+
+```{r}
+iso_xmap <- iso_codes |>
+  dplyr::mutate(link = 1) |>
+  as_xmap_df(from = ISONumeric, to = ISO2, weights = link, .keep_all = TRUE)
+```
+
+Notice that `as_xmap_df()` place the `from`, `to` and `weights` columns first.
+
+```{r}
+print(iso_xmap)
+```
+
+### Aggregation
+
+For an example of crossmaps which only have recode and collapse links (i.e. aggregation), consider the ISO 3166-2 Subdivisions of [Australia](https://en.wikipedia.org/w/index.php?title=ISO_3166-2:AU&oldid=1110907059) and [Canada]:
+
+```{r}
+adm1_list <- tibble::tribble(
+  ~ctr, ~adm1,
+  "AU", "AU-NSW, AU-QLD, AU-SA, AU-TAS, AU-VIC, AU-WA, AU-ACT, AU-NT",
+  "CA", "CA-AB, CA-BC, CA-MB, CA-NB, CA-NL, CA-NS, CA-ON, CA-PE, CA-QC, CA-SK, CA-NT, CA-NU, CA-YT"
+)
+```
+
+Recall that we need one row per relation between the source (`adm1`) and target (`ctr`) nomenclature. Thus we split the string list into a vector, and then unnest the values by country.
+
+```{r}
+agg_x <- adm1_list |> 
+  dplyr::mutate(adm1 = str_split(adm1, ", ")) |>
+  tidyr::unnest(cols = c(adm1))
+
+agg_x
+```
+
+Since aggregation involves the one-to-one transfer of values between `adm1` and `ctr` prior to the collapsing the `ctr` groups, we simple add weights of one to form a valid crossmap:
+
+```{r}
+agg_x |>
+  dplyr::mutate(link = 1) |>
+  as_xmap_df(from = adm1, to = ctr, weights = link)
+```
+
+### Splitting
+
+Now consider the following example provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3):
+
+> In the second example, one ISIC class is equivalent to more than one NAICS Canada class. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
+
+```{r}
+canada_links <- tibble::tribble(
+  ~NAICS1997, ~NAICS1997_desc, ~ISIC3, ~ISIC3_desc, ~Link,
+  "311320", "Chocolate and Confectionery Manufacturing from Cacao Beans", "D1543 *", "Manufacture of cocoa, chocolate and sugar confectionery", "Chocolate and confectionery, made from cacao beans",
+  "311330", "Confectionery Manufacturing from Purchased Chocolate", "D1543 *", "Manufacture of cocoa, chocolate and sugar confectionery", "Confectionery, made from purchased chocolate",
+  "311340", "Non-Chocolate Confectionery Manufacturing", "D1543 *", "Manufacture of cocoa, chocolate and sugar confectionery", "Non-chocolate confectionery, manufacturing"
+)
+
+canada_links
+```
