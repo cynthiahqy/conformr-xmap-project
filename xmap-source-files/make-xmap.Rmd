@@ -271,4 +271,31 @@ canada_xmap <- dplyr::bind_rows(canada_unit, canada_frac) |>
 print(canada_xmap)
 ```
 
+## One-Way Crossmaps
+
+Except in the case of recoding, crossmaps are generally lateral (one-way). Weights on collapse and split links are no longer valid if you reverse the direct of the link. Notice that `as_xmap_df()` throws an error if you try to naively swap the `from` and `to` arguments:
+
+```{r error=TRUE}
+dplyr::bind_rows(canada_unit, canada_frac) |>
+  as_xmap_df(from = ISIC3, to = NAICS1997, weights = share)
+```
+
+However, we **can** swap the arguments on a recode map. Recall the ISO country code crossmap we created above:
+
+```{r}
+print(iso_xmap)
+```
+
+Imagine that instead of converting country codes from ISO Numeric to ISO-2 digit, we wanted to convert from ISO-2 digit to ISO Numeric. We can take the existing crossmap and invert it without editing any weights:
+
+```{r}
+iso_xmap |>
+  as_xmap_df(from = ISO2, to = ISONumeric, weights = link)
+```
+
+We can also easily generate crossmaps for the other nomenclature in the table:
+
+```{r}
+iso_xmap |>
+  as_xmap_df(from = ISO2, to = ISO3, weights = link)
 ```
