@@ -23,7 +23,9 @@
   return(direction)
 }
 
-
+#' Print an `xmap_df`
+#'
+#' @export
 print.xmap_df <- function(xmap_df){
   x_direction <- .get_link_direction.xmap_df(xmap_df)
   x_type <- .get_link_types.xmap_df(xmap_df)

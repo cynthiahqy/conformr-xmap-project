@@ -9,7 +9,7 @@
 #'  * For `is_xmap()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
-#' @param .drop Logical indicating whether or not to drop additional columns in `x`. Defaults to FALSE.
+#' @param .keep_all Logical indicating whether or not to keep additional columns in `x`. Defaults to TRUE.
 #'
 #' @return A crossmap `xmap_df` S3 object.
 #' @export
@@ -27,7 +27,7 @@
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap_df(links, from = a, to = b, weights = w)
 #'
-as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
+as_xmap_df <- function(x, from, to, weights, .keep_all = TRUE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -40,7 +40,7 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
   df_check_cols(x, col_strings)
 
   ## drop additional columns
-  if (.drop) {
+  if (!.keep_all) {
     df <- x[col_strings]
     if (ncol(df) < ncol(x)) {
     cli::cli_warn("Dropped additional columns in `x`")
@@ -54,7 +54,7 @@ as_xmap_df <- function(x, from, to, weights, .drop = FALSE) {
   df <- df[col_order]
 
   ## construction
-  xmap <- new_xmap_df(df, from = col_from, to = col_to, weights = col_weights)
+  xmap <- new_xmap_df(df, col_from, col_to, col_weights)
 
   ## validation
   validate_xmap_df(xmap)

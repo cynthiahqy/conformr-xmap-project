@@ -368,7 +368,7 @@ package</h1>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9008&quot;,
+    Version = &quot;0.0.0.9009&quot;,
     Title = &quot;xmap: A data-structure for extending crosswalks&quot;,
     Description = &quot;Provides a &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) based on &#39;tbl_df&#39;
     class for use in {conformr} package.&quot;,
@@ -421,126 +421,6 @@ library(rlang)</code></pre>
 #&#39; @keywords internal
 #&#39; @import rlang
 &quot;_PACKAGE&quot;</code></pre>
-</div>
-</div>
-<div id="package-concepts" class="section level2">
-<h2>Package Concepts</h2>
-<div id="crossmap-and-crosswalk-tables" class="section level3">
-<h3>Crossmap and Crosswalk tables</h3>
-<!--# define crosswalks -->
-<p>Crosswalks are used in many different applications and domains, and
-generally refer to a table showing equivalent or related elements in two
-distinct nomenclature, schema or standards. Crosswalks are used to
-encode one-to-one, one-to-many, many-to-one, and many-to-many relations.
-Except for cases where there are only one-to-one relations, Crosswalks
-are “lateral” (one-way) mappings.</p>
-<!--# define crossmaps -->
-<p>Crossmaps extends the standard Crosswalk format to explictly encode
-the weights used when mapping data from one scheme to another. A
-crosswalk table generally consists of two columns, one each for the two
-schemes, and each row specifies a relation between elements of the
-disjoint schemes. A crossmap adds an additional column specifying
-transition weights for mapping data belonging to class elements in the
-source (initial) scheme into class elements in target scheme.</p>
-<!--# insert image of crosswalk & crossmap TABLES (generate ggxmap/gt?) -->
-</div>
-<div id="graph-and-matrix-representations" class="section level3">
-<h3>Graph and Matrix Representations</h3>
-<!--# relation to graph & incidence matrix representation -->
-<p>Crosswalked datasets are often visualised using Sankey flow diagrams.
-These diagrams hint at the fact that, when considered independently of
-the data they are applied to, crosswalks can be represented as directed
-acyclic bipartite graphs. Recall that for a bipartite graph, the nodes
-<span class="math inline">\(N\)</span> can be subdivided into two
-disjoint sets (<span class="math inline">\(N_1, N_2\)</span>), and links
-are only allowed between these two sets. The class elements of the
-source and target classifications naturally form two disjoint sets of
-nodes.</p>
-<!--# INSERT image of crosswalk GRAPH (generate using ggxmap) -->
-<p>Noting that crossmaps are essentially lateral crosswalks with weights
-attached to each relation, we find that crossmaps can be represented as
-weighted acyclic bipartite digraphs. A crossmap fully captures all the
-information needed to “transition” or “translate” numeric and/or
-categorical data between the source and target classes (nodes).</p>
-<!--# INSERT image of crossmap as graph (generate using ggxmap) -->
-<p>Furthermore, the explicit weights make clear why mappings are
-generally “lateral”. Consider the case <!--# above? --> where you have a
-many-to-one relation between source and target schemes.</p>
-</div>
-<div id="application-to-ex-post-data-harmonisation" class="section level3">
-<h3>Application to Ex-Post Data Harmonisation</h3>
-<!--# define ex-post data harmonisation -->
-<p>Crossmaps have features which are especially useful when using a
-Crosswalk approach to ex-post data harmonisation requiring one-to-many
-splits. Ex-post data harmonisation refers to the integration of data
-from ….</p>
-<p>Continuing with the graph representation, we can attach arbitary
-numeric values (such as counts, or monetary amounts) to each source node
-as additional properties of each node.
-<!--# brings us back to sankey diagram representation --></p>
-<!--# related but distinct requirements compared to crosswalks in metadata / data mapping -->
-<p>Although both processes use crosswalks, the requirements of an
-ex-post harmonisation workflow have some important differences to
-crosswalking between database schemas (“metadata translation using
-schema crosswalks <a href="https://en.wikipedia.org/wiki/Schema_crosswalk">(Wikipedia)</a>”)<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and are
-more specific than “data mapping” <a href="https://en.wikipedia.org/wiki/Data_mapping">(Wikipedia)</a>
-between distinct data models. In particular, for the latter two cases,
-there are often more obvious constraints on candidate crosswalks (agreed
-upon standards etc., translation between legacy systems etc., more
-obvious connection between the two databases, harmonising data flows),
-and fewer classes (fields).</p>
-<p>On the other hand, ex-post harmonisation is often a “last resort”
-attempt to bring together data from different sources to answer
-difficult questions (social sciences). The data is often scarce,
-expensive to collect, and as a result the semantic ties between the
-datasets are not so obvious, and much more subjective opinion is applied
-when designing crosswalks (and the implicit weights).</p>
-</div>
-<div id="crosswalk-vs.-crossmap-transformation" class="section level3">
-<h3>Crosswalk vs. Crossmap Transformation</h3>
-<!--# applying crosswalks vs. crossmaps -->
-<p>A crossmap transformation can be performed by passing a valid
-crossmap table and validated input data can be passed as inputs into
-“generic” transformation function, which implements a (left join,
-mutate, and aggregate), to produce the target dataset without generating
-any additional code. The specific conditions for source data are
-discussed in <code>{conformr}</code>.</p>
-<!--# insert image of transformation -- JOIN -->
-<p>On the other hand, crosswalks need to be translated into procedural
-code (ETL, graphical manuals, for-loops).
-<!--# short list of drawbacks -->. The drawbacks and limitation of these
-approaches are discussed in more detail in <code>{conformr}</code>.</p>
-<!--# ETL, graphical methods not so relevant (because we're not generally looking at data stored in database schema) -->
-<!--# common practice is for-loops; drawbacks // maybe point people to conformr pkg -->
-<p>For-loops must be coded from either the source-code or target-code
-perspective (i.e. you iterate over the source classes or target classes,
-dealing with each set of relations one by one). The most obvious
-drawback to this approach is the number of lines of code grows with the
-number of classes in the classifications, decreasing the readability of
-the code.</p>
-<p>For-loops are often used when generating data-driven weights
-<!--# (are they? they are natural fit for it, especially for social science data) -->.
-However,</p>
-<!--# benefits of crosswalks for ex-post harmonisation -->
-<p>Crossmaps provide a systematic structure for validating candidate
-mappings, and can enable tractable experimentation with different
-processes for generating mappings<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> and conducting sensitivity analysis.</p>
-</div>
-<div id="sharing-dataset-harmonisation-designs-and-transformations" class="section level3">
-<h3>Sharing Dataset Harmonisation Designs and Transformations</h3>
-<p>In addition to standard data cleaning tasks, researchers and analysts
-invest considerable time and effort into integrating datasets from
-different sources. Unfortunately, harmonisation designs are generally
-embedded in custom transformation scripts, or provided in non-machine
-readable formats like user manuals and classification standard
-handbooks.</p>
-<p>The <code>xmap</code> construct, and <code>xmap_df</code>,
-<code>xmap_graph</code> &amp; <code>xmap_matrix</code> formats provide a
-standard framework for encoding harmonisation decisions as a
-machine-readable input to a data transformation workflow. The format
-allows researchers to easily share, modify and/or reuse harmonisation
-designs – saving time, improving reproducibility, and data
-consistency.</p>
 </div>
 </div>
 <div id="package-design-notes" class="section level2">
@@ -708,24 +588,25 @@ which:</p>
 </ul>
 <pre class="r"><code>#&#39; Low Level Constructor for xmap_df
 #&#39;
-<span id='new_xmap_df'>new_xmap_df</span> &lt;- function(x = data.frame(), from, to, weights, from_set = NULL) {
+#&#39; @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
+<span id='new_xmap_df'>new_xmap_df</span> &lt;- function(x = data.frame(), col_from, col_to, col_weights, from_set = NULL) {
   #&#39; checks argument types
   stopifnot(is.data.frame(x))
-  stopifnot(length(from) == 1 &amp;&amp; is.character(from))
-  stopifnot(length(to) == 1 &amp;&amp; is.character(to))
-  stopifnot(length(weights) == 1 &amp;&amp; is.character(weights))
+  stopifnot(length(col_from) == 1 &amp;&amp; is.character(col_from))
+  stopifnot(length(col_to) == 1 &amp;&amp; is.character(col_to))
+  stopifnot(length(col_weights) == 1 &amp;&amp; is.character(col_weights))
 
   #&#39; naively generates `from_set` if it is missing
-  from_set &lt;- from_set %||% as.character(unique(x[[from]]))
+  from_set &lt;- from_set %||% as.character(unique(x[[col_from]]))
   stopifnot(is.vector(from_set, mode = &quot;character&quot;))
 
   #&#39; @return `x` with additional subclasses `xmap` and `xmap_df`
 
   class(x) &lt;- append(c(&quot;xmap_df&quot;, &quot;xmap&quot;), class(x))
   structure(x,
-    col_from = from,
-    col_to = to,
-    col_weights = weights,
+    col_from = col_from,
+    col_to = col_to,
+    col_weights = col_weights,
     from_set = from_set
   )
 }</code></pre>
@@ -738,7 +619,7 @@ which:</p>
       y = 1:5,
       z = runif(5)
     )
-    xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(x = df, from = &quot;x&quot;, to = &quot;y&quot;, weights = &quot;z&quot;)
+    xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(x = df, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
     xmap_attrs &lt;- attributes(xmap)
     testthat::expect_s3_class(xmap, &quot;xmap_df&quot;)
     testthat::expect_s3_class(xmap, &quot;xmap&quot;)
@@ -748,7 +629,7 @@ which:</p>
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -859,7 +740,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -995,7 +876,7 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
 </div>
@@ -1065,12 +946,12 @@ single row)</li>
       &quot;A4&quot;, &quot;B03&quot;, 0.25,
       &quot;A4&quot;, &quot;B04&quot;, 0.75
     )
-    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, from = &quot;node_A&quot;, to = &quot;node_B&quot;, weights = &quot;w_AB&quot;)
+    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;node_A&quot;, &quot;node_B&quot;, &quot;w_AB&quot;)
     out &lt;- testthat::expect_invisible(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x))
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1153,7 +1034,7 @@ testthat::test_that(
       &quot;A1&quot;, &quot;B02&quot;, 1
     )
     testthat::expect_error(<a href='create-xmap.html#df_check_links'>df_check_links</a>(df, &quot;from&quot;, &quot;to&quot;))
-    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, from = &quot;from&quot;, to = &quot;to&quot;, weights = &quot;weights&quot;)
+    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;from&quot;, &quot;to&quot;, &quot;weights&quot;)
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_dup&quot;)
   }
 )
@@ -1176,10 +1057,10 @@ testthat::test_that(
 )</code></pre>
 <pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 😀</code></pre>
 <pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 </div>
 <div id="generic-xmap_validate" class="section level3">
@@ -1236,7 +1117,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
 #&#39;  * For `<a href='create-xmap.html#is_xmap'>is_xmap</a>()`: An object to test.
 #&#39; @param from,to Columns in `x` specifying the source and target nodes
 #&#39; @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
-#&#39; @param .drop Logical indicating whether or not to drop additional columns in `x`. Defaults to FALSE.
+#&#39; @param .keep_all Logical indicating whether or not to keep additional columns in `x`. Defaults to TRUE.
 #&#39;
 #&#39; @return A crossmap `xmap_df` S3 object.
 #&#39; @export
@@ -1254,7 +1135,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
 #&#39; links$extra &lt;- c(2, 4, 5, 6)
 #&#39; <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(links, from = a, to = b, weights = w)
 #&#39;
-<span id='as_xmap_df'>as_xmap_df</span> &lt;- function(x, from, to, weights, .drop = FALSE) {
+<span id='as_xmap_df'>as_xmap_df</span> &lt;- function(x, from, to, weights, .keep_all = TRUE) {
   ## coercion &amp; checks
   stopifnot(is.data.frame(x))
 
@@ -1267,7 +1148,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
   <a href='create-xmap.html#df_check_cols'>df_check_cols</a>(x, col_strings)
 
   ## drop additional columns
-  if (.drop) {
+  if (!.keep_all) {
     df &lt;- x[col_strings]
     if (ncol(df) &lt; ncol(x)) {
     cli::cli_warn(&quot;Dropped additional columns in `x`&quot;)
@@ -1281,7 +1162,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
   df &lt;- df[col_order]
 
   ## construction
-  xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, from = col_from, to = col_to, weights = col_weights)
+  xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, col_from, col_to, col_weights)
 
   ## validation
   <a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(xmap)
@@ -1373,7 +1254,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(<a href='create-xmap.html#has_collapse_recode_only'>has_collapse_recode_only</a>(links_collapse$weights, links_collapse$to))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="s3-enhancements" class="section level2">
@@ -1410,7 +1291,9 @@ has_collapse &lt;- has_1fromM</code></pre>
   return(direction)
 }
 
-
+#&#39; Print an `xmap_df`
+#&#39;
+#&#39; @export
 <span id='print.xmap_df'>print.xmap_df</span> &lt;- function(xmap_df){
   x_direction &lt;- <a href='create-xmap.html#.get_link_direction.xmap_df'>.get_link_direction.xmap_df</a>(xmap_df)
   x_type &lt;- <a href='create-xmap.html#.get_link_types.xmap_df'>.get_link_types.xmap_df</a>(xmap_df)
@@ -1495,20 +1378,27 @@ tibble::as_tibble(valid_xmap_df) |&gt;
 </div>
 <div id="package-creation" class="section level2">
 <h2>Package Creation</h2>
+<div id="add-vignettes" class="section level3">
+<h3>Add Vignettes</h3>
+<pre class="r"><code>litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)</code></pre>
+</div>
+<div id="render-package" class="section level3">
+<h3>Render package</h3>
 <p>We finish by running commands that will document, build, and install
 the package. It may also be a good idea to check the package from within
 this file.</p>
 <pre class="r"><code>rm(list = ls())
 litr::document() # &lt;-- use instead of devtools::document()
 devtools::run_examples()
-# devtools::build()
-# devtools::install()
+devtools::build()
+devtools::install()
 # devtools::check(document = FALSE)</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap
 ## Writing &#39;]8;;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/NAMESPACENAMESPACE]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;as_xmap_df&#39;)as_xmap_df.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap_df&#39;)new_xmap_df.Rd]8;;&#39;
+## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;print.xmap_df&#39;)print.xmap_df.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;op-null-default&#39;)op-null-default.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;df_check&#39;)df_check.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;validate_xmap_df&#39;)validate_xmap_df.Rd]8;;&#39;
@@ -1518,18 +1408,22 @@ devtools::run_examples()
 ## ℹ Loading xmap
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;as_xmap_df&#39;)as_xmap_df.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap_df&#39;)new_xmap_df.Rd]8;;&#39;
+## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;print.xmap_df&#39;)print.xmap_df.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;op-null-default&#39;)op-null-default.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;df_check&#39;)df_check.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;validate_xmap_df&#39;)validate_xmap_df.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap-has&#39;)xmap-has.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap_validate&#39;)xmap_validate.Rd]8;;&#39;</code></pre>
-<pre><code>## ── Running 7 example files ───────────────────────────────────────────── xmap ──</code></pre>
+<pre><code>## ── Running 8 example files ───────────────────────────────────────────── xmap ──</code></pre>
 <pre><code>## ℹ Loading xmap</code></pre>
 <pre><code>## 
 ## &gt; links &lt;- data.frame(a = &quot;AUS&quot;, b = c(&quot;VIC&quot;, &quot;NSW&quot;, 
 ## +     &quot;WA&quot;, &quot;OTHER&quot;), w = c(0.1, 0.15, 0.25, 0.5))
 ## 
 ## &gt; <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(links, from = a, to = b, weights = w)
+## xmap_df:
+## split 
+## (a -&gt; b) BY w
 ##     a     b    w
 ## 1 AUS   VIC 0.10
 ## 2 AUS   NSW 0.15
@@ -1539,22 +1433,100 @@ devtools::run_examples()
 ## &gt; links$extra &lt;- c(2, 4, 5, 6)
 ## 
 ## &gt; <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(links, from = a, to = b, weights = w)
+## xmap_df:
+## split 
+## (a -&gt; b) BY w
 ##     a     b    w extra
 ## 1 AUS   VIC 0.10     2
 ## 2 AUS   NSW 0.15     4
 ## 3 AUS    WA 0.25     5
 ## 4 AUS OTHER 0.50     6</code></pre>
 <pre><code>## ℹ Loading xmap</code></pre>
+<pre><code>##   
+   checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ ...
+  
+✔  checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’
+## 
+  
+─  preparing ‘xmap’:
+## 
+  
+   checking DESCRIPTION meta-information ...
+  
+✔  checking DESCRIPTION meta-information
+## 
+  
+─  installing the package to process help pages
+## 
+  
+   creating vignettes ...
+  
+✔  creating vignettes (4.2s)
+## 
+  
+─  checking for LF line-endings in source and make files and shell scripts
+## 
+  
+─  checking for empty or unneeded directories
+## 
+  
+─  looking to see if a ‘data/datalist’ file should be added
+## 
+  
+─  building ‘xmap_0.0.0.9009.tar.gz’
+## 
+  
+   
+## </code></pre>
+<pre><code>## [1] &quot;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap_0.0.0.9009.tar.gz&quot;</code></pre>
+<pre><code>## 
+##   
+   checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ ...
+  
+✔  checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’
+## 
+  
+─  preparing ‘xmap’:
+## 
+  
+   checking DESCRIPTION meta-information ...
+  
+✔  checking DESCRIPTION meta-information
+## 
+  
+─  installing the package to process help pages
+## 
+  
+─  checking for LF line-endings in source and make files and shell scripts (1.5s)
+## 
+  
+─  checking for empty or unneeded directories
+## ─  looking to see if a ‘data/datalist’ file should be added
+## 
+  
+─  building ‘xmap_0.0.0.9009.tar.gz’
+## 
+  
+   
+## 
+Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \
+##   /var/folders/7s/5vds1_8n7msbnx7mdc53zg8r0000gn/T//Rtmp9oZaKT/xmap_0.0.0.9009.tar.gz \
+##   --install-tests 
+## * installing to library ‘/Users/cynthiahqy/Library/R/x86_64/4.2/library’
+## * installing *source* package ‘xmap’ ...
+## ** using staged installation
+## ** R
+## ** tests
+## ** byte-compile and prepare package for lazy loading
+## ** help
+## *** installing help indices
+## ** building package indices
+## ** installing vignettes
+## ** testing if installed package can be loaded from temporary location
+## ** testing if installed package can be loaded from final location
+## ** testing if installed package keeps a record of temporary installation path
+## * DONE (xmap)</code></pre>
 </div>
-<div class="footnotes footnotes-end-of-document">
-<hr />
-<ol>
-<li id="fn1"><p>Schema crosswalks show equivalent elements or “fields”
-between database schema, and are used to “translate” data from one
-format into another in “metadata mapping”.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>e.g. using data-driven mapping (<a href="https://en.wikipedia.org/wiki/Data_mapping">Wikipedia, no
-reference</a>)<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-</ol>
 </div>
 
 

@@ -6,7 +6,7 @@
 \alias{is_xmap_df}
 \title{Coerce a data.frame-like object to \code{xmap_df}}
 \usage{
-as_xmap_df(x, from, to, weights, .drop = FALSE)
+as_xmap_df(x, from, to, weights, .keep_all = TRUE)
 
 is_xmap(x)
 
@@ -22,7 +22,7 @@ is_xmap_df(x)
 
 \item{weights}{Column in \code{x} specifying the weight applied to data passed along the directed link between source and target node}
 
-\item{.drop}{Logical indicating whether or not to drop additional columns in \code{x}. Defaults to FALSE.}
+\item{.keep_all}{Logical indicating whether or not to keep additional columns in \code{x}. Defaults to TRUE.}
 }
 \value{
 A crossmap \code{xmap_df} S3 object.
