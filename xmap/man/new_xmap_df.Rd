@@ -4,12 +4,16 @@
 \alias{new_xmap_df}
 \title{Low Level Constructor for xmap_df}
 \usage{
-new_xmap_df(x = data.frame(), from, to, weights, from_set = NULL)
+new_xmap_df(x = data.frame(), col_from, col_to, col_weights, from_set = NULL)
+}
+\arguments{
+\item{col_from, col_to, col_weights}{character strings naming columns containing source nodes, target nodes and numeric weights.
+checks argument types
+naively generates \code{from_set} if it is missing}
 }
 \value{
 \code{x} with additional subclasses \code{xmap} and \code{xmap_df}
 }
 \description{
-checks argument types
-naively generates \code{from_set} if it is missing
+Low Level Constructor for xmap_df
 }

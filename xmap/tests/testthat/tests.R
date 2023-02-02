@@ -7,7 +7,7 @@ testthat::test_that(
       y = 1:5,
       z = runif(5)
     )
-    xmap <- new_xmap_df(x = df, from = "x", to = "y", weights = "z")
+    xmap <- new_xmap_df(x = df, "x", "y", "z")
     xmap_attrs <- attributes(xmap)
     testthat::expect_s3_class(xmap, "xmap_df")
     testthat::expect_s3_class(xmap, "xmap")
@@ -79,7 +79,7 @@ testthat::test_that(
       "A4", "B03", 0.25,
       "A4", "B04", 0.75
     )
-    x <- new_xmap_df(df, from = "node_A", to = "node_B", weights = "w_AB")
+    x <- new_xmap_df(df, "node_A", "node_B", "w_AB")
     out <- testthat::expect_invisible(validate_xmap_df(x))
     testthat::expect_identical(out, x)
   }
@@ -167,7 +167,7 @@ testthat::test_that(
       "A1", "B02", 1
     )
     testthat::expect_error(df_check_links(df, "from", "to"))
-    x <- new_xmap_df(df, from = "from", to = "to", weights = "weights")
+    x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_dup")
   }
 )
