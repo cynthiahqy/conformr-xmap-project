@@ -186,19 +186,89 @@ state_xmap <- state_data |>
 #> 8 AU    AU-ACT 0.0176
 ```
 
-### Splitting
+### Mixed Maps
 
-Now consider the following example provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3):
+Now consider the following mixed transformation using selected correspondences between NAICS Canada 1997 and ISIC Revision 3. Imagine that we have some numeric data (e.g. gross output in CAD) collected in the NAICS Canada nomenclature that we want to harmonise into ISIC Revision 3. The correspondence between the two nomenclature contains a mixture of one-to-one, one-to-many, many-to-one and many-to-many relations.
+
+Luckily, we only need to deal with two cases when forming a crossmap:
+
+1.  links with unit weights (recode and collapse) and,
+2.  links with fractional weights (split).
+
+Let's first define some example correspondences.[^1]
+
+[^1]: based on examples provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3).
+
+> In the first example, one NAICS Canada class relates to exactly one ISIC class.
+
+```{r}
+canada_recode <- tibble::tribble(
+      ~NAICS1997,   ~NAICS1997_desc,  ~ISIC3,           ~ISIC3_desc,
+        "212210", "Iron Ore Mining", "C1310", "Mining of iron ores"
+      )
+```
 
 > In the second example, one ISIC class is equivalent to more than one NAICS Canada class. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
 
 ```{r}
-canada_links <- tibble::tribble(
+canada_agg <- tibble::tribble(
   ~NAICS1997, ~NAICS1997_desc, ~ISIC3, ~ISIC3_desc, ~Link,
   "311320", "Chocolate and Confectionery Manufacturing from Cacao Beans", "D1543 *", "Manufacture of cocoa, chocolate and sugar confectionery", "Chocolate and confectionery, made from cacao beans",
   "311330", "Confectionery Manufacturing from Purchased Chocolate", "D1543 *", "Manufacture of cocoa, chocolate and sugar confectionery", "Confectionery, made from purchased chocolate",
   "311340", "Non-Chocolate Confectionery Manufacturing", "D1543 *", "Manufacture of cocoa, chocolate and sugar confectionery", "Non-chocolate confectionery, manufacturing"
 )
+```
 
-canada_links
+> In this third example, one NAICS Canada class is equivalent to more than one ISIC class.
+
+```{r}
+canada_split <- tibble::tribble(
+      ~NAICS1997,                                   ~NAICS1997_desc,    ~ISIC3,                       ~ISIC3_desc,                                          ~Link,
+        "483213", "Inland Water Transportation (except by Ferries)", "I6110 *", "Sea and coastal water transport",            "Intracoastal water transportation",
+        "483213", "Inland Water Transportation (except by Ferries)", "I6120 *",          "Inland water transport", "Inland water transportation (except ferries)"
+      )
+```
+
+#### Unit weight links
+
+Notice that for both recode and collapse category relations, values attached to each source category are not directly modified during the "transfer" between source and target nomenclature. Instead, the source values are either retained, or summarised when the category collapse (and value aggregation) is performed. Thus, as shown above, both recode and collapse links have a weight of one.
+
+Let's clean up the recode and collapse links defined above:
+
+```{r}
+canada_unit <- canada_agg |>
+  # remove the partial flag (*)
+  dplyr::mutate(ISIC3 = str_remove(ISIC3, " \\*")) |>
+  dplyr::select(-Link) |>
+  # bind the links together and add weights
+  dplyr::bind_rows(canada_recode) |>
+  dplyr::mutate(share = 1)
+
+canada_unit
+```
+
+#### Fractional weight links
+
+Now all that remains is to prepare the split links. Similar to the disaggregation example above, we need to design weights to allocate the "pool" of numeric value associated with the NAICS class `483213` into the corresponding ISIC classes `I6110` and `I6120`.
+
+Assume for illustration purposes that the Canadian "Inland water transport" industry (`I6120`) is twice as big as the "Sea and coastal water transport" industry (`I6110`). This suggests that the weight between `483213` and `I6120` should be twice that of `I6110`.
+
+```{r}
+canada_frac <- canada_split |>
+  dplyr::mutate(ISIC3 = str_remove(ISIC3, " \\*")) |>
+  dplyr::select(-Link) |>
+  dplyr::mutate(share = case_when(ISIC3 == "I6110" ~ 0.33,
+                                  ISIC3 == "I6120" ~ 0.67,
+                                  T ~ NA_real_))
+```
+
+Now let's combine the unit and fractional links into a crossmap:
+
+```{r}
+canada_xmap <- dplyr::bind_rows(canada_unit, canada_frac) |>
+  as_xmap_df(from = NAICS1997, to = ISIC3, weights = share)
+
+print(canada_xmap)
+```
+
 ```
