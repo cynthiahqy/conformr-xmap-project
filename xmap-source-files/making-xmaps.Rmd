@@ -46,6 +46,8 @@ Additional columns (e.g. for label descriptions etc.) can be retained using the 
 The following example shows how to encode one-to-one, many-to-one and one-to-many links and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
 
 ```{r}
+library(xmap)
+
 simple_x <- tibble::tribble(
   ~source, ~target, ~share,
   "equal", "EQUAL", 1,       # one-to-one
@@ -111,7 +113,7 @@ Recall that we need one row per relation between the source (`adm1`) and target 
 
 ```{r}
 agg_x <- adm1_list |> 
-  dplyr::mutate(adm1 = str_split(adm1, ", ")) |>
+  dplyr::mutate(adm1 = stringr::str_split(adm1, ", ")) |>
   tidyr::unnest(cols = c(adm1))
 
 agg_x
@@ -199,16 +201,22 @@ Let's first define some example correspondences.[^1]
 
 [^1]: based on examples provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3).
 
-> In the first example, one NAICS Canada class relates to exactly one ISIC class.
+In the first example, one NAICS Canada class relates to exactly one ISIC class.
 
 ```{r}
-canada_recode <- tibble::tribble(
-      ~NAICS1997,   ~NAICS1997_desc,  ~ISIC3,           ~ISIC3_desc,
-        "212210", "Iron Ore Mining", "C1310", "Mining of iron ores"
-      )
+canada_recode <- tibble::tibble(
+  NAICS1997      = "212210", 
+  NAICS1997_desc = "Iron Ore Mining",
+  ISIC3          = "C1310",
+  ISIC3_desc    = "Mining of iron ores"
+)
 ```
 
-> In the second example, one ISIC class is equivalent to more than one NAICS Canada class. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
+```{r echo=FALSE}
+canada_recode
+```
+
+In the second example, one ISIC class is equivalent to more than one NAICS Canada class. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
 
 ```{r}
 canada_agg <- tibble::tribble(
@@ -219,14 +227,22 @@ canada_agg <- tibble::tribble(
 )
 ```
 
-> In this third example, one NAICS Canada class is equivalent to more than one ISIC class.
+```{r echo=FALSE}
+canada_agg
+```
+
+In this third example, one NAICS Canada class is equivalent to more than one ISIC class.
 
 ```{r}
 canada_split <- tibble::tribble(
-      ~NAICS1997,                                   ~NAICS1997_desc,    ~ISIC3,                       ~ISIC3_desc,                                          ~Link,
-        "483213", "Inland Water Transportation (except by Ferries)", "I6110 *", "Sea and coastal water transport",            "Intracoastal water transportation",
-        "483213", "Inland Water Transportation (except by Ferries)", "I6120 *",          "Inland water transport", "Inland water transportation (except ferries)"
-      )
+  ~NAICS1997, ~NAICS1997_desc, ~ISIC3, ~ISIC3_desc, ~Link,
+  "483213", "Inland Water Transportation (except by Ferries)", "I6110 *", "Sea and coastal water transport", "Intracoastal water transportation",
+  "483213", "Inland Water Transportation (except by Ferries)", "I6120 *", "Inland water transport", "Inland water transportation (except ferries)"
+)
+```
+
+```{r echo=FALSE}
+canada_split 
 ```
 
 #### Unit weight links
@@ -238,7 +254,7 @@ Let's clean up the recode and collapse links defined above:
 ```{r}
 canada_unit <- canada_agg |>
   # remove the partial flag (*)
-  dplyr::mutate(ISIC3 = str_remove(ISIC3, " \\*")) |>
+  dplyr::mutate(ISIC3 = stringr::str_remove(ISIC3, " \\*")) |>
   dplyr::select(-Link) |>
   # bind the links together and add weights
   dplyr::bind_rows(canada_recode) |>
@@ -255,9 +271,9 @@ Assume for illustration purposes that the Canadian "Inland water transport" indu
 
 ```{r}
 canada_frac <- canada_split |>
-  dplyr::mutate(ISIC3 = str_remove(ISIC3, " \\*")) |>
+  dplyr::mutate(ISIC3 = stringr::str_remove(ISIC3, " \\*")) |>
   dplyr::select(-Link) |>
-  dplyr::mutate(share = case_when(ISIC3 == "I6110" ~ 0.33,
+  dplyr::mutate(share = dplyr::case_when(ISIC3 == "I6110" ~ 0.33,
                                   ISIC3 == "I6120" ~ 0.67,
                                   T ~ NA_real_))
 ```
