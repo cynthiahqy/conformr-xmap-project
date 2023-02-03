@@ -521,7 +521,7 @@ testthat::test_that(
 )
 ```
 
-### Method: `xmap_df`
+### Method: `validate_xmap_df()`
 
 -   order checks from cheapest to most expensive
 -   validates data.frame properties:
