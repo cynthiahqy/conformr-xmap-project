@@ -786,59 +786,6 @@ as_xmap_df <- function(x, from, to, weights, .keep_all = TRUE) {
 }
 ```
 
-## Modification
-
-See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues/67)
-
-### Method: `modify_xmap_df()`
-
-```{r send_to="R/modify_xmap.R"}
-modify_xmap_df <- function(xmap_df, from = NULL, to = NULL, weights = NULL){
-  stopifnot(inherits(xmap_df, "xmap_df"))
-  if (all(missing(from), missing(to), missing(weights))){
-      stop("Please supply at least one of `from`, `to` or `weights` to modify `xmap_df`")
-    }
-  
-  x_attrs <- attributes(xmap_df)
-  
-  col_from <- ifelse(is.null(rlang::maybe_missing(from)),
-                     x_attrs$col_from,
-                     deparse(substitute(from)))
-  col_to <- ifelse(is.null(rlang::maybe_missing(to)), 
-                     x_attrs$col_to,
-                     deparse(substitute(to)))
-  col_weights <- ifelse(is.null(rlang::maybe_missing(weights)), 
-                     x_attrs$col_weights,
-                     deparse(substitute(weights)))
-  col_strings <- c(col_from, col_to, col_weights)
-  
-  df_check_cols(x, col_strings)
-}
-```
-
-```{r}
-iso_xmap <- tibble::tribble(
-      ~ISONumeric, ~ISO2, ~link,         ~country, ~ISO3,
-            "004",  "AF",     1,    "Afghanistan", "AFG",
-            "008",  "AL",     1,        "Albania", "ALB",
-            "012",  "DZ",     1,        "Algeria", "DZA",
-            "016",  "AS",     1, "American Samoa", "ASM",
-            "020",  "AD",     1,        "Andorra", "AND"
-      ) |>
-  as_xmap_df(from = ISO2, to = ISONumeric, weights = link)
-
-modify_xmap_df(iso_xmap, from = country, to = ISONumeric)
-```
-
-### Generic: `xmap_modify()`
-
-### Generic: `xmap_reverse()`
-
-```{r}
-xmap_reverse.xmap_df <- function(xmap_df, .weights_to = "r_weights"){
-}
-```
-
 ## Diagnostic Tools
 
 See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues/63)
@@ -928,6 +875,118 @@ testthat::test_that(
     testthat::expect_true(has_split_recode_only(links_split$weights, links_split$to))
     testthat::expect_true(has_collapse_recode_only(links_collapse$weights, links_collapse$to))
   }
+)
+```
+
+## Modification
+
+See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues/67)
+
+### Method: `modify_xmap_df()`
+
+```{r send_to="R/modify_xmap.R"}
+modify_xmap_df <- function(xmap_df, col_from = NULL, col_to = NULL, col_weights = NULL){
+  stopifnot(inherits(xmap_df, "xmap_df"))
+  
+  x_attrs <- attributes(xmap_df)
+  col_from <- col_from %||% x_attrs$col_from
+  col_to <- col_to %||% x_attrs$col_to
+  col_weights <- col_weights %||% x_attrs$col_weights
+  
+  col_strings <- c(col_from, col_to, col_weights)
+  df_check_cols(xmap_df, col_strings)
+  
+  df <- as.data.frame(xmap_df)
+  col_order <- c(col_strings, setdiff(names(df), col_strings))
+  df <- df[col_order]
+  xmap <- new_xmap_df(df, col_from, col_to, col_weights)
+  validate_xmap_df(xmap)
+
+  return(xmap)
+}
+```
+
+```{r}
+iso_xmap <- tibble::tribble(
+      ~ISONumeric, ~ISO2, ~link,         ~country, ~ISO3,
+            "004",  "AF",     1,    "Afghanistan", "AFG",
+            "008",  "AL",     1,        "Albania", "ALB",
+            "012",  "DZ",     1,        "Algeria", "DZA",
+            "016",  "AS",     1, "American Samoa", "ASM",
+            "020",  "AD",     1,        "Andorra", "AND"
+      ) |>
+  as_xmap_df(from = ISO2, to = ISONumeric, weights = link)
+```
+
+### Generic: `xmap_modify()`
+
+### Generic: `xmap_reverse()`
+
+```{r}
+xmap_reverse <- function(x, ...){
+  UseMethod("xmap_validate")
+}
+
+#' Reverse xmap direction
+#'
+#' @param x
+#' @param new_col_weights 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+xmap_reverse.xmap_df <- function(x, new_col_weights = "r_weights"){
+  stopifnot(inherits(x, "xmap_df"))
+  x_attrs <- attributes(x)
+  df <- as.data.frame(x)
+  
+  ## check xmap can be reversed
+  x_to <- df[[x_attrs$col_to]]
+  if (has_collapse(x_to)){
+    cli::cli_abort("Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.")
+  }
+  
+  ## make new xmap
+  df[[new_col_weights]] <- 1
+  new_from <- x_attrs$col_to
+  new_to <- x_attrs$col_from
+  new_weights <- new_col_weights
+  new_cols <- c(new_from, new_to, new_weights)
+  ## rearrange columns
+  col_order <- c(new_cols, setdiff(names(df), new_cols))
+  df <- df[col_order]
+  
+  ## construction
+  xmap <- new_xmap_df(df, new_from, new_to, new_weights)
+  
+  ## validation
+  xmap_validate(xmap)
+  
+  return(xmap)
+}
+```
+
+```{r}
+testthat::test_that("xmap_reverse() works as expected",             {
+  x <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A4", "B03", 0.25,
+      "A4", "B04", 0.75
+    ) |> as.data.frame() |> 
+    new_xmap_df("from", "to", "weights")
+  
+  x_rev <- data.frame(
+    to = x$to,
+    from = x$from,
+    r_weights = 1,
+    weights = x$weights
+  ) |>
+    new_xmap_df("to", "from", "r_weights")
+  
+  testthat::expect_identical(xmap_reverse.xmap_df(x), x_rev)
+}
 )
 ```
 
