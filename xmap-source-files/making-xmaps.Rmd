@@ -153,6 +153,10 @@ For example, imagine that we have population figures for Australia at the 3166-2
 
 Alternatively, we might want to compare aggregate and disaggregate statistics to identify discrepancies.
 
+Using Australian population statistics from 30 Jun 2022[^1]
+
+[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/latest-release)
+
 ```{r}
 state_data <- tibble::tribble(
                               ~state,    ~adm1,    ~Pop,
@@ -197,9 +201,9 @@ Luckily, we only need to deal with two cases when forming a crossmap:
 1.  links with unit weights (recode and collapse) and,
 2.  links with fractional weights (split).
 
-Let's first define some example correspondences.[^1]
+Let's first define some example correspondences.[^2]
 
-[^1]: based on examples provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3).
+[^2]: based on examples provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3).
 
 In the first example, one NAICS Canada class relates to exactly one ISIC class.
 
