@@ -215,7 +215,7 @@ new_xmap_df <- function(x = data.frame(), col_from, col_to, col_weights, from_se
 
   #' @return `x` with additional subclasses `xmap` and `xmap_df`
 
-  class(x) <- append(c("xmap_df", "xmap"), class(x))
+  class(x) <- union(c("xmap_df", "xmap"), class(x))
   structure(x,
     col_from = col_from,
     col_to = col_to,
@@ -970,7 +970,8 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
 #' Print an `xmap_df`
 #'
 #' @export
-print.xmap_df <- function(xmap_df){
+print.xmap_df <- function(x){
+  xmap_df <- x
   x_direction <- .get_link_direction.xmap_df(xmap_df)
   x_type <- .get_link_types.xmap_df(xmap_df)
 
