@@ -285,7 +285,7 @@ is_xmap_df <- function(x) {
 
 ## Validation
 
-### Error Helpers (`validate-helpers.R`)
+### Diagnostic Helpers (`validate-helpers.R`)
 
 The conventions for validation helpers:
 
@@ -786,13 +786,13 @@ as_xmap_df <- function(x, from, to, weights, .keep_all = TRUE) {
 }
 ```
 
-## Diagnostic Tools
+## Description Tools
 
 See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues/63)
 
 ### Helper: xmap link classification
 
--   used for print methods
+-   used for print methods, reverse
 
 ```{r print-helpers, send_to="R/xmap-has.R"}
 #' @describeIn xmap-has Return TRUE if xmap recodes labels between `from` and `to`
