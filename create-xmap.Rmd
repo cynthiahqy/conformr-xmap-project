@@ -978,6 +978,8 @@ Suggested in [confomr-project #43](https://github.com/cynthiahqy/conformr-projec
 ### Add Vignettes
 
 ```{r}
+litr::add_readme("../xmap-source-files/README.Rmd")
+litr::add_vignettes("../xmap-source-files/xmap.Rmd")
 litr::add_vignettes("../xmap-source-files/making-xmaps.Rmd")
 ```
 
@@ -988,6 +990,7 @@ We finish by running commands that will document, build, and install the package
 ```{r}
 rm(list = ls())
 litr::document() # <-- use instead of devtools::document()
+litr::add_pkgdown()
 devtools::run_examples()
 devtools::build()
 devtools::install()
