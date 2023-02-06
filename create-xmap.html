@@ -368,7 +368,7 @@ package</h1>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9009&quot;,
+    Version = &quot;0.0.0.9010&quot;,
     Title = &quot;xmap: A data-structure for extending crosswalks&quot;,
     Description = &quot;Provides a &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) based on &#39;tbl_df&#39;
     class for use in {conformr} package.&quot;,
@@ -629,7 +629,7 @@ which:</p>
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -740,7 +740,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -876,9 +876,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 </div>
 <div id="method-xmap_df" class="section level3">
@@ -951,7 +951,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1055,12 +1055,12 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="generic-xmap_validate" class="section level3">
@@ -1216,7 +1216,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="helper-xmap-type-classification" class="section level3">
 <h3>Helper: xmap type classification</h3>
@@ -1254,7 +1254,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(<a href='create-xmap.html#has_collapse_recode_only'>has_collapse_recode_only</a>(links_collapse$weights, links_collapse$to))
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="s3-enhancements" class="section level2">
@@ -1380,7 +1380,13 @@ tibble::as_tibble(valid_xmap_df) |&gt;
 <h2>Package Creation</h2>
 <div id="add-vignettes" class="section level3">
 <h3>Add Vignettes</h3>
-<pre class="r"><code>litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)</code></pre>
+<pre class="r"><code>litr::add_readme(&quot;../xmap-source-files/README.Rmd&quot;)
+litr::add_vignettes(&quot;../xmap-source-files/xmap.Rmd&quot;)
+litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)</code></pre>
+<pre><code>## ✔ Writing &#39;README.Rmd&#39;
+## ✔ Adding &#39;^README\\.Rmd$&#39; to &#39;.Rbuildignore&#39;
+## ✔ Creating &#39;.git/hooks/&#39;
+## ✔ Writing &#39;.git/hooks/pre-commit&#39;</code></pre>
 </div>
 <div id="render-package" class="section level3">
 <h3>Render package</h3>
@@ -1389,6 +1395,7 @@ the package. It may also be a good idea to check the package from within
 this file.</p>
 <pre class="r"><code>rm(list = ls())
 litr::document() # &lt;-- use instead of devtools::document()
+litr::add_pkgdown()
 devtools::run_examples()
 devtools::build()
 devtools::install()
@@ -1404,6 +1411,50 @@ devtools::install()
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;validate_xmap_df&#39;)validate_xmap_df.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap-has&#39;)xmap-has.Rd]8;;&#39;
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap_validate&#39;)xmap_validate.Rd]8;;&#39;</code></pre>
+<pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;
+## ✔ Writing &#39;_pkgdown.yml&#39;</code></pre>
+<pre><code>## -- Installing package into temporary library -----------------------------------
+## == Building pkgdown site =======================================================
+## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap&#39;
+## Writing to:   &#39;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/docs&#39;
+## -- Initialising site -----------------------------------------------------------
+## Copying &#39;../../../../../../../Library/Frameworks/R.framework/Versions/4.2/Resources/library/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
+## Copying &#39;../../../../../../../Library/Frameworks/R.framework/Versions/4.2/Resources/library/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
+## -- Building home ---------------------------------------------------------------
+## Writing &#39;authors.html&#39;
+## Reading &#39;LICENSE.md&#39;
+## Writing &#39;LICENSE.html&#39;
+## Writing &#39;LICENSE-text.html&#39;
+## Writing &#39;404.html&#39;
+## -- Building function reference -------------------------------------------------
+## Writing &#39;reference/index.html&#39;
+## Reading &#39;man/as_xmap_df.Rd&#39;
+## Writing &#39;reference/as_xmap_df.html&#39;
+## Reading &#39;man/df_check.Rd&#39;
+## Writing &#39;reference/df_check.html&#39;
+## Reading &#39;man/new_xmap_df.Rd&#39;
+## Writing &#39;reference/new_xmap_df.html&#39;
+## Reading &#39;man/op-null-default.Rd&#39;
+## Writing &#39;reference/op-null-default.html&#39;
+## Reading &#39;man/print.xmap_df.Rd&#39;
+## Writing &#39;reference/print.xmap_df.html&#39;
+## Reading &#39;man/validate_xmap_df.Rd&#39;
+## Writing &#39;reference/validate_xmap_df.html&#39;
+## Reading &#39;man/xmap-has.Rd&#39;
+## Writing &#39;reference/xmap-has.html&#39;
+## Reading &#39;man/xmap_validate.Rd&#39;
+## Writing &#39;reference/xmap_validate.html&#39;
+## -- Building articles -----------------------------------------------------------
+## Writing &#39;articles/index.html&#39;
+## Reading &#39;vignettes/making-xmaps.Rmd&#39;
+## Writing &#39;articles/making-xmaps.html&#39;
+## Reading &#39;vignettes/xmap.Rmd&#39;
+## Writing &#39;articles/xmap.html&#39;
+## Writing &#39;sitemap.xml&#39;
+## -- Building search index -------------------------------------------------------
+## == DONE ========================================================================
+## Warning message:
+## The vignette title specified in \VignetteIndexEntry{} is different from the title in the YAML metadata. The former is &quot;Intro to Crossmaps for Data Transformation in R&quot;, and the latter is &quot;Crossmaps for Data Transformation in R&quot;. If that is intentional, you may set options(rmarkdown.html_vignette.check_title = FALSE) to suppress this check.</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap
 ## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;as_xmap_df&#39;)as_xmap_df.Rd]8;;&#39;
@@ -1461,7 +1512,7 @@ devtools::install()
   
    creating vignettes ...
   
-✔  creating vignettes (4.2s)
+✔  creating vignettes (4.6s)
 ## 
   
 ─  checking for LF line-endings in source and make files and shell scripts
@@ -1473,12 +1524,12 @@ devtools::install()
 ─  looking to see if a ‘data/datalist’ file should be added
 ## 
   
-─  building ‘xmap_0.0.0.9009.tar.gz’
+─  building ‘xmap_0.0.0.9010.tar.gz’
 ## 
   
    
 ## </code></pre>
-<pre><code>## [1] &quot;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap_0.0.0.9009.tar.gz&quot;</code></pre>
+<pre><code>## [1] &quot;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap_0.0.0.9010.tar.gz&quot;</code></pre>
 <pre><code>## 
 ##   
    checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ ...
@@ -1497,20 +1548,20 @@ devtools::install()
 ─  installing the package to process help pages
 ## 
   
-─  checking for LF line-endings in source and make files and shell scripts (1.5s)
+─  checking for LF line-endings in source and make files and shell scripts (2.1s)
 ## 
   
 ─  checking for empty or unneeded directories
 ## ─  looking to see if a ‘data/datalist’ file should be added
 ## 
   
-─  building ‘xmap_0.0.0.9009.tar.gz’
+─  building ‘xmap_0.0.0.9010.tar.gz’
 ## 
   
    
 ## 
 Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \
-##   /var/folders/7s/5vds1_8n7msbnx7mdc53zg8r0000gn/T//Rtmp9oZaKT/xmap_0.0.0.9009.tar.gz \
+##   /var/folders/7s/5vds1_8n7msbnx7mdc53zg8r0000gn/T//RtmpbsfALo/xmap_0.0.0.9010.tar.gz \
 ##   --install-tests 
 ## * installing to library ‘/Users/cynthiahqy/Library/R/x86_64/4.2/library’
 ## * installing *source* package ‘xmap’ ...
