@@ -198,10 +198,11 @@ The constructor returns an object of class `xmap_df` which:
     -   `col_weights`: link weights
     -   `from_set`: source node set
 
-```{r xmap-constructor}
+```{r xmap-constructor, send_to="R/xmap_df.R"}
 #' Low Level Constructor for xmap_df
-#'
+#' @param x data-frame like object.
 #' @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
+#' @return xmap_df object. Note that this function unclasses tibbles.
 new_xmap_df <- function(x = data.frame(), col_from, col_to, col_weights, from_set = NULL) {
   #' checks argument types
   stopifnot(is.data.frame(x))
@@ -291,7 +292,7 @@ The conventions for validation helpers:
 
 `df_check_*(df,...)` all take an data.frame for first argument, and character values or vectors for the remaining arguments. They throw an error if the validation condition does not pass, and `NULL` otherwise.
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' xmap_df validation helpers
 #'
 #' @description
@@ -311,7 +312,7 @@ NULL
 
 #### Missing Columns Check
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if named columns can't be found in xmap_df
 #'
 df_check_cols <- function(df, col_attrs) {
@@ -329,7 +330,7 @@ df_check_cols <- function(df, col_attrs) {
 
 #### Missing Value Check
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if xmap_df has missing values
 #'
 df_check_na <- function(df) {
@@ -345,7 +346,7 @@ df_check_na <- function(df) {
 
 #### Column Order Check
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if xmap_df columns are not in order
 df_check_col_order <- function(df, col_from, col_to, col_weights){
   correct_order <- c(col_from, col_to, col_weights)
@@ -373,7 +374,7 @@ testthat::test_that("df_check_col_order() works as expected",
 
 #### Column Type Check
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if xmap_df has wrong column types
 #'
 df_check_col_type <- function(df, col_weights) {
@@ -389,7 +390,7 @@ df_check_col_type <- function(df, col_weights) {
 
 #### From Set Check
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if from_set attribute doesn't match xmap_df values
 #'
 df_check_from_set <- function(df, col_from, from_set) {
@@ -425,7 +426,7 @@ has_dup_links <- function(x_from, x_to) {
 }
 ```
 
-```{r send_to="R/validate-helpers.R"}
+```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if xmap_df has duplicate links
 #'
 df_check_links <- function(df, col_from, col_to) {
@@ -460,7 +461,7 @@ has_complete_weights <- function(x_from, x_weights) {
 }
 ```
 
-```{r fnc-check-weights, send_to="R/validate-helpers.R"}
+```{r fnc-check-weights, send_to="R/df_check.R"}
 #' @describeIn df_check Abort if df has invalid mapping weights
 #'
 df_check_weights <- function(df, col_from, col_weights) {
@@ -905,11 +906,13 @@ iso_xmap <- tibble::tribble(
 #' @export
 #'
 #' @examples
-xmap_reverse <- function(x, ...){
+xmap_reverse <- function(x, weights_to = "r_weights"){
   UseMethod("xmap_reverse")
 }
 
-
+#' @describeIn xmap_reverse
+#' @return xmap_df
+#' 
 #' @export
 xmap_reverse.xmap_df <- function(x, weights_to = "r_weights"){
   stopifnot(inherits(x, "xmap_df"))
