@@ -17,9 +17,8 @@ xmap provides tools for creating, validating and modifying Nomenclature Crossmap
 
 ## Installation
 
-To install the latest development version of `conformr`:
+To install the latest development version of `xmap`:
 
 ``` r
 remotes::install_github("cynthiahqy/conformr-project", subdir = "xmap")
 ```
-
