@@ -925,44 +925,6 @@ df_check_reversible <- function(df, col_to) {
 
 See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues/67)
 
-### Method: `modify_xmap_df()`
-
-```{r send_to="R/modify_xmap.R"}
-modify_xmap_df <- function(xmap_df, col_from = NULL, col_to = NULL, col_weights = NULL){
-  stopifnot(inherits(xmap_df, "xmap_df"))
-  
-  x_attrs <- attributes(xmap_df)
-  col_from <- col_from %||% x_attrs$col_from
-  col_to <- col_to %||% x_attrs$col_to
-  col_weights <- col_weights %||% x_attrs$col_weights
-  
-  col_strings <- c(col_from, col_to, col_weights)
-  df_check_cols(xmap_df, col_strings)
-  
-  df <- as.data.frame(xmap_df)
-  col_order <- c(col_strings, setdiff(names(df), col_strings))
-  df <- df[col_order]
-  xmap <- new_xmap_df(df, col_from, col_to, col_weights)
-  validate_xmap_df(xmap)
-
-  return(xmap)
-}
-```
-
-```{r}
-iso_xmap <- tibble::tribble(
-      ~ISONumeric, ~ISO2, ~link,         ~country, ~ISO3,
-            "004",  "AF",     1,    "Afghanistan", "AFG",
-            "008",  "AL",     1,        "Albania", "ALB",
-            "012",  "DZ",     1,        "Algeria", "DZA",
-            "016",  "AS",     1, "American Samoa", "ASM",
-            "020",  "AD",     1,        "Andorra", "AND"
-      ) |>
-  as_xmap_df(from = ISO2, to = ISONumeric, weights = link)
-```
-
-### Generic: `xmap_modify()`
-
 ### Generic: `xmap_reverse()`
 
 ```{r}
