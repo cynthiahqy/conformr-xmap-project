@@ -1013,11 +1013,11 @@ See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues
 #' @export
 #'
 #' @examples
-xmap_reverse <- function(x, weights_to = "r_weights"){
+xmap_reverse <- function(x, weights_to){
   UseMethod("xmap_reverse")
 }
 
-#' @describeIn xmap_reverse
+#' @describeIn xmap_reverse Reverse a `xmap_df`
 #' @return xmap_df
 #' 
 #' @export
@@ -1043,15 +1043,25 @@ xmap_reverse.xmap_df <- function(x, weights_to = "r_weights"){
   xmap <- new_xmap_df(df, new_from, new_to, new_weights)
   
   ## validation
-  xmap_validate(xmap)
+  validate_xmap_df(xmap)
   
+  return(xmap)
+}
+
+#' @describeIn xmap_reverse Reverse a `xmap_tbl`
+#' @return xmap_tbl
+#'
+#' @export
+xmap_reverse.xmap_tbl <- function(x, weights_to = "r_weights"){
+  xmap <- xmap_reverse.xmap_df(x, weights_to)
+  class(xmap) <- .get_xmap_subclass_attr("xmap_tbl")
   return(xmap)
 }
 ```
 
 ```{r}
-testthat::test_that("xmap_reverse() works as expected",             {
-  x <- tibble::tribble(
+testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
+  df_x <- tibble::tribble(
       ~from, ~to, ~weights,
       "A1", "B01", 1,
       "A4", "B03", 0.25,
@@ -1059,16 +1069,27 @@ testthat::test_that("xmap_reverse() works as expected",             {
     ) |> as.data.frame() |> 
     new_xmap_df("from", "to", "weights")
   
-  x_rev <- data.frame(
-    to = x$to,
-    from = x$from,
+  df_x_rev <- data.frame(
+    to = df_x$to,
+    from = df_x$from,
     r_weights = 1,
-    weights = x$weights
+    weights = df_x$weights
   ) |>
     new_xmap_df("to", "from", "r_weights")
   
-  testthat::expect_identical(xmap_reverse.xmap_df(x), x_rev)
-  testthat::expect_identical(df_check_reversible(x,"to"), x)
+  # class checks
+  testthat::expect_s3_class(xmap_reverse.xmap_df(df_x), class(df_x_rev))
+  testthat::expect_s3_class(xmap_reverse(df_x), class(df_x_rev))
+  
+  # output checks
+  testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
+  testthat::expect_identical(df_check_reversible(df_x,"to"), df_x)
+  
+  # more class checks
+  testthat::expect_s3_class(xmap_reverse.xmap_tbl(df_x), .get_xmap_subclass_attr("xmap_tbl"))
+  tbl_x <- df_x |> new_xmap_tbl("from", "to", "weights")
+  tbl_x_rev <- df_x_rev |> new_xmap_tbl("to", "from", "r_weights")
+  testthat::expect_s3_class(xmap_reverse(tbl_x), class(tbl_x_rev))
 }
 )
 ```

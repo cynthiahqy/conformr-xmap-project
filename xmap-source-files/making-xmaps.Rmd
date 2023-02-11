@@ -310,7 +310,7 @@ Imagine that instead of converting country codes from ISO Numeric to ISO-2 digit
 
 ```{r}
 iso_xmap |>
-  as_xmap(from = ISO2, to = ISONumeric, weights = link)
+  xmap_reverse()
 ```
 
 We can also easily generate crossmaps for the other nomenclature in the table:
