@@ -269,8 +269,7 @@ testthat::test_that(
     )
     xmap <- new_xmap_df(x = df, "x", "y", "z")
     xmap_attrs <- attributes(xmap)
-    testthat::expect_s3_class(xmap, "xmap_df")
-    testthat::expect_s3_class(xmap, "xmap")
+    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_df"))
     testthat::expect_identical(xmap_attrs$col_from, "x")
     testthat::expect_identical(xmap_attrs$col_to, "y")
     testthat::expect_identical(xmap_attrs$col_weights, "z")
@@ -330,7 +329,7 @@ testthat::test_that(
     ) |> tibble::as_tibble()
     xmap <- new_xmap_tbl(x = df, "x", "y", "z")
     xmap_attrs <- attributes(xmap)
-    testthat::expect_s3_class(xmap, "xmap_tbl")
+    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_tbl"))
     testthat::expect_identical(xmap_attrs$col_from, "x")
     testthat::expect_identical(xmap_attrs$col_to, "y")
     testthat::expect_identical(xmap_attrs$col_weights, "z")
@@ -787,16 +786,19 @@ testthat::test_that(
 #'  * For `is_xmap()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
+#' @param subclass Which xmap subclass `df` or `tbl` to return. Defaults to `xmap_df` for `data.frame`, and `xmap_tbl` for `tibble`
 #' @param .keep_all Logical indicating whether or not to keep additional columns in `x`. Defaults to TRUE.
 #' 
+#' @return A validated `xmap` object.
+#' 
 #' @export
-as_xmap <- function(x, from, to, weights, ...) {
+as_xmap <- function(x, from, to, weights, subclass, ...) {
   UseMethod("as_xmap")
 }
 
 ```
 
-### `as_xmap_df()`
+### `as_xmap.data.frame()`
 
 -   checks for:
     -   [x] existence of columns via `validate_xmap_df()`
@@ -806,7 +808,7 @@ as_xmap <- function(x, from, to, weights, ...) {
     -   [x] any validation failures via `validate_xmap_df()`
 
 ```{r}
-#' @describeIn as_xmap Coerce a `data.frame` to `xmap_df`
+#' @describeIn as_xmap Coerce a `data.frame` to `xmap_df` or `xmap_tbl`
 #'
 #' @return A crossmap `xmap_df` S3 object.
 #' @export
@@ -822,7 +824,7 @@ as_xmap <- function(x, from, to, weights, ...) {
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap(links, from = a, to = b, weights = w)
-as_xmap.data.frame <- function(x, from, to, weights, .keep_all = TRUE) {
+as_xmap.data.frame <- function(x, from, to, weights, subclass = NULL, .keep_all = TRUE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -846,7 +848,11 @@ as_xmap.data.frame <- function(x, from, to, weights, .keep_all = TRUE) {
   df <- df[col_order]
 
   ## construction
-  xmap <- new_xmap_df(df, col_from, col_to, col_weights)
+  subclass <- subclass %||% "xmap_df"
+  xmap <- switch(subclass,
+                 xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
+                 xmap_tbl = new_xmap_tbl(df, col_from, col_to, col_weights),
+                 stop("Unknown xmap subclass"))
 
   ## validation
   validate_xmap_df(xmap)
@@ -856,6 +862,74 @@ as_xmap.data.frame <- function(x, from, to, weights, .keep_all = TRUE) {
 
 # temp-fix to avoid rewriting tests
 as_xmap_df <- as_xmap.data.frame
+
+
+#' @describeIn as_xmap Coerce a `tibble` to `xmap_tbl` or `xmap_df`
+#' 
+#' @export
+as_xmap.tbl_df <- function(x, from, to, weights, subclass = NULL, .keep_all = TRUE){
+  stopifnot(tibble::is_tibble(x))
+
+  # get string names for columns
+  col_from <- deparse(substitute(from))
+  col_to <- deparse(substitute(to))
+  col_weights <- deparse(substitute(weights))
+  col_strings <- c(col_from, col_to, col_weights)
+  ## check columns exist
+  df_check_cols(x, col_strings)
+
+  ## drop additional columns
+  if (!.keep_all) {
+    df <- x[col_strings]
+  } else {
+    df <- x
+  }
+
+  ## rearrange columns
+  col_order <- c(col_strings, setdiff(names(df), col_strings))
+  df <- df[col_order]
+
+  ## construction
+  subclass <- subclass %||% "xmap_tbl"
+  xmap <- switch(subclass,
+                 xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
+                 xmap_tbl = new_xmap_tbl(df, col_from, col_to, col_weights),
+                 stop("Unknown xmap subclass"))
+
+  ## validation
+  validate_xmap_df(xmap)
+
+  return(xmap)
+}
+```
+
+```{r}
+testthat::test_that(
+  "as_xmap() is returns expected xmap subclasses",
+  {
+     tbl_links <- tibble::tribble(
+      ~f, ~t, ~w,
+      "A1", "B01", 1,
+      "A2", "B02", 1,
+      "A3", "B02", 1,
+      "A4", "B03", 0.67,
+      "A4", "B04", 0.33
+      )
+     df_links <- as.data.frame(tbl_links)
+     
+     ## default subclasses work as expected
+     testthat::expect_s3_class(as_xmap(df_links, f, t, w),
+                               .get_xmap_subclass_attr("xmap_df"))
+     testthat::expect_s3_class(as_xmap(tbl_links, f, t, w),
+                               .get_xmap_subclass_attr("xmap_tbl"))
+     
+     ## override subclass works as well
+     testthat::expect_s3_class(as_xmap(df_links, f, t, w, subclass = "xmap_tbl"),
+                               .get_xmap_subclass_attr("xmap_tbl"))
+     testthat::expect_s3_class(as_xmap(df_links, f, t, w, subclass = "xmap_df"),
+                               .get_xmap_subclass_attr("xmap_df"))
+  }
+)
 ```
 
 ## Description Tools
@@ -1080,7 +1154,7 @@ valid_xmap_df <-
     "civil", "CONS", 1 / 3,
   ) |>
   dplyr::mutate(extra_col = "stuff") |>
-  as_xmap_df(from = sector, to = new_sec, weight)
+  as_xmap(from = sector, to = new_sec, weight)
 
 print(valid_xmap_df)
 ```
