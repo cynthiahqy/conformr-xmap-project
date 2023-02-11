@@ -174,13 +174,15 @@ The naming convention for constructors is: `new_<subclass>()`. For example: `new
 
 ### Helper for subclass attributes
 
-```{r send-to="R/new_xmap.R"}
+```{r send_to="R/new_xmap.R"}
 #'
 .get_xmap_subclass_attr <- function(subclass){
-  switch(subclass,
+  class_attr <- switch(subclass,
          xmap_df = c("xmap_df", "xmap", "data.frame"),
-         xmap_tbl = c("xmap_tbl", "xmap_df", "xmap", "tbl_df", "tbl", "dataframe"),
+         xmap_tbl = c("xmap_tbl", "xmap_df", "xmap", "tbl_df", "tbl", "data.frame"),
          stop("Unknown xmap subclass"))
+  
+  return(class_attr)
 }
 ```
 
