@@ -172,6 +172,26 @@ Has all the same properties as `xmap_df` and is also a tibble.
 
 The naming convention for constructors is: `new_<subclass>()`. For example: `new_xmap_df()`
 
+### Helper for subclass attributes
+
+```{r send-to="R/new_xmap.R"}
+#'
+.get_xmap_subclass_attr <- function(subclass){
+  switch(subclass,
+         xmap_df = c("xmap_df", "xmap", "data.frame"),
+         xmap_tbl = c("xmap_tbl", "xmap_df", "xmap", "tbl_df", "tbl", "dataframe"),
+         stop("Unknown xmap subclass"))
+}
+```
+
+```{r}
+testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
+                    {
+                      testthat::expect_error(.get_xmap_subclass_attr("unknown"),
+                                             regexp = "Unknown xmap subclass")
+                    })
+```
+
 ### `xmap_df` Constructor Method
 
 The low-level constructor takes in:
@@ -202,7 +222,7 @@ The constructor returns an object of class `xmap_df` which:
     -   `col_weights`: link weights
     -   `from_set`: source node set
 
-```{r xmap-constructor, send_to="R/xmap_df.R"}
+```{r xmap-constructor, send_to="R/new_xmap.R"}
 #' Low Level Constructors for xmap subclasses
 #' @param x data-frame like object.
 #' @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
@@ -224,7 +244,7 @@ new_xmap_df <- function(x, col_from, col_to, col_weights, from_set = NULL) {
 
   #' @return `x` with additional subclasses `xmap_df` and `xmap`
 
-  class(x) <- c("xmap_df", "xmap", "data.frame")
+  class(x) <- .get_xmap_subclass_attr("xmap_df")
   structure(x,
     col_from = col_from,
     col_to = col_to,
@@ -276,7 +296,7 @@ testthat::test_that(
 
 Has all the same properties as `xmap_df` except it is also a tibble.
 
-```{r}
+```{r send_to="R/new_xmap.R"}
 #' Low Level Constructors for xmap subclasses
 #' @param x data-frame like object.
 #' @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
@@ -291,7 +311,7 @@ new_xmap_tbl <- function(x, col_from, col_to, col_weights, from_set = NULL) {
   
   #' @return `x` with additional subclasses `xmap_tbl`, `xmap_df` and `xmap`
   
-  class(x) <- c("xmap_tbl", "xmap_df", "xmap", "tbl_df", "tbl", "data.frame")
+  class(x) <- .get_xmap_subclass_attr("xmap_tbl")
   
   return(x)
 }
