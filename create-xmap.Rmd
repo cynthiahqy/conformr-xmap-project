@@ -602,7 +602,7 @@ testthat::test_that(
 )
 ```
 
-### Method: `validate_xmap_df()`
+### Internal: `validate_xmap_df()`
 
 -   order checks from cheapest to most expensive
 -   validates data.frame properties:
@@ -769,30 +769,6 @@ testthat::test_that(
     testthat::expect_error(validate_xmap_df(x), class = "abort_weights")
   }
 )
-```
-
-### Generic: `xmap_validate()`
-
-```{r}
-#' Validator for `xmap` objects
-#'
-#' @param x An `xmap` to be validated
-#'
-#' @return `x` if validation passes. Throws error otherwise.
-#'
-#' @section Methods:
-#' \Sexpr[stage=render,results=rd]{generics:::methods_rd("xmap_validate")}
-#'
-#' @export
-#'
-xmap_validate <- function(x) {
-  UseMethod("xmap_validate")
-}
-
-#' @export
-xmap_validate.xmap_df <- function(x){
-  validate_xmap_df(x)
-}
 ```
 
 ## Coercion
