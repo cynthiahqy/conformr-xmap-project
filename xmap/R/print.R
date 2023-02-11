@@ -26,18 +26,25 @@
 #' Print an `xmap_df`
 #'
 #' @export
-print.xmap_df <- function(xmap_df){
-  x_direction <- .get_link_direction.xmap_df(xmap_df)
-  x_type <- .get_link_types.xmap_df(xmap_df)
-
-  ## switch for retaining tibble printing
-  if (inherits(xmap_df, "tbl")) {
-    x_links <- tibble::as_tibble(xmap_df)
-  } else {
-    x_links <- as.data.frame(xmap_df)
-  }
+print.xmap_df <- function(x){
+  x_direction <- .get_link_direction.xmap_df(x)
+  x_type <- .get_link_types.xmap_df(x)
+  x_links <- as.data.frame(x)
 
   ## print headers and links
   cat(paste0("xmap_df:\n",  x_type, "\n", x_direction, "\n"))
+  print(x_links)
+}
+
+#' Print an `xmap_tbl`
+#' 
+#' @export
+print.xmap_tbl <- function(x){
+  x_direction <- .get_link_direction.xmap_df(x)
+  x_type <- .get_link_types.xmap_df(x)
+  x_links <- tibble::as_tibble(x)
+  
+  ## print headers and links
+  cat(paste0("xmap_tbl:\n",  x_type, "\n", x_direction, "\n"))
   print(x_links)
 }

@@ -1,6 +1,6 @@
 Package: xmap
 Title: xmap: A data-structure for extending crosswalks
-Version: 0.0.0.9010
+Version: 0.0.0.9011
 Authors@R: 
     person("Cynthia", "Huang", , "cynthiahqy@gmail.com", role = c("aut", "cre"))
 Description: Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df'
@@ -22,4 +22,4 @@ Depends:
     R (>= 2.10)
 VignetteBuilder: knitr
 LitrVersionUsed: 0.6.0
-LitrId: 2e8ddf9a680cee2083a2bb743c577dc3
+LitrId: e325662c694c6e130cf81f9d59dade58

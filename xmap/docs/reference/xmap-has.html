@@ -14,7 +14,7 @@ but does not check if the inputs are from the same xmap."><!-- mathjax --><scrip
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,13 +65,7 @@ but does not check if the inputs are from the same xmap.</p>
 <span></span>
 <span><span class="fu">has_1toM</span><span class="op">(</span><span class="va">x_weights</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">has_1fromM</span><span class="op">(</span><span class="va">x_to</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">has_recode_only</span><span class="op">(</span><span class="va">x_weights</span>, <span class="va">x_to</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">has_collapse_recode_only</span><span class="op">(</span><span class="va">x_weights</span>, <span class="va">x_to</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">has_split_recode_only</span><span class="op">(</span><span class="va">x_weights</span>, <span class="va">x_to</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">has_1fromM</span><span class="op">(</span><span class="va">x_to</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -88,9 +82,6 @@ but does not check if the inputs are from the same xmap.</p>
 <li><p><code>has_1to1()</code>: Return TRUE if xmap recodes labels between <code>from</code> and <code>to</code></p></li>
 <li><p><code>has_1toM()</code>: Return TRUE if xmap has splitting links between <code>from</code> and <code>to</code></p></li>
 <li><p><code>has_1fromM()</code>: Return TRUE if xmap has collapsing links between <code>from</code> and <code>to</code></p></li>
-<li><p><code>has_recode_only()</code>: Return TRUE if xmap ONLY recodes labels between <code>from</code> and <code>to</code>. Return FALSE if there is even one collapsing or splitting link</p></li>
-<li><p><code>has_collapse_recode_only()</code>: Return TRUE if xmap has at least one set of collapsing links, any number of recoding links, and no splitting links.</p></li>
-<li><p><code>has_split_recode_only()</code>: Return TRUE if xmap has at least one set of splitting links, any number of recoding links (or none), and no splitting</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

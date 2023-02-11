@@ -9,7 +9,7 @@ Crossmaps for use in Data Integration and Harmonisation workflows
 
 ## Installation
 
-To install the latest development version of `conformr`:
+To install the latest development version of `xmap`:
 
 ``` r
 remotes::install_github("cynthiahqy/conformr-project", subdir = "xmap")

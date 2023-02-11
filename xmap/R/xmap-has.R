@@ -58,22 +58,3 @@ has_1fromM <- function(x_to){
 }
 #'
 has_collapse <- has_1fromM
-
-#' @describeIn xmap-has Return TRUE if xmap ONLY recodes labels between `from` and `to`. Return FALSE if there is even one collapsing or splitting link
-#'
-has_recode_only <- function(x_weights, x_to){
-  stopifnot(identical(length(x_weights), length(x_to)))
-  has_recode(x_weights) && !has_split(x_weights) && !has_collapse(x_to)
-}
-
-#' @describeIn xmap-has Return TRUE if xmap has at least one set of collapsing links, any number of recoding links, and no splitting links.
-has_collapse_recode_only <- function(x_weights, x_to){
-  stopifnot(identical(length(x_weights), length(x_to)))
-  has_collapse(x_to) && !has_split(x_weights)
-}
-
-#' @describeIn xmap-has Return TRUE if xmap has at least one set of splitting links, any number of recoding links (or none), and no splitting
-has_split_recode_only <- function(x_weights, x_to){
-  stopifnot(identical(length(x_weights), length(x_to)))
-  has_split(x_weights) && !has_collapse(x_to)
-}

@@ -1,4 +1,10 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
+testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
+                    {
+                      testthat::expect_error(.get_xmap_subclass_attr("unknown"),
+                                             regexp = "Unknown xmap subclass")
+                    })
+
 testthat::test_that(
   "new_xmap_df() accepts arbitrary data.frames with correct from argument",
   {
@@ -9,8 +15,25 @@ testthat::test_that(
     )
     xmap <- new_xmap_df(x = df, "x", "y", "z")
     xmap_attrs <- attributes(xmap)
-    testthat::expect_s3_class(xmap, "xmap_df")
-    testthat::expect_s3_class(xmap, "xmap")
+    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_df"))
+    testthat::expect_identical(xmap_attrs$col_from, "x")
+    testthat::expect_identical(xmap_attrs$col_to, "y")
+    testthat::expect_identical(xmap_attrs$col_weights, "z")
+    testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
+  }
+)
+
+testthat::test_that(
+  "new_xmap_tbl() accepts arbitrary tibbles with correct from argument",
+  {
+    df <- data.frame(
+      x = letters[1:5],
+      y = 1:5,
+      z = runif(5)
+    ) |> tibble::as_tibble()
+    xmap <- new_xmap_tbl(x = df, "x", "y", "z")
+    xmap_attrs <- attributes(xmap)
+    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_tbl"))
     testthat::expect_identical(xmap_attrs$col_from, "x")
     testthat::expect_identical(xmap_attrs$col_to, "y")
     testthat::expect_identical(xmap_attrs$col_weights, "z")
@@ -190,6 +213,33 @@ testthat::test_that(
 )
 
 testthat::test_that(
+  "as_xmap() is returns expected xmap subclasses",
+  {
+     tbl_links <- tibble::tribble(
+      ~f, ~t, ~w,
+      "A1", "B01", 1,
+      "A2", "B02", 1,
+      "A3", "B02", 1,
+      "A4", "B03", 0.67,
+      "A4", "B04", 0.33
+      )
+     df_links <- as.data.frame(tbl_links)
+     
+     ## default subclasses work as expected
+     testthat::expect_s3_class(as_xmap(df_links, f, t, w),
+                               .get_xmap_subclass_attr("xmap_df"))
+     testthat::expect_s3_class(as_xmap(tbl_links, f, t, w),
+                               .get_xmap_subclass_attr("xmap_tbl"))
+     
+     ## override subclass works as well
+     testthat::expect_s3_class(as_xmap(df_links, f, t, w, subclass = "xmap_tbl"),
+                               .get_xmap_subclass_attr("xmap_tbl"))
+     testthat::expect_s3_class(as_xmap(df_links, f, t, w, subclass = "xmap_df"),
+                               .get_xmap_subclass_attr("xmap_df"))
+  }
+)
+
+testthat::test_that(
   "has_* split, recode, collapse checkers work as expected",
   {
     w_1to1 <- rep(1, 10)
@@ -203,20 +253,36 @@ testthat::test_that(
   }
 )
 
-testthat::test_that(
-  "split, recode, collapse type checkers work as expected",
-  {
-    links_recode <- data.frame(from = letters, to = LETTERS, weights = 1)
-    links_split <- data.frame(from = rep("cake", 6),
-                              to = paste0("piece_", 1:6),
-                              weights = rep(1/6, 6))
-    links_collapse <- data.frame(from = paste0("state_", 1:4),
-                                 to = rep("country", 4),
-                                 weights = 1)
-
-    testthat::expect_true(has_recode_only(links_recode$weights, links_recode$to))
-    testthat::expect_true(has_split_recode_only(links_split$weights, links_split$to))
-    testthat::expect_true(has_collapse_recode_only(links_collapse$weights, links_collapse$to))
-  }
+testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
+  df_x <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A4", "B03", 0.25,
+      "A4", "B04", 0.75
+    ) |> as.data.frame() |> 
+    new_xmap_df("from", "to", "weights")
+  
+  df_x_rev <- data.frame(
+    to = df_x$to,
+    from = df_x$from,
+    r_weights = 1,
+    weights = df_x$weights
+  ) |>
+    new_xmap_df("to", "from", "r_weights")
+  
+  # class checks
+  testthat::expect_s3_class(xmap_reverse.xmap_df(df_x), class(df_x_rev))
+  testthat::expect_s3_class(xmap_reverse(df_x), class(df_x_rev))
+  
+  # output checks
+  testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
+  testthat::expect_identical(df_check_reversible(df_x,"to"), df_x)
+  
+  # more class checks
+  testthat::expect_s3_class(xmap_reverse.xmap_tbl(df_x), .get_xmap_subclass_attr("xmap_tbl"))
+  tbl_x <- df_x |> new_xmap_tbl("from", "to", "weights")
+  tbl_x_rev <- df_x_rev |> new_xmap_tbl("to", "from", "r_weights")
+  testthat::expect_s3_class(xmap_reverse(tbl_x), class(tbl_x_rev))
+}
 )
 

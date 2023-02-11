@@ -3,7 +3,7 @@
 #' Validator for `xmap_df` objects
 #'
 validate_xmap_df <- function(x) {
-  stopifnot(is_xmap_df(x))
+  stopifnot(is_xmap(x))
 
   df <- data.frame(x) # unclass(x)
   x_attrs <- attributes(x)

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,7 +110,7 @@ categories) involve redistribution of source values.</li>
 where each row represents a weighted link between the source and target
 classifications. You can create an <code>xmap_df</code> from a
 data.frame or tibble of weighted edges using
-<code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code>.</p>
+<code>as_xmap_df()</code>.</p>
 <p>Your input table <code>x</code> needs to have at least 3 complete
 (i.e. no <code>NA</code>) columns:</p>
 <ul>
@@ -124,7 +124,7 @@ classification</li>
 </ul>
 <p>Additional columns (e.g. for label descriptions etc.) can be retained
 using the <code>.keep_all</code> argument.</p>
-<p><code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> will validate that for <code>x</code>:</p>
+<p><code>as_xmap_df()</code> will validate that for <code>x</code>:</p>
 <ol style="list-style-type: decimal">
 <li>There are no duplicates <code>from</code>-<code>to</code>
 pairs,</li>
@@ -157,10 +157,10 @@ method is most suitable for simple crossmaps.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simple_xmap</span> <span class="op">&lt;-</span> <span class="va">simple_x</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">source</span>, to <span class="op">=</span> <span class="va">target</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">source</span>, to <span class="op">=</span> <span class="va">target</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simple_xmap</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_df:</span></span>
+<pre><code><span><span class="co">## xmap_tbl:</span></span>
 <span><span class="co">## recode, split, and collapse  </span></span>
 <span><span class="co">## (source -&gt; target) BY share</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
@@ -200,12 +200,12 @@ and numeric codes.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_xmap</span> <span class="op">&lt;-</span> <span class="va">iso_codes</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISONumeric</span>, to <span class="op">=</span> <span class="va">ISO2</span>, weights <span class="op">=</span> <span class="va">link</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Notice that <code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> place the <code>from</code>,
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISONumeric</span>, to <span class="op">=</span> <span class="va">ISO2</span>, weights <span class="op">=</span> <span class="va">link</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Notice that <code>as_xmap_df()</code> place the <code>from</code>,
 <code>to</code> and <code>weights</code> columns first.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">iso_xmap</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_df:</span></span>
+<pre><code><span><span class="co">## xmap_tbl:</span></span>
 <span><span class="co">## recode </span></span>
 <span><span class="co">## (ISONumeric -&gt; ISO2) BY link</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
@@ -260,7 +260,7 @@ crossmap:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg_xmap</span> <span class="op">&lt;-</span> <span class="va">agg_x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">adm1</span>, to <span class="op">=</span> <span class="va">ctr</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">adm1</span>, to <span class="op">=</span> <span class="va">ctr</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#&gt; xmap_df:</span></span>
 <span><span class="co">#&gt; recode and collapse</span></span>
@@ -295,6 +295,8 @@ subdivision level population proportions from the year preceding or
 following the missing year.</p>
 <p>Alternatively, we might want to compare aggregate and disaggregate
 statistics to identify discrepancies.</p>
+<p>Using Australian population statistics from 30 Jun 2022<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Source: &lt;a href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/latest-release" class="external-link"&gt;Australian
+Bureau of Statistics&lt;/a&gt;&lt;/p&gt;'><sup>1</sup></a></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">state_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>                              <span class="op">~</span><span class="va">state</span>,    <span class="op">~</span><span class="va">adm1</span>,    <span class="op">~</span><span class="va">Pop</span>,</span>
@@ -312,10 +314,9 @@ statistics to identify discrepancies.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ctr <span class="op">=</span> <span class="st">"AU"</span>,</span>
 <span>                <span class="va">adm1</span>,</span>
 <span>                share <span class="op">=</span> <span class="va">Pop</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Pop</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">adm1</span>, weights <span class="op">=</span> <span class="va">share</span>, .keep_all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Dropped additional columns in `x`</span></span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#&gt; xmap_df:</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">adm1</span>, weights <span class="op">=</span> <span class="va">share</span>, .keep_all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#&gt; xmap_df:</span></span>
 <span><span class="co">#&gt; split</span></span>
 <span><span class="co">#&gt; (ctr -&gt; adm1) BY share</span></span>
 <span><span class="co">#&gt; # A tibble: 8 × 3</span></span>
@@ -349,10 +350,10 @@ crossmap:</p>
 </ol>
 <p>Let’s first define some example correspondences.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;based on examples provided by Statistics Canada on the
 page &lt;a href="https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3" class="external-link"&gt;How
-to Read a Concordance Table&lt;/a&gt;.&lt;/p&gt;'><sup>1</sup></a></p>
+to Read a Concordance Table&lt;/a&gt;.&lt;/p&gt;'><sup>2</sup></a></p>
 <p>In the first example, one NAICS Canada class relates to exactly one
 ISIC class.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_recode</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  NAICS1997      <span class="op">=</span> <span class="st">"212210"</span>, </span>
 <span>  NAICS1997_desc <span class="op">=</span> <span class="st">"Iron Ore Mining"</span>,</span>
@@ -368,7 +369,7 @@ NAICS Canada class. The asterisk (Partial Flag) indicates that part of
 ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities
 corresponding to each NAICS Canada class are listed in the column
 labelled “Link”.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_agg</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">NAICS1997</span>, <span class="op">~</span><span class="va">NAICS1997_desc</span>, <span class="op">~</span><span class="va">ISIC3</span>, <span class="op">~</span><span class="va">ISIC3_desc</span>, <span class="op">~</span><span class="va">Link</span>,</span>
 <span>  <span class="st">"311320"</span>, <span class="st">"Chocolate and Confectionery Manufacturing from Cacao Beans"</span>, <span class="st">"D1543 *"</span>, <span class="st">"Manufacture of cocoa, chocolate and sugar confectionery"</span>, <span class="st">"Chocolate and confectionery, made from cacao beans"</span>,</span>
@@ -384,7 +385,7 @@ labelled “Link”.</p>
 <span><span class="co">## <span style="color: #949494;"># … with abbreviated variable name ¹​ISIC3_desc</span></span></span></code></pre>
 <p>In this third example, one NAICS Canada class is equivalent to more
 than one ISIC class.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_split</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">NAICS1997</span>, <span class="op">~</span><span class="va">NAICS1997_desc</span>, <span class="op">~</span><span class="va">ISIC3</span>, <span class="op">~</span><span class="va">ISIC3_desc</span>, <span class="op">~</span><span class="va">Link</span>,</span>
 <span>  <span class="st">"483213"</span>, <span class="st">"Inland Water Transportation (except by Ferries)"</span>, <span class="st">"I6110 *"</span>, <span class="st">"Sea and coastal water transport"</span>, <span class="st">"Intracoastal water transportation"</span>,</span>
@@ -406,7 +407,7 @@ values are either retained, or summarised when the category collapse
 (and value aggregation) is performed. Thus, as shown above, both recode
 and collapse links have a weight of one.</p>
 <p>Let’s clean up the recode and collapse links defined above:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_unit</span> <span class="op">&lt;-</span> <span class="va">canada_agg</span> <span class="op">|&gt;</span></span>
 <span>  <span class="co"># remove the partial flag (*)</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ISIC3 <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">ISIC3</span>, <span class="st">" \\*"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -438,7 +439,7 @@ transport” industry (<code>I6120</code>) is twice as big as the “Sea and
 coastal water transport” industry (<code>I6110</code>). This suggests
 that the weight between <code>483213</code> and <code>I6120</code>
 should be twice that of <code>I6110</code>.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_frac</span> <span class="op">&lt;-</span> <span class="va">canada_split</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ISIC3 <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">ISIC3</span>, <span class="st">" \\*"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Link</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -446,12 +447,12 @@ should be twice that of <code>I6110</code>.</p>
 <span>                                  <span class="va">ISIC3</span> <span class="op">==</span> <span class="st">"I6120"</span> <span class="op">~</span> <span class="fl">0.67</span>,</span>
 <span>                                  <span class="cn">T</span> <span class="op">~</span> <span class="cn">NA_real_</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Now let’s combine the unit and fractional links into a crossmap:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_xmap</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_unit</span>, <span class="va">canada_frac</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">NAICS1997</span>, to <span class="op">=</span> <span class="va">ISIC3</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">NAICS1997</span>, to <span class="op">=</span> <span class="va">ISIC3</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">canada_xmap</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_df:</span></span>
+<pre><code><span><span class="co">## xmap_tbl:</span></span>
 <span><span class="co">## recode, split, and collapse  </span></span>
 <span><span class="co">## (NAICS1997 -&gt; ISIC3) BY share</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
@@ -473,19 +474,19 @@ should be twice that of <code>I6110</code>.</p>
 <p>Except in the case of recoding, crossmaps are generally lateral
 (one-way). Weights on collapse and split links are no longer valid if
 you reverse the direct of the link. Notice that
-<code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> throws an error if you try to naively swap the
+<code>as_xmap_df()</code> throws an error if you try to naively swap the
 <code>from</code> and <code>to</code> arguments:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_unit</span>, <span class="va">canada_frac</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISIC3</span>, to <span class="op">=</span> <span class="va">NAICS1997</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISIC3</span>, to <span class="op">=</span> <span class="va">NAICS1997</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `df_check_weights()`:</span></span></span>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> Incomplete mapping weights found. Check sum of weights for each `from`</span></span>
 <span><span class="co">##   group sums to 1</span></span></code></pre>
 <p>However, we <strong>can</strong> swap the arguments on a recode map.
 Recall the ISO country code crossmap we created above:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">iso_xmap</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_df:</span></span>
+<pre><code><span><span class="co">## xmap_tbl:</span></span>
 <span><span class="co">## recode </span></span>
 <span><span class="co">## (ISONumeric -&gt; ISO2) BY link</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
@@ -500,26 +501,26 @@ Recall the ISO country code crossmap we created above:</p>
 ISO-2 digit, we wanted to convert from ISO-2 digit to ISO Numeric. We
 can take the existing crossmap and invert it without editing any
 weights:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_xmap</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISO2</span>, to <span class="op">=</span> <span class="va">ISONumeric</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_df:</span></span>
+<span>  <span class="fu"><a href="../reference/xmap_reverse.html">xmap_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## xmap_tbl:</span></span>
 <span><span class="co">## recode </span></span>
-<span><span class="co">## (ISO2 -&gt; ISONumeric) BY link</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
-<span><span class="co">##   ISO2  ISONumeric  link country        ISO3 </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> AF    004            1 Afghanistan    AFG  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> AL    008            1 Albania        ALB  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> DZ    012            1 Algeria        DZA  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> AS    016            1 American Samoa ASM  </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> AD    020            1 Andorra        AND</span></span></code></pre>
+<span><span class="co">## (ISO2 -&gt; ISONumeric) BY r_weights</span></span>
+<span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 6</span></span></span>
+<span><span class="co">##   ISO2  ISONumeric r_weights  link country        ISO3 </span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> AF    004                1     1 Afghanistan    AFG  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> AL    008                1     1 Albania        ALB  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> DZ    012                1     1 Algeria        DZA  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> AS    016                1     1 American Samoa ASM  </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span> AD    020                1     1 Andorra        AND</span></span></code></pre>
 <p>We can also easily generate crossmaps for the other nomenclature in
 the table:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_xmap</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISO2</span>, to <span class="op">=</span> <span class="va">ISO3</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_df:</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISO2</span>, to <span class="op">=</span> <span class="va">ISO3</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## xmap_tbl:</span></span>
 <span><span class="co">## recode </span></span>
 <span><span class="co">## (ISO2 -&gt; ISO3) BY link</span></span>
 <span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>

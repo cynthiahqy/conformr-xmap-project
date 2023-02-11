@@ -7,9 +7,6 @@
 \alias{has_1to1}
 \alias{has_1toM}
 \alias{has_1fromM}
-\alias{has_recode_only}
-\alias{has_collapse_recode_only}
-\alias{has_split_recode_only}
 \title{Boolean flags for xmap properties}
 \usage{
 has_dup_links(x_from, x_to)
@@ -21,12 +18,6 @@ has_1to1(x_weights)
 has_1toM(x_weights)
 
 has_1fromM(x_to)
-
-has_recode_only(x_weights, x_to)
-
-has_collapse_recode_only(x_weights, x_to)
-
-has_split_recode_only(x_weights, x_to)
 }
 \arguments{
 \item{x_from, x_to, x_weights}{equal length vectors containing the source-target node pairs}
@@ -47,11 +38,5 @@ but does not check if the inputs are from the same xmap.
 \item \code{has_1toM()}: Return TRUE if xmap has splitting links between \code{from} and \code{to}
 
 \item \code{has_1fromM()}: Return TRUE if xmap has collapsing links between \code{from} and \code{to}
-
-\item \code{has_recode_only()}: Return TRUE if xmap ONLY recodes labels between \code{from} and \code{to}. Return FALSE if there is even one collapsing or splitting link
-
-\item \code{has_collapse_recode_only()}: Return TRUE if xmap has at least one set of collapsing links, any number of recoding links, and no splitting links.
-
-\item \code{has_split_recode_only()}: Return TRUE if xmap has at least one set of splitting links, any number of recoding links (or none), and no splitting
 
 }}

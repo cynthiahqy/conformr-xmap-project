@@ -4,7 +4,7 @@
 \alias{print.xmap_df}
 \title{Print an \code{xmap_df}}
 \usage{
-\method{print}{xmap_df}(xmap_df)
+\method{print}{xmap_df}(x)
 }
 \description{
 Print an \code{xmap_df}

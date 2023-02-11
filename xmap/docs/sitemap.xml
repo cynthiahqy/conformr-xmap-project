@@ -25,7 +25,7 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/as_xmap_df.html</loc>
+    <loc>/reference/as_xmap.html</loc>
   </url>
   <url>
     <loc>/reference/df_check.html</loc>
@@ -34,7 +34,7 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/new_xmap_df.html</loc>
+    <loc>/reference/new_xmap.html</loc>
   </url>
   <url>
     <loc>/reference/op-null-default.html</loc>
@@ -43,12 +43,15 @@
     <loc>/reference/print.xmap_df.html</loc>
   </url>
   <url>
+    <loc>/reference/print.xmap_tbl.html</loc>
+  </url>
+  <url>
     <loc>/reference/validate_xmap_df.html</loc>
   </url>
   <url>
     <loc>/reference/xmap-has.html</loc>
   </url>
   <url>
-    <loc>/reference/xmap_validate.html</loc>
+    <loc>/reference/xmap_reverse.html</loc>
   </url>
 </urlset>
