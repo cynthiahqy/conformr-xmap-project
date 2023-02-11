@@ -164,11 +164,15 @@ Let `X` be an **validated** object of class `xmap_df`. Then:
     -   has no missing values - the character vector of all unique values in the `col_from` variable exactly match the `from_set` attribute - the `col_weights` column is a numeric vector - `X` inherits from the class `xmap`
     -   (each row represents a single weighted link)
 
+### `xmap_tbl` subclass properties
+
+Has all the same properties as `xmap_df` and is also a tibble.
+
 ## Construction
 
 The naming convention for constructors is: `new_<subclass>()`. For example: `new_xmap_df()`
 
-### `xmap_df` Constructor
+### `xmap_df` Constructor Method
 
 The low-level constructor takes in:
 
@@ -199,7 +203,7 @@ The constructor returns an object of class `xmap_df` which:
     -   `from_set`: source node set
 
 ```{r xmap-constructor, send_to="R/xmap_df.R"}
-#' Low Level Constructors for Xmap subclasses
+#' Low Level Constructors for xmap subclasses
 #' @param x data-frame like object.
 #' @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
 #' @return xmap_df object. Note that this function unclasses tibbles.
@@ -207,7 +211,7 @@ The constructor returns an object of class `xmap_df` which:
 NULL
 
 #' @describeIn new_xmap Construct xmap_df from data.frame
-new_xmap_df <- function(x = data.frame(), col_from, col_to, col_weights, from_set = NULL) {
+new_xmap_df <- function(x, col_from, col_to, col_weights, from_set = NULL) {
   #' checks argument types
   stopifnot(is.data.frame(x))
   stopifnot(length(col_from) == 1 && is.character(col_from))
@@ -268,6 +272,51 @@ testthat::test_that(
 )
 ```
 
+### `xmap_tbl` Construction
+
+Has all the same properties as `xmap_df` except it is also a tibble.
+
+```{r}
+#' Low Level Constructors for xmap subclasses
+#' @param x data-frame like object.
+#' @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
+#' @return xmap_df object. Note that this function unclasses tibbles.
+#' @name new_xmap
+NULL
+
+#' @describeIn new_xmap Construct xmap_tbl from tibble
+new_xmap_tbl <- function(x, col_from, col_to, col_weights, from_set = NULL) {
+
+  x <- new_xmap_df(x, col_from, col_to, col_weights, from_set)
+  
+  #' @return `x` with additional subclasses `xmap_tbl`, `xmap_df` and `xmap`
+  
+  class(x) <- c("xmap_tbl", "xmap_df", "xmap", "tbl_df", "tbl", "data.frame")
+  
+  return(x)
+}
+```
+
+```{r}
+testthat::test_that(
+  "new_xmap_tbl() accepts arbitrary tibbles with correct from argument",
+  {
+    df <- data.frame(
+      x = letters[1:5],
+      y = 1:5,
+      z = runif(5)
+    ) |> tibble::as_tibble()
+    xmap <- new_xmap_tbl(x = df, "x", "y", "z")
+    xmap_attrs <- attributes(xmap)
+    testthat::expect_s3_class(xmap, "xmap_tbl")
+    testthat::expect_identical(xmap_attrs$col_from, "x")
+    testthat::expect_identical(xmap_attrs$col_to, "y")
+    testthat::expect_identical(xmap_attrs$col_weights, "z")
+    testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
+  }
+)
+```
+
 ### Class Tests
 
 ```{r send_to="R/is_xmap.R"}
@@ -275,16 +324,23 @@ testthat::test_that(
 #'
 #' This function returns `TRUE` for crossmaps `xmap` or subclasses thereof (`xmap_df`), and `FALSE` for all other objects, including regular data.frames or tibbles.
 #' @export
-#' @rdname as_xmap_df
+#' @rdname as_xmap
 is_xmap <- function(x) {
   base::inherits(x, "xmap")
 }
 
 #' Test if object is `xmap_df`
 #' @export
-#' @rdname as_xmap_df
+#' @rdname as_xmap
 is_xmap_df <- function(x) {
   rlang::inherits_all(x, c("xmap_df", "xmap"))
+}
+
+#' Test if object is `xmap_tbl`
+#' @export
+#' @rdname as_xmap
+is_xmap_tbl <- function(x) {
+  rlang::inherits_all(x, c("xmap_tbl", "xmap_df", "xmap"))
 }
 ```
 
