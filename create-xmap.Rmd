@@ -865,10 +865,6 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = NULL, .keep_all 
   return(xmap)
 }
 
-# temp-fix to avoid rewriting tests
-as_xmap_df <- as_xmap.data.frame
-
-
 #' @describeIn as_xmap Coerce a `tibble` to `xmap_tbl` or `xmap_df`
 #' 
 #' @export
