@@ -1037,13 +1037,25 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
 #'
 #' @export
 print.xmap_df <- function(x){
-  xmap_df <- x
-  x_direction <- .get_link_direction.xmap_df(xmap_df)
-  x_type <- .get_link_types.xmap_df(xmap_df)
-  x_links <- as.data.frame(xmap_df)
+  x_direction <- .get_link_direction.xmap_df(x)
+  x_type <- .get_link_types.xmap_df(x)
+  x_links <- as.data.frame(x)
 
   ## print headers and links
   cat(paste0("xmap_df:\n",  x_type, "\n", x_direction, "\n"))
+  print(x_links)
+}
+
+#' Print an `xmap_tbl`
+#' 
+#' @export
+print.xmap_tbl <- function(x){
+  x_direction <- .get_link_direction.xmap_df(x)
+  x_type <- .get_link_types.xmap_df(x)
+  x_links <- tibble::as_tibble(x)
+  
+  ## print headers and links
+  cat(paste0("xmap_tbl:\n",  x_type, "\n", x_direction, "\n"))
   print(x_links)
 }
 ```
@@ -1066,9 +1078,9 @@ valid_xmap_df <-
     "civil", "CONS", 1 / 3,
   ) |>
   dplyr::mutate(extra_col = "stuff") |>
-  as_xmap(from = sector, to = new_sec, weight)
+  as_xmap_df(from = sector, to = new_sec, weight)
 
-print.xmap_df(valid_xmap_df)
+print(valid_xmap_df)
 ```
 
 ### Read / Write Methods
