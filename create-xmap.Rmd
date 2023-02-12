@@ -791,13 +791,13 @@ testthat::test_that(
 #'  * For `is_xmap()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
-#' @param subclass Which xmap subclass `df` or `tbl` to return. Defaults to `xmap_df` for `data.frame`, and `xmap_tbl` for `tibble`
+#' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame`, and `xmap_tbl` for `tibble`
 #' @param .keep_all Logical indicating whether or not to keep additional columns in `x`. Defaults to TRUE.
 #' 
 #' @return A validated `xmap` object.
 #' 
 #' @export
-as_xmap <- function(x, from, to, weights, subclass, ...) {
+as_xmap <- function(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), ...) {
   UseMethod("as_xmap")
 }
 
@@ -813,9 +813,8 @@ as_xmap <- function(x, from, to, weights, subclass, ...) {
     -   [x] any validation failures via `validate_xmap_df()`
 
 ```{r}
-#' @describeIn as_xmap Coerce a `data.frame` to `xmap_df` or `xmap_tbl`
+#' @describeIn as_xmap Coerce a `data.frame` to `xmap`
 #'
-#' @return A crossmap `xmap_df` S3 object.
 #' @export
 #' @examples
 #' # For a well formed crossmap:
@@ -829,7 +828,7 @@ as_xmap <- function(x, from, to, weights, subclass, ...) {
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap(links, from = a, to = b, weights = w)
-as_xmap.data.frame <- function(x, from, to, weights, subclass = NULL, .keep_all = TRUE) {
+as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep_all = TRUE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -853,7 +852,6 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = NULL, .keep_all 
   df <- df[col_order]
 
   ## construction
-  subclass <- subclass %||% "xmap_df"
   xmap <- switch(subclass,
                  xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
                  xmap_tbl = new_xmap_tbl(df, col_from, col_to, col_weights),
@@ -865,10 +863,10 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = NULL, .keep_all 
   return(xmap)
 }
 
-#' @describeIn as_xmap Coerce a `tibble` to `xmap_tbl` or `xmap_df`
+#' @describeIn as_xmap Coerce a `tibble` to `xmap`
 #' 
 #' @export
-as_xmap.tbl_df <- function(x, from, to, weights, subclass = NULL, .keep_all = TRUE){
+as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl", .keep_all = TRUE){
   stopifnot(tibble::is_tibble(x))
 
   # get string names for columns
@@ -891,7 +889,6 @@ as_xmap.tbl_df <- function(x, from, to, weights, subclass = NULL, .keep_all = TR
   df <- df[col_order]
 
   ## construction
-  subclass <- subclass %||% "xmap_tbl"
   xmap <- switch(subclass,
                  xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
                  xmap_tbl = new_xmap_tbl(df, col_from, col_to, col_weights),
