@@ -1004,13 +1004,13 @@ See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues
 
 ### Generic: `xmap_reverse()`
 
-```{r}
+```{r xmap-reverse}
 #' Reverse xmap direction
 #'
 #' @param x xmap object to be reversed
 #' @param weights_to A string specifying the name of a new or existing column to store reverse weights in. 
 #'
-#' @return
+#' @return xmap object of same class as `x`, or throws an error if `x` is not reversible
 #' @export
 #'
 #' @examples
@@ -1019,7 +1019,6 @@ xmap_reverse <- function(x, weights_to){
 }
 
 #' @describeIn xmap_reverse Reverse a `xmap_df`
-#' @return xmap_df
 #' 
 #' @export
 xmap_reverse.xmap_df <- function(x, weights_to = "r_weights"){
@@ -1050,7 +1049,6 @@ xmap_reverse.xmap_df <- function(x, weights_to = "r_weights"){
 }
 
 #' @describeIn xmap_reverse Reverse a `xmap_tbl`
-#' @return xmap_tbl
 #'
 #' @export
 xmap_reverse.xmap_tbl <- function(x, weights_to = "r_weights"){
