@@ -1,0 +1,16 @@
+---
+title: "Using Crossmaps to Transform Data"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Using Crossmaps to Transform Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Nomenclature Transformation
+
+### Table Joins (single variable)
+
+### Matrix (multiple variables at once)
