@@ -781,7 +781,7 @@ testthat::test_that(
 
 ### `as_xmap()`
 
-```{r}
+```{r send_to="R/as_xmap.R"}
 #' Coerce objects to xmap
 #' 
 #' Validates and creates a valid crossmap `xmap` object of the same type as the input.
@@ -812,7 +812,7 @@ as_xmap <- function(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), .
 -   throws errors for:
     -   [x] any validation failures via `validate_xmap_df()`
 
-```{r}
+```{r send_to="R/as_xmap.R"}
 #' @describeIn as_xmap Coerce a `data.frame` to `xmap`
 #'
 #' @export
@@ -1001,7 +1001,7 @@ See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues
 
 ### Generic: `xmap_reverse()`
 
-```{r xmap-reverse}
+```{r xmap-reverse, send_to="R/xmap_reverse.R"}
 #' Reverse xmap direction
 #'
 #' @param x xmap object to be reversed
@@ -1126,9 +1126,16 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
   return(direction)
 }
 
-#' Print an `xmap_df`
+#' Print an `xmap` object
+#' 
+#' @name print.xmap
+#' @export
+NULL
+
+#' @describeIn print.xmap Print an `xmap_df`
 #'
 #' @export
+
 print.xmap_df <- function(x){
   x_direction <- .get_link_direction.xmap_df(x)
   x_type <- .get_link_types.xmap_df(x)
@@ -1139,7 +1146,7 @@ print.xmap_df <- function(x){
   print(x_links)
 }
 
-#' Print an `xmap_tbl`
+#' @describeIn print.xmap Print an `xmap_tbl`
 #' 
 #' @export
 print.xmap_tbl <- function(x){
