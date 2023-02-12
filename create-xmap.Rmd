@@ -627,7 +627,7 @@ testthat::test_that(
 #' Validator for `xmap_df` objects
 #'
 validate_xmap_df <- function(x) {
-  stopifnot(is_xmap(x))
+  stopifnot(is_xmap_df(x))
 
   df <- data.frame(x) # unclass(x)
   x_attrs <- attributes(x)
@@ -779,7 +779,7 @@ testthat::test_that(
 
 ## Coercion
 
-### `as_xmap()`
+### Generic: `as_xmap()`
 
 ```{r send_to="R/as_xmap.R"}
 #' Coerce objects to xmap
