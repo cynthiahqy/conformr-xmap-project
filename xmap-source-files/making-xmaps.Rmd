@@ -16,11 +16,13 @@ A (Nomenclature) Crossmap encodes a complete redistribution of values between a 
 1.  There is at most one link between each distinct source and target node
 2.  For each source node, the sum of weights attached to outgoing links sums to one.
 
+## Types of Crossmap Transformations
+
 The outgoing and incoming properties of the graph links determine the type of data transformation encoded by a given crossmap.
 
 1.  **Recode**: Maps with only one-to-one relations recode category labels, leaving any attached values untouched
-2.  **Collapse**: Maps with at least one set of many-to-one/one-from-many links (i.e. multiple source categories collapsed into a single target category) involve some kind of aggregation of source values.
-3.  **Split**: Maps with at least one set of one-to-many links (i.e. a single source category split into multiple target categories) involve redistribution of source values.
+2.  **Split**: Maps with at least one set of fractional (one-to-many) links involve redistribution of source values.
+3.  **Collapse**: Maps with at least one set of many-to-one/one-from-many links (i.e. multiple source categories collapsed into a single target category) involve some kind of aggregation of source values.
 
 ### Crossmap tables: `xmap_df`
 
