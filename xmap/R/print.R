@@ -23,9 +23,15 @@
   return(direction)
 }
 
-#' Print an `xmap_df`
+#' Print an `xmap` object
+#' 
+#' @name print.xmap
+NULL
+
+#' @describeIn print.xmap Print an `xmap_df`
 #'
 #' @export
+
 print.xmap_df <- function(x){
   x_direction <- .get_link_direction.xmap_df(x)
   x_type <- .get_link_types.xmap_df(x)
@@ -36,7 +42,7 @@ print.xmap_df <- function(x){
   print(x_links)
 }
 
-#' Print an `xmap_tbl`
+#' @describeIn print.xmap Print an `xmap_tbl`
 #' 
 #' @export
 print.xmap_tbl <- function(x){

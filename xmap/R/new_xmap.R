@@ -1,5 +1,7 @@
 #'
-.get_xmap_subclass_attr <- function(subclass){
+.get_xmap_subclass_attr <- function(subclass = c("xmap_df", "xmap_tbl")){
+  subclass <- rlang::arg_match(subclass)
+
   class_attr <- switch(subclass,
          xmap_df = c("xmap_df", "xmap", "data.frame"),
          xmap_tbl = c("xmap_tbl", "xmap_df", "xmap", "tbl_df", "tbl", "data.frame"),

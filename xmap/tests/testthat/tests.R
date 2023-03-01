@@ -1,8 +1,7 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
 testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
                     {
-                      testthat::expect_error(.get_xmap_subclass_attr("unknown"),
-                                             regexp = "Unknown xmap subclass")
+                      testthat::expect_error(.get_xmap_subclass_attr("unknown"))
                     })
 
 testthat::test_that(
