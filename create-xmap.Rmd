@@ -1127,7 +1127,6 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
 #' Print an `xmap` object
 #' 
 #' @name print.xmap
-#' @export
 NULL
 
 #' @describeIn print.xmap Print an `xmap_df`
