@@ -798,7 +798,6 @@ testthat::test_that(
 as_xmap <- function(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), ...) {
   UseMethod("as_xmap")
 }
-
 ```
 
 ### `as_xmap.data.frame()`
@@ -839,10 +838,12 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep
   df_check_cols(x, col_strings)
 
   ## drop additional columns
-  if (!.keep_all) {
-    df <- x[col_strings]
-  } else {
+  if (.keep_all) {
     df <- x
+  } else {
+    df <- x[col_strings]
+  if (ncol(df) < ncol(x)) {
+    cli::cli_inform("Dropped additional columns in `x`")
   }
 
   ## rearrange columns
@@ -861,6 +862,11 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep
   return(xmap)
 }
 
+#' @describeIn as_xmap Coerce `data.frame` or `tibble` to `xmap_df`
+#' 
+#' @export
+as_xmap_df <- as_xmap.data.frame
+
 #' @describeIn as_xmap Coerce a `tibble` to `xmap`
 #' 
 #' @export
@@ -876,6 +882,7 @@ as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl", .keep_al
   df_check_cols(x, col_strings)
 
   ## drop additional columns
+<<<<<<< HEAD
   if (!.keep_all) {
     df <- x[col_strings]
   } else {
@@ -885,6 +892,12 @@ as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl", .keep_al
   ## rearrange columns
   col_order <- c(col_strings, setdiff(names(df), col_strings))
   df <- df[col_order]
+=======
+  df <- x[col_strings]
+  if (ncol(df) < ncol(x)) {
+    cli::cli_inform("Dropped additional columns in `x`")
+  }
+>>>>>>> ba26dcc (:memo: fix making-xmaps vignette #94)
 
   ## construction
   xmap <- switch(subclass,

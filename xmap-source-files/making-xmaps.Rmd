@@ -59,7 +59,7 @@ simple_x <- tibble::tribble(
 )
 
 simple_xmap <- simple_x |>
-  as_xmap(from = source, to = target, weights = share)
+  as_xmap_df(from = source, to = target, weights = share)
 
 simple_xmap
 ```
@@ -88,13 +88,21 @@ To create a crossmap between `ISONumeric` and `ISO2`, we simply add a weights co
 ```{r}
 iso_xmap <- iso_codes |>
   dplyr::mutate(link = 1) |>
-  as_xmap(from = ISONumeric, to = ISO2, weights = link, .keep_all = TRUE)
+  as_xmap_df(from = ISONumeric, to = ISO2, weights = link)
 ```
 
-Notice that `as_xmap_df()` place the `from`, `to` and `weights` columns first.
+Notice that `as_xmap()` always place the `from`, `to` and `weights` columns in order and drops any additional columns passed to it.
 
 ```{r}
 print(iso_xmap)
+```
+
+We can also easily generate crossmaps for the other nomenclature in the table:
+
+```{r}
+iso_codes |>
+  dplyr::mutate(link = 1) |>
+  as_xmap(from = ISO2, to = ISO3, weights = link)
 ```
 
 #### Collapse maps: Aggregation
@@ -126,23 +134,7 @@ agg_xmap <- agg_x |>
   dplyr::mutate(link = 1) |>
   as_xmap(from = adm1, to = ctr, weights = link)
 
-#> xmap_df:
-#> recode and collapse
-#> (adm1 -> ctr) BY link
-#> # A tibble: 21 × 3
-#>    adm1   ctr    link
-#>    <chr>  <chr> <dbl>
-#>  1 AU-NSW AU        1
-#>  2 AU-QLD AU        1
-#>  3 AU-SA  AU        1
-#>  4 AU-TAS AU        1
-#>  5 AU-VIC AU        1
-#>  6 AU-WA  AU        1
-#>  7 AU-ACT AU        1
-#>  8 AU-NT  AU        1
-#>  9 CA-AB  CA        1
-#> 10 CA-BC  CA        1
-#> # … with 11 more rows
+agg_xmap
 ```
 
 #### Split maps: Disaggregation
@@ -174,22 +166,9 @@ state_xmap <- state_data |>
   dplyr::mutate(ctr = "AU",
                 adm1,
                 share = Pop / sum(Pop)) |>
-  as_xmap(from = ctr, to = adm1, weights = share, .keep_all = FALSE)
+  as_xmap_df(from = ctr, to = adm1, weights = share)
 
-#> xmap_df:
-#> split
-#> (ctr -> adm1) BY share
-#> # A tibble: 8 × 3
-#>   ctr   adm1     share
-#>   <chr> <chr>    <dbl>
-#> 1 AU    AU-NSW 0.314
-#> 2 AU    AU-VIC 0.255
-#> 3 AU    AU-QLD 0.205
-#> 4 AU    AU-SA  0.0701
-#> 5 AU    AU-WA  0.107
-#> 6 AU    AU-TAS 0.0220
-#> 7 AU    AU-NT  0.00965
-#> 8 AU    AU-ACT 0.0176
+state_xmap
 ```
 
 ### Mixed Maps
@@ -217,7 +196,7 @@ canada_recode <- tibble::tibble(
 ```
 
 ```{r echo=FALSE}
-canada_recode
+knitr::kable(canada_recode)
 ```
 
 In the second example, one ISIC class is equivalent to more than one NAICS Canada class. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
@@ -311,11 +290,4 @@ Imagine that instead of converting country codes from ISO Numeric to ISO-2 digit
 ```{r}
 iso_xmap |>
   xmap_reverse()
-```
-
-We can also easily generate crossmaps for the other nomenclature in the table:
-
-```{r}
-iso_xmap |>
-  as_xmap(from = ISO2, to = ISO3, weights = link)
 ```
