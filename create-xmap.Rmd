@@ -23,7 +23,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.1.9001",
+    Version = "0.0.0.9013",
     Title = "xmap: A data-structure for extending crosswalks",
     Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df'
     class for use in {conformr} package.",
@@ -882,15 +882,20 @@ as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl"){
   ## check columns exist
   df_check_cols(x, col_strings)
 
- ## drop additional columns
+  ## drop additional columns
   if (.keep_all) {
     df <- x
   } else {
     df <- x[col_strings]
   }
+
   if (ncol(df) < ncol(x)) {
     cli::cli_inform("Dropped additional columns in `x`")
   }
+  
+  ## rearrange columns
+  col_order <- c(col_strings, setdiff(names(df), col_strings))
+  df <- df[col_order]
 
   ## construction
   xmap <- switch(subclass,
