@@ -1198,14 +1198,24 @@ litr::add_vignettes("../xmap-source-files/using-xmaps.Rmd")
 
 ### Render package
 
+To debug without having to re-render the litr file every time use the `pkg = "."` argument in devtools functions:
+
+``` r
+devtools::run_examples('xmap')
+devtools::test('xmap')
+devtools::build('xmap')
+devtools::install('xmap')
+devtools::check('xmap', document = FALSE)
+```
+
 We finish by running commands that will document, build, and install the package. It may also be a good idea to check the package from within this file.
 
 ```{r}
 rm(list = ls())
 litr::document() # <-- use instead of devtools::document()
 litr::add_pkgdown()
-devtools::run_examples()
-devtools::build()
-devtools::install()
+# devtools::run_examples()
+# devtools::build()
+# devtools::install()
 # devtools::check(document = FALSE)
 ```
