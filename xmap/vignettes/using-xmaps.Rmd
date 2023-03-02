@@ -1,0 +1,83 @@
+---
+title: "Using Crossmaps to Transform Data"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Using Crossmaps to Transform Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Nomenclature Transformation
+
+### Table Joins (single variable)
+
+This vignette illustrates with simple examples how crossmaps can be used to complete recode, split and collapse transformation.
+
+#### Aggregation
+
+Let's consider a simple case where we have some disaggregated population figures which we want to aggregate.
+
+First, define a crossmap for the aggregation.
+
+```{r}
+library(xmap)
+
+agg_map <- data.frame(ctr = "AU",
+                      adm1 = c("AU-NSW", "AU-QLD", "AU-SA", "AU-TAS", "AU-VIC", "AU-WA", "AU-ACT", "AU-NT"),
+                      link = 1) |>
+  as_xmap_df(adm1, ctr, link)
+```
+
+Second, load in our state-level figures
+
+```{r}
+state_data <- tibble::tribble(
+                              ~state,    ~adm1,    ~Pop,
+                   "New South Wales", "AU-NSW", 8153600,
+                          "Victoria", "AU-VIC", 6613700,
+                        "Queensland", "AU-QLD", 5322100,
+                   "South Australia",  "AU-SA", 1820500,
+                 "Western Australia",  "AU-WA", 2785300,
+                          "Tasmania", "AU-TAS",  571500,
+                "Northern Territory",  "AU-NT",  250600,
+      "Australian Capital Territory", "AU-ACT",  456700
+)
+```
+
+Now, assuming your crossmap fully covers your data the transformation involves two steps:
+
+1.  Joining the aggregate group to each row in `state_data`
+2.  Summarising values for each group
+
+```{r}
+dplyr::left_join(state_data, agg_map, by = c("adm1")) |>
+  dplyr::mutate(x_pop = Pop * link) |>
+  dplyr::group_by(ctr) |>
+  dplyr::summarise(agg_pop = sum(x_pop))
+```
+
+Or using `apply_xmap()` from the `conformr` package:
+
+``` r
+conformr::apply_xmap(data_in = state_data, xmap = agg_map,
+                     in_codes = adm1, in_values = Pop,
+                     out_codes = NULL, out_values = NULL)
+```
+
+which also checks that the nomenclature in `data_in` is fully covered by your `xmap` -- i.e. you don't lose any rows during the join.
+
+#### Disaggregation
+
+We can reverse the aggregation (assuming we retained appropriate weights) using:
+
+``` r
+apply_xmap(data_in = ctr_data, xmap = disagg_map, in_codes = ctr, in_values = Pop, out_codes = NULL, out_values = NULL)
+```
+
+#### Complex Maps
+
+Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmpas are best suited for cases where you have multiple types of transformations being applied at once.
+
+### Matrix (multiple variables at once)

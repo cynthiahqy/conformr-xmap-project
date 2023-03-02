@@ -1209,6 +1209,7 @@ Suggested in [confomr-project #43](https://github.com/cynthiahqy/conformr-projec
 litr::add_readme("../xmap-source-files/README.Rmd")
 litr::add_vignettes("../xmap-source-files/xmap.Rmd")
 litr::add_vignettes("../xmap-source-files/making-xmaps.Rmd")
+litr::add_vignettes("../xmap-source-files/using-xmaps.Rmd")
 ```
 
 ### Render package
