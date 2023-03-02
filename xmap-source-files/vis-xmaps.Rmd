@@ -1,0 +1,18 @@
+---
+title: "Visualising Crossmap Transformations"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Visualising Crossmap Transformations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## One Object, Three Representations
+
+### Graph
+
+### Matrix
+
+### Table
