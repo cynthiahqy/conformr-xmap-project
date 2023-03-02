@@ -648,7 +648,7 @@ tibble.</p>
                     {
                       testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="xmap_df-constructor-method" class="section level3">
 <h3><code>xmap_df</code> Constructor Method</h3>
@@ -741,7 +741,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -794,7 +794,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="class-tests" class="section level3">
 <h3>Class Tests</h3>
@@ -901,7 +901,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -1037,9 +1037,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 </div>
 <div id="internal-validate_xmap_df" class="section level3">
@@ -1112,7 +1112,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1218,10 +1218,10 @@ testthat::test_that(
 )</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
 <pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 </div>
@@ -1426,7 +1426,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
@@ -1530,7 +1530,7 @@ has_collapse &lt;- has_1fromM</code></pre>
   testthat::expect_s3_class(<a href='create-xmap.html#xmap_reverse'>xmap_reverse</a>(tbl_x), class(tbl_x_rev))
 }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="s3-enhancements" class="section level2">
@@ -1794,7 +1794,7 @@ devtools::install()
   
    creating vignettes ...
   
-✔  creating vignettes (6.4s)
+✔  creating vignettes (5.2s)
 ## 
   
 ─  checking for LF line-endings in source and make files and shell scripts
@@ -1816,7 +1816,7 @@ devtools::install()
 ##   
    checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ ...
   
-✔  checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ (341ms)
+✔  checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’
 ## 
   
 ─  preparing ‘xmap’:
@@ -1831,9 +1831,7 @@ devtools::install()
 ## 
   
 ─  checking for empty or unneeded directories
-## 
-  
-─  looking to see if a ‘data/datalist’ file should be added
+## ─  looking to see if a ‘data/datalist’ file should be added
 ## 
   
 ─  building ‘xmap_0.0.1.9001.tar.gz’
@@ -1842,7 +1840,7 @@ devtools::install()
    
 ## 
 Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \
-##   /var/folders/7s/5vds1_8n7msbnx7mdc53zg8r0000gn/T//RtmpjsaFGN/xmap_0.0.1.9001.tar.gz \
+##   /var/folders/7s/5vds1_8n7msbnx7mdc53zg8r0000gn/T//RtmpzZG7mE/xmap_0.0.1.9001.tar.gz \
 ##   --install-tests 
 ## * installing to library ‘/Users/cynthiahqy/Library/R/x86_64/4.2/library’
 ## * installing *source* package ‘xmap’ ...
