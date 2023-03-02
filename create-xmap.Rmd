@@ -138,6 +138,22 @@ input_df <- tibble::tribble(
 int_dat <- list("input_df" = input_df)
 
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
+
+```
+
+```{r simple-xmap}
+simple_xmap <- tibble::tribble(~f, ~t, ~w,
+                                "x1111", "A1", 1,
+                                "x2222", "B2", 0.5,
+                                "x2222", "B3", 0.5,
+                                "x3333", "C5", 1,
+                                "x4444", "C5", 1,
+                                "x5555", "D6", 0.4,
+                                "x5555", "D7", 0.6,
+                                "x6666", "D6", 0.3,
+                                "x6666", "D7", 0.7,
+                                "x7777", "D6", 1
+)
 ```
 
 ## Class Structure
@@ -1098,6 +1114,70 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
 )
 ```
 
+## Visualisation
+
+Adding in more dependencies
+
+```{r vis-depend}
+usethis::use_package("dplyr", type = "suggests")
+usethis::use_package("tibble", type = "suggests")
+usethis::use_package("ggplot2", type = "suggests")
+usethis::use_package("ggbump", type = "suggests")
+```
+
+### Planned Generic: `xmap_viz_*()`
+
+This section is left in for future reference, when I get around to properly developing visualisation functions for crossmaps.
+
+#### `xmap_viz_bigraph()`
+
+``` r
+#' Visualise `xmap` as bigraph
+#' 
+#' Plot crossmap as bigraph using sigmoid curves from ggbump.
+#'
+#' @param x object to plot
+#' @param ... reserved for future plot customisation options
+#'
+#' @return ggplot2 object
+#' @export
+#'
+#' @examples
+#' library(ggplot2)
+#' library(dplyr)
+#' simple_xmap <- tibble::tribble(~f, ~t, ~w,
+#'                              "x1111", "A1", 1,
+#'                              "x2222", "B2", 0.5,
+#'                              "x2222", "B3", 0.5,
+#'                              "x3333", "C5", 1,
+#'                              "x4444", "C5", 1,
+#'                              "x5555", "D6", 0.4,
+#'                              "x5555", "D7", 0.6,
+#'                              "x6666", "D6", 0.3,
+#'                              "x6666", "D7", 0.7,
+#'                              "x7777", "D6", 1)  |> 
+#'                 as_xmap_df(from = f, to = t, weights = w)
+#' xmap_viz_bigraph(simple_xmap)
+xmap_viz_bigraph <- function(x, ...){
+  UseMethod("xmap_viz_bigraph")
+}
+
+#' @describeIn xmap_viz_bigraph Plot `xmap_df` as sigmoid bigraph
+#' @export
+#'
+#' xmap_viz_bigraph.xmap_df <- function(x, ...) {
+```
+
+#### `xmap_viz_matrix()`
+
+```{r xmap-viz-matrix}
+
+```
+
+### Example Plots
+
+See `vis-xmaps.Rmd` vignette
+
 ## S3 Enhancements
 
 See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724)
@@ -1142,7 +1222,6 @@ NULL
 #' @describeIn print.xmap Print an `xmap_df`
 #'
 #' @export
-
 print.xmap_df <- function(x){
   x_direction <- .get_link_direction.xmap_df(x)
   x_type <- .get_link_types.xmap_df(x)
@@ -1207,6 +1286,7 @@ litr::add_readme("../xmap-source-files/README.Rmd")
 litr::add_vignettes("../xmap-source-files/xmap.Rmd")
 litr::add_vignettes("../xmap-source-files/making-xmaps.Rmd")
 litr::add_vignettes("../xmap-source-files/using-xmaps.Rmd")
+litr::add_vignettes("../xmap-source-files/vis-xmaps.Rmd")
 ```
 
 ### Render package

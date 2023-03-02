@@ -24,6 +24,7 @@ new_xmap_df <- function(x, col_from, col_to, col_weights, from_set = NULL) {
   stopifnot(length(col_from) == 1 && is.character(col_from))
   stopifnot(length(col_to) == 1 && is.character(col_to))
   stopifnot(length(col_weights) == 1 && is.character(col_weights))
+  stopifnot(ncol(x) == 3)
 
   #' naively generates `from_set` if it is missing
   from_set <- from_set %||% as.character(unique(x[[col_from]]))

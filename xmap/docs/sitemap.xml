@@ -19,6 +19,9 @@
     <loc>/articles/using-xmaps.html</loc>
   </url>
   <url>
+    <loc>/articles/vis-xmaps.html</loc>
+  </url>
+  <url>
     <loc>/articles/xmap.html</loc>
   </url>
   <url>
@@ -41,9 +44,6 @@
   </url>
   <url>
     <loc>/reference/op-null-default.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.xmap.html</loc>
   </url>
   <url>
     <loc>/reference/validate_xmap_df.html</loc>
