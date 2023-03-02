@@ -29,8 +29,8 @@ xmap_reverse.xmap_df <- function(x, weights_into = "r_weights"){
   new_weights <- weights_into
   new_cols <- c(new_from, new_to, new_weights)
   ## rearrange columns
-  col_order <- c(new_cols, setdiff(names(df), new_cols))
-  df <- df[col_order]
+  #col_order <- c(new_cols, setdiff(names(df), new_cols))
+  df <- df[new_cols]
   
   ## construction
   xmap <- new_xmap_df(df, new_from, new_to, new_weights)

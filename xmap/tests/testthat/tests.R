@@ -264,8 +264,7 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
   df_x_rev <- data.frame(
     to = df_x$to,
     from = df_x$from,
-    r_weights = 1,
-    weights = df_x$weights
+    r_weights = 1
   ) |>
     new_xmap_df("to", "from", "r_weights")
   

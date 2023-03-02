@@ -3,6 +3,7 @@
 \name{as_xmap}
 \alias{as_xmap}
 \alias{as_xmap.data.frame}
+\alias{as_xmap_df}
 \alias{as_xmap.tbl_df}
 \alias{is_xmap}
 \alias{is_xmap_df}
@@ -11,9 +12,11 @@
 \usage{
 as_xmap(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), ...)
 
-\method{as_xmap}{data.frame}(x, from, to, weights, subclass = "xmap_df", .keep_all = TRUE)
+\method{as_xmap}{data.frame}(x, from, to, weights, subclass = "xmap_df")
 
-\method{as_xmap}{tbl_df}(x, from, to, weights, subclass = "xmap_tbl", .keep_all = TRUE)
+as_xmap_df(x, from, to, weights, subclass = "xmap_df")
+
+\method{as_xmap}{tbl_df}(x, from, to, weights, subclass = "xmap_tbl")
 
 is_xmap(x)
 
@@ -32,8 +35,6 @@ is_xmap_tbl(x)
 \item{weights}{Column in \code{x} specifying the weight applied to data passed along the directed link between source and target node}
 
 \item{subclass}{Which xmap subclass to return. Defaults to \code{xmap_df} for \code{data.frame}, and \code{xmap_tbl} for \code{tibble}}
-
-\item{.keep_all}{Logical indicating whether or not to keep additional columns in \code{x}. Defaults to TRUE.}
 }
 \value{
 A validated \code{xmap} object.
@@ -48,6 +49,11 @@ This function returns \code{TRUE} for crossmaps \code{xmap} or subclasses thereo
 \item \code{as_xmap(data.frame)}: Coerce a \code{data.frame} to \code{xmap}
 
 \item \code{as_xmap(tbl_df)}: Coerce a \code{tibble} to \code{xmap}
+
+}}
+\section{Functions}{
+\itemize{
+\item \code{as_xmap_df()}: Coerce \code{data.frame} or \code{tibble} to \code{xmap_df}
 
 }}
 \examples{
