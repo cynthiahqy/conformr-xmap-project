@@ -63,20 +63,20 @@ plt_xmap_bigraph <- function(x, ...) {
     ggplot2::geom_label(data = dplyr::filter(df_gg, out_case == "unit_out"),
              aes(x = (from_x + to_x) / 4,
                  y = from_y,
-                 label = round(!!sym(x_attrs$col_weights), 2))) +
+                 label = round(.data[[x_attrs$col_weights]], 2))) +
     ggplot2::geom_label(data = dplyr::filter(df_gg, out_case == "frac_out"),
              aes(x = (((from_x + to_x) / 2) + to_x) / 2,
                  y = to_y,
-                 label = round(!!sym(x_attrs$col_weights), 2))) +
+                 label = round(.data[[x_attrs$col_weights]], 2))) +
     ## from nodes
     ggplot2::geom_text(aes(x = from_x - 0.5, y = from_y,
-                           label= !!sym(x_attrs$col_from),
+                           label = .data[[x_attrs$col_from]],
                            fontface=I(font_type)),
                       ## drop idx groups to avoid duplicate labels
                       stat = "unique", inherit.aes = FALSE) +
     ## to nodes
     ggplot2::geom_label(aes(x = to_x + 0.5, y = to_y, 
-                            label = !!sym(x_attrs$col_to)),
+                            label = .data[[x_attrs$col_to]]),
                         fill = "black",
                         alpha = 0.1) +
     ggplot2::scale_y_reverse() +
