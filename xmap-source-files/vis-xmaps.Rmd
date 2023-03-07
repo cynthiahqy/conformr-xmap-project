@@ -13,15 +13,63 @@ vignette: >
 
 Crossmaps aim to encode dataset integration and harmonisation choices separately to the code used to apply those such designs to data. It follows that visualisations and plots of the candidate crossmaps could be useful during the design process. For instance, Sankey diagrams are sometimes used to visualise schema crosswalks.
 
-This article provides a few ggplot2 code examples for visualising crossmaps. If there is sufficient interest, I might also publish wrapper functions for producing these plots in a ggplot2 extension package.
+This article provides a few ggplot2 code examples for visualising crossmaps. Most of the code below will eventually live in a ggplot2 extension package.
 
-### Bigraph
-
-```{r echo=FALSE, message=FALSE}
+```{r message=FALSE}
 library(ggplot2)
 library(dplyr)
 library(ggbump)
+library(xmap)
+```
 
+### Table
+
+Let's start with visualising a section of the ANZSCO22 to ISCO8 crosswalk published by the Australian Bureau of Statistics:
+
+```{r}
+anzsco_cw <- tibble::tribble(
+      ~anzsco22,                        ~anzsco22_descr, ~isco8, ~partial,                                         ~isco8_descr,
+       "111111", "Chief Executive or Managing Director", "1112",      "p",                        "Senior government officials",
+       "111111", "Chief Executive or Managing Director", "1114",      "p", "Senior officials of special-interest organizations",
+       "111111", "Chief Executive or Managing Director", "1120",      "p",            "Managing directors and chief executives",
+       "111211",            "Corporate General Manager", "1112",      "p",                        "Senior government officials",
+       "111211",            "Corporate General Manager", "1114",      "p", "Senior officials of special-interest organizations",
+       "111211",            "Corporate General Manager", "1120",      "p",            "Managing directors and chief executives",
+       "111212",         "Defence Force Senior Officer", "0110",      "p",                 "Commissioned armed forces officers",
+       "111311",          "Local Government Legislator", "1111",      "p",                                        "Legislators",
+       "111312",                 "Member of Parliament", "1111",      "p",                                        "Legislators",
+       "111399",                      "Legislators nec", "1111",      "p",                                        "Legislators"
+      )
+
+links <- anzsco_cw |>
+  dplyr::group_by(anzsco22) |>
+  dplyr::summarise(n_dest = dplyr::n_distinct(isco8)) |>
+  dplyr::ungroup() |>
+  dplyr::transmute(anzsco22, weight = 1/n_dest) |>
+  dplyr::left_join(anzsco_cw, by = "anzsco22")
+
+## get code tables
+table_anzsco <- anzsco_cw |>
+  dplyr::distinct(anzsco22, anzsco22_descr)
+table_isco8 <- anzsco_cw |>
+  dplyr::distinct(isco8, isco8_descr)
+
+## make xmap
+anzsco_xmap <- links |>
+  as_xmap_df(anzsco22, isco8, weight)
+```
+
+The included `print()` method for `xmap_df` objects:
+
+```{r}
+print(anzsco_xmap)
+```
+
+### Bigraph
+
+Visualisation as a bigraph is particularly useful for seeing the relations between the two nomenclature.
+
+```{r message=FALSE}
 plt_xmap_bigraph <- function(x, ...) {
   stopifnot(is_xmap_df(x))
   x_attrs <- attributes(x)
@@ -33,10 +81,8 @@ plt_xmap_bigraph <- function(x, ...) {
     "unit_out", "solid", "bold",
     "frac_out", "dashed", "italic")
   df_out_style <- edges_short |>
-    dplyr::group_by_at(x_attrs$col_from) |>
-    dplyr::mutate(n_dest = dplyr::n()) |>
-    dplyr::mutate(out_case = dplyr::case_when(n_dest == 1 ~ "unit_out",
-                                              n_dest > 1 ~ "frac_out")) |>
+    dplyr::mutate(out_case = dplyr::case_when(.data[[x_attrs$col_weights]] == 1 ~ "unit_out",
+                                              .data[[x_attrs$col_weights]] < 1 ~ "frac_out")) |>
     dplyr::left_join(style_out_case,
               by = "out_case") |>
     dplyr::ungroup()
@@ -92,36 +138,7 @@ plt_xmap_bigraph <- function(x, ...) {
 ```
 
 ```{r message=FALSE, echo=FALSE}
-library(xmap)
-anzsco_cw <- tibble::tribble(
-      ~anzsco22,                        ~anzsco22_descr, ~isco8, ~partial,                                         ~isco8_descr,
-       "111111", "Chief Executive or Managing Director", "1112",      "p",                        "Senior government officials",
-       "111111", "Chief Executive or Managing Director", "1114",      "p", "Senior officials of special-interest organizations",
-       "111111", "Chief Executive or Managing Director", "1120",      "p",            "Managing directors and chief executives",
-       "111211",            "Corporate General Manager", "1112",      "p",                        "Senior government officials",
-       "111211",            "Corporate General Manager", "1114",      "p", "Senior officials of special-interest organizations",
-       "111211",            "Corporate General Manager", "1120",      "p",            "Managing directors and chief executives",
-       "111212",         "Defence Force Senior Officer", "0110",      "p",                 "Commissioned armed forces officers",
-       "111311",          "Local Government Legislator", "1111",      "p",                                        "Legislators",
-       "111312",                 "Member of Parliament", "1111",      "p",                                        "Legislators",
-       "111399",                      "Legislators nec", "1111",      "p",                                        "Legislators"
-      )
-
-links <- anzsco_cw |>
-  dplyr::group_by(anzsco22) |>
-  dplyr::summarise(n_dest = n_distinct(isco8)) |>
-  dplyr::ungroup() |>
-  dplyr::transmute(anzsco22, weight = 1/n_dest) |>
-  dplyr::left_join(anzsco_cw, by = "anzsco22")
-
-## get code tables
-table_anzsco <- anzsco_cw |>
-  dplyr::distinct(anzsco22, anzsco22_descr)
-table_isco8 <- anzsco_cw |>
-  dplyr::distinct(isco8, isco8_descr)
-
-gg_bigraph <- links |>
-  as_xmap_df(anzsco22, isco8, weight) |>
+gg_bigraph <- anzsco_xmap |>
   plt_xmap_bigraph()
 
 # print bigraph and code tables
@@ -132,8 +149,60 @@ gg_bigraph
 knitr::kable(list(table_anzsco, table_isco8))
 ```
 
-Prepare links for plotting
+This visualisation also has benefits over the traditionally used Sankey diagram. Sankey diagrams are often used to illustrated "flows" between nodes. However, variable link widths can actually clutter the visualisation of crosswalks. Consider this simple crossmap that might be used to harmonise national accounts data (e.g. GDP) across two time periods.
+
+```{r}
+edges <- tribble(~ctr, ~ctr2, ~split,
+                 "BLX", "BEL", 0.5,
+                 "BLX", "LUX", 0.5,
+                 "E.GER", "DEU", 1,
+                 "W.GER", "DEU", 1)
+```
+
+![](https://raw.githubusercontent.com/cynthiahqy/viz-panel-maps/57272c61692ece2d2b94874d12fe7f0619c6e864/docs/plots/viz-country-concord/ggsankey.png)
+
+On the other hand, the bigraph visualisation shows more clearly how data is modified (or not) when harmonising between nomenclature. The solid lines show when a link does not modify the source values, whilst the dotted line style indicates that data will be split up. Furthermore, by using fixed width links, there is room to place labels on-top of each curve indicated the transformation weights.
+
+![](https://raw.githubusercontent.com/cynthiahqy/viz-panel-maps/workflowr/docs/plots/ggbump-sigmoid-graph-edges.jpg)
 
 ### Matrix
 
-### Table
+Another useful visualisation or representation of a crossmap is as an incidence matrix with the source nomenclature indexed along the rows and the target nomenclature indexed on the columns:
+
+```{r xmap-as-matrix}
+plt_xmap_ggmatrix <- function(x, ...){
+  stopifnot(is_xmap_df(x))
+  x_attrs <- attributes(x)
+  edges_complete <- tibble::as_tibble(x) |> 
+    tidyr::complete(.data[[x_attrs$col_from]], .data[[x_attrs$col_to]])
+  
+  ## add link-out type
+  gg_df <- edges_complete |>
+    dplyr::mutate(out_case = dplyr::case_when(.data[[x_attrs$col_weights]] == 1 ~ "one-to-one",
+                                              .data[[x_attrs$col_weights]] < 1 ~ "one-to-many",
+                                              is.na(.data[[x_attrs$col_weights]]) ~ "none")
+                  )
+  
+  ## make plot
+  gg_df |> ggplot(aes(x=.data[[x_attrs$col_to]],
+                      y=.data[[x_attrs$col_from]])) +
+    geom_tile(aes(fill=out_case), col="grey") +
+    scale_y_discrete(limits=rev) +
+    scale_x_discrete(position='top') +
+    scale_fill_brewer() +
+    coord_fixed()  +
+    labs(x = x_attrs$col_to, y = x_attrs$col_from, fill="Outgoing Link Type") +
+    theme_minimal() +
+    geom_text(data = dplyr::filter(gg_df, !is.na(.data[[x_attrs$col_weights]])), aes(label=round(.data[[x_attrs$col_weights]], 2))) +
+    theme(legend.position = "bottom",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()
+    )
+}
+```
+
+Notice that the requirement that a valid crossmap has outgoing weights which sum to 1 for each source node is equivalent to a requirement that the total of weights across each row sums to 1.
+
+```{r}
+plt_xmap_ggmatrix(anzsco_xmap)
+```
