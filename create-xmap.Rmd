@@ -25,8 +25,7 @@ usethis::create_package(
     Package = params$package_name,
     Version = "0.0.0.9014",
     Title = "xmap: A data-structure for extending crosswalks",
-    Description = "Provides a 'xmap' S3 class (the 'Crossmap') based on 'tbl_df'
-    class for use in {conformr} package.",
+    Description = "Provides 'xmap' S3 classes (the 'Crossmap') for use in {conformr} package.",
     `Authors@R` = person(
       given = "Cynthia",
       family = "Huang",
