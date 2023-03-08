@@ -58,7 +58,7 @@ Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
 -   `to`: target classification labels
 -   `weights`: applied to values in the source classification
 
-Additional columns (e.g. for label descriptions etc.) can be retained using the `.keep_all` argument.
+Additional columns (e.g. for label descriptions etc.) can be retained by setting the `.drop_extra` argument to `FALSE`.
 
 `as_xmap_df()` will validate that:
 
