@@ -12,7 +12,7 @@ This function returns TRUE for crossmaps xmap or subclasses thereof (xmap_df), a
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,12 +58,12 @@ This function returns TRUE for crossmaps xmap or subclasses thereof (xmap_df), a
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as_xmap</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"xmap_df"</span>, <span class="st">"xmap_tbl"</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for data.frame</span></span>
-<span><span class="fu">as_xmap</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="st">"xmap_df"</span><span class="op">)</span></span>
+<span><span class="fu">as_xmap</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="st">"xmap_df"</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">as_xmap_df</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="st">"xmap_df"</span><span class="op">)</span></span>
+<span><span class="fu">as_xmap_df</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="st">"xmap_df"</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for tbl_df</span></span>
-<span><span class="fu">as_xmap</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="st">"xmap_tbl"</span><span class="op">)</span></span>
+<span><span class="fu">as_xmap</span><span class="op">(</span><span class="va">x</span>, <span class="va">from</span>, <span class="va">to</span>, <span class="va">weights</span>, subclass <span class="op">=</span> <span class="st">"xmap_tbl"</span>, .keep_all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">is_xmap</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
@@ -90,6 +90,10 @@ This function returns TRUE for crossmaps xmap or subclasses thereof (xmap_df), a
 
 <dt>subclass</dt>
 <dd><p>Which xmap subclass to return. Defaults to <code>xmap_df</code> for <code>data.frame</code>, and <code>xmap_tbl</code> for <code>tibble</code></p></dd>
+
+
+<dt>.keep_all</dt>
+<dd><p>Logical indicating whether or not to keep additional columns in <code>x</code>. Defaults to TRUE.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -131,15 +135,14 @@ This function returns TRUE for crossmaps xmap or subclasses thereof (xmap_df), a
 <span class="r-in"><span><span class="co"># extra columns are dropped,</span></span></span>
 <span class="r-in"><span><span class="va">links</span><span class="op">$</span><span class="va">extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as_xmap</span><span class="op">(</span><span class="va">links</span>, from <span class="op">=</span> <span class="va">a</span>, to <span class="op">=</span> <span class="va">b</span>, weights <span class="op">=</span> <span class="va">w</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropped additional columns in `x`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> xmap_df:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> split </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> (a -&gt; b) BY w</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     a     b    w</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 AUS   VIC 0.10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 AUS   NSW 0.15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 AUS    WA 0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 AUS OTHER 0.50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     a     b    w extra</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 AUS   VIC 0.10     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 AUS   NSW 0.15     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 AUS    WA 0.25     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 AUS OTHER 0.50     6</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

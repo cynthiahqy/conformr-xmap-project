@@ -838,7 +838,11 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df") {
   df_check_cols(x, col_strings)
 
   ## drop additional columns
-  df <- x[col_strings]
+  if (.keep_all) {
+    df <- x
+  } else {
+    df <- x[col_strings]
+  }
   if (ncol(df) < ncol(x)) {
     cli::cli_inform("Dropped additional columns in `x`")
   }
@@ -878,8 +882,12 @@ as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl"){
   ## check columns exist
   df_check_cols(x, col_strings)
 
-  ## drop additional columns
-  df <- x[col_strings]
+ ## drop additional columns
+  if (.keep_all) {
+    df <- x
+  } else {
+    df <- x[col_strings]
+  }
   if (ncol(df) < ncol(x)) {
     cli::cli_inform("Dropped additional columns in `x`")
   }
