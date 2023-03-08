@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9015</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,31 +86,113 @@ valid Crossmap satisfies the following conditions:</p>
 <ol style="list-style-type: decimal">
 <li>There is at most one link between each distinct source and target
 node</li>
-<li>For each source node, the sum of weights attached to outgoing links
-sums to one.</li>
-</ol>
-</div>
-<div class="section level2">
-<h2 id="types-of-crossmap-transformations">Types of Crossmap Transformations<a class="anchor" aria-label="anchor" href="#types-of-crossmap-transformations"></a>
-</h2>
-<p>The outgoing and incoming properties of the graph links determine the
-type of data transformation encoded by a given crossmap.</p>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Recode</strong>: Maps with only one-to-one relations recode
-category labels, leaving any attached values untouched</li>
-<li>
-<strong>Split</strong>: Maps with at least one set of fractional
-(one-to-many) links involve redistribution of source values.</li>
-<li>
-<strong>Collapse</strong>: Maps with at least one set of
-many-to-one/one-from-many links (i.e. multiple source categories
-collapsed into a single target category) involve some kind of
-aggregation of source values.</li>
+<li>For each source node, the sum of weights attached to all outgoing
+links sums to one.</li>
 </ol>
 <div class="section level3">
-<h3 id="crossmap-tables-xmap_df">Crossmap tables: <code>xmap_df</code><a class="anchor" aria-label="anchor" href="#crossmap-tables-xmap_df"></a>
+<h3 id="unit-and-fractional-weight-links">Unit and Fractional Weight Links<a class="anchor" aria-label="anchor" href="#unit-and-fractional-weight-links"></a>
 </h3>
+<p>The weights associated with each source-target link encode the
+transformation to be applied to values associated with a given source
+node. Let the weight between source node <span class="math inline">\(i\)</span> and target node <span class="math inline">\(j\)</span> be denoted <span class="math inline">\(w_{ij}\)</span>. Weights can range from <span class="math inline">\([0,1]\)</span>. Note that <span class="math inline">\(w_{ij} = 0\)</span> is the trivial case where
+there is no link between the source and target nodes. The non-trivial
+cases are unit weights, <span class="math inline">\(w_{ij} = 1\)</span>
+and fractional weights, <span class="math inline">\(w_{ij} \in
+(0,1)\)</span>.</p>
+<p>Unit weights indicate that source values will be unmodified when
+passed into the target nomenclature. Therefore, crosswalks for recoding
+node labels, or collapsing multiple sub-category source nodes into
+parent target nodes, can both be represented as crossmaps with unit
+weights.</p>
+<p>Fractional weights on the other hand indicate how a source value will
+be modified when passed to the target node. For example a link with a
+weight of <span class="math inline">\(0.7\)</span> indicates that 70% of
+the numeric value associated with a source node should be “passed over”
+to the target node.</p>
+<p>Now, consider two links from the same source node <span class="math inline">\(i\)</span> to two different target nodes <span class="math inline">\(j\)</span> and <span class="math inline">\(k\)</span>, with weights <span class="math inline">\(w_{ij}\)</span> and <span class="math inline">\(w_{ik}\)</span>. Assume that the source node <span class="math inline">\(i\)</span> has no other outgoing links into the
+target nomenclature. Then, it follows that the weights on the two given
+links should sum to one if we want to preserve the total value between
+the source and target nomenclature. For instance, if <span class="math inline">\(w_{ij} = 0.7\)</span>, then <span class="math inline">\(w_{ik}\)</span> should be <span class="math inline">\(0.3\)</span>, such that 70% of the value
+associated with source node <span class="math inline">\(i\)</span> goes
+to the target node <span class="math inline">\(j\)</span>, and the
+remaining 30% is distributed to target node <span class="math inline">\(k\)</span>.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="special-cases-of-crossmaps">Special Cases of Crossmaps<a class="anchor" aria-label="anchor" href="#special-cases-of-crossmaps"></a>
+</h2>
+<p>The conditions for valid nomenclature crossmaps defined above are
+sufficient to ensure that the total sum of value is retained between the
+source and target nomenclature However, there are a number of other
+transformation properties which crossmaps can also encode and validate.
+Such special cases include “degenerate” crossmaps. We consider a
+crossmap “degenerate” if it has only binary weights on all possible
+source-target links. In such cases the weights are implied by the
+presence or absence of a link. It is helpful when thinking about special
+cases to define some familiar types of relations:</p>
+<ul>
+<li>
+<strong>one-to-one</strong>: a set of links where pairs of source
+and target nodes are uniquely linked to each other and no other nodes.
+Any links in this type of relation will have unit weights.</li>
+<li>
+<strong>one-to-many</strong>: a set of links where a single source
+node is linked to multiple target nodes. Links in this relation will
+have fractional weights.</li>
+<li>
+<strong>one-from-many</strong>: a set of links where a single target
+node is linked to multiple source nodes. Links can have either unit or
+fractional weights depending on whether the source nodes are part of
+one-to-one or one-to-many relations.</li>
+</ul>
+<div class="section level3">
+<h3 id="recode-maps">Recode maps<a class="anchor" aria-label="anchor" href="#recode-maps"></a>
+</h3>
+<p>Crossmaps with only one-to-one relations recode source labels to
+target labels, leaving any attached values untouched. For a crossmap to
+be a recode map it must only have unit weights, and the cardinality of
+the source and target node sets must be equal. Notice that Schema
+Crosswalks and category recoding functions could also be implemented as
+Recode Maps.</p>
+</div>
+<div class="section level3">
+<h3 id="collapse-or-aggregation-maps">Collapse or Aggregation maps<a class="anchor" aria-label="anchor" href="#collapse-or-aggregation-maps"></a>
+</h3>
+<p>Collapse crossmaps are similar to Recode crossmaps in that source
+values are unmodified when passed into the target nomenclature. However,
+as the name suggests, multiple source nodes can be “collapsed” into the
+same target node, such that at least some of the source values will be
+aggregated in the target nomenclature. Similar to a Recode crossmap, a
+Collapse crossmap must only have unit weights, but the cardinality of
+the source node set will be larger than the target node set. This means
+that at least two source nodes must be linked to the same target node
+since there are fewer target nodes than source nodes.</p>
+<p>Aggregation transformations can implemented as Collapse maps.
+Additionally, aggregation size requirements can be implemented as
+conditions on the number of incoming links for each target node. For
+instance, if you know that each target node should aggregate values from
+at least two source nodes, then the minimum number of non-zero incoming
+links should be 2 for every target node. Notice that this requirement
+precludes one-to-one links since it prevents any source node from being
+recoded into an “unshared” node in the target nomenclature.</p>
+</div>
+<div class="section level3">
+<h3 id="split-or-disaggregation-maps">Split or Disaggregation maps<a class="anchor" aria-label="anchor" href="#split-or-disaggregation-maps"></a>
+</h3>
+<p>Any crossmap with at least one set of fractional weight (one-to-many)
+links involve some redistribution of source value. However, a useful
+special case of maps with fractional weights are split maps, which
+encode the disaggregation of source values into a target nomenclature.
+Such maps which will have mostly one-to-many relations, and do not
+contain one-from-many relations. This can be ensured by restricting each
+target node to only have one incoming link. Furthermore, we can preclude
+one-to-one links with the condition that all links must have fractional
+weights.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="crossmap-tables-xmap_df">Crossmap tables: <code>xmap_df</code><a class="anchor" aria-label="anchor" href="#crossmap-tables-xmap_df"></a>
+</h2>
 <p>An <code>xmap_df</code> is a data.frame representation of a Crossmap,
 where each row represents a weighted link between the source and target
 classifications. You can create an <code>xmap_df</code> from a
@@ -129,32 +211,28 @@ classification</li>
 </ul>
 <p>Additional columns (e.g. for label descriptions etc.) can be retained
 using the <code>.keep_all</code> argument.</p>
-<p><code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> will validate that for <code>x</code>:</p>
+<p><code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> will validate that:</p>
 <ol style="list-style-type: decimal">
 <li>There are no duplicates <code>from</code>-<code>to</code>
 pairs,</li>
 <li>Every group of <code>weights</code> associated with a distinct
-<code>from</code> value sums to 1 (subject to minor floating point
-errors).</li>
+<code>from</code> value sums to 1 (subject to a floating point
+tolerance).</li>
 </ol>
-</div>
-</div>
-<div class="section level2">
-<h2 id="creating-crossmaps-tables">Creating Crossmaps Tables<a class="anchor" aria-label="anchor" href="#creating-crossmaps-tables"></a>
-</h2>
 <div class="section level3">
 <h3 id="row-wise-creation">Row-wise creation<a class="anchor" aria-label="anchor" href="#row-wise-creation"></a>
 </h3>
-<p>The following example shows how to encode one-to-one, many-to-one and
-one-to-many links and coerce them into a <code>xmap_df</code>. This
-method is most suitable for simple crossmaps.</p>
+<p>The following example shows how to create a mixed crossmap which
+encodes one-to-one, many-to-one and one-to-many relations and coerce
+them into a <code>xmap_df</code>. This method is most suitable for
+simple crossmaps.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simple_x</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">source</span>, <span class="op">~</span><span class="va">target</span>, <span class="op">~</span><span class="va">share</span>,</span>
 <span>  <span class="st">"equal"</span>, <span class="st">"EQUAL"</span>, <span class="fl">1</span>,       <span class="co"># one-to-one</span></span>
-<span>  <span class="st">"member_1"</span>, <span class="st">"GROUP"</span>, <span class="fl">1</span>,    <span class="co"># many-to-one</span></span>
+<span>  <span class="st">"member_1"</span>, <span class="st">"GROUP"</span>, <span class="fl">1</span>,    <span class="co"># one-FROM-many</span></span>
 <span>  <span class="st">"member_2"</span>, <span class="st">"GROUP"</span>, <span class="fl">1</span>,</span>
 <span>  <span class="st">"whole"</span>, <span class="st">"PART_1"</span>, <span class="fl">0.3</span>,    <span class="co"># one-to-many</span></span>
 <span>  <span class="st">"whole"</span>, <span class="st">"PART_2"</span>, <span class="fl">0.6</span>,</span>
@@ -183,7 +261,7 @@ method is most suitable for simple crossmaps.</p>
 correspondence into a crossmap. Such conversions require attaching
 appropriate weights to the existing crosswalk table.</p>
 <div class="section level4">
-<h4 id="recode-maps">Recode maps<a class="anchor" aria-label="anchor" href="#recode-maps"></a>
+<h4 id="recode-maps-1">Recode maps<a class="anchor" aria-label="anchor" href="#recode-maps-1"></a>
 </h4>
 <p>Consider the first five country codes in the ISO 3166 international
 standard and the one-to-one correspondence between the 2-digit, 2-digit
@@ -237,7 +315,7 @@ the table:</p>
 <span><span class="co">## 5   AD  AND    1</span></span></code></pre>
 </div>
 <div class="section level4">
-<h4 id="collapse-maps-aggregation">Collapse maps: Aggregation<a class="anchor" aria-label="anchor" href="#collapse-maps-aggregation"></a>
+<h4 id="aggregation-map">Aggregation map<a class="anchor" aria-label="anchor" href="#aggregation-map"></a>
 </h4>
 <p>Now consider aggregating data which were collected using the ISO
 3166-2 Subdivisions of <a href="https://en.wikipedia.org/w/index.php?title=ISO_3166-2:AU&amp;oldid=1110907059" class="external-link">Australia</a>
@@ -274,7 +352,7 @@ country.</p>
 <span><span class="co">## <span style="color: #949494;"># … with 11 more rows</span></span></span></code></pre>
 <p>Since aggregation involves the one-to-one transfer of values between
 <code>adm1</code> and <code>ctr</code> prior to the collapsing the
-<code>ctr</code> groups, we simple add weights of one to form a valid
+<code>ctr</code> groups, we simple add unit weights to form a valid
 crossmap:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg_xmap</span> <span class="op">&lt;-</span> <span class="va">agg_x</span> <span class="op">|&gt;</span></span>
@@ -309,7 +387,7 @@ crossmap:</p>
 <span><span class="co">## 21  CA-YT  CA    1</span></span></code></pre>
 </div>
 <div class="section level4">
-<h4 id="split-maps-disaggregation">Split maps: Disaggregation<a class="anchor" aria-label="anchor" href="#split-maps-disaggregation"></a>
+<h4 id="disaggregation-map">Disaggregation map<a class="anchor" aria-label="anchor" href="#disaggregation-map"></a>
 </h4>
 <p>Conversely, we might have aggregate level data which want to
 disaggregate. Continuing the above example, this could involve
@@ -369,19 +447,19 @@ correspondences between NAICS Canada 1997 and ISIC Revision 3. Imagine
 that we have some numeric data (e.g. gross output in CAD) collected in
 the NAICS Canada nomenclature that we want to harmonise into ISIC
 Revision 3. The correspondence between the two nomenclature contains a
-mixture of one-to-one, one-to-many, many-to-one and many-to-many
-relations.</p>
-<p>Luckily, we only need to deal with two cases when forming a
-crossmap:</p>
+mixture of one-to-one, one-to-many, and one-from-many relations.</p>
+<p>Luckily, we can split the source nomenclature into two groups:</p>
 <ol style="list-style-type: decimal">
-<li>links with unit weights (recode and collapse) and,</li>
-<li>links with fractional weights (split).</li>
+<li>source nodes with only one outgoing link (one-to-one relations with
+unit weights)</li>
+<li>source nodes with multiple outgoing links (one-to-many relations
+with fractional weights)</li>
 </ol>
-<p>Let’s first define some example correspondences.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;based on examples provided by Statistics Canada on the
+<p>Let’s first define somed example correspondences.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;based on examples provided by Statistics Canada on the
 page &lt;a href="https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3" class="external-link"&gt;How
 to Read a Concordance Table&lt;/a&gt;.&lt;/p&gt;'><sup>2</sup></a></p>
 <p>In the first example, one NAICS Canada class relates to exactly one
-ISIC class.</p>
+ISIC class, forming a one-to-one relation.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_recode</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  NAICS1997      <span class="op">=</span> <span class="st">"212210"</span>, </span>
@@ -403,11 +481,12 @@ ISIC class.</p>
 <td align="left">Mining of iron ores</td>
 </tr></tbody>
 </table>
-<p>In the second example, one ISIC class is equivalent to more than one
-NAICS Canada class. The asterisk (Partial Flag) indicates that part of
-ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities
-corresponding to each NAICS Canada class are listed in the column
-labelled “Link”.</p>
+<p>In the second example, the ISIC target class <code>D1543</code> is
+equivalent to more than one NAICS Canada source class, forming a
+one-from-many relation. The asterisk (Partial Flag) indicates that part
+of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC
+activities corresponding to each NAICS Canada class are listed in the
+column labelled “Link”.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_agg</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">NAICS1997</span>, <span class="op">~</span><span class="va">NAICS1997_desc</span>, <span class="op">~</span><span class="va">ISIC3</span>, <span class="op">~</span><span class="va">ISIC3_desc</span>, <span class="op">~</span><span class="va">Link</span>,</span>
@@ -415,70 +494,168 @@ labelled “Link”.</p>
 <span>  <span class="st">"311330"</span>, <span class="st">"Confectionery Manufacturing from Purchased Chocolate"</span>, <span class="st">"D1543 *"</span>, <span class="st">"Manufacture of cocoa, chocolate and sugar confectionery"</span>, <span class="st">"Confectionery, made from purchased chocolate"</span>,</span>
 <span>  <span class="st">"311340"</span>, <span class="st">"Non-Chocolate Confectionery Manufacturing"</span>, <span class="st">"D1543 *"</span>, <span class="st">"Manufacture of cocoa, chocolate and sugar confectionery"</span>, <span class="st">"Non-chocolate confectionery, manufacturing"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 5</span></span></span>
-<span><span class="co">##   NAICS1997 NAICS1997_desc                                   ISIC3 ISIC3…¹ Link </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 311320    Chocolate and Confectionery Manufacturing from … D154… Manufa… Choc…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 311330    Confectionery Manufacturing from Purchased Choc… D154… Manufa… Conf…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 311340    Non-Chocolate Confectionery Manufacturing        D154… Manufa… Non-…</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable name ¹​ISIC3_desc</span></span></span></code></pre>
-<p>In this third example, one NAICS Canada class is equivalent to more
-than one ISIC class.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<table class="table">
+<colgroup>
+<col width="5%">
+<col width="32%">
+<col width="4%">
+<col width="30%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">NAICS1997</th>
+<th align="left">NAICS1997_desc</th>
+<th align="left">ISIC3</th>
+<th align="left">ISIC3_desc</th>
+<th align="left">Link</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">311320</td>
+<td align="left">Chocolate and Confectionery Manufacturing from Cacao
+Beans</td>
+<td align="left">D1543 *</td>
+<td align="left">Manufacture of cocoa, chocolate and sugar
+confectionery</td>
+<td align="left">Chocolate and confectionery, made from cacao beans</td>
+</tr>
+<tr class="even">
+<td align="left">311330</td>
+<td align="left">Confectionery Manufacturing from Purchased
+Chocolate</td>
+<td align="left">D1543 *</td>
+<td align="left">Manufacture of cocoa, chocolate and sugar
+confectionery</td>
+<td align="left">Confectionery, made from purchased chocolate</td>
+</tr>
+<tr class="odd">
+<td align="left">311340</td>
+<td align="left">Non-Chocolate Confectionery Manufacturing</td>
+<td align="left">D1543 *</td>
+<td align="left">Manufacture of cocoa, chocolate and sugar
+confectionery</td>
+<td align="left">Non-chocolate confectionery, manufacturing</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that for both one-to-one and one-from-many relations, values
+attached to each source category are not directly modified during the
+“transfer” between source and target nomenclature. Instead, the source
+values are either retained, or summarised when the category collapse
+(and value aggregation) is performed. Thus, as shown above, all links in
+the above examples will take unit weights.</p>
+<p>In this third example, one souce NAICS Canada class is equivalent to
+more than one target ISIC class, forming a one-to-many relation.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_split</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">NAICS1997</span>, <span class="op">~</span><span class="va">NAICS1997_desc</span>, <span class="op">~</span><span class="va">ISIC3</span>, <span class="op">~</span><span class="va">ISIC3_desc</span>, <span class="op">~</span><span class="va">Link</span>,</span>
 <span>  <span class="st">"483213"</span>, <span class="st">"Inland Water Transportation (except by Ferries)"</span>, <span class="st">"I6110 *"</span>, <span class="st">"Sea and coastal water transport"</span>, <span class="st">"Intracoastal water transportation"</span>,</span>
 <span>  <span class="st">"483213"</span>, <span class="st">"Inland Water Transportation (except by Ferries)"</span>, <span class="st">"I6120 *"</span>, <span class="st">"Inland water transport"</span>, <span class="st">"Inland water transportation (except ferries)"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
-<span><span class="co">##   NAICS1997 NAICS1997_desc                                  ISIC3  ISIC3…¹ Link </span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 483213    Inland Water Transportation (except by Ferries) I6110… Sea an… Intr…</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 483213    Inland Water Transportation (except by Ferries) I6120… Inland… Inla…</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable name ¹​ISIC3_desc</span></span></span></code></pre>
-<div class="section level4">
-<h4 id="unit-weight-links">Unit weight links<a class="anchor" aria-label="anchor" href="#unit-weight-links"></a>
-</h4>
-<p>Notice that for both recode and collapse category relations, values
-attached to each source category are not directly modified during the
-“transfer” between source and target nomenclature. Instead, the source
-values are either retained, or summarised when the category collapse
-(and value aggregation) is performed. Thus, as shown above, both recode
-and collapse links have a weight of one.</p>
-<p>Let’s clean up the recode and collapse links defined above:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<table class="table">
+<colgroup>
+<col width="6%">
+<col width="33%">
+<col width="5%">
+<col width="22%">
+<col width="31%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">NAICS1997</th>
+<th align="left">NAICS1997_desc</th>
+<th align="left">ISIC3</th>
+<th align="left">ISIC3_desc</th>
+<th align="left">Link</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">483213</td>
+<td align="left">Inland Water Transportation (except by Ferries)</td>
+<td align="left">I6110 *</td>
+<td align="left">Sea and coastal water transport</td>
+<td align="left">Intracoastal water transportation</td>
+</tr>
+<tr class="even">
+<td align="left">483213</td>
+<td align="left">Inland Water Transportation (except by Ferries)</td>
+<td align="left">I6120 *</td>
+<td align="left">Inland water transport</td>
+<td align="left">Inland water transportation (except ferries)</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s clean up the recode and collapse relations shown above:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_unit</span> <span class="op">&lt;-</span> <span class="va">canada_agg</span> <span class="op">|&gt;</span></span>
 <span>  <span class="co"># remove the partial flag (*)</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ISIC3 <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">ISIC3</span>, <span class="st">" \\*"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Link</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="co"># bind the links together and add weights</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_recode</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>share <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">canada_unit</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 4 × 5</span></span></span>
-<span><span class="co">##   NAICS1997 NAICS1997_desc                                   ISIC3 ISIC3…¹ share</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 311320    Chocolate and Confectionery Manufacturing from … D1543 Manufa…     1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 311330    Confectionery Manufacturing from Purchased Choc… D1543 Manufa…     1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 311340    Non-Chocolate Confectionery Manufacturing        D1543 Manufa…     1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 212210    Iron Ore Mining                                  C1310 Mining…     1</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with abbreviated variable name ¹​ISIC3_desc</span></span></span></code></pre>
-</div>
-<div class="section level4">
-<h4 id="fractional-weight-links">Fractional weight links<a class="anchor" aria-label="anchor" href="#fractional-weight-links"></a>
-</h4>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>share <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="7%">
+<col width="43%">
+<col width="4%">
+<col width="40%">
+<col width="4%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">NAICS1997</th>
+<th align="left">NAICS1997_desc</th>
+<th align="left">ISIC3</th>
+<th align="left">ISIC3_desc</th>
+<th align="right">share</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">311320</td>
+<td align="left">Chocolate and Confectionery Manufacturing from Cacao
+Beans</td>
+<td align="left">D1543</td>
+<td align="left">Manufacture of cocoa, chocolate and sugar
+confectionery</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">311330</td>
+<td align="left">Confectionery Manufacturing from Purchased
+Chocolate</td>
+<td align="left">D1543</td>
+<td align="left">Manufacture of cocoa, chocolate and sugar
+confectionery</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">311340</td>
+<td align="left">Non-Chocolate Confectionery Manufacturing</td>
+<td align="left">D1543</td>
+<td align="left">Manufacture of cocoa, chocolate and sugar
+confectionery</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">212210</td>
+<td align="left">Iron Ore Mining</td>
+<td align="left">C1310</td>
+<td align="left">Mining of iron ores</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
 <p>Now all that remains is to prepare the split links. Similar to the
 disaggregation example above, we need to design weights to allocate the
 “pool” of numeric value associated with the NAICS class
 <code>483213</code> into the corresponding ISIC classes
 <code>I6110</code> and <code>I6120</code>.</p>
-<p>Assume for illustration purposes that the Canadian “Inland water
-transport” industry (<code>I6120</code>) is twice as big as the “Sea and
-coastal water transport” industry (<code>I6110</code>). This suggests
-that the weight between <code>483213</code> and <code>I6120</code>
-should be twice that of <code>I6110</code>.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<p>Assume for illustration purposes that we have reference data to
+suggest the Canadian “Inland water transport” industry
+(<code>I6120</code>) is twice as big as the “Sea and coastal water
+transport” industry (<code>I6110</code>). This suggests that the weight
+between <code>483213</code> and <code>I6120</code> should be twice that
+of <code>I6110</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_frac</span> <span class="op">&lt;-</span> <span class="va">canada_split</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ISIC3 <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_remove.html" class="external-link">str_remove</a></span><span class="op">(</span><span class="va">ISIC3</span>, <span class="st">" \\*"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Link</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -486,12 +663,12 @@ should be twice that of <code>I6110</code>.</p>
 <span>                                  <span class="va">ISIC3</span> <span class="op">==</span> <span class="st">"I6120"</span> <span class="op">~</span> <span class="fl">0.67</span>,</span>
 <span>                                  <span class="cn">T</span> <span class="op">~</span> <span class="cn">NA_real_</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Now let’s combine the unit and fractional links into a crossmap:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_xmap</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_unit</span>, <span class="va">canada_frac</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">NAICS1997</span>, to <span class="op">=</span> <span class="va">ISIC3</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Dropped additional columns in `dplyr::bind_rows(canada_unit,</span></span>
 <span><span class="co">## canada_frac)`</span></span></code></pre>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">canada_xmap</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode, split, and collapse  </span></span>
@@ -505,7 +682,6 @@ should be twice that of <code>I6110</code>.</p>
 <span><span class="co">## 6    483213 I6120  0.67</span></span></code></pre>
 </div>
 </div>
-</div>
 <div class="section level2">
 <h2 id="one-way-crossmaps">One-Way Crossmaps<a class="anchor" aria-label="anchor" href="#one-way-crossmaps"></a>
 </h2>
@@ -514,7 +690,7 @@ should be twice that of <code>I6110</code>.</p>
 you reverse the direct of the link. Notice that
 <code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> throws an error if you try to naively swap the
 <code>from</code> and <code>to</code> arguments:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_unit</span>, <span class="va">canada_frac</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISIC3</span>, to <span class="op">=</span> <span class="va">NAICS1997</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Dropped additional columns in `dplyr::bind_rows(canada_unit,</span></span>
@@ -524,7 +700,7 @@ you reverse the direct of the link. Notice that
 <span><span class="co">##   group sums to 1</span></span></code></pre>
 <p>However, we <strong>can</strong> swap the arguments on a recode map.
 Recall the ISO country code crossmap we created above:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">iso_xmap</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode </span></span>
@@ -539,7 +715,7 @@ Recall the ISO country code crossmap we created above:</p>
 ISO-2 digit, we wanted to convert from ISO-2 digit to ISO Numeric. We
 can take the existing crossmap and invert it without editing any
 weights:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_xmap</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/xmap_reverse.html">xmap_reverse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
