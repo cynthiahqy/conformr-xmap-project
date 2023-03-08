@@ -60,16 +60,14 @@ Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
 
 Additional columns (e.g. for label descriptions etc.) can be retained using the `.keep_all` argument.
 
-`as_xmap_df()` will validate that for `x`:
+`as_xmap_df()` will validate that:
 
 1.  There are no duplicates `from`-`to` pairs,
-2.  Every group of `weights` associated with a distinct `from` value sums to 1 (subject to minor floating point errors).
-
-## Creating Crossmaps Tables
+2.  Every group of `weights` associated with a distinct `from` value sums to 1 (subject to a floating point tolerance).
 
 ### Row-wise creation
 
-The following example shows how to encode one-to-one, many-to-one and one-to-many links and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
+The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
 
 ```{r}
 library(xmap)
@@ -77,7 +75,7 @@ library(xmap)
 simple_x <- tibble::tribble(
   ~source, ~target, ~share,
   "equal", "EQUAL", 1,       # one-to-one
-  "member_1", "GROUP", 1,    # many-to-one
+  "member_1", "GROUP", 1,    # one-FROM-many
   "member_2", "GROUP", 1,
   "whole", "PART_1", 0.3,    # one-to-many
   "whole", "PART_2", 0.6,
@@ -131,7 +129,7 @@ iso_codes |>
   as_xmap_df(from = ISO2, to = ISO3, weights = link)
 ```
 
-#### Collapse maps: Aggregation
+#### Aggregation map
 
 Now consider aggregating data which were collected using the ISO 3166-2 Subdivisions of [Australia](https://en.wikipedia.org/w/index.php?title=ISO_3166-2:AU&oldid=1110907059) and [Canada](https://en.wikipedia.org/w/index.php?title=ISO_3166-2:CA&oldid=1110906706):
 
@@ -153,7 +151,7 @@ agg_x <- adm1_list |>
 agg_x
 ```
 
-Since aggregation involves the one-to-one transfer of values between `adm1` and `ctr` prior to the collapsing the `ctr` groups, we simple add weights of one to form a valid crossmap:
+Since aggregation involves the one-to-one transfer of values between `adm1` and `ctr` prior to the collapsing the `ctr` groups, we simple add unit weights to form a valid crossmap:
 
 ```{r}
 agg_xmap <- agg_x |>
@@ -163,7 +161,7 @@ agg_xmap <- agg_x |>
 agg_xmap
 ```
 
-#### Split maps: Disaggregation
+#### Disaggregation map
 
 Conversely, we might have aggregate level data which want to disaggregate. Continuing the above example, this could involve incorporating country level data into analysis at the 3166-2 Subdivisions level.
 
@@ -199,18 +197,18 @@ state_xmap
 
 ### Mixed Maps
 
-Now consider the following mixed transformation using selected correspondences between NAICS Canada 1997 and ISIC Revision 3. Imagine that we have some numeric data (e.g. gross output in CAD) collected in the NAICS Canada nomenclature that we want to harmonise into ISIC Revision 3. The correspondence between the two nomenclature contains a mixture of one-to-one, one-to-many, many-to-one and many-to-many relations.
+Now consider the following mixed transformation using selected correspondences between NAICS Canada 1997 and ISIC Revision 3. Imagine that we have some numeric data (e.g. gross output in CAD) collected in the NAICS Canada nomenclature that we want to harmonise into ISIC Revision 3. The correspondence between the two nomenclature contains a mixture of one-to-one, one-to-many, and one-from-many relations.
 
-Luckily, we only need to deal with two cases when forming a crossmap:
+Luckily, we can split the source nomenclature into two groups:
 
-1.  links with unit weights (recode and collapse) and,
-2.  links with fractional weights (split).
+1.  source nodes with only one outgoing link (one-to-one relations with unit weights)
+2.  source nodes with multiple outgoing links (one-to-many relations with fractional weights)
 
-Let's first define some example correspondences.[^2]
+Let's first define somed example correspondences.[^2]
 
 [^2]: based on examples provided by Statistics Canada on the page [How to Read a Concordance Table](https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3).
 
-In the first example, one NAICS Canada class relates to exactly one ISIC class.
+In the first example, one NAICS Canada class relates to exactly one ISIC class, forming a one-to-one relation.
 
 ```{r}
 canada_recode <- tibble::tibble(
@@ -225,7 +223,7 @@ canada_recode <- tibble::tibble(
 knitr::kable(canada_recode)
 ```
 
-In the second example, one ISIC class is equivalent to more than one NAICS Canada class. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
+In the second example, the ISIC target class `D1543` is equivalent to more than one NAICS Canada source class, forming a one-from-many relation. The asterisk (Partial Flag) indicates that part of ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities corresponding to each NAICS Canada class are listed in the column labelled "Link".
 
 ```{r}
 canada_agg <- tibble::tribble(
@@ -237,10 +235,12 @@ canada_agg <- tibble::tribble(
 ```
 
 ```{r echo=FALSE}
-canada_agg
+knitr::kable(canada_agg)
 ```
 
-In this third example, one NAICS Canada class is equivalent to more than one ISIC class.
+Notice that for both one-to-one and one-from-many relations, values attached to each source category are not directly modified during the "transfer" between source and target nomenclature. Instead, the source values are either retained, or summarised when the category collapse (and value aggregation) is performed. Thus, as shown above, all links in the above examples will take unit weights.
+
+In this third example, one souce NAICS Canada class is equivalent to more than one target ISIC class, forming a one-to-many relation.
 
 ```{r}
 canada_split <- tibble::tribble(
@@ -251,14 +251,10 @@ canada_split <- tibble::tribble(
 ```
 
 ```{r echo=FALSE}
-canada_split 
+knitr::kable(canada_split)
 ```
 
-#### Unit weight links
-
-Notice that for both recode and collapse category relations, values attached to each source category are not directly modified during the "transfer" between source and target nomenclature. Instead, the source values are either retained, or summarised when the category collapse (and value aggregation) is performed. Thus, as shown above, both recode and collapse links have a weight of one.
-
-Let's clean up the recode and collapse links defined above:
+Let's clean up the recode and collapse relations shown above:
 
 ```{r}
 canada_unit <- canada_agg |>
@@ -268,15 +264,15 @@ canada_unit <- canada_agg |>
   # bind the links together and add weights
   dplyr::bind_rows(canada_recode) |>
   dplyr::mutate(share = 1)
-
-canada_unit
 ```
 
-#### Fractional weight links
+```{r echo=FALSE}
+knitr::kable(canada_unit)
+```
 
 Now all that remains is to prepare the split links. Similar to the disaggregation example above, we need to design weights to allocate the "pool" of numeric value associated with the NAICS class `483213` into the corresponding ISIC classes `I6110` and `I6120`.
 
-Assume for illustration purposes that the Canadian "Inland water transport" industry (`I6120`) is twice as big as the "Sea and coastal water transport" industry (`I6110`). This suggests that the weight between `483213` and `I6120` should be twice that of `I6110`.
+Assume for illustration purposes that we have reference data to suggest the Canadian "Inland water transport" industry (`I6120`) is twice as big as the "Sea and coastal water transport" industry (`I6110`). This suggests that the weight between `483213` and `I6120` should be twice that of `I6110`.
 
 ```{r}
 canada_frac <- canada_split |>
