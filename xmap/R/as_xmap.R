@@ -8,6 +8,7 @@
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
+#' @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
 #' 
 #' @return A validated `xmap` object.
 #' 
@@ -31,7 +32,7 @@ as_xmap_df <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap_df(links, from = a, to = b, weights = w)
-as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE) {
+as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .drop_extra = TRUE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -44,10 +45,10 @@ as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .k
   df_check_cols(x, col_strings)
 
   ## drop additional columns
-  if (.keep_all) {
-    df <- x
-  } else {
+  if (.drop_extra) {
     df <- x[col_strings]
+  } else {
+    df <- x
   }
   if (ncol(df) < ncol(x)) {
     cli::cli_inform("Dropped additional columns in {.arg {deparse(substitute(x))}}")
