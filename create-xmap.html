@@ -421,6 +421,13 @@ classification</a></li>
 <li><a href="#generic-xmap_reverse" id="toc-generic-xmap_reverse">Generic:
 <code><a href='create-xmap.html#xmap_reverse'>xmap_reverse</a>()</code></a></li>
 </ul></li>
+<li><a href="#visualisation" id="toc-visualisation">Visualisation</a>
+<ul>
+<li><a href="#planned-generic-xmap_viz_" id="toc-planned-generic-xmap_viz_">Planned Generic:
+<code>xmap_viz_*()</code></a></li>
+<li><a href="#example-plots" id="toc-example-plots">Example
+Plots</a></li>
+</ul></li>
 <li><a href="#s3-enhancements" id="toc-s3-enhancements">S3
 Enhancements</a>
 <ul>
@@ -450,7 +457,7 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9012&quot;,
+    Version = &quot;0.0.0.9013&quot;,
     Title = &quot;xmap: A data-structure for extending crosswalks&quot;,
     Description = &quot;Provides a &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) based on &#39;tbl_df&#39;
     class for use in {conformr} package.&quot;,
@@ -573,9 +580,22 @@ input_df &lt;- tibble::tribble(
 
 int_dat &lt;- list(&quot;input_df&quot; = input_df)
 
-usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)</code></pre>
+usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
+</code></pre>
 <pre><code>## ✔ Adding &#39;R&#39; to Depends field in DESCRIPTION
 ## ✔ Saving &#39;int_dat&#39; to &#39;R/sysdata.rda&#39;</code></pre>
+<pre class="r"><code>simple_xmap &lt;- tibble::tribble(~f, ~t, ~w,
+                                &quot;x1111&quot;, &quot;A1&quot;, 1,
+                                &quot;x2222&quot;, &quot;B2&quot;, 0.5,
+                                &quot;x2222&quot;, &quot;B3&quot;, 0.5,
+                                &quot;x3333&quot;, &quot;C5&quot;, 1,
+                                &quot;x4444&quot;, &quot;C5&quot;, 1,
+                                &quot;x5555&quot;, &quot;D6&quot;, 0.4,
+                                &quot;x5555&quot;, &quot;D7&quot;, 0.6,
+                                &quot;x6666&quot;, &quot;D6&quot;, 0.3,
+                                &quot;x6666&quot;, &quot;D7&quot;, 0.7,
+                                &quot;x7777&quot;, &quot;D6&quot;, 1
+)</code></pre>
 </div>
 </div>
 <div id="class-structure" class="section level2">
@@ -648,7 +668,7 @@ tibble.</p>
                     {
                       testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 <div id="xmap_df-constructor-method" class="section level3">
 <h3><code>xmap_df</code> Constructor Method</h3>
@@ -706,6 +726,7 @@ NULL
   stopifnot(length(col_from) == 1 &amp;&amp; is.character(col_from))
   stopifnot(length(col_to) == 1 &amp;&amp; is.character(col_to))
   stopifnot(length(col_weights) == 1 &amp;&amp; is.character(col_weights))
+  stopifnot(ncol(x) == 3)
 
   #&#39; naively generates `from_set` if it is missing
   from_set &lt;- from_set %||% as.character(unique(x[[col_from]]))
@@ -793,7 +814,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 <div id="class-tests" class="section level3">
 <h3>Class Tests</h3>
@@ -900,7 +921,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -1036,9 +1057,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="internal-validate_xmap_df" class="section level3">
@@ -1111,7 +1132,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1215,12 +1236,12 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
 <pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 </div>
@@ -1238,7 +1259,6 @@ testthat::test_that(
 #&#39; @param from,to Columns in `x` specifying the source and target nodes
 #&#39; @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #&#39; @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame`, and `xmap_tbl` for `tibble`
-#&#39; @param .keep_all Logical indicating whether or not to keep additional columns in `x`. Defaults to TRUE.
 #&#39; 
 #&#39; @return A validated `xmap` object.
 #&#39; 
@@ -1282,7 +1302,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
 #&#39; # extra columns are dropped,
 #&#39; links$extra &lt;- c(2, 4, 5, 6)
 #&#39; <a href='create-xmap.html#as_xmap'>as_xmap</a>(links, from = a, to = b, weights = w)
-<span id='as_xmap.data.frame'>as_xmap.data.frame</span> &lt;- function(x, from, to, weights, subclass = &quot;xmap_df&quot;, .keep_all = TRUE) {
+<span id='as_xmap.data.frame'>as_xmap.data.frame</span> &lt;- function(x, from, to, weights, subclass = &quot;xmap_df&quot;, .keep_all = FALSE) {
   ## coercion &amp; checks
   stopifnot(is.data.frame(x))
 
@@ -1301,7 +1321,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
     df &lt;- x[col_strings]
   }
   if (ncol(df) &lt; ncol(x)) {
-    cli::cli_inform(&quot;Dropped additional columns in `x`&quot;)
+    cli::cli_inform(&quot;Dropped additional columns in {.arg {deparse(substitute(x))}}&quot;)
   }
 
   ## rearrange columns
@@ -1328,7 +1348,7 @@ as_xmap_df &lt;- as_xmap.data.frame
 #&#39; @describeIn as_xmap Coerce a `tibble` to `xmap`
 #&#39; 
 #&#39; @export
-<span id='as_xmap.tbl_df'>as_xmap.tbl_df</span> &lt;- function(x, from, to, weights, subclass = &quot;xmap_tbl&quot;, .keep_all = TRUE){
+<span id='as_xmap.tbl_df'>as_xmap.tbl_df</span> &lt;- function(x, from, to, weights, subclass = &quot;xmap_tbl&quot;, .keep_all = FALSE){
   stopifnot(tibble::is_tibble(x))
 
   # get string names for columns
@@ -1339,16 +1359,17 @@ as_xmap_df &lt;- as_xmap.data.frame
   ## check columns exist
   <a href='create-xmap.html#df_check_cols'>df_check_cols</a>(x, col_strings)
 
- ## drop additional columns
+  ## drop additional columns
   if (.keep_all) {
     df &lt;- x
   } else {
     df &lt;- x[col_strings]
   }
+
   if (ncol(df) &lt; ncol(x)) {
     cli::cli_inform(&quot;Dropped additional columns in `x`&quot;)
   }
-
+  
   ## rearrange columns
   col_order &lt;- c(col_strings, setdiff(names(df), col_strings))
   df &lt;- df[col_order]
@@ -1390,7 +1411,7 @@ as_xmap_df &lt;- as_xmap.data.frame
                                <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 </div>
 <div id="description-tools" class="section level2">
@@ -1438,7 +1459,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
@@ -1491,8 +1512,8 @@ has_collapse &lt;- has_1fromM</code></pre>
   new_weights &lt;- weights_into
   new_cols &lt;- c(new_from, new_to, new_weights)
   ## rearrange columns
-  col_order &lt;- c(new_cols, setdiff(names(df), new_cols))
-  df &lt;- df[col_order]
+  #col_order &lt;- c(new_cols, setdiff(names(df), new_cols))
+  df &lt;- df[new_cols]
   
   ## construction
   xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, new_from, new_to, new_weights)
@@ -1523,8 +1544,7 @@ has_collapse &lt;- has_1fromM</code></pre>
   df_x_rev &lt;- data.frame(
     to = df_x$to,
     from = df_x$from,
-    r_weights = 1,
-    weights = df_x$weights
+    r_weights = 1
   ) |&gt;
     <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;to&quot;, &quot;from&quot;, &quot;r_weights&quot;)
   
@@ -1546,6 +1566,74 @@ has_collapse &lt;- has_1fromM</code></pre>
 <pre><code>## Test passed 😀</code></pre>
 </div>
 </div>
+<div id="visualisation" class="section level2">
+<h2>Visualisation</h2>
+<p>Adding in more dependencies</p>
+<pre class="r"><code>usethis::use_package(&quot;dplyr&quot;, type = &quot;suggests&quot;)
+usethis::use_package(&quot;tibble&quot;, type = &quot;suggests&quot;)
+usethis::use_package(&quot;ggplot2&quot;, type = &quot;suggests&quot;)
+usethis::use_package(&quot;ggbump&quot;, type = &quot;suggests&quot;)</code></pre>
+<pre><code>## ✔ Adding &#39;dplyr&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;dplyr&quot;)` or `rlang::check_installed(&quot;dplyr&quot;)` to test if dplyr is installed
+## • Then directly refer to functions with `dplyr::fun()`</code></pre>
+<pre><code>## • In your package code, use `rlang::is_installed(&quot;tibble&quot;)` or `rlang::check_installed(&quot;tibble&quot;)` to test if tibble is installed
+## • Then directly refer to functions with `tibble::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;ggplot2&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;ggplot2&quot;)` or `rlang::check_installed(&quot;ggplot2&quot;)` to test if ggplot2 is installed
+## • Then directly refer to functions with `ggplot2::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;ggbump&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;ggbump&quot;)` or `rlang::check_installed(&quot;ggbump&quot;)` to test if ggbump is installed
+## • Then directly refer to functions with `ggbump::fun()`</code></pre>
+<div id="planned-generic-xmap_viz_" class="section level3">
+<h3>Planned Generic: <code>xmap_viz_*()</code></h3>
+<p>This section is left in for future reference, when I get around to
+properly developing visualisation functions for crossmaps.</p>
+<div id="xmap_viz_bigraph" class="section level4">
+<h4><code><a href='create-xmap.html#xmap_viz_bigraph'>xmap_viz_bigraph</a>()</code></h4>
+<pre class="r"><code>#&#39; Visualise `xmap` as bigraph
+#&#39; 
+#&#39; Plot crossmap as bigraph using sigmoid curves from ggbump.
+#&#39;
+#&#39; @param x object to plot
+#&#39; @param ... reserved for future plot customisation options
+#&#39;
+#&#39; @return ggplot2 object
+#&#39; @export
+#&#39;
+#&#39; @examples
+#&#39; library(ggplot2)
+#&#39; library(dplyr)
+#&#39; simple_xmap &lt;- tibble::tribble(~f, ~t, ~w,
+#&#39;                              &quot;x1111&quot;, &quot;A1&quot;, 1,
+#&#39;                              &quot;x2222&quot;, &quot;B2&quot;, 0.5,
+#&#39;                              &quot;x2222&quot;, &quot;B3&quot;, 0.5,
+#&#39;                              &quot;x3333&quot;, &quot;C5&quot;, 1,
+#&#39;                              &quot;x4444&quot;, &quot;C5&quot;, 1,
+#&#39;                              &quot;x5555&quot;, &quot;D6&quot;, 0.4,
+#&#39;                              &quot;x5555&quot;, &quot;D7&quot;, 0.6,
+#&#39;                              &quot;x6666&quot;, &quot;D6&quot;, 0.3,
+#&#39;                              &quot;x6666&quot;, &quot;D7&quot;, 0.7,
+#&#39;                              &quot;x7777&quot;, &quot;D6&quot;, 1)  |&gt; 
+#&#39;                 as_xmap_df(from = f, to = t, weights = w)
+#&#39; <a href='create-xmap.html#xmap_viz_bigraph'>xmap_viz_bigraph</a>(simple_xmap)
+<span id='xmap_viz_bigraph'>xmap_viz_bigraph</span> &lt;- function(x, ...){
+  UseMethod(&quot;xmap_viz_bigraph&quot;)
+}
+
+#&#39; @describeIn xmap_viz_bigraph Plot `xmap_df` as sigmoid bigraph
+#&#39; @export
+#&#39;
+#&#39; <span id='xmap_viz_bigraph.xmap_df'>xmap_viz_bigraph.xmap_df</span> &lt;- function(x, ...) {</code></pre>
+</div>
+<div id="xmap_viz_matrix" class="section level4">
+<h4><code>xmap_viz_matrix()</code></h4>
+</div>
+</div>
+<div id="example-plots" class="section level3">
+<h3>Example Plots</h3>
+<p>See <code>vis-xmaps.Rmd</code> vignette</p>
+</div>
+</div>
 <div id="s3-enhancements" class="section level2">
 <h2>S3 Enhancements</h2>
 <p>See discussion <a href="https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724">here</a></p>
@@ -1555,6 +1643,9 @@ has_collapse &lt;- has_1fromM</code></pre>
 #60</a></p>
 <div id="method-xmap_df" class="section level4">
 <h4>Method: <code>xmap_df</code></h4>
+<pre class="r"><code></code></pre>
+<p>NULL</p>
+<p>Test Prints:</p>
 <pre class="r"><code>#&#39;
 <span id='.get_link_types.xmap_df'>.get_link_types.xmap_df</span> &lt;- function(xmap_df){
   x_attrs &lt;- attributes(xmap_df)
@@ -1588,7 +1679,6 @@ NULL
 #&#39; @describeIn print.xmap Print an `xmap_df`
 #&#39;
 #&#39; @export
-
 <span id='print.xmap_df'>print.xmap_df</span> &lt;- function(x){
   x_direction &lt;- <a href='create-xmap.html#.get_link_direction.xmap_df'>.get_link_direction.xmap_df</a>(x)
   x_type &lt;- <a href='create-xmap.html#.get_link_types.xmap_df'>.get_link_types.xmap_df</a>(x)
@@ -1611,8 +1701,40 @@ NULL
   cat(paste0(&quot;xmap_tbl:\n&quot;,  x_type, &quot;\n&quot;, x_direction, &quot;\n&quot;))
   print(x_links)
 }</code></pre>
-<p>NULL</p>
-<p>Test Prints:</p>
+<pre><code>## Dropped additional columns in `x`</code></pre>
+<pre><code>## xmap_tbl:
+## recode, split, and collapse  
+## (sector -&gt; new_sec) BY weight
+## # A tibble: 10 × 3
+##    sector new_sec weight
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
+##  1 MINE   mining   1    
+##  2 AGRI   agri     1    
+##  3 FISH   agri     1    
+##  4 MANU   text     0.25 
+##  5 MANU   food     0.25 
+##  6 MANU   chem     0.25 
+##  7 MANU   elec     0.25 
+##  8 CONS   build    0.333
+##  9 CONS   roads    0.333
+## 10 CONS   civil    0.333</code></pre>
+</div>
+</div>
+<div id="read-write-methods" class="section level3">
+<h3>Read / Write Methods</h3>
+<p>Discussed here: <a href="https://github.com/cynthiahqy/conformr-project/issues/62">conformr-project
+#62</a></p>
+</div>
+<div id="plot-method" class="section level3">
+<h3>Plot Method</h3>
+<p>Suggested in <a href="https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724">confomr-project
+#43</a></p>
+</div>
+</div>
+<div id="package-creation" class="section level2">
+<h2>Package Creation</h2>
+<div id="add-vignettes" class="section level3">
+<h3>Add Vignettes</h3>
 <pre class="r"><code>valid_xmap_df &lt;-
   tibble::tribble(
     ~new_sec, ~sector, ~weight,
@@ -1631,43 +1753,6 @@ NULL
   <a href='create-xmap.html#as_xmap'>as_xmap</a>(from = sector, to = new_sec, weight)
 
 print(valid_xmap_df)</code></pre>
-<pre><code>## xmap_tbl:
-## recode, split, and collapse  
-## (sector -&gt; new_sec) BY weight
-## # A tibble: 10 × 4
-##    sector new_sec weight extra_col
-##    &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;    
-##  1 MINE   mining   1     stuff    
-##  2 AGRI   agri     1     stuff    
-##  3 FISH   agri     1     stuff    
-##  4 MANU   text     0.25  stuff    
-##  5 MANU   food     0.25  stuff    
-##  6 MANU   chem     0.25  stuff    
-##  7 MANU   elec     0.25  stuff    
-##  8 CONS   build    0.333 stuff    
-##  9 CONS   roads    0.333 stuff    
-## 10 CONS   civil    0.333 stuff</code></pre>
-</div>
-</div>
-<div id="read-write-methods" class="section level3">
-<h3>Read / Write Methods</h3>
-<p>Discussed here: <a href="https://github.com/cynthiahqy/conformr-project/issues/62">conformr-project
-#62</a></p>
-</div>
-<div id="plot-method" class="section level3">
-<h3>Plot Method</h3>
-<p>Suggested in <a href="https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724">confomr-project
-#43</a></p>
-</div>
-</div>
-<div id="package-creation" class="section level2">
-<h2>Package Creation</h2>
-<div id="add-vignettes" class="section level3">
-<h3>Add Vignettes</h3>
-<pre class="r"><code>litr::add_readme(&quot;../xmap-source-files/README.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/xmap.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/using-xmaps.Rmd&quot;)</code></pre>
 <pre><code>## ✔ Writing &#39;README.Rmd&#39;
 ## ✔ Adding &#39;^README\\.Rmd$&#39; to &#39;.Rbuildignore&#39;
 ## ✔ Creating &#39;.git/hooks/&#39;
@@ -1675,16 +1760,21 @@ litr::add_vignettes(&quot;../xmap-source-files/using-xmaps.Rmd&quot;)</code></pr
 </div>
 <div id="render-package" class="section level3">
 <h3>Render package</h3>
+<p>To debug without having to re-render the litr file every time use the
+<code>pkg = &quot;.&quot;</code> argument in devtools functions:</p>
+<pre class="r"><code>devtools::run_examples(&#39;xmap&#39;)
+devtools::test(&#39;xmap&#39;)
+devtools::build(&#39;xmap&#39;)
+devtools::install(&#39;xmap&#39;)
+devtools::check(&#39;xmap&#39;, document = FALSE)</code></pre>
 <p>We finish by running commands that will document, build, and install
 the package. It may also be a good idea to check the package from within
 this file.</p>
-<pre class="r"><code>rm(list = ls())
-litr::document() # &lt;-- use instead of devtools::document()
-litr::add_pkgdown()
-devtools::run_examples()
-devtools::build()
-devtools::install()
-# devtools::check(document = FALSE)</code></pre>
+<pre class="r"><code>litr::add_readme(&quot;../xmap-source-files/README.Rmd&quot;)
+litr::add_vignettes(&quot;../xmap-source-files/xmap.Rmd&quot;)
+litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)
+litr::add_vignettes(&quot;../xmap-source-files/using-xmaps.Rmd&quot;)
+litr::add_vignettes(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;)</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap</code></pre>
 <pre><code>## Warning: []8;line = 9:col = 1;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/
@@ -1738,6 +1828,8 @@ devtools::install()
 ## Writing &#39;articles/making-xmaps.html&#39;
 ## Reading &#39;vignettes/using-xmaps.Rmd&#39;
 ## Writing &#39;articles/using-xmaps.html&#39;
+## Reading &#39;vignettes/vis-xmaps.Rmd&#39;
+## Writing &#39;articles/vis-xmaps.html&#39;
 ## Reading &#39;vignettes/xmap.Rmd&#39;
 ## Writing &#39;articles/xmap.html&#39;
 ## Writing &#39;sitemap.xml&#39;
@@ -1745,128 +1837,6 @@ devtools::install()
 ## == DONE ========================================================================
 ## Warning message:
 ## The vignette title specified in \VignetteIndexEntry{} is different from the title in the YAML metadata. The former is &quot;Intro to Crossmaps for Data Transformation in R&quot;, and the latter is &quot;Crossmaps for Data Transformation in R&quot;. If that is intentional, you may set options(rmarkdown.html_vignette.check_title = FALSE) to suppress this check.</code></pre>
-<pre><code>## ℹ Updating xmap documentation
-## ℹ Loading xmap</code></pre>
-<pre><code>## Warning: []8;line = 9:col = 1;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/
-## conformr-project/xmap/R/xmap_reverse.Rxmap_reverse.R:9]8;;] @examples requires a
-## value</code></pre>
-<pre><code>## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;as_xmap&#39;)as_xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;df_check&#39;)df_check.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap&#39;)new_xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;print.xmap&#39;)print.xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;op-null-default&#39;)op-null-default.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;validate_xmap_df&#39;)validate_xmap_df.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap-has&#39;)xmap-has.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap_reverse&#39;)xmap_reverse.Rd]8;;&#39;</code></pre>
-<pre><code>## ── Running 8 example files ───────────────────────────────────────────── xmap ──</code></pre>
-<pre><code>## ℹ Loading xmap</code></pre>
-<pre><code>## 
-## &gt; links &lt;- data.frame(a = &quot;AUS&quot;, b = c(&quot;VIC&quot;, &quot;NSW&quot;, 
-## +     &quot;WA&quot;, &quot;OTHER&quot;), w = c(0.1, 0.15, 0.25, 0.5))
-## 
-## &gt; <a href='create-xmap.html#as_xmap'>as_xmap</a>(links, from = a, to = b, weights = w)
-## xmap_df:
-## split 
-## (a -&gt; b) BY w
-##     a     b    w
-## 1 AUS   VIC 0.10
-## 2 AUS   NSW 0.15
-## 3 AUS    WA 0.25
-## 4 AUS OTHER 0.50
-## 
-## &gt; links$extra &lt;- c(2, 4, 5, 6)
-## 
-## &gt; <a href='create-xmap.html#as_xmap'>as_xmap</a>(links, from = a, to = b, weights = w)
-## xmap_df:
-## split 
-## (a -&gt; b) BY w
-##     a     b    w extra
-## 1 AUS   VIC 0.10     2
-## 2 AUS   NSW 0.15     4
-## 3 AUS    WA 0.25     5
-## 4 AUS OTHER 0.50     6</code></pre>
-<pre><code>## ℹ Loading xmap</code></pre>
-<pre><code>##   
-   checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ ...
-  
-✔  checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’
-## 
-  
-─  preparing ‘xmap’:
-## 
-  
-   checking DESCRIPTION meta-information ...
-  
-✔  checking DESCRIPTION meta-information
-## 
-  
-─  installing the package to build vignettes
-## 
-  
-   creating vignettes ...
-  
-✔  creating vignettes (4.3s)
-## 
-  
-─  checking for LF line-endings in source and make files and shell scripts
-## 
-  
-─  checking for empty or unneeded directories
-## 
-  
-─  looking to see if a ‘data/datalist’ file should be added
-## 
-  
-─  building ‘xmap_0.0.0.9012.tar.gz’
-## 
-  
-   
-## </code></pre>
-<pre><code>## [1] &quot;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap_0.0.0.9012.tar.gz&quot;</code></pre>
-<pre><code>## 
-##   
-   checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’ ...
-  
-✔  checking for file ‘/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/DESCRIPTION’
-## 
-  
-─  preparing ‘xmap’:
-## 
-  
-   checking DESCRIPTION meta-information ...
-  
-✔  checking DESCRIPTION meta-information
-## 
-  
-─  checking for LF line-endings in source and make files and shell scripts
-## 
-  
-─  checking for empty or unneeded directories
-## ─  looking to see if a ‘data/datalist’ file should be added
-## 
-  
-─  building ‘xmap_0.0.0.9012.tar.gz’
-## 
-  
-   
-## 
-Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \
-##   /var/folders/7s/5vds1_8n7msbnx7mdc53zg8r0000gn/T//RtmpTiKTHe/xmap_0.0.0.9012.tar.gz \
-##   --install-tests 
-## * installing to library ‘/Users/cynthiahqy/Library/R/x86_64/4.2/library’
-## * installing *source* package ‘xmap’ ...
-## ** using staged installation
-## ** R
-## ** tests
-## ** byte-compile and prepare package for lazy loading
-## ** help
-## *** installing help indices
-## ** building package indices
-## ** installing vignettes
-## ** testing if installed package can be loaded from temporary location
-## ** testing if installed package can be loaded from final location
-## ** testing if installed package keeps a record of temporary installation path
-## * DONE (xmap)</code></pre>
 </div>
 </div>
 

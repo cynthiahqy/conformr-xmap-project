@@ -12,11 +12,11 @@
 \usage{
 as_xmap(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), ...)
 
-\method{as_xmap}{data.frame}(x, from, to, weights, subclass = "xmap_df")
+\method{as_xmap}{data.frame}(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE)
 
-as_xmap_df(x, from, to, weights, subclass = "xmap_df")
+as_xmap_df(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE)
 
-\method{as_xmap}{tbl_df}(x, from, to, weights, subclass = "xmap_tbl")
+\method{as_xmap}{tbl_df}(x, from, to, weights, subclass = "xmap_tbl", .keep_all = FALSE)
 
 is_xmap(x)
 
