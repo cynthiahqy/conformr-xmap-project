@@ -17,7 +17,7 @@ If you already have a valid crossmap table, turn it into a `xmap` object by spec
 
 ``` r
 links |>
-  as_xmap(from = ISIC2, to = ISIC3, weights = shares)
+  as_xmap_df(from = ISIC2, to = ISIC3, weights = shares)
 ```
 
 See `vignette("making-xmaps.Rmd")` for more details on validation conditions and creating custom weights.
