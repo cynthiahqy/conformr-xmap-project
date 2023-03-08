@@ -113,7 +113,7 @@ reference:
   desc: >
     Functions for constructing a `xmap_df`.
   - xmap
-  - as_xmap
+  - as_xmap_df
 - title: "Helpers and Validation"
   - new_xmap
   - validate_xmap
@@ -754,12 +754,12 @@ testthat::test_that(
 #' @return A validated `xmap` object.
 #' 
 #' @export
-as_xmap <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
-  UseMethod("as_xmap")
+as_xmap_df <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
+  UseMethod("as_xmap_df")
 }
 ```
 
-### `as_xmap.data.frame()`
+### `as_xmap_df.data.frame()`
 
 -   checks for:
     -   [x] existence of columns via `validate_xmap_df()`
@@ -779,12 +779,12 @@ as_xmap <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
 #'   b = c("VIC", "NSW", "WA", "OTHER"),
 #'   w = c(0.1, 0.15, 0.25, 0.5)
 #' )
-#' as_xmap(links, from = a, to = b, weights = w)
+#' as_xmap_df(links, from = a, to = b, weights = w)
 #'
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
-#' as_xmap(links, from = a, to = b, weights = w)
-as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE) {
+#' as_xmap_df(links, from = a, to = b, weights = w)
+as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -820,11 +820,6 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep
 
   return(xmap)
 }
-
-#' @describeIn as_xmap Coerce `data.frame` or `tibble` to `xmap_df`
-#' 
-#' @export
-as_xmap_df <- as_xmap.data.frame
 ```
 
 ```{r}
@@ -842,11 +837,11 @@ testthat::test_that(
      df_links <- as.data.frame(tbl_links)
      
      ## default subclasses work as expected
-     testthat::expect_s3_class(as_xmap(df_links, f, t, w),
+     testthat::expect_s3_class(as_xmap_df(df_links, f, t, w),
                                .get_xmap_subclass_attr("xmap_df"))
      
      ## override subclass works as well
-     testthat::expect_s3_class(as_xmap(tbl_links, f, t, w, subclass = "xmap_df"),
+     testthat::expect_s3_class(as_xmap_df(tbl_links, f, t, w, subclass = "xmap_df"),
                                .get_xmap_subclass_attr("xmap_df"))
   }
 )
@@ -1135,7 +1130,7 @@ valid_xmap_df <-
     "civil", "CONS", 1 / 3,
   ) |>
   dplyr::mutate(extra_col = "stuff") |>
-  as_xmap(from = sector, to = new_sec, weight)
+  as_xmap_df(from = sector, to = new_sec, weight)
 
 print(valid_xmap_df)
 ```
