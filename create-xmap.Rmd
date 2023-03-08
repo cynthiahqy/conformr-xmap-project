@@ -841,7 +841,7 @@ as_xmap <- function(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), .
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap(links, from = a, to = b, weights = w)
-as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df") {
+as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -887,7 +887,7 @@ as_xmap_df <- as_xmap.data.frame
 #' @describeIn as_xmap Coerce a `tibble` to `xmap`
 #' 
 #' @export
-as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl"){
+as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl", .keep_all = FALSE){
   stopifnot(tibble::is_tibble(x))
 
   # get string names for columns
