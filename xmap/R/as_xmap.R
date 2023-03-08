@@ -8,6 +8,7 @@
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame`, and `xmap_tbl` for `tibble`
+#' @param .keep_all Logical indicating whether or not to keep additional columns in `x`. Defaults to TRUE.
 #' 
 #' @return A validated `xmap` object.
 #' 
@@ -31,7 +32,7 @@ as_xmap <- function(x, from, to, weights, subclass = c("xmap_df", "xmap_tbl"), .
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap(links, from = a, to = b, weights = w)
-as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df") {
+as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .keep_all = TRUE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -44,7 +45,11 @@ as_xmap.data.frame <- function(x, from, to, weights, subclass = "xmap_df") {
   df_check_cols(x, col_strings)
 
   ## drop additional columns
-  df <- x[col_strings]
+  if (.keep_all) {
+    df <- x
+  } else {
+    df <- x[col_strings]
+  }
   if (ncol(df) < ncol(x)) {
     cli::cli_inform("Dropped additional columns in `x`")
   }
@@ -73,7 +78,7 @@ as_xmap_df <- as_xmap.data.frame
 #' @describeIn as_xmap Coerce a `tibble` to `xmap`
 #' 
 #' @export
-as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl"){
+as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl", .keep_all = TRUE){
   stopifnot(tibble::is_tibble(x))
 
   # get string names for columns
@@ -84,11 +89,19 @@ as_xmap.tbl_df <- function(x, from, to, weights, subclass = "xmap_tbl"){
   ## check columns exist
   df_check_cols(x, col_strings)
 
-  ## drop additional columns
-  df <- x[col_strings]
+ ## drop additional columns
+  if (.keep_all) {
+    df <- x
+  } else {
+    df <- x[col_strings]
+  }
   if (ncol(df) < ncol(x)) {
     cli::cli_inform("Dropped additional columns in `x`")
   }
+
+  ## rearrange columns
+  col_order <- c(col_strings, setdiff(names(df), col_strings))
+  df <- df[col_order]
 
   ## construction
   xmap <- switch(subclass,
