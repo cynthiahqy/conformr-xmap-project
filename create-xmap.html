@@ -453,7 +453,7 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9014&quot;,
+    Version = &quot;0.0.0.9015&quot;,
     Title = &quot;xmap: A data-structure for extending crosswalks&quot;,
     Description = &quot;Provides &#39;xmap&#39; S3 classes (the &#39;Crossmap&#39;) for use in {conformr} package.&quot;,
     `Authors@R` = person(
@@ -658,7 +658,7 @@ a numeric vector - <code>X</code> inherits from the class
                     {
                       testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 <div id="xmap_df-constructor-method" class="section level3">
 <h3><code>xmap_df</code> Constructor Method</h3>
@@ -750,7 +750,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -861,7 +861,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -998,7 +998,7 @@ testthat::test_that(
   }
 )</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
@@ -1072,7 +1072,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1176,12 +1176,12 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 </div>
@@ -1300,7 +1300,7 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
                                <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 </div>
 <div id="description-tools" class="section level2">
@@ -1348,7 +1348,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
@@ -1437,7 +1437,7 @@ has_collapse &lt;- has_1fromM</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#df_check_reversible'>df_check_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level2">
