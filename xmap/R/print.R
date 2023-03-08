@@ -40,16 +40,3 @@ print.xmap_df <- function(x){
   cat(paste0("xmap_df:\n",  x_type, "\n", x_direction, "\n"))
   print(x_links)
 }
-
-#' @describeIn print.xmap Print an `xmap_tbl`
-#' 
-#' @export
-print.xmap_tbl <- function(x){
-  x_direction <- .get_link_direction.xmap_df(x)
-  x_type <- .get_link_types.xmap_df(x)
-  x_links <- tibble::as_tibble(x)
-  
-  ## print headers and links
-  cat(paste0("xmap_tbl:\n",  x_type, "\n", x_direction, "\n"))
-  print(x_links)
-}

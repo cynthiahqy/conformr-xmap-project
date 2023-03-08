@@ -40,12 +40,3 @@ xmap_reverse.xmap_df <- function(x, weights_into = "r_weights"){
   
   return(xmap)
 }
-
-#' @describeIn xmap_reverse Reverse a `xmap_tbl`
-#'
-#' @export
-xmap_reverse.xmap_tbl <- function(x, weights_into = "r_weights"){
-  xmap <- xmap_reverse.xmap_df(x, weights_into)
-  class(xmap) <- .get_xmap_subclass_attr("xmap_tbl")
-  return(xmap)
-}

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9013</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9014</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,7 @@ population figures which we want to aggregate.</p>
 <span><span class="va">agg_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ctr <span class="op">=</span> <span class="st">"AU"</span>,</span>
 <span>                      adm1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AU-NSW"</span>, <span class="st">"AU-QLD"</span>, <span class="st">"AU-SA"</span>, <span class="st">"AU-TAS"</span>, <span class="st">"AU-VIC"</span>, <span class="st">"AU-WA"</span>, <span class="st">"AU-ACT"</span>, <span class="st">"AU-NT"</span><span class="op">)</span>,</span>
 <span>                      link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span><span class="va">adm1</span>, <span class="va">ctr</span>, <span class="va">link</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span><span class="va">adm1</span>, <span class="va">ctr</span>, <span class="va">link</span><span class="op">)</span></span></code></pre></div>
 <p>Second, load in our state-level figures</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">state_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>

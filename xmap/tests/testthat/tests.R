@@ -22,24 +22,6 @@ testthat::test_that(
   }
 )
 
-testthat::test_that(
-  "new_xmap_tbl() accepts arbitrary tibbles with correct from argument",
-  {
-    df <- data.frame(
-      x = letters[1:5],
-      y = 1:5,
-      z = runif(5)
-    ) |> tibble::as_tibble()
-    xmap <- new_xmap_tbl(x = df, "x", "y", "z")
-    xmap_attrs <- attributes(xmap)
-    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_tbl"))
-    testthat::expect_identical(xmap_attrs$col_from, "x")
-    testthat::expect_identical(xmap_attrs$col_to, "y")
-    testthat::expect_identical(xmap_attrs$col_weights, "z")
-    testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
-  }
-)
-
 testthat::test_that("df_check_col_order() works as expected",
                     {
                       df <- data.frame(a = 1, b = 2, c = 3)
@@ -225,15 +207,11 @@ testthat::test_that(
      df_links <- as.data.frame(tbl_links)
      
      ## default subclasses work as expected
-     testthat::expect_s3_class(as_xmap(df_links, f, t, w),
+     testthat::expect_s3_class(as_xmap_df(df_links, f, t, w),
                                .get_xmap_subclass_attr("xmap_df"))
-     testthat::expect_s3_class(as_xmap(tbl_links, f, t, w),
-                               .get_xmap_subclass_attr("xmap_tbl"))
      
      ## override subclass works as well
-     testthat::expect_s3_class(as_xmap(df_links, f, t, w, subclass = "xmap_tbl"),
-                               .get_xmap_subclass_attr("xmap_tbl"))
-     testthat::expect_s3_class(as_xmap(df_links, f, t, w, subclass = "xmap_df"),
+     testthat::expect_s3_class(as_xmap_df(tbl_links, f, t, w, subclass = "xmap_df"),
                                .get_xmap_subclass_attr("xmap_df"))
   }
 )
@@ -275,12 +253,6 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
   # output checks
   testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
   testthat::expect_identical(df_check_reversible(df_x,"to"), df_x)
-  
-  # more class checks
-  testthat::expect_s3_class(xmap_reverse.xmap_tbl(df_x), .get_xmap_subclass_attr("xmap_tbl"))
-  tbl_x <- df_x |> new_xmap_tbl("from", "to", "weights")
-  tbl_x_rev <- df_x_rev |> new_xmap_tbl("to", "from", "r_weights")
-  testthat::expect_s3_class(xmap_reverse(tbl_x), class(tbl_x_rev))
 }
 )
 

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9013</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9014</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,7 +115,7 @@ aggregation of source values.</li>
 where each row represents a weighted link between the source and target
 classifications. You can create an <code>xmap_df</code> from a
 data.frame or tibble of weighted edges using
-<code><a href="../reference/as_xmap.html">as_xmap_df()</a></code>.</p>
+<code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code>.</p>
 <p>Your input table <code>x</code> needs to have at least 3 complete
 (i.e. no <code>NA</code>) columns:</p>
 <ul>
@@ -129,7 +129,7 @@ classification</li>
 </ul>
 <p>Additional columns (e.g. for label descriptions etc.) can be retained
 using the <code>.keep_all</code> argument.</p>
-<p><code><a href="../reference/as_xmap.html">as_xmap_df()</a></code> will validate that for <code>x</code>:</p>
+<p><code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> will validate that for <code>x</code>:</p>
 <ol style="list-style-type: decimal">
 <li>There are no duplicates <code>from</code>-<code>to</code>
 pairs,</li>
@@ -162,7 +162,7 @@ method is most suitable for simple crossmaps.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simple_xmap</span> <span class="op">&lt;-</span> <span class="va">simple_x</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">source</span>, to <span class="op">=</span> <span class="va">target</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">source</span>, to <span class="op">=</span> <span class="va">target</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">simple_xmap</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
@@ -203,9 +203,9 @@ and numeric codes.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_xmap</span> <span class="op">&lt;-</span> <span class="va">iso_codes</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISONumeric</span>, to <span class="op">=</span> <span class="va">ISO2</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISONumeric</span>, to <span class="op">=</span> <span class="va">ISO2</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Dropped additional columns in `dplyr::mutate(iso_codes, link = 1)`</span></span></code></pre>
-<p>Notice that <code><a href="../reference/as_xmap.html">as_xmap()</a></code> always place the
+<p>Notice that <code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> always place the
 <code>from</code>, <code>to</code> and <code>weights</code> columns in
 order and drops any additional columns passed to it.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -224,19 +224,17 @@ the table:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_codes</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISO2</span>, to <span class="op">=</span> <span class="va">ISO3</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Dropped additional columns in `x`</span></span></code></pre>
-<pre><code><span><span class="co">## xmap_tbl:</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISO2</span>, to <span class="op">=</span> <span class="va">ISO3</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Dropped additional columns in `dplyr::mutate(iso_codes, link = 1)`</span></span></code></pre>
+<pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode </span></span>
 <span><span class="co">## (ISO2 -&gt; ISO3) BY link</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 3</span></span></span>
-<span><span class="co">##   ISO2  ISO3   link</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> AF    AFG       1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> AL    ALB       1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> DZ    DZA       1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> AS    ASM       1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> AD    AND       1</span></span></code></pre>
+<span><span class="co">##   ISO2 ISO3 link</span></span>
+<span><span class="co">## 1   AF  AFG    1</span></span>
+<span><span class="co">## 2   AL  ALB    1</span></span>
+<span><span class="co">## 3   DZ  DZA    1</span></span>
+<span><span class="co">## 4   AS  ASM    1</span></span>
+<span><span class="co">## 5   AD  AND    1</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="collapse-maps-aggregation">Collapse maps: Aggregation<a class="anchor" aria-label="anchor" href="#collapse-maps-aggregation"></a>
@@ -281,26 +279,34 @@ crossmap:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg_xmap</span> <span class="op">&lt;-</span> <span class="va">agg_x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">adm1</span>, to <span class="op">=</span> <span class="va">ctr</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">adm1</span>, to <span class="op">=</span> <span class="va">ctr</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">agg_xmap</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_tbl:</span></span>
+<pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode and collapse  </span></span>
 <span><span class="co">## (adm1 -&gt; ctr) BY link</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 21 × 3</span></span></span>
-<span><span class="co">##    adm1   ctr    link</span></span>
-<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> AU-NSW AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> AU-QLD AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> AU-SA  AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> AU-TAS AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> AU-VIC AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> AU-WA  AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> AU-ACT AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> AU-NT  AU        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> CA-AB  CA        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">10</span> CA-BC  CA        1</span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 11 more rows</span></span></span></code></pre>
+<span><span class="co">##      adm1 ctr link</span></span>
+<span><span class="co">## 1  AU-NSW  AU    1</span></span>
+<span><span class="co">## 2  AU-QLD  AU    1</span></span>
+<span><span class="co">## 3   AU-SA  AU    1</span></span>
+<span><span class="co">## 4  AU-TAS  AU    1</span></span>
+<span><span class="co">## 5  AU-VIC  AU    1</span></span>
+<span><span class="co">## 6   AU-WA  AU    1</span></span>
+<span><span class="co">## 7  AU-ACT  AU    1</span></span>
+<span><span class="co">## 8   AU-NT  AU    1</span></span>
+<span><span class="co">## 9   CA-AB  CA    1</span></span>
+<span><span class="co">## 10  CA-BC  CA    1</span></span>
+<span><span class="co">## 11  CA-MB  CA    1</span></span>
+<span><span class="co">## 12  CA-NB  CA    1</span></span>
+<span><span class="co">## 13  CA-NL  CA    1</span></span>
+<span><span class="co">## 14  CA-NS  CA    1</span></span>
+<span><span class="co">## 15  CA-ON  CA    1</span></span>
+<span><span class="co">## 16  CA-PE  CA    1</span></span>
+<span><span class="co">## 17  CA-QC  CA    1</span></span>
+<span><span class="co">## 18  CA-SK  CA    1</span></span>
+<span><span class="co">## 19  CA-NT  CA    1</span></span>
+<span><span class="co">## 20  CA-NU  CA    1</span></span>
+<span><span class="co">## 21  CA-YT  CA    1</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="split-maps-disaggregation">Split maps: Disaggregation<a class="anchor" aria-label="anchor" href="#split-maps-disaggregation"></a>
@@ -336,7 +342,7 @@ Bureau of Statistics&lt;/a&gt;&lt;/p&gt;'><sup>1</sup></a></p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>ctr <span class="op">=</span> <span class="st">"AU"</span>,</span>
 <span>                <span class="va">adm1</span>,</span>
 <span>                share <span class="op">=</span> <span class="va">Pop</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Pop</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">adm1</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">adm1</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Dropped additional columns in `dplyr::mutate(state_data, ctr = "AU", adm1,</span></span>
 <span><span class="co">## share = Pop/sum(Pop))`</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -482,22 +488,21 @@ should be twice that of <code>I6110</code>.</p>
 <p>Now let’s combine the unit and fractional links into a crossmap:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">canada_xmap</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_unit</span>, <span class="va">canada_frac</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">NAICS1997</span>, to <span class="op">=</span> <span class="va">ISIC3</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Dropped additional columns in `x`</span></span></code></pre>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">NAICS1997</span>, to <span class="op">=</span> <span class="va">ISIC3</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Dropped additional columns in `dplyr::bind_rows(canada_unit,</span></span>
+<span><span class="co">## canada_frac)`</span></span></code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">canada_xmap</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## xmap_tbl:</span></span>
+<pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode, split, and collapse  </span></span>
 <span><span class="co">## (NAICS1997 -&gt; ISIC3) BY share</span></span>
-<span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
 <span><span class="co">##   NAICS1997 ISIC3 share</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> 311320    D1543  1   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> 311330    D1543  1   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> 311340    D1543  1   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span> 212210    C1310  1   </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span> 483213    I6110  0.33</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span> 483213    I6120  0.67</span></span></code></pre>
+<span><span class="co">## 1    311320 D1543  1.00</span></span>
+<span><span class="co">## 2    311330 D1543  1.00</span></span>
+<span><span class="co">## 3    311340 D1543  1.00</span></span>
+<span><span class="co">## 4    212210 C1310  1.00</span></span>
+<span><span class="co">## 5    483213 I6110  0.33</span></span>
+<span><span class="co">## 6    483213 I6120  0.67</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -507,12 +512,13 @@ should be twice that of <code>I6110</code>.</p>
 <p>Except in the case of recoding, crossmaps are generally lateral
 (one-way). Weights on collapse and split links are no longer valid if
 you reverse the direct of the link. Notice that
-<code><a href="../reference/as_xmap.html">as_xmap_df()</a></code> throws an error if you try to naively swap the
+<code><a href="../reference/as_xmap_df.html">as_xmap_df()</a></code> throws an error if you try to naively swap the
 <code>from</code> and <code>to</code> arguments:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">canada_unit</span>, <span class="va">canada_frac</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISIC3</span>, to <span class="op">=</span> <span class="va">NAICS1997</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Dropped additional columns in `x`</span></span></code></pre>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISIC3</span>, to <span class="op">=</span> <span class="va">NAICS1997</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Dropped additional columns in `dplyr::bind_rows(canada_unit,</span></span>
+<span><span class="co">## canada_frac)`</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `df_check_weights()`:</span></span></span>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> Incomplete mapping weights found. Check sum of weights for each `from`</span></span>
 <span><span class="co">##   group sums to 1</span></span></code></pre>

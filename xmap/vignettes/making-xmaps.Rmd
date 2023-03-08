@@ -93,7 +93,7 @@ iso_xmap <- iso_codes |>
   as_xmap_df(from = ISONumeric, to = ISO2, weights = link)
 ```
 
-Notice that `as_xmap()` always place the `from`, `to` and `weights` columns in order and drops any additional columns passed to it.
+Notice that `as_xmap_df()` always place the `from`, `to` and `weights` columns in order and drops any additional columns passed to it.
 
 ```{r}
 print(iso_xmap)
@@ -104,7 +104,7 @@ We can also easily generate crossmaps for the other nomenclature in the table:
 ```{r}
 iso_codes |>
   dplyr::mutate(link = 1) |>
-  as_xmap(from = ISO2, to = ISO3, weights = link)
+  as_xmap_df(from = ISO2, to = ISO3, weights = link)
 ```
 
 #### Collapse maps: Aggregation
@@ -134,7 +134,7 @@ Since aggregation involves the one-to-one transfer of values between `adm1` and 
 ```{r}
 agg_xmap <- agg_x |>
   dplyr::mutate(link = 1) |>
-  as_xmap(from = adm1, to = ctr, weights = link)
+  as_xmap_df(from = adm1, to = ctr, weights = link)
 
 agg_xmap
 ```
@@ -267,7 +267,7 @@ Now let's combine the unit and fractional links into a crossmap:
 
 ```{r}
 canada_xmap <- dplyr::bind_rows(canada_unit, canada_frac) |>
-  as_xmap(from = NAICS1997, to = ISIC3, weights = share)
+  as_xmap_df(from = NAICS1997, to = ISIC3, weights = share)
 
 print(canada_xmap)
 ```
@@ -278,7 +278,7 @@ Except in the case of recoding, crossmaps are generally lateral (one-way). Weigh
 
 ```{r error=TRUE}
 dplyr::bind_rows(canada_unit, canada_frac) |>
-  as_xmap(from = ISIC3, to = NAICS1997, weights = share)
+  as_xmap_df(from = ISIC3, to = NAICS1997, weights = share)
 ```
 
 However, we **can** swap the arguments on a recode map. Recall the ISO country code crossmap we created above:
