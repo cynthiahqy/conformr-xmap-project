@@ -17,6 +17,8 @@ as_xmap_df(x, from, to, weights, subclass = c("xmap_df"), ...)
 \item{weights}{Column in \code{x} specifying the weight applied to data passed along the directed link between source and target node}
 
 \item{subclass}{Which xmap subclass to return. Defaults to \code{xmap_df} for \code{data.frame} and \code{tibble}}
+
+\item{.drop_extra}{Drop columns other than \code{from}, \code{to} and \code{weights}. Defaults to \code{TRUE}}
 }
 \value{
 A validated \code{xmap} object.

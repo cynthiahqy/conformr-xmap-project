@@ -58,7 +58,7 @@ Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
 -   `to`: target classification labels
 -   `weights`: applied to values in the source classification
 
-Additional columns (e.g. for label descriptions etc.) can be retained using the `.keep_all` argument.
+Additional columns (e.g. for label descriptions etc.) can be retained by setting the `.drop_extra` argument to `FALSE`.
 
 `as_xmap_df()` will validate that:
 
@@ -292,7 +292,9 @@ canada_xmap <- dplyr::bind_rows(canada_unit, canada_frac) |>
 print(canada_xmap)
 ```
 
-## One-Way Crossmaps
+## Reversing Crossmaps
+
+### One-Way Maps
 
 Except in the case of recoding, crossmaps are generally lateral (one-way). Weights on collapse and split links are no longer valid if you reverse the direct of the link. Notice that `as_xmap_df()` throws an error if you try to naively swap the `from` and `to` arguments:
 
@@ -300,6 +302,8 @@ Except in the case of recoding, crossmaps are generally lateral (one-way). Weigh
 dplyr::bind_rows(canada_unit, canada_frac) |>
   as_xmap_df(from = ISIC3, to = NAICS1997, weights = share)
 ```
+
+### Reversible Maps
 
 However, we **can** swap the arguments on a recode map. Recall the ISO country code crossmap we created above:
 
@@ -314,3 +318,17 @@ iso_xmap |>
   xmap_reverse()
 ```
 
+A less trivial reversal is creating an aggregation map from a disaggregation map. Recall the country to state level disaggregation map we created above:
+
+```{r}
+state_xmap |>
+  xmap_drop_extra()
+```
+
+Now imagine we wanted to re-aggregate the data, say after some state-level adjustments:
+
+```{r}
+state_xmap |>
+  xmap_reverse(weights_into = "agg_w") |>
+  xmap_drop_extra()
+```

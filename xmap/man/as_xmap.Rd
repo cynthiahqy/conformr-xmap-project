@@ -6,7 +6,7 @@
 \alias{is_xmap_df}
 \title{Test if object is a crossmap}
 \usage{
-\method{as_xmap_df}{data.frame}(x, from, to, weights, subclass = "xmap_df", .keep_all = FALSE)
+\method{as_xmap_df}{data.frame}(x, from, to, weights, subclass = "xmap_df", .drop_extra = TRUE)
 
 is_xmap(x)
 
