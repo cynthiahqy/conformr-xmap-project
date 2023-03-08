@@ -3,14 +3,11 @@
 \name{xmap_reverse}
 \alias{xmap_reverse}
 \alias{xmap_reverse.xmap_df}
-\alias{xmap_reverse.xmap_tbl}
 \title{Reverse xmap direction}
 \usage{
 xmap_reverse(x, weights_into)
 
 \method{xmap_reverse}{xmap_df}(x, weights_into = "r_weights")
-
-\method{xmap_reverse}{xmap_tbl}(x, weights_into = "r_weights")
 }
 \arguments{
 \item{x}{xmap object to be reversed}
@@ -26,7 +23,5 @@ Reverse xmap direction
 \section{Methods (by class)}{
 \itemize{
 \item \code{xmap_reverse(xmap_df)}: Reverse a \code{xmap_df}
-
-\item \code{xmap_reverse(xmap_tbl)}: Reverse a \code{xmap_tbl}
 
 }}

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Making Valid Crossmaps</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Making Valid Crossmaps</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#nomenclature-crossmaps" id="toc-nomenclature-crossmaps">Nomenclature Crossmaps</a></li>
+<li><a href="#types-of-crossmap-transformations" id="toc-types-of-crossmap-transformations">Types of Crossmap
+Transformations</a>
+<ul>
+<li><a href="#crossmap-tables-xmap_df" id="toc-crossmap-tables-xmap_df">Crossmap tables:
+<code>xmap_df</code></a></li>
+</ul></li>
+<li><a href="#creating-crossmaps-tables" id="toc-creating-crossmaps-tables">Creating Crossmaps Tables</a>
+<ul>
+<li><a href="#row-wise-creation" id="toc-row-wise-creation">Row-wise
+creation</a></li>
+<li><a href="#coercion-from-crosswalks" id="toc-coercion-from-crosswalks">Coercion from Crosswalks</a></li>
+<li><a href="#mixed-maps" id="toc-mixed-maps">Mixed Maps</a></li>
+</ul></li>
+<li><a href="#one-way-crossmaps" id="toc-one-way-crossmaps">One-Way
+Crossmaps</a></li>
+</ul>
+</div>
+
+<div id="nomenclature-crossmaps" class="section level2">
+<h2>Nomenclature Crossmaps</h2>
+<p>A (Nomenclature) Crossmap encodes a complete redistribution of values
+between a source and target classifications as a directed, bipartite,
+weighted graph. Numeric values transformed using a valid Crossmap will
+sum to the same total in both the source and target classifications. A
+valid Crossmap satisfies the following conditions:</p>
+<ol style="list-style-type: decimal">
+<li>There is at most one link between each distinct source and target
+node</li>
+<li>For each source node, the sum of weights attached to outgoing links
+sums to one.</li>
+</ol>
+</div>
+<div id="types-of-crossmap-transformations" class="section level2">
+<h2>Types of Crossmap Transformations</h2>
+<p>The outgoing and incoming properties of the graph links determine the
+type of data transformation encoded by a given crossmap.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Recode</strong>: Maps with only one-to-one relations recode
+category labels, leaving any attached values untouched</li>
+<li><strong>Split</strong>: Maps with at least one set of fractional
+(one-to-many) links involve redistribution of source values.</li>
+<li><strong>Collapse</strong>: Maps with at least one set of
+many-to-one/one-from-many links (i.e. multiple source categories
+collapsed into a single target category) involve some kind of
+aggregation of source values.</li>
+</ol>
+<div id="crossmap-tables-xmap_df" class="section level3">
+<h3>Crossmap tables: <code>xmap_df</code></h3>
+<p>An <code>xmap_df</code> is a data.frame representation of a Crossmap,
+where each row represents a weighted link between the source and target
+classifications. You can create an <code>xmap_df</code> from a
+data.frame or tibble of weighted edges using
+<code>as_xmap_df()</code>.</p>
+<p>Your input table <code>x</code> needs to have at least 3 complete
+(i.e. no <code>NA</code>) columns:</p>
+<ul>
+<li><code>from</code>: source classification labels.</li>
+<li><code>to</code>: target classification labels</li>
+<li><code>weights</code>: applied to values in the source
+classification</li>
+</ul>
+<p>Additional columns (e.g. for label descriptions etc.) can be retained
+using the <code>.keep_all</code> argument.</p>
+<p><code>as_xmap_df()</code> will validate that for <code>x</code>:</p>
+<ol style="list-style-type: decimal">
+<li>There are no duplicates <code>from</code>-<code>to</code>
+pairs,</li>
+<li>Every group of <code>weights</code> associated with a distinct
+<code>from</code> value sums to 1 (subject to minor floating point
+errors).</li>
+</ol>
+</div>
+</div>
+<div id="creating-crossmaps-tables" class="section level2">
+<h2>Creating Crossmaps Tables</h2>
+<div id="row-wise-creation" class="section level3">
+<h3>Row-wise creation</h3>
+<p>The following example shows how to encode one-to-one, many-to-one and
+one-to-many links and coerce them into a <code>xmap_df</code>. This
+method is most suitable for simple crossmaps.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xmap)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>simple_x <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>source, <span class="sc">~</span>target, <span class="sc">~</span>share,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;equal&quot;</span>, <span class="st">&quot;EQUAL&quot;</span>, <span class="dv">1</span>,       <span class="co"># one-to-one</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;member_1&quot;</span>, <span class="st">&quot;GROUP&quot;</span>, <span class="dv">1</span>,    <span class="co"># many-to-one</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;member_2&quot;</span>, <span class="st">&quot;GROUP&quot;</span>, <span class="dv">1</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;whole&quot;</span>, <span class="st">&quot;PART_1&quot;</span>, <span class="fl">0.3</span>,    <span class="co"># one-to-many</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;whole&quot;</span>, <span class="st">&quot;PART_2&quot;</span>, <span class="fl">0.6</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;whole&quot;</span>, <span class="st">&quot;PART_3&quot;</span>, <span class="fl">0.1</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>simple_xmap <span class="ot">&lt;-</span> simple_x <span class="sc">|&gt;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> source, <span class="at">to =</span> target, <span class="at">weights =</span> share)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>simple_xmap</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode, split, and collapse  
+## (source -&gt; target) BY share
+##     source target share
+## 1    equal  EQUAL   1.0
+## 2 member_1  GROUP   1.0
+## 3 member_2  GROUP   1.0
+## 4    whole PART_1   0.3
+## 5    whole PART_2   0.6
+## 6    whole PART_3   0.1</code></pre>
+</div>
+<div id="coercion-from-crosswalks" class="section level3">
+<h3>Coercion from Crosswalks</h3>
+<p>It is more common that you will want to convert an existing
+correspondence into a crossmap. Such conversions require attaching
+appropriate weights to the existing crosswalk table.</p>
+<div id="recode-maps" class="section level4">
+<h4>Recode maps</h4>
+<p>Consider the first five country codes in the ISO 3166 international
+standard and the one-to-one correspondence between the 2-digit, 2-digit
+and numeric codes.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>iso_codes <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>              <span class="sc">~</span>country, <span class="sc">~</span>ISO2, <span class="sc">~</span>ISO3, <span class="sc">~</span>ISONumeric,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;Afghanistan&quot;</span>,          <span class="st">&quot;AF&quot;</span>,         <span class="st">&quot;AFG&quot;</span>,    <span class="st">&quot;004&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;Albania&quot;</span>,          <span class="st">&quot;AL&quot;</span>,         <span class="st">&quot;ALB&quot;</span>,    <span class="st">&quot;008&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;Algeria&quot;</span>,          <span class="st">&quot;DZ&quot;</span>,         <span class="st">&quot;DZA&quot;</span>,    <span class="st">&quot;012&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;American Samoa&quot;</span>,          <span class="st">&quot;AS&quot;</span>,         <span class="st">&quot;ASM&quot;</span>,    <span class="st">&quot;016&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;Andorra&quot;</span>,          <span class="st">&quot;AD&quot;</span>,         <span class="st">&quot;AND&quot;</span>,    <span class="st">&quot;020&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      )</span></code></pre></div>
+<p>To create a crossmap between <code>ISONumeric</code> and
+<code>ISO2</code>, we simply add a weights columns and coerce to
+<code>xmap_df</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>iso_xmap <span class="ot">&lt;-</span> iso_codes <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">link =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> ISONumeric, <span class="at">to =</span> ISO2, <span class="at">weights =</span> link)</span></code></pre></div>
+<p>Notice that <code>as_xmap_df()</code> always place the
+<code>from</code>, <code>to</code> and <code>weights</code> columns in
+order and drops any additional columns passed to it.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(iso_xmap)</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode 
+## (ISONumeric -&gt; ISO2) BY link
+##   ISONumeric ISO2 link        country ISO3
+## 1        004   AF    1    Afghanistan  AFG
+## 2        008   AL    1        Albania  ALB
+## 3        012   DZ    1        Algeria  DZA
+## 4        016   AS    1 American Samoa  ASM
+## 5        020   AD    1        Andorra  AND</code></pre>
+<p>We can also easily generate crossmaps for the other nomenclature in
+the table:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>iso_codes <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">link =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> ISO2, <span class="at">to =</span> ISO3, <span class="at">weights =</span> link)</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode 
+## (ISO2 -&gt; ISO3) BY link
+##   ISO2 ISO3 link        country ISONumeric
+## 1   AF  AFG    1    Afghanistan        004
+## 2   AL  ALB    1        Albania        008
+## 3   DZ  DZA    1        Algeria        012
+## 4   AS  ASM    1 American Samoa        016
+## 5   AD  AND    1        Andorra        020</code></pre>
+</div>
+<div id="collapse-maps-aggregation" class="section level4">
+<h4>Collapse maps: Aggregation</h4>
+<p>Now consider aggregating data which were collected using the ISO
+3166-2 Subdivisions of <a href="https://en.wikipedia.org/w/index.php?title=ISO_3166-2:AU&amp;oldid=1110907059">Australia</a>
+and <a href="https://en.wikipedia.org/w/index.php?title=ISO_3166-2:CA&amp;oldid=1110906706">Canada</a>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>adm1_list <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>ctr, <span class="sc">~</span>adm1,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;AU&quot;</span>, <span class="st">&quot;AU-NSW, AU-QLD, AU-SA, AU-TAS, AU-VIC, AU-WA, AU-ACT, AU-NT&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;CA&quot;</span>, <span class="st">&quot;CA-AB, CA-BC, CA-MB, CA-NB, CA-NL, CA-NS, CA-ON, CA-PE, CA-QC, CA-SK, CA-NT, CA-NU, CA-YT&quot;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Recall that we need one row per relation between the source
+(<code>adm1</code>) and target (<code>ctr</code>) nomenclature. Thus we
+split the string list into a vector, and then unnest the values by
+country.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>agg_x <span class="ot">&lt;-</span> adm1_list <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">adm1 =</span> stringr<span class="sc">::</span><span class="fu">str_split</span>(adm1, <span class="st">&quot;, &quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">c</span>(adm1))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>agg_x</span></code></pre></div>
+<pre><code>## # A tibble: 21 × 2
+##    ctr   adm1  
+##    &lt;chr&gt; &lt;chr&gt; 
+##  1 AU    AU-NSW
+##  2 AU    AU-QLD
+##  3 AU    AU-SA 
+##  4 AU    AU-TAS
+##  5 AU    AU-VIC
+##  6 AU    AU-WA 
+##  7 AU    AU-ACT
+##  8 AU    AU-NT 
+##  9 CA    CA-AB 
+## 10 CA    CA-BC 
+## # … with 11 more rows</code></pre>
+<p>Since aggregation involves the one-to-one transfer of values between
+<code>adm1</code> and <code>ctr</code> prior to the collapsing the
+<code>ctr</code> groups, we simple add weights of one to form a valid
+crossmap:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>agg_xmap <span class="ot">&lt;-</span> agg_x <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">link =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> adm1, <span class="at">to =</span> ctr, <span class="at">weights =</span> link)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>agg_xmap</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode and collapse  
+## (adm1 -&gt; ctr) BY link
+##      adm1 ctr link
+## 1  AU-NSW  AU    1
+## 2  AU-QLD  AU    1
+## 3   AU-SA  AU    1
+## 4  AU-TAS  AU    1
+## 5  AU-VIC  AU    1
+## 6   AU-WA  AU    1
+## 7  AU-ACT  AU    1
+## 8   AU-NT  AU    1
+## 9   CA-AB  CA    1
+## 10  CA-BC  CA    1
+## 11  CA-MB  CA    1
+## 12  CA-NB  CA    1
+## 13  CA-NL  CA    1
+## 14  CA-NS  CA    1
+## 15  CA-ON  CA    1
+## 16  CA-PE  CA    1
+## 17  CA-QC  CA    1
+## 18  CA-SK  CA    1
+## 19  CA-NT  CA    1
+## 20  CA-NU  CA    1
+## 21  CA-YT  CA    1</code></pre>
+</div>
+<div id="split-maps-disaggregation" class="section level4">
+<h4>Split maps: Disaggregation</h4>
+<p>Conversely, we might have aggregate level data which want to
+disaggregate. Continuing the above example, this could involve
+incorporating country level data into analysis at the 3166-2
+Subdivisions level.</p>
+<p>For example, imagine that we have population figures for Australia at
+the 3166-2 level for 9 out of 10 years, but only country level figures
+for the missing year. In this simple example, a reasonable harmonisation
+design could involve splitting the country level figure by the
+subdivision level population proportions from the year preceding or
+following the missing year.</p>
+<p>Alternatively, we might want to compare aggregate and disaggregate
+statistics to identify discrepancies.</p>
+<p>Using Australian population statistics from 30 Jun 2022<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>state_data <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">~</span>state,    <span class="sc">~</span>adm1,    <span class="sc">~</span>Pop,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">&quot;New South Wales&quot;</span>, <span class="st">&quot;AU-NSW&quot;</span>, <span class="dv">8153600</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Victoria&quot;</span>, <span class="st">&quot;AU-VIC&quot;</span>, <span class="dv">6613700</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;Queensland&quot;</span>, <span class="st">&quot;AU-QLD&quot;</span>, <span class="dv">5322100</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">&quot;South Australia&quot;</span>,  <span class="st">&quot;AU-SA&quot;</span>, <span class="dv">1820500</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&quot;Western Australia&quot;</span>,  <span class="st">&quot;AU-WA&quot;</span>, <span class="dv">2785300</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;Tasmania&quot;</span>, <span class="st">&quot;AU-TAS&quot;</span>,  <span class="dv">571500</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Northern Territory&quot;</span>,  <span class="st">&quot;AU-NT&quot;</span>,  <span class="dv">250600</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Australian Capital Territory&quot;</span>, <span class="st">&quot;AU-ACT&quot;</span>,  <span class="dv">456700</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>state_xmap <span class="ot">&lt;-</span> state_data <span class="sc">|&gt;</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ctr =</span> <span class="st">&quot;AU&quot;</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>                adm1,</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">share =</span> Pop <span class="sc">/</span> <span class="fu">sum</span>(Pop)) <span class="sc">|&gt;</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> ctr, <span class="at">to =</span> adm1, <span class="at">weights =</span> share)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>state_xmap</span></code></pre></div>
+<pre><code>## xmap_df:
+## split 
+## (ctr -&gt; adm1) BY share
+##   ctr   adm1      share                        state     Pop
+## 1  AU AU-NSW 0.31391391              New South Wales 8153600
+## 2  AU AU-VIC 0.25462770                     Victoria 6613700
+## 3  AU AU-QLD 0.20490105                   Queensland 5322100
+## 4  AU  AU-SA 0.07008932              South Australia 1820500
+## 5  AU  AU-WA 0.10723416            Western Australia 2785300
+## 6  AU AU-TAS 0.02200277                     Tasmania  571500
+## 7  AU  AU-NT 0.00964811           Northern Territory  250600
+## 8  AU AU-ACT 0.01758297 Australian Capital Territory  456700</code></pre>
+</div>
+</div>
+<div id="mixed-maps" class="section level3">
+<h3>Mixed Maps</h3>
+<p>Now consider the following mixed transformation using selected
+correspondences between NAICS Canada 1997 and ISIC Revision 3. Imagine
+that we have some numeric data (e.g. gross output in CAD) collected in
+the NAICS Canada nomenclature that we want to harmonise into ISIC
+Revision 3. The correspondence between the two nomenclature contains a
+mixture of one-to-one, one-to-many, many-to-one and many-to-many
+relations.</p>
+<p>Luckily, we only need to deal with two cases when forming a
+crossmap:</p>
+<ol style="list-style-type: decimal">
+<li>links with unit weights (recode and collapse) and,</li>
+<li>links with fractional weights (split).</li>
+</ol>
+<p>Let’s first define some example correspondences.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p>In the first example, one NAICS Canada class relates to exactly one
+ISIC class.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>canada_recode <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">NAICS1997      =</span> <span class="st">&quot;212210&quot;</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">NAICS1997_desc =</span> <span class="st">&quot;Iron Ore Mining&quot;</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ISIC3          =</span> <span class="st">&quot;C1310&quot;</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ISIC3_desc    =</span> <span class="st">&quot;Mining of iron ores&quot;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">NAICS1997</th>
+<th align="left">NAICS1997_desc</th>
+<th align="left">ISIC3</th>
+<th align="left">ISIC3_desc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">212210</td>
+<td align="left">Iron Ore Mining</td>
+<td align="left">C1310</td>
+<td align="left">Mining of iron ores</td>
+</tr>
+</tbody>
+</table>
+<p>In the second example, one ISIC class is equivalent to more than one
+NAICS Canada class. The asterisk (Partial Flag) indicates that part of
+ISIC D1543 is equivalent to each NAICS Canada class. The ISIC activities
+corresponding to each NAICS Canada class are listed in the column
+labelled “Link”.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>canada_agg <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>NAICS1997, <span class="sc">~</span>NAICS1997_desc, <span class="sc">~</span>ISIC3, <span class="sc">~</span>ISIC3_desc, <span class="sc">~</span>Link,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;311320&quot;</span>, <span class="st">&quot;Chocolate and Confectionery Manufacturing from Cacao Beans&quot;</span>, <span class="st">&quot;D1543 *&quot;</span>, <span class="st">&quot;Manufacture of cocoa, chocolate and sugar confectionery&quot;</span>, <span class="st">&quot;Chocolate and confectionery, made from cacao beans&quot;</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;311330&quot;</span>, <span class="st">&quot;Confectionery Manufacturing from Purchased Chocolate&quot;</span>, <span class="st">&quot;D1543 *&quot;</span>, <span class="st">&quot;Manufacture of cocoa, chocolate and sugar confectionery&quot;</span>, <span class="st">&quot;Confectionery, made from purchased chocolate&quot;</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;311340&quot;</span>, <span class="st">&quot;Non-Chocolate Confectionery Manufacturing&quot;</span>, <span class="st">&quot;D1543 *&quot;</span>, <span class="st">&quot;Manufacture of cocoa, chocolate and sugar confectionery&quot;</span>, <span class="st">&quot;Non-chocolate confectionery, manufacturing&quot;</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 3 × 5
+##   NAICS1997 NAICS1997_desc                                   ISIC3 ISIC3…¹ Link 
+##   &lt;chr&gt;     &lt;chr&gt;                                            &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;
+## 1 311320    Chocolate and Confectionery Manufacturing from … D154… Manufa… Choc…
+## 2 311330    Confectionery Manufacturing from Purchased Choc… D154… Manufa… Conf…
+## 3 311340    Non-Chocolate Confectionery Manufacturing        D154… Manufa… Non-…
+## # … with abbreviated variable name ¹​ISIC3_desc</code></pre>
+<p>In this third example, one NAICS Canada class is equivalent to more
+than one ISIC class.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>canada_split <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>NAICS1997, <span class="sc">~</span>NAICS1997_desc, <span class="sc">~</span>ISIC3, <span class="sc">~</span>ISIC3_desc, <span class="sc">~</span>Link,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;483213&quot;</span>, <span class="st">&quot;Inland Water Transportation (except by Ferries)&quot;</span>, <span class="st">&quot;I6110 *&quot;</span>, <span class="st">&quot;Sea and coastal water transport&quot;</span>, <span class="st">&quot;Intracoastal water transportation&quot;</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;483213&quot;</span>, <span class="st">&quot;Inland Water Transportation (except by Ferries)&quot;</span>, <span class="st">&quot;I6120 *&quot;</span>, <span class="st">&quot;Inland water transport&quot;</span>, <span class="st">&quot;Inland water transportation (except ferries)&quot;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 2 × 5
+##   NAICS1997 NAICS1997_desc                                  ISIC3  ISIC3…¹ Link 
+##   &lt;chr&gt;     &lt;chr&gt;                                           &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;
+## 1 483213    Inland Water Transportation (except by Ferries) I6110… Sea an… Intr…
+## 2 483213    Inland Water Transportation (except by Ferries) I6120… Inland… Inla…
+## # … with abbreviated variable name ¹​ISIC3_desc</code></pre>
+<div id="unit-weight-links" class="section level4">
+<h4>Unit weight links</h4>
+<p>Notice that for both recode and collapse category relations, values
+attached to each source category are not directly modified during the
+“transfer” between source and target nomenclature. Instead, the source
+values are either retained, or summarised when the category collapse
+(and value aggregation) is performed. Thus, as shown above, both recode
+and collapse links have a weight of one.</p>
+<p>Let’s clean up the recode and collapse links defined above:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>canada_unit <span class="ot">&lt;-</span> canada_agg <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># remove the partial flag (*)</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ISIC3 =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(ISIC3, <span class="st">&quot; </span><span class="sc">\\</span><span class="st">*&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Link) <span class="sc">|&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bind the links together and add weights</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(canada_recode) <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">share =</span> <span class="dv">1</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>canada_unit</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 5
+##   NAICS1997 NAICS1997_desc                                   ISIC3 ISIC3…¹ share
+##   &lt;chr&gt;     &lt;chr&gt;                                            &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
+## 1 311320    Chocolate and Confectionery Manufacturing from … D1543 Manufa…     1
+## 2 311330    Confectionery Manufacturing from Purchased Choc… D1543 Manufa…     1
+## 3 311340    Non-Chocolate Confectionery Manufacturing        D1543 Manufa…     1
+## 4 212210    Iron Ore Mining                                  C1310 Mining…     1
+## # … with abbreviated variable name ¹​ISIC3_desc</code></pre>
+</div>
+<div id="fractional-weight-links" class="section level4">
+<h4>Fractional weight links</h4>
+<p>Now all that remains is to prepare the split links. Similar to the
+disaggregation example above, we need to design weights to allocate the
+“pool” of numeric value associated with the NAICS class
+<code>483213</code> into the corresponding ISIC classes
+<code>I6110</code> and <code>I6120</code>.</p>
+<p>Assume for illustration purposes that the Canadian “Inland water
+transport” industry (<code>I6120</code>) is twice as big as the “Sea and
+coastal water transport” industry (<code>I6110</code>). This suggests
+that the weight between <code>483213</code> and <code>I6120</code>
+should be twice that of <code>I6110</code>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>canada_frac <span class="ot">&lt;-</span> canada_split <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">ISIC3 =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(ISIC3, <span class="st">&quot; </span><span class="sc">\\</span><span class="st">*&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>Link) <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">share =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(ISIC3 <span class="sc">==</span> <span class="st">&quot;I6110&quot;</span> <span class="sc">~</span> <span class="fl">0.33</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>                                  ISIC3 <span class="sc">==</span> <span class="st">&quot;I6120&quot;</span> <span class="sc">~</span> <span class="fl">0.67</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>                                  T <span class="sc">~</span> <span class="cn">NA_real_</span>))</span></code></pre></div>
+<p>Now let’s combine the unit and fractional links into a crossmap:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>canada_xmap <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(canada_unit, canada_frac) <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> NAICS1997, <span class="at">to =</span> ISIC3, <span class="at">weights =</span> share)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(canada_xmap)</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode, split, and collapse  
+## (NAICS1997 -&gt; ISIC3) BY share
+##   NAICS1997 ISIC3 share
+## 1    311320 D1543  1.00
+## 2    311330 D1543  1.00
+## 3    311340 D1543  1.00
+## 4    212210 C1310  1.00
+## 5    483213 I6110  0.33
+## 6    483213 I6120  0.67
+##                                               NAICS1997_desc
+## 1 Chocolate and Confectionery Manufacturing from Cacao Beans
+## 2       Confectionery Manufacturing from Purchased Chocolate
+## 3                  Non-Chocolate Confectionery Manufacturing
+## 4                                            Iron Ore Mining
+## 5            Inland Water Transportation (except by Ferries)
+## 6            Inland Water Transportation (except by Ferries)
+##                                                ISIC3_desc
+## 1 Manufacture of cocoa, chocolate and sugar confectionery
+## 2 Manufacture of cocoa, chocolate and sugar confectionery
+## 3 Manufacture of cocoa, chocolate and sugar confectionery
+## 4                                     Mining of iron ores
+## 5                         Sea and coastal water transport
+## 6                                  Inland water transport</code></pre>
+</div>
+</div>
+</div>
+<div id="one-way-crossmaps" class="section level2">
+<h2>One-Way Crossmaps</h2>
+<p>Except in the case of recoding, crossmaps are generally lateral
+(one-way). Weights on collapse and split links are no longer valid if
+you reverse the direct of the link. Notice that
+<code>as_xmap_df()</code> throws an error if you try to naively swap the
+<code>from</code> and <code>to</code> arguments:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(canada_unit, canada_frac) <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_xmap_df</span>(<span class="at">from =</span> ISIC3, <span class="at">to =</span> NAICS1997, <span class="at">weights =</span> share)</span></code></pre></div>
+<pre><code>## Error in `df_check_weights()`:
+## ! Incomplete mapping weights found. Check sum of weights for each `from`
+##   group sums to 1</code></pre>
+<p>However, we <strong>can</strong> swap the arguments on a recode map.
+Recall the ISO country code crossmap we created above:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(iso_xmap)</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode 
+## (ISONumeric -&gt; ISO2) BY link
+##   ISONumeric ISO2 link        country ISO3
+## 1        004   AF    1    Afghanistan  AFG
+## 2        008   AL    1        Albania  ALB
+## 3        012   DZ    1        Algeria  DZA
+## 4        016   AS    1 American Samoa  ASM
+## 5        020   AD    1        Andorra  AND</code></pre>
+<p>Imagine that instead of converting country codes from ISO Numeric to
+ISO-2 digit, we wanted to convert from ISO-2 digit to ISO Numeric. We
+can take the existing crossmap and invert it without editing any
+weights:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>iso_xmap <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xmap_reverse</span>()</span></code></pre></div>
+<pre><code>## xmap_df:
+## recode 
+## (ISO2 -&gt; ISONumeric) BY r_weights
+##   ISO2 ISONumeric r_weights link        country ISO3
+## 1   AF        004         1    1    Afghanistan  AFG
+## 2   AL        008         1    1        Albania  ALB
+## 3   DZ        012         1    1        Algeria  DZA
+## 4   AS        016         1    1 American Samoa  ASM
+## 5   AD        020         1    1        Andorra  AND</code></pre>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Source: <a href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/latest-release">Australian
+Bureau of Statistics</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>based on examples provided by Statistics Canada on the
+page <a href="https://www.statcan.gc.ca/en/subjects/standard/concordances/concordanc_tabl3">How
+to Read a Concordance Table</a>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

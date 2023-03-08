@@ -3,12 +3,9 @@
 \name{new_xmap}
 \alias{new_xmap}
 \alias{new_xmap_df}
-\alias{new_xmap_tbl}
 \title{Low Level Constructors for xmap subclasses}
 \usage{
 new_xmap_df(x, col_from, col_to, col_weights, from_set = NULL)
-
-new_xmap_tbl(x, col_from, col_to, col_weights, from_set = NULL)
 }
 \arguments{
 \item{x}{data-frame like object.}
@@ -19,14 +16,8 @@ new_xmap_tbl(x, col_from, col_to, col_weights, from_set = NULL)
 xmap_df object. Note that this function unclasses tibbles.
 
 \code{x} with additional subclasses \code{xmap_df} and \code{xmap}
-
-xmap_df object. Note that this function unclasses tibbles.
-
-\code{x} with additional subclasses \code{xmap_tbl}, \code{xmap_df} and \code{xmap}
 }
 \description{
-Low Level Constructors for xmap subclasses
-
 Low Level Constructors for xmap subclasses
 }
 \section{Functions}{
@@ -34,7 +25,5 @@ Low Level Constructors for xmap subclasses
 \item \code{new_xmap_df()}: Construct xmap_df from data.frame
 checks argument types
 naively generates \code{from_set} if it is missing
-
-\item \code{new_xmap_tbl()}: Construct xmap_tbl from tibble
 
 }}

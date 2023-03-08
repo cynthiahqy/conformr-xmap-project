@@ -3,12 +3,9 @@
 \name{print.xmap}
 \alias{print.xmap}
 \alias{print.xmap_df}
-\alias{print.xmap_tbl}
 \title{Print an \code{xmap} object}
 \usage{
 \method{print}{xmap_df}(x)
-
-\method{print}{xmap_tbl}(x)
 }
 \description{
 Print an \code{xmap} object
@@ -16,7 +13,5 @@ Print an \code{xmap} object
 \section{Functions}{
 \itemize{
 \item \code{print(xmap_df)}: Print an \code{xmap_df}
-
-\item \code{print(xmap_tbl)}: Print an \code{xmap_tbl}
 
 }}

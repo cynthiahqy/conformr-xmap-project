@@ -104,7 +104,7 @@ We can also easily generate crossmaps for the other nomenclature in the table:
 ```{r}
 iso_codes |>
   dplyr::mutate(link = 1) |>
-  as_xmap(from = ISO2, to = ISO3, weights = link)
+  as_xmap_df(from = ISO2, to = ISO3, weights = link)
 ```
 
 #### Collapse maps: Aggregation

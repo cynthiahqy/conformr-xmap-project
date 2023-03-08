@@ -13,10 +13,3 @@ is_xmap <- function(x) {
 is_xmap_df <- function(x) {
   rlang::inherits_all(x, c("xmap_df", "xmap"))
 }
-
-#' Test if object is `xmap_tbl`
-#' @export
-#' @rdname as_xmap
-is_xmap_tbl <- function(x) {
-  rlang::inherits_all(x, c("xmap_tbl", "xmap_df", "xmap"))
-}
