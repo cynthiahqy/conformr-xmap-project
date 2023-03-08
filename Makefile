@@ -1,5 +1,9 @@
-xmap : create-xmap.Rmd
+xmap : create-xmap.Rmd clean_xmap
 	Rscript -e "rmarkdown::render('create-xmap.Rmd')"
 
+xmap_render : create-xmap.Rmd xmap
+	Rscript -e "devtools::build('xmap')"
+
+.PHONY: clean_xmap
 clean_xmap:
-	rm -r xmap *tar.gz
+	rm -rf xmap *tar.gz
