@@ -9,6 +9,34 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+## Nomenclature Variables and Datasets
+
+```{r echo=FALSE}
+state_data <- tibble::tribble(
+                              ~State,    ~`Population (est. 30 Jun 2022)`,
+                   "New South Wales", 8153600,
+                          "Victoria", 6613700,
+                        "Queensland", 5322100,
+                   "South Australia", 1820500,
+                 "Western Australia", 2785300,
+                          "Tasmania",  571500,
+                "Northern Territory",  250600,
+      "Australian Capital Territory",  456700
+)
+
+total_pop_ex <- round(sum(state_data$`Population (est. 30 Jun 2022)`) / 10^6, 2)
+```
+
+A nomenclature variable is a set of name-value pairs, where the names correspond to categories or classes in a particular nomenclature, and the values can be considered part of the same aggregate pool. For instance, consider data on population by state in Australia[^1] shown below.
+
+[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022)
+
+```{r echo=FALSE}
+knitr::kable(state_data, caption = "Australian population by State (excl. Other Territories)")
+```
+
+The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. The aggregate pool for which the values for each state belong is the total population of Australia.
+
 ## Nomenclature Transformation
 
 ### Table Joins (single variable)
