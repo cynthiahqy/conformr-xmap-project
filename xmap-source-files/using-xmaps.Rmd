@@ -3,6 +3,7 @@ title: "Using Crossmaps to Transform Data"
 output:
   rmarkdown::html_vignette:
     toc: yes
+bibliography: using-xmaps.bib
 vignette: >
   %\VignetteIndexEntry{Using Crossmaps to Transform Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -36,6 +37,48 @@ knitr::kable(state_data, caption = "Australian population by State (excl. Other 
 ```
 
 The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. The aggregate pool for which the values for each state belong is the total population of Australia.
+
+### Tidy Nomenclature datasets
+
+@wickham2007 introduces a division of dataset variables into two types: **identifier and measured variables:**
+
+-   Identifier variables identify the unit that measurements are taken on.
+-   Measured variables are values measured on the observation unit defined by the identifier variables.
+
+Using the additional abstraction step of splitting measured variables into id-value pairs, we extend this taxonomy slightly to define a "tidy nomeclature data" format:
+
+-   **Observational Unit Identifier Variables** are any identify variables used to index observational units. For example, country and year variables could be used to index population observations.
+-   **Dimension Identifier Variables** identify the dimension, or set of dimensions, for the observation unit which measurements take place on.
+-   **Measured Variables** contain values measured in a common "schematic?" unit. These variables combined with the associated dimension id variable form an observation on a particular dimension of the observational unit.
+
+@wickham2014's **tidy data** (see [`vignette("tidy-data", package = "tidyr")`](https://tidyr.tidyverse.org/articles/tidy-data.html#defining)) format describes a standard way of structuring tabular datasets using the following data semantics:
+
+> A dataset is a collection of **values**, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
+
+Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. In this case, every value belongs to a sub-dimension identifier variable, which forms part of a larger nomenclature dimension.
+
+A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature, which form the associated aggregate pool of value.
+
+Hence for **tidy nomenclature data**:
+
+1.  Every column is either a identifier variable, or part of a nomenclature name-value pair
+2.  Every row is an observation on a nomenclature sub-dimension
+3.  Every cell is a single value of an identifier variable, nomenclature node, or measured variable.
+
+If we nest nomenclature data, we obtain a structure analogous to the standard tidy data format (@wickham2014):
+
+1.  Every column is variable
+2.  Every row is an observation
+3.  Every cell is single value or nested name-value set.
+
+Notice that in the nested form, we can see that nomenclature datasets can be thought of mixture of long and wide form. In particular, the format is suitable for cases where the nomenclature variable:
+
+a.  has too many category nodes for wide format,
+b.  and/or subject to ex-post harmonisation
+
+<!--- wide format vs. nomenclature format // makes sense in the context of transformation // nomenclature is sort of an observation id variable, except its not fixed the same way an observation id variable is --->
+
+<!---- show examples --->
 
 ## Nomenclature Transformation
 
