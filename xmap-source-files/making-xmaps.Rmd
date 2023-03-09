@@ -171,7 +171,7 @@ Alternatively, we might want to compare aggregate and disaggregate statistics to
 
 Using Australian population statistics from 30 Jun 2022[^1]
 
-[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/latest-release)
+[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022)
 
 ```{r}
 state_data <- tibble::tribble(
