@@ -80,6 +80,28 @@ b.  and/or subject to ex-post harmonisation
 
 <!---- show examples --->
 
+### Wild Caught Nomenclature Data
+
+Let's tidy a wild caught dataset:
+
+``` r
+aus_pop <- readabs::download_abs_data_cube("national-state-and-territory-population", "31010do001_202206.xlsx")
+```
+
+```{r}
+state_pop <- readxl::read_xlsx("data-raw/abs-population_2022.xlsx", sheet = "Table_3", range = "A6:D22")
+
+state_pop
+```
+
+#### Issue 1: Multiple Nomenclature Variables in the Same Table
+
+<!--- split into two tables --->
+
+#### Issue 2: Observation Units split across columns (wide format)
+
+<!--- pivot longer ---->
+
 ## Nomenclature Transformation
 
 ### Coverage requirement
