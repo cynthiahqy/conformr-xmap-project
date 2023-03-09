@@ -149,6 +149,14 @@ origin_tidy_sec
 
 This vignette illustrates with simple examples how crossmaps can be used to complete recode, split and collapse transformation.
 
+Notice that all crossmaps transformations can be decomposed into multiple "standard" transformation steps:
+
+1.  recode node labels to target nomenclature
+
+2.  mutate node values
+
+3.  summarise mutated values by target node
+
 #### Aggregation
 
 Let's consider a simple case where we have some disaggregated population figures which we want to aggregate.
