@@ -39,7 +39,20 @@ The set of all name-value pairs of state/territory name and population estimate 
 
 ## Nomenclature Transformation
 
-### Table Joins (single variable)
+### Coverage requirement
+
+The only strict requirement when applying a nomenclature crossmap to transform data is that the source nodes in the crossmap fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. Let's call this the Coverage requirement.
+
+Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
+
+### No missing values
+
+In addition to the coverage requirement, there are few additional conditions that should be checked to avoid any unexpected data loss or transformations:
+
+Missing values should be dealt with prior to transformation as they can silently corrupt data in collapse or split transformations. Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. For instance, in R, the function `sum()` takes the argument `na.rm` which when `TRUE` removes missing values from the sum. This is equivalent to treating missing values as `0` when collapsing multiple source values into a target node, and hence should be handled explicitly before applying the crossmap transformation.
+
+The only exception to this is when the transformation is a one-to-one recode, such that missing values can be passed unmodified in to the target nomenclature.
+
 
 This vignette illustrates with simple examples how crossmaps can be used to complete recode, split and collapse transformation.
 
