@@ -147,6 +147,6 @@ apply_xmap(data_in = ctr_data, xmap = disagg_map, in_codes = ctr, in_values = Po
 
 #### Complex Maps
 
-Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmpas are best suited for cases where you have multiple types of transformations being applied at once.
+Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmpas are best suited for cases where you have multiple types of transformations being applied at once. In particular, they circumvent the need to count the number of observations after merging, and hence can insure against duplication and erroneous drops even in cases where it is difficult to calculate the expected number of post-transformations rows (i.e. many-to-many relations with both split and collapse transformations)
 
 ### Matrix (multiple variables at once)
