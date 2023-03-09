@@ -53,6 +53,34 @@ Missing values should be dealt with prior to transformation as they can silently
 
 The only exception to this is when the transformation is a one-to-one recode, such that missing values can be passed unmodified in to the target nomenclature.
 
+### Tidy Original Dataset
+
+Tidyness in the context of nomenclature variables requires that for each observation unit in the dataset, which can span multiple rows, there is only one row of values for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link. This is not a strict requirement, but avoids hidden aggregation across source nodes.
+
+```{r}
+## basically summarise numeric values into a single origin node.
+origin_tidy_sub <- tibble::tribble(
+  ~country, ~year, ~sector, ~subsector, ~output,
+  "AU", 2012, "AGR", "FISH", 3983,
+  "AU", 2012, "AGR", "LIVE", 432,
+  "AU", 2013, "AGR", "FISH", 3983,
+  "AU", 2013, "AGR", "LIVE", NA,
+)
+
+origin_tidy_sub
+```
+
+The above dataset is tidy for a crossmap with `subsector` source nodes, but would not be considered tidy for a crossmap with `sector` source nodes.
+
+```{r}
+origin_tidy_sec <- origin_tidy_sub |>
+  dplyr::group_by(country, year, sector) |>
+  dplyr::summarise(output = sum(output, na.rm = TRUE), .groups = "drop")
+
+origin_tidy_sec
+```
+
+## Transformation via Mutating Joins
 
 This vignette illustrates with simple examples how crossmaps can be used to complete recode, split and collapse transformation.
 
