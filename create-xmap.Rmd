@@ -1208,6 +1208,17 @@ Suggested in [confomr-project #43](https://github.com/cynthiahqy/conformr-projec
 
 ### Add Vignettes
 
+First add bibliography file
+
+```{r}
+add_vignette_bib <- function(bib_files){
+  fs::dir_create("vignettes")
+  for (fn in bib_files) fs::file_copy(fn, "vignettes")
+}
+
+add_vignette_bib("../xmap-source-files/using-xmaps.bib")
+```
+
 ```{r}
 litr::add_readme("../xmap-source-files/README.Rmd")
 litr::add_vignettes("../xmap-source-files/xmap.Rmd")
