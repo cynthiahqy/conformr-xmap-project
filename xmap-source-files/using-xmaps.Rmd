@@ -86,10 +86,17 @@ d.  is one layer of a larger hierarchical nomenclature
 
 <!---- show examples --->
 
+## Nomenclature Transformations
 
+The utility of the tidy nomenclature format is most evident when we look at transforming multiple observations of a nomenclature variable into a target nomenclature as a set of matrix operations.
 
+<!--- treat each nested name-value set as a named column vector // and crossmaps as a transformation matrix. Overly complicated for a single crossmap, but useful for different crossmaps -->
 
+<!--- insert examples from viz-panel-maps --->
 
+-   demonstrate using matrix visualisation?
+-   Observational units vs. dimension variables
+-   aggregation as a special case
 
 ## Crossmap Usage Conditions
 
