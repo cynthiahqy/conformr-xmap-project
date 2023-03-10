@@ -69,12 +69,18 @@ If we nest nomenclature data, we obtain a structure analogous to the standard ti
 
 1.  Every column is variable
 2.  Every row is an observation
-3.  Every cell is single value or nested name-value set.
+3.  Every cell is single value *or nested name-value set*.
 
-Notice that in the nested form, we can see that nomenclature datasets can be thought of mixture of long and wide form. In particular, the format is suitable for cases where the nomenclature variable:
+Notice that nomenclature datasets blur the distinction between variable and value. For example, we could describe the above table as containing values of a `population` variable attached to the observational units of `state`, rather than a single observation of a `state-population` nomenclature variable (dimension-value pair) for the observational unit of "Australia".
 
-a.  has too many category nodes for wide format,
-b.  and/or subject to ex-post harmonisation
+However, the concept of a dimension identifier variable is useful for defining the data structure required to use crossmaps. Just as wider dataset formats are useful for data entry, and longer formats are more suited for analysis, the two-column nomenclature variable format is ideal for transforming or harmonising data between nomenclature.
+
+The format is particularly suitable for cases where the original nomenclature:
+
+a.  has sufficiently many category nodes that a wider format is difficult to work with,
+b.  and/or will be transformed using a crossmap
+c.  is expected to change relatively frequently (e.g. occupation or product classifications)
+d.  is one layer of a larger hierarchical nomenclature
 
 <!--- wide format vs. nomenclature format // makes sense in the context of transformation // nomenclature is sort of an observation id variable, except its not fixed the same way an observation id variable is --->
 
