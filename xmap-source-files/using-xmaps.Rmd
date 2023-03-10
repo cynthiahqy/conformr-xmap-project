@@ -86,29 +86,12 @@ d.  is one layer of a larger hierarchical nomenclature
 
 <!---- show examples --->
 
-### Wild Caught Nomenclature Data
 
-Let's tidy a wild caught dataset:
 
-``` r
-aus_pop <- readabs::download_abs_data_cube("national-state-and-territory-population", "31010do001_202206.xlsx")
-```
 
-```{r}
-state_pop <- readxl::read_xlsx("data-raw/abs-population_2022.xlsx", sheet = "Table_3", range = "A6:D22")
 
-state_pop
-```
 
-#### Issue 1: Multiple Nomenclature Variables in the Same Table
-
-<!--- split into two tables --->
-
-#### Issue 2: Observation Units split across columns (wide format)
-
-<!--- pivot longer ---->
-
-## Nomenclature Transformation
+## Crossmap Usage Conditions
 
 ### Coverage requirement
 
@@ -163,7 +146,58 @@ Notice that all crossmaps transformations can be decomposed into multiple "stand
 
 3.  summarise mutated values by target node
 
-#### Aggregation
+### Wild Caught (Hierarchical) Nomenclature Data
+
+Let's tidy a wild caught dataset:
+
+``` r
+aus_pop <- readabs::download_abs_data_cube("national-state-and-territory-population", "31010do001_202206.xlsx")
+```
+
+```{r}
+raw_abs_pop <- readxl::read_xlsx("data-raw/abs-population_2022.xlsx",
+                               sheet = "Table_3", range = "A6:D23")
+```
+
+Let's start by doing some standard data import tidying: removing the first two rows of table notes and giving the first column a sensible name.
+
+```{r}
+abs_pop <- raw_abs_pop |>
+  dplyr::slice(3:dplyr::n()) |>
+  dplyr::rename(area = `...1`)
+
+knitr::kable(abs_pop)
+```
+
+The above table is unfortunately not in tidy nomenclature format.
+
+#### Issue 1: Multiple Nomenclature Variables in the Same Table
+
+First, the table contains values at multiple hierarchical levels. In particular, it has aggregate values at both the country level (Australia), and sub-group level (Other Territories). Assume that the most disaggregated values are the nomenclature variable we are interested in.
+
+Now, split the table to remove totals and the "Other Territories" divider row:
+
+```{r}
+abs_split <- split(abs_pop, stringr::str_detect(abs_pop$area, "Total|Other Territories", negate = TRUE))
+state_pop <- abs_split$`TRUE`
+
+knitr::kable(state_pop)
+```
+
+#### Issue 2: Observation Units split across columns
+
+Further notice that the observational unit that we would want to apply the aggregation transformation on is year. Hence, we pivot the dataset longer:
+
+```{r}
+state_nom <- state_pop |>
+  tidyr::pivot_longer(cols = -area, names_to = "year", values_to = "population") |>
+  dplyr::select(year, dplyr::everything()) |>
+  dplyr::arrange(year)
+
+knitr::kable(state_nom)
+```
+
+### Aggregation via crossmaps
 
 Let's consider a simple case where we have some disaggregated population figures which we want to aggregate.
 
