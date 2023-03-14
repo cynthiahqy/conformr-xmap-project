@@ -66,9 +66,11 @@ Hence for **tidy nomenclature data**:
 2.  Every row is an observation on a nomenclature sub-dimension
 3.  Every cell is a single value of an identifier variable, nomenclature node, or measured variable.
 
+<!--- insert example table here --->
+
 If we nest nomenclature data, we obtain a structure analogous to the standard tidy data format (@wickham2014):
 
-1.  Every column is variable
+1.  Every column is a variable
 2.  Every row is an observation
 3.  Every cell is single value *or nested name-value set*.
 
