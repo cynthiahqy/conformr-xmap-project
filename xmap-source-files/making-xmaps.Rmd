@@ -28,11 +28,20 @@ Now, consider two links from the same source node $i$ to two different target no
 
 ## Special Cases of Crossmaps
 
-The conditions for valid nomenclature crossmaps defined above are sufficient to ensure that the total sum of value is retained between the source and target nomenclature However, there are a number of other transformation properties which crossmaps can also encode and validate. Such special cases include "degenerate" crossmaps. We consider a crossmap "degenerate" if it has only binary weights on all possible source-target links. In such cases the weights are implied by the presence or absence of a link. It is helpful when thinking about special cases to define some familiar types of relations:
+```{r setup}
+library(xmap)
+```
+
+The conditions for valid nomenclature crossmaps defined above are sufficient to ensure that the total sum of value is retained between the source and target nomenclature However, there are a number of other transformation properties which crossmaps can also encode and validate. Such special cases include "degenerate" crossmaps. We consider a crossmap "degenerate" if it has only binary weights on all possible source-target links. In such cases the weights are implied by the presence or absence of a link.
+
+### Types of Mapping Relations
+
+It is helpful when thinking about special cases to define some familiar types of relations:
 
 -   **one-to-one**: a set of links where pairs of source and target nodes are uniquely linked to each other and no other nodes. Any links in this type of relation will have unit weights.
 -   **one-to-many**: a set of links where a single source node is linked to multiple target nodes. Links in this relation will have fractional weights.
 -   **one-from-many**: a set of links where a single target node is linked to multiple source nodes. Links can have either unit or fractional weights depending on whether the source nodes are part of one-to-one or one-to-many relations.
+-   **many-to-many**: ???
 
 ### Recode maps
 
@@ -70,8 +79,6 @@ Additional columns (e.g. for label descriptions etc.) can be retained by setting
 The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
 
 ```{r}
-library(xmap)
-
 simple_x <- tibble::tribble(
   ~source, ~target, ~share,
   "equal", "EQUAL", 1,       # one-to-one
