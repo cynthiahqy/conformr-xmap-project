@@ -50,13 +50,13 @@ Using the additional abstraction step of splitting measured variables into id-va
 
 -   **Observational Unit Identifier Variables** are any identify variables used to index observational units. For example, country and year variables could be used to index population observations.
 -   **Dimension Identifier Variables** identify the dimension, or set of dimensions, for the observation unit which measurements take place on.
--   **Measured Variables** contain values measured in a common "schematic?" unit. These variables combined with the associated dimension id variable form an observation on a particular dimension of the observational unit.
+-   **Measured Variables** contain values measured on the observation unit and dimension. The dimension id and measured variables form name-value pairs on a particular dimension of the observational unit.
 
 @wickham2014's **tidy data** (see [`vignette("tidy-data", package = "tidyr")`](https://tidyr.tidyverse.org/articles/tidy-data.html#defining)) format describes a standard way of structuring tabular datasets using the following data semantics:
 
 > A dataset is a collection of **values**, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
 
-Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. In this case, every value belongs to a sub-dimension identifier variable, which forms part of a larger nomenclature dimension.
+Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. Furthermore, under a semantic role system [@kandel2011], the nomenclature name column has the semantic role of "classification code", while the value column would have a standard data type (e.g. integer). Hence, a nomenclature variable can also be thought of as pairings of classification code and standard value columns.
 
 A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature, which form the associated aggregate pool of value.
 
@@ -103,23 +103,31 @@ The utility of the tidy nomenclature format is most evident when we look at tran
 
 ## Crossmap Usage Conditions
 
-### Coverage requirement
-
-The only strict requirement when applying a nomenclature crossmap to transform data is that the source nodes in the crossmap fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. Let's call this the Coverage requirement.
-
-Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
-
-### No missing values
-
-In addition to the coverage requirement, there are few additional conditions that should be checked to avoid any unexpected data loss or transformations:
-
-Missing values should be dealt with prior to transformation as they can silently corrupt data in collapse or split transformations. Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. For instance, in R, the function `sum()` takes the argument `na.rm` which when `TRUE` removes missing values from the sum. This is equivalent to treating missing values as `0` when collapsing multiple source values into a target node, and hence should be handled explicitly before applying the crossmap transformation.
-
-The only exception to this is when the transformation is a one-to-one recode, such that missing values can be passed unmodified in to the target nomenclature.
-
 ### Tidy Original Dataset
 
-Tidyness in the context of nomenclature variables requires that for each observation unit in the dataset, which can span multiple rows, there is only one row of values for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link. This is not a strict requirement, but avoids hidden aggregation across source nodes.
+### Dataset Coverage Requirement
+
+The only other strict requirement when applying a nomenclature crossmap to transform data is that the source nodes in the crossmap fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
+
+![](images/image-674708063.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
+
+In addition to the **coverage requirement**, there are few additional conditions that should be checked to avoid any unexpected data loss or modification:
+
+### Handle missing values before crossmap transformation
+
+Missing values should be dealt with prior to transformation as they can silently corrupt data in collapse or split transformations. The figure below shows a nomenclature variable with a missing value which cannot be unambiguously resolved in the crossmap transformation. The missing value belongs to a source node which is part of both a split and collapse relations.
+
+![](images/image-760208178.png){width="100%"}
+
+Naive application of the crossmap transformation implicitly attempts to apply arithmetic operations on missing values. However, missing values are not numbers, and as such, it does not make sense to split an `NA` in half as illustrated in the outgoing links from the `x5555` node. Similarly, the target node `D6` receives both `NA` and numeric values from multiple source nodes and cannot be combined without additional preprocessing decisions. Handling missing values prior to applying the crossmap explicitly records such decisions.
+
+For instance, in R, the function `sum()` takes the argument `na.rm` which when `TRUE` removes missing values from the sum. This is equivalent to treating missing values as `0` when collapsing multiple source values into a target node, and hence should be handled explicitly before applying the crossmap transformation.
+
+Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. Lastly, note that crossmaps with only one-to-one recode relations avoids this "**missing value arithmetic**" issue since missing values can be passed unmodified in to the target nomenclature. Nevertheless, it is still advisable to handle missing values prior to applying the crossmap so that missing value decisions and nomenclature transformations are encoded in separate steps.
+
+### Avoid multiple observations for each source node
+
+In addition to the tidy structure requirement described above, for each observational unit in the dataset, which can span multiple rows, there should ideally only be one name-value pair for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link. This is not a strict requirement, but avoids hidden aggregation across source nodes.
 
 ```{r}
 ## basically summarise numeric values into a single origin node.
