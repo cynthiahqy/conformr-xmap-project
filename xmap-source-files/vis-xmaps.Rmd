@@ -171,11 +171,11 @@ edges <- tribble(~ctr, ~ctr2, ~split,
                  "W.GER", "DEU", 1)
 ```
 
-![](https://raw.githubusercontent.com/cynthiahqy/viz-panel-maps/57272c61692ece2d2b94874d12fe7f0619c6e864/docs/plots/viz-country-concord/ggsankey.png)
+![](https://raw.githubusercontent.com/cynthiahqy/viz-panel-maps/57272c61692ece2d2b94874d12fe7f0619c6e864/docs/plots/viz-country-concord/ggsankey.png){width="100%"}
 
 On the other hand, the bigraph visualisation shows more clearly how data is modified (or not) when harmonising between nomenclature. The solid lines show when a link does not modify the source values, whilst the dotted line style indicates that data will be split up. Furthermore, by using fixed width links, there is room to place labels on-top of each curve indicated the transformation weights.
 
-![](https://raw.githubusercontent.com/cynthiahqy/viz-panel-maps/workflowr/docs/plots/ggbump-sigmoid-graph-edges.jpg)
+![](https://raw.githubusercontent.com/cynthiahqy/viz-panel-maps/workflowr/docs/plots/ggbump-sigmoid-graph-edges.jpg){width="100%"}
 
 ### Matrix
 
@@ -213,8 +213,41 @@ plt_xmap_ggmatrix <- function(x, ...){
 }
 ```
 
-Notice that the requirement that a valid crossmap has outgoing weights which sum to 1 for each source node is equivalent to a requirement that the total of weights across each row sums to 1.
-
 ```{r}
 plt_xmap_ggmatrix(anzsco_xmap)
+```
+
+Notice that the requirement that a valid crossmap has outgoing weights which sum to 1 for each source node is equivalent to a requirement that the total of weights across each row sums to 1.
+
+![](images/image-716111381.png){width="100%"}
+
+## Visualising Types of Mapping Relations
+
+```{r, echo=FALSE}
+veg_1a <- c("eggplant", "capsicum", "zucchini")
+veg_1b <- c("aubergine", "pepper", "courgette")
+veg_2 <- c("vegetables")
+fruit_1a <- c("peach", "raspberry", "kumquat")
+fruit_2 <- c("fruits")
+pb_1a <- c("salt", "sugar", "peanuts")
+pb_2 <- c("peanut butter")
+pb_1a_w <- c(0.02, 0.05, 0.93)
+
+recode <- data.frame(au = veg_1a, uk = veg_1b, link = 1) |>
+  as_xmap_df(au, uk, link)
+gg_recode <- recode |> plt_xmap_bigraph()
+
+agg <- data.frame(item = fruit_1a, group = fruit_2, link = 1) |>
+  as_xmap_df(item, group, link)
+gg_agg <- agg |> plt_xmap_bigraph()
+
+disagg <- data.frame(group = pb_2, item = pb_1a, link = pb_1a_w) |>
+  as_xmap_df(group, item, link)
+gg_disagg <- disagg |> plt_xmap_bigraph()
+```
+
+```{r}
+library(patchwork)
+
+gg_recode + gg_agg + gg_disagg
 ```
