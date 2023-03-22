@@ -169,12 +169,36 @@ Notice that all crossmaps transformations can be decomposed into multiple "stand
 Let's tidy a wild caught dataset:
 
 ``` r
+aus_pop <- "data-raw/abs-population_2022.xlsx"
 aus_pop <- readabs::download_abs_data_cube("national-state-and-territory-population", "31010do001_202206.xlsx")
 ```
 
-```{r}
-raw_abs_pop <- readxl::read_xlsx("data-raw/abs-population_2022.xlsx",
+``` r
+raw_abs_pop <- readxl::read_xlsx(aus_pop,
                                sheet = "Table_3", range = "A6:D23")
+```
+
+```{r}
+raw_abs_pop <-     tibble::tribble(
+                                       ~...1,     ~X2002,     ~X2012,     ~X2022,
+                                          NA,      "no.",      "no.",      "no.",
+                 "Australia–at 30 September",         NA,         NA,         NA,
+                           "New South Wales",  "6580807",  "7304244",  "8153584",
+                                  "Victoria",  "4817774",  "5651091",  "6613727",
+                                "Queensland",  "3653123",  "4568687",  "5322058",
+                           "South Australia",  "1511567",  "1656725",  "1820530",
+                         "Western Australia",  "1928512",  "2425507",  "2785312",
+                                  "Tasmania",   "474152",   "511724",   "571517",
+                        "Northern Territory",   "202251",   "235915",   "250635",
+              "Australian Capital Territory",   "324627",   "376539",   "456652",
+                         "Other Territories",         NA,         NA,         NA,
+                      "Jervis Bay Territory",      "464",      "380",      "312",
+             "Territory of Christmas Island",     "1365",     "2107",     "1781",
+      "Territory of Cocos (Keeling) Islands",      "568",      "546",      "614",
+                            "Norfolk Island",        "0",        "0",     "2213",
+                   "Total Other Territories",     "2397",     "3033",     "4920",
+                           "Total Australia", "19495210", "22733465", "25978935"
+      )
 ```
 
 Let's start by doing some standard data import tidying: removing the first two rows of table notes and giving the first column a sensible name.
