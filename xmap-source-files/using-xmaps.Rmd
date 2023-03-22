@@ -29,7 +29,7 @@ state_data <- tibble::tribble(
 total_pop_ex <- round(sum(state_data$`Population (est. 30 Jun 2022)`) / 10^6, 2)
 ```
 
-A nomenclature variable is a set of name-value pairs, where the names correspond to categories or classes in a particular nomenclature, and the values can be considered part of the same aggregate pool. For instance, consider data on population by state in Australia[^1] shown below.
+A nomenclature variable is a set of name-value pairs, where the names correspond to categories or classes in a particular nomenclature, and the values are measured on those particular categories or classes. For instance, consider data on population by state in Australia[^1] shown below.
 
 [^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022)
 
@@ -37,7 +37,7 @@ A nomenclature variable is a set of name-value pairs, where the names correspond
 knitr::kable(state_data, caption = "Australian population by State (excl. Other Territories)")
 ```
 
-The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. The aggregate pool for which the values for each state belong is the total population of Australia.
+The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. Furthermore, since the values form an aggregate pool for the total population of Australia, we can consider this to be a **nomenclature pool variable**.
 
 ### Tidy Nomenclature datasets
 
@@ -56,9 +56,9 @@ Using the additional abstraction step of splitting measured variables into id-va
 
 > A dataset is a collection of **values**, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
 
-Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. Furthermore, under a semantic role system [@kandel2011], the nomenclature name column has the semantic role of "classification code", while the value column would have a standard data type (e.g. integer). Hence, a nomenclature variable can also be thought of as pairings of classification code and standard value columns.
+Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. Furthermore, under a semantic role system [@kandel2011], the nomenclature name column has the semantic role of "classification code", while the value column would have a standard data type (e.g. integer). Hence, a nomenclature variable can also be thought of as pairings of classification code and value columns.
 
-A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature, which form the associated aggregate pool of value.
+A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature.
 
 Hence for **tidy nomenclature data**:
 
@@ -107,11 +107,57 @@ The utility of the tidy nomenclature format is most evident when we look at tran
 
 ### Dataset Coverage Requirement
 
-The only other strict requirement when applying a nomenclature crossmap to transform data is that the source nodes in the crossmap fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
+The source nodes in the crossmap must fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
 
 ![](images/image-674708063.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
 
-In addition to the **coverage requirement**, there are few additional conditions that should be checked to avoid any unexpected data loss or modification:
+### Only split or collapse nomenclature pool variables
+
+Crossmaps with split or collapse relations should only be applied to nomenclature pool variables where the measured values are counts which are part of the same aggregate pool. For example, a crossmap could be used to aggregate or further disaggregate the occupation counts shown below:
+
+```{r}
+## table 5: https://www.abs.gov.au/statistics/labour/jobs/jobs-australia/2015-16-2019-20
+tibble::tribble(
+                                  ~Occupation, ~`Male.('000.persons)`, ~`Female.('000.persons)`,
+                                   "Managers",                  934.4,                    668.5,
+                              "Professionals",                 1190.9,                   1542.2,
+             "Technicians and trades workers",                 1229.7,                      225,
+     "Community and personal service workers",                    443,                    998.1,
+        "Clerical and administrative workers",                  373.5,                   1203.7,
+                              "Sales workers",                  382.6,                    651.4,
+            "Machinery operators and drivers",                  621.3,                     81.3,
+                                  "Labourers",                  815.5,                      437
+     ) |> knitr::kable()
+```
+
+On the other hand, non-count numeric variables such as averages should not be aggregated or disaggregated. In this case, it only makes sense to use recoding crossmaps, since they are effectively crosswalks or lookup tables that leave the measured values unmodified. For example, beyond recoding the industry labels, any other nomenclature transformation of the average weekly total cash earnings shown below requires knowledge of employee counts.
+
+```{r}
+## Table: All employees, average weekly total cash earnings - industry
+## https://www.abs.gov.au/statistics/labour/earnings-and-working-conditions/employee-earnings-and-hours-australia/may-2021
+tibble::tribble(
+                                              ~industry,  ~avg_weekly_earnings,
+                                               "Mining", "2,798.40",
+                                        "Manufacturing", "1,457.40",
+           "Electricity, gas, water and waste services", "2,060.90",
+                                         "Construction", "1,600.40",
+                                      "Wholesale trade", "1,468.20",
+                                         "Retail trade",   "864.50",
+                      "Accommodation and food services",   "664.70",
+                    "Transport, postal and warehousing", "1,587.70",
+             "Information media and telecommunications", "1,797.40",
+                       "Finance and insurance services", "1,990.40",
+              "Rental, hiring and real estate services", "1,381.70",
+      "Professional, scientific and technical services", "1,911.30",
+                  "Administrative and support services", "1,234.50",
+                     "Public administration and safety", "1,745.40",
+                               "Education and training", "1,374.80",
+                    "Health care and social assistance", "1,287.40",
+                         "Arts and recreation services", "1,032.90",
+                                       "Other services", "1,043.10",
+                                       "**All industries**", "**1,394.10**"
+) |> knitr::kable()
+```
 
 ### Handle missing values before crossmap transformation
 
