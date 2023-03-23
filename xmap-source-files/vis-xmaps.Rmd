@@ -219,7 +219,7 @@ plt_xmap_ggmatrix(anzsco_xmap)
 
 Notice that the requirement that a valid crossmap has outgoing weights which sum to 1 for each source node is equivalent to a requirement that the total of weights across each row sums to 1.
 
-![](images/image-716111381.png){width="100%"}
+![](plot-weight-sum-matrix.png){width="100%"}
 
 ## Visualising Types of Mapping Relations
 

@@ -109,7 +109,7 @@ The utility of the tidy nomenclature format is most evident when we look at tran
 
 The source nodes in the crossmap must fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
 
-![](images/image-674708063.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
+![](plot-coverage-matrix.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
 
 ### Only split or collapse nomenclature pool variables
 
@@ -163,7 +163,7 @@ tibble::tribble(
 
 Missing values should be dealt with prior to transformation as they can silently corrupt data in collapse or split transformations. The figure below shows a nomenclature variable with a missing value which cannot be unambiguously resolved in the crossmap transformation. The missing value belongs to a source node which is part of both a split and collapse relations.
 
-![](images/image-760208178.png){width="100%"}
+![](plot-missing-val-bigraph.png){width="100%"}
 
 Naive application of the crossmap transformation implicitly attempts to apply arithmetic operations on missing values. However, missing values are not numbers, and as such, it does not make sense to split an `NA` in half as illustrated in the outgoing links from the `x5555` node. Similarly, the target node `D6` receives both `NA` and numeric values from multiple source nodes and cannot be combined without additional preprocessing decisions. Handling missing values prior to applying the crossmap explicitly records such decisions.
 

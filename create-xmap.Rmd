@@ -1211,12 +1211,26 @@ Suggested in [confomr-project #43](https://github.com/cynthiahqy/conformr-projec
 First add bibliography file
 
 ```{r}
-add_vignette_bib <- function(bib_files){
-  fs::dir_create("vignettes")
-  for (fn in bib_files) fs::file_copy(fn, "vignettes")
+add_files_to_folder <- function(files, folder){
+  fs::dir_create(folder)
+  mapply(fs::file_copy, files, folder)
 }
+add_files_to_folder("../xmap-source-files/using-xmaps.bib", "vignettes")
+```
 
-add_vignette_bib("../xmap-source-files/using-xmaps.bib")
+```{r}
+## works
+vignette_images <- c("../xmap-source-files/plot-coverage-matrix.png",
+                     "../xmap-source-files/plot-missing-val-bigraph.png",
+                     "../xmap-source-files/plot-weight-sum-matrix.png")
+add_files_to_folder(vignette_images, "vignettes")
+```
+
+``` r
+## doesn't work???
+vignette_images <- paste0("../",
+                          list.files("xmap-source-files", pattern = "plot", full.names = TRUE))
+add_files_to_folder(vignette_images, "vignettes")
 ```
 
 ```{r}
