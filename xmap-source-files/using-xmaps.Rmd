@@ -151,27 +151,38 @@ For instance, one could calculate and compare the sums of $\bf{x}$ and $\bf{y}$.
 
 <!--- counting rows? ---->
 
-To illustrate, consider the source node `f` in the `origin` source nomenclature. It is split by three outgoing links to `DD`, `EE` and `FF`. A case-wise approach to coding this transformation might look something like:
+To illustrate, consider the following imperative code for transforming $\bf{x}$ into the target nomenclature:
 
-``` r
-DD = 0.3 * f
-EE = 0.3 * f
-FF = 0.4 * f
+```{r, attr.source='.numberLines'}
+y <- list()
+
+y$AA = x["a", ] + x["b", ] + x["c", ]
+y$BB = x["d", ]
+y$CC = x["c", ]
+y$DD = 0.3 * x["f", ]
+y$EE = 0.2 * x["f", ]
+y$FF = 0.4 * x["f", ]
+
+y |> as.matrix()
 ```
 
-Notice that there is no simple way to check that the three weights sum to one.
+Observe the following:
 
-Now, consider the target node `AA` which is in a collapse relation with `a`, `b` and `c`. An iterative approach might look something like:
+-   The value attached to source node `c` is mistakenly distributed twice (lines 3 and 4) into the transformed vector $\bf{y}$, whilst the source value for `e` has not been distributed at all.
+-   The source node `f` in the `origin` source nomenclature is split by three outgoing links to `DD`, `EE` and `FF`. Notice that we would need to check three lines of code (6-8) to validate that the weights sum to one. In fact, the weights above only sum to `0.9`.
+-   The total sum of $\bf{x}$ is `600`, and does not match the total sum of $\bf{y}$ which is `590`. However, this mismatch can be fixed by detecting and correcting the second weights error alone, and provides no insight on the first double distribution error.
 
-```         
-AA = a
-AA = AA + b
-AA = AA + c
-```
+<!---- reference validate, assertr packages? --->
 
-Notice that this requires updating the value for `AA` and makes it difficult to see at a glance which source nodes feed into it.
+### Comparison to Existing Crosswalk approaches
 
-Now consider combining multiple relation types in a single transformation. Such transformations might be implemented using a combination of case-wise and iterative code making it even harder to audit the transformation and identify errors.
+> -   Crosswalk or lookup table approaches are better than above
+> -   but are still limited when it comes to dealing with split relations and complex xmaps
+> -   unambiguous matches are left to the user, not supported
+
+<!---- existing packages // forcats, recode etc. --->
+
+### Additional Benefits
 
 #### Code-Agnostic Dataset Design
 
@@ -182,6 +193,10 @@ As more and more datasets are created by integrating data from multiple sources,
 #### Multiple related nomenclature transformations (FUTURE WORK)
 
 Returning to the tidy nomenclature format, note that each nested name-value set is analogous to $\bf{x}$, where the name column indexes the measured values.
+
+> -   kronecker product for multiple observation vectors in the same source nomenclature to same target nomenclature
+> -   list/nested approach for multiple observation vectors in different source noemncalture but same target nomenclature
+> -   resolving discrepancies between aggregation levels
 
 <!--- treat each nested name-value set as a named column vector // and crossmaps as a transformation matrix. Overly complicated for a single crossmap, but useful for different crossmaps -->
 
