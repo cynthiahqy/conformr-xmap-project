@@ -864,7 +864,8 @@ testthat::test_that(
 ```{r}
 #' Extract incidence matrix from xmap objects
 #' 
-#' Transforms `xmap` objects into incidence matrix.
+#' Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
+#' and the columns are indexed by `to` values. Drops any additional variables.
 #' 
 #' @param x an xmap object
 #' @param sparse logical specifying if the result should be a sparse matrix. Defaults to TRUE.
@@ -913,6 +914,30 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
   }
   return(x_mtx)
 }
+```
+
+```{r test-xmap-to-matrix}
+testthat::test_that("xmap_to_matrix handles xmaps with different column counts",{
+  links <- tibble::tribble(
+    ~f, ~t, ~w,
+    "A1", "B01", 1,
+    "A2", "B02", 1,
+    "A3", "B02", 1,
+    "A4", "B03", 0.25,
+    "A4", "B04", 0.75
+  ) 
+  xmap_small <- new_xmap_df(links, "f", "t", "w")
+
+  links_extra <- links |> 
+    dplyr::mutate(ex = "extra")
+  xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
+  
+  xmap_matrix_small <- xmap_small |> xmap_to_matrix()
+  xmap_matrix_extra <- xmap_extra |> xmap_to_matrix()
+  
+  testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
+  }
+  )
 ```
 
 ### Helper: `xmap_drop_extra()`
