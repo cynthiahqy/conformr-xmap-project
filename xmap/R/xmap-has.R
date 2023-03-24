@@ -1,3 +1,5 @@
+# Generated from create-xmap.Rmd: do not edit by hand
+
 #' Boolean flags for xmap properties
 #'
 #' @description

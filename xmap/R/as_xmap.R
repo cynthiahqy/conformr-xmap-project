@@ -1,10 +1,12 @@
-#' Coerce objects to xmap
+# Generated from create-xmap.Rmd: do not edit by hand
+
+#' Coerce objects to xmap_df
 #' 
-#' Validates and creates a valid crossmap `xmap` object of the same type as the input.
+#' Validates and creates a valid crossmap `xmap_df` object.
 #' 
 #' @param x
-#'  * For `as_xmap()`: An object to coerce
-#'  * For `is_xmap()`: An object to test.
+#'  * For `as_xmap_df()`: An object to coerce
+#'  * For `is_xmap_df()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
@@ -17,7 +19,7 @@ as_xmap_df <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
   UseMethod("as_xmap_df")
 }
 
-#' @describeIn as_xmap Coerce a `data.frame` to `xmap`
+#' @describeIn as_xmap_df Coerce a `data.frame` to `xmap`
 #'
 #' @export
 #' @examples

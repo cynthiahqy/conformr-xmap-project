@@ -1,3 +1,5 @@
+# Generated from create-xmap.Rmd: do not edit by hand
+
 #' Reverse xmap direction
 #'
 #' @param x xmap object to be reversed

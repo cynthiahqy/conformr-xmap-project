@@ -1,3 +1,5 @@
+# Generated from create-xmap.Rmd: do not edit by hand
+
 #'
 .get_link_types.xmap_df <- function(xmap_df){
   x_attrs <- attributes(xmap_df)

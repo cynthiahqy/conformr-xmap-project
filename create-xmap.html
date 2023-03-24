@@ -401,9 +401,11 @@ Method</a></li>
 </ul></li>
 <li><a href="#coercion" id="toc-coercion">Coercion</a>
 <ul>
-<li><a href="#generic-as_xmap" id="toc-generic-as_xmap">Generic:
-<code>as_xmap()</code></a></li>
+<li><a href="#generic-as_xmap_df" id="toc-generic-as_xmap_df">Generic:
+<code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code></a></li>
 <li><a href="#as_xmap_df.data.frame" id="toc-as_xmap_df.data.frame"><code><a href='create-xmap.html#as_xmap_df.data.frame'>as_xmap_df.data.frame</a>()</code></a></li>
+<li><a href="#conversion-xmap_to_matrix" id="toc-conversion-xmap_to_matrix">Conversion:
+<code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></a></li>
 <li><a href="#helper-xmap_drop_extra" id="toc-helper-xmap_drop_extra">Helper:
 <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></a></li>
 </ul></li>
@@ -455,7 +457,7 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9016&quot;,
+    Version = &quot;0.0.0.9017&quot;,
     Title = &quot;xmap: A data-structure for extending crosswalks&quot;,
     Description = &quot;Provides &#39;xmap&#39; S3 classes (the &#39;Crossmap&#39;) for use in {conformr} package.&quot;,
     `Authors@R` = person(
@@ -477,7 +479,8 @@ usethis::use_package(&quot;cli&quot;)
 
 # Suggests
 usethis::use_package(&quot;tibble&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)</code></pre>
+usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(&quot;matlib&quot;, type = &quot;Suggests&quot;)</code></pre>
 <pre><code>## ✔ Adding &#39;rlang&#39; to Imports field in DESCRIPTION
 ## • Refer to functions with `rlang::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;cli&#39; to Imports field in DESCRIPTION
@@ -488,6 +491,9 @@ usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)</code></
 <pre><code>## ✔ Adding &#39;testthat&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;testthat&quot;)` or `rlang::check_installed(&quot;testthat&quot;)` to test if testthat is installed
 ## • Then directly refer to functions with `testthat::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;matlib&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;matlib&quot;)` or `rlang::check_installed(&quot;matlib&quot;)` to test if matlib is installed
+## • Then directly refer to functions with `matlib::fun()`</code></pre>
 </div>
 <div id="utilities" class="section level3">
 <h3>Utilities</h3>
@@ -499,14 +505,7 @@ library(rlang)</code></pre>
 </div>
 <div id="package-level-documentation" class="section level3">
 <h3>Package Level Documentation</h3>
-<pre class="{package-doc}"><code>#&#39; xmap: A data-structure for extending crosswalks
-#&#39;
-#&#39; @description
-#&#39; Provides &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) for use in {conformr} package.
-#&#39;
-#&#39; @keywords internal
-#&#39; @import rlang
-&quot;_PACKAGE&quot;</code></pre>
+<p><code>{package-doc} #&#39; xmap: A data-structure for extending crosswalks #&#39; #&#39; @description #&#39; Provides &#39;xmap&#39; S3 class (the &#39;Crossmap&#39;) for use in {conformr} package. #&#39; #&#39; @keywords internal #&#39; @import rlang &quot;_PACKAGE&quot;</code></p>
 </div>
 </div>
 <div id="package-design-notes" class="section level2">
@@ -660,7 +659,7 @@ a numeric vector - <code>X</code> inherits from the class
                     {
                       testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="xmap_df-constructor-method" class="section level3">
 <h3><code>xmap_df</code> Constructor Method</h3>
@@ -752,7 +751,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -863,7 +862,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -999,9 +998,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="internal-validate_xmap_df" class="section level3">
@@ -1081,7 +1080,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1185,26 +1184,26 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 </div>
 <div id="coercion" class="section level2">
 <h2>Coercion</h2>
-<div id="generic-as_xmap" class="section level3">
-<h3>Generic: <code>as_xmap()</code></h3>
-<pre class="r"><code>#&#39; Coerce objects to xmap
+<div id="generic-as_xmap_df" class="section level3">
+<h3>Generic: <code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code></h3>
+<pre class="r"><code>#&#39; Coerce objects to xmap_df
 #&#39; 
-#&#39; Validates and creates a valid crossmap `xmap` object of the same type as the input.
+#&#39; Validates and creates a valid crossmap `xmap_df` object.
 #&#39; 
 #&#39; @param x
-#&#39;  * For `as_xmap()`: An object to coerce
-#&#39;  * For `<a href='create-xmap.html#is_xmap'>is_xmap</a>()`: An object to test.
+#&#39;  * For `<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()`: An object to coerce
+#&#39;  * For `<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>()`: An object to test.
 #&#39; @param from,to Columns in `x` specifying the source and target nodes
 #&#39; @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #&#39; @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
@@ -1222,22 +1221,22 @@ testthat::test_that(
 <ul>
 <li>checks for:
 <ul class="task-list">
-<li><input type="checkbox" disabled checked></input>existence of columns
-via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
+<li><input type="checkbox" checked></input>existence of columns via
+<code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
 </ul></li>
 <li>warns for:
 <ul class="task-list">
-<li><input type="checkbox" disabled checked></input>dropping extra
-columns (anything other than <code>from</code>, <code>to</code>,
-<code>weights</code>) as controlled by <code>.drop</code> argument</li>
+<li><input type="checkbox" checked></input>dropping extra columns (anything
+other than <code>from</code>, <code>to</code>, <code>weights</code>) as
+controlled by <code>.drop</code> argument</li>
 </ul></li>
 <li>throws errors for:
 <ul class="task-list">
-<li><input type="checkbox" disabled checked></input>any validation
-failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
+<li><input type="checkbox" checked></input>any validation failures via
+<code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
 </ul></li>
 </ul>
-<pre class="r"><code>#&#39; @describeIn as_xmap Coerce a `data.frame` to `xmap`
+<pre class="r"><code>#&#39; @describeIn as_xmap_df Coerce a `data.frame` to `xmap`
 #&#39;
 #&#39; @export
 #&#39; @examples
@@ -1310,7 +1309,82 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
                                <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+</div>
+<div id="conversion-xmap_to_matrix" class="section level3">
+<h3>Conversion: <code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></h3>
+<pre class="r"><code>#&#39; Extract incidence matrix from xmap objects
+#&#39; 
+#&#39; Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
+#&#39; and the columns are indexed by `to` values. Drops any additional variables.
+#&#39; 
+#&#39; @param x an xmap object
+#&#39; @param sparse logical specifying if the result should be a sparse matrix. Defaults to TRUE.
+#&#39; @param ... Unused
+#&#39; 
+#&#39; @return A matrix or sparse matrix object
+#&#39; 
+#&#39; @export
+<span id='xmap_to_matrix'>xmap_to_matrix</span> &lt;- function(x, sparse, ...) {
+  UseMethod(&quot;xmap_to_matrix&quot;)
+}</code></pre>
+<div id="method-xmap_to_matrix.xmap_df" class="section level4">
+<h4>Method: <code><a href='create-xmap.html#xmap_to_matrix.xmap_df'>xmap_to_matrix.xmap_df</a>()</code></h4>
+<pre class="r"><code>#&#39; @describeIn xmap_to_matrix Coerce a `data.frame` to `xmap`
+#&#39;
+#&#39; @return
+#&#39; @export
+#&#39;
+#&#39; @examples
+#&#39; abc_xmap &lt;- data.frame(
+#&#39;  stringsAsFactors = FALSE,
+#&#39;                  origin = c(&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;,&quot;e&quot;,
+#&#39;                           &quot;f&quot;,&quot;g&quot;,&quot;h&quot;,&quot;i&quot;,&quot;i&quot;,&quot;j&quot;,&quot;j&quot;,&quot;j&quot;),
+#&#39;                    dest = c(&quot;AA&quot;,&quot;AA&quot;,&quot;AA&quot;,&quot;AA&quot;,
+#&#39;                           &quot;BB&quot;,&quot;BB&quot;,&quot;CC&quot;,&quot;DD&quot;,&quot;EE&quot;,&quot;FF&quot;,&quot;GG&quot;,&quot;HH&quot;,&quot;II&quot;),
+#&#39;            link = c(1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.3, 0.3, 0.4)
+#&#39;  ) |&gt;
+#&#39; <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(origin, dest, link)
+#&#39; <a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>(abc_xmap)
+<span id='xmap_to_matrix.xmap_df'>xmap_to_matrix.xmap_df</span> &lt;- function(x, sparse = TRUE){
+  x_attrs &lt;- attributes(x)
+  fm &lt;- paste(x_attrs$col_weights, &quot;~&quot;, x_attrs$col_from, &quot;+&quot;, x_attrs$col_to,
+              collapse = &quot;&quot;)
+  x_df &lt;- x |&gt;
+    as.data.frame(stringsAsFactors = TRUE)
+  
+  if(sparse){
+    x_mtx &lt;- stats::xtabs(as.formula(fm), x_df, sparse = TRUE)
+  } else {
+    x_mtx &lt;- stats::xtabs(as.formula(fm), x_df, sparse = FALSE)
+    attr(x_mtx, &quot;call&quot;) &lt;- NULL
+    unclass(x_mtx)
+  }
+  return(x_mtx)
+}</code></pre>
+<pre class="r"><code>testthat::test_that(&quot;xmap_to_matrix handles xmaps with different column counts&quot;,{
+  links &lt;- tibble::tribble(
+    ~f, ~t, ~w,
+    &quot;A1&quot;, &quot;B01&quot;, 1,
+    &quot;A2&quot;, &quot;B02&quot;, 1,
+    &quot;A3&quot;, &quot;B02&quot;, 1,
+    &quot;A4&quot;, &quot;B03&quot;, 0.25,
+    &quot;A4&quot;, &quot;B04&quot;, 0.75
+  ) 
+  xmap_small &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+
+  links_extra &lt;- links |&gt; 
+    dplyr::mutate(ex = &quot;extra&quot;)
+  xmap_extra &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links_extra, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+  
+  xmap_matrix_small &lt;- xmap_small |&gt; <a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()
+  xmap_matrix_extra &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()
+  
+  testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
+  }
+  )</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+</div>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -1345,18 +1419,19 @@ failures via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df<
   &quot;A4&quot;, &quot;B03&quot;, 0.25,
   &quot;A4&quot;, &quot;B04&quot;, 0.75
   ) 
-  xmap_small &lt;- <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(links, f, t, w)
+  xmap_small &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
 
   links_extra &lt;- links |&gt; 
     dplyr::mutate(ex = &quot;extra&quot;)
-  xmap_extra &lt;- <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(links_extra, f, t, w, .drop_extra = FALSE)
+  xmap_extra &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links_extra, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+  
   xmap_drop_df &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_drop_extra.xmap_df'>xmap_drop_extra.xmap_df</a>()
   xmap_drop &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()
   
   testthat::expect_identical(xmap_small, xmap_drop_df)
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="description-tools" class="section level2">
@@ -1404,7 +1479,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
@@ -1493,7 +1568,7 @@ has_collapse &lt;- has_1fromM</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#df_check_reversible'>df_check_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level2">
@@ -1655,6 +1730,10 @@ NULL
 <h2>Package Creation</h2>
 <div id="add-vignettes" class="section level3">
 <h3>Add Vignettes</h3>
+<pre class="r"><code>## doesn&#39;t work???
+vignette_images &lt;- paste0(&quot;../&quot;,
+                          list.files(&quot;xmap-source-files&quot;, pattern = &quot;plot&quot;, full.names = TRUE))
+add_vignettes(vignette_images)</code></pre>
 <pre class="r"><code>valid_xmap_df &lt;-
   tibble::tribble(
     ~new_sec, ~sector, ~weight,
@@ -1693,24 +1772,33 @@ this file.</p>
 <pre class="r"><code>litr::add_readme(&quot;../xmap-source-files/README.Rmd&quot;)
 litr::add_vignettes(&quot;../xmap-source-files/xmap.Rmd&quot;)
 litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/using-xmaps.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;)</code></pre>
+litr::add_vignettes(c(&quot;../xmap-source-files/using-xmaps.Rmd&quot;,
+                      &quot;../xmap-source-files/using-xmaps.bib&quot;,
+                      &quot;../xmap-source-files/plot-coverage-matrix.png&quot;,
+                      &quot;../xmap-source-files/plot-missing-val-bigraph.png&quot;
+                    ))
+litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
+                      &quot;../xmap-source-files/plot-weight-sum-matrix.png&quot;))</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap</code></pre>
-<pre><code>## Warning: []8;line = 9:col = 1;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/
-## conformr-project/xmap/R/xmap_reverse.Rxmap_reverse.R:9]8;;] @examples requires a
-## value</code></pre>
-<pre><code>## Writing &#39;]8;;file:///Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/NAMESPACENAMESPACE]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;as_xmap_df&#39;)as_xmap_df.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;as_xmap_df.data.frame&#39;)as_xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;df_check&#39;)df_check.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;new_xmap&#39;)new_xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;print.xmap&#39;)print.xmap.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;op-null-default&#39;)op-null-default.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;validate_xmap_df&#39;)validate_xmap_df.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap-has&#39;)xmap-has.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap_drop_extra&#39;)xmap_drop_extra.Rd]8;;&#39;
-## Writing &#39;]8;;ide:run:pkgload::dev_help(&#39;xmap_reverse&#39;)xmap_reverse.Rd]8;;&#39;</code></pre>
+<pre><code>## Warning: [
+## conformr-project/xmap/R/xmap_reverse.Rxmap_reverse.R:11] @examples requires
+## a value</code></pre>
+<pre><code>## Warning: [
+## conformr-project/xmap/R/xmap_to_matrix.xmap_df.Rxmap_to_matrix.xmap_df.R:5]
+## @return requires a value</code></pre>
+<pre><code>## Writing &#39;NAMESPACE&#39;
+## Writing &#39;as_xmap_df.Rd&#39;
+## Writing &#39;df_check.Rd&#39;
+## Writing &#39;as_xmap.Rd&#39;
+## Writing &#39;new_xmap.Rd&#39;
+## Writing &#39;print.xmap.Rd&#39;
+## Writing &#39;op-null-default.Rd&#39;
+## Writing &#39;validate_xmap_df.Rd&#39;
+## Writing &#39;xmap-has.Rd&#39;
+## Writing &#39;xmap_drop_extra.Rd&#39;
+## Writing &#39;xmap_reverse.Rd&#39;
+## Writing &#39;xmap_to_matrix.Rd&#39;</code></pre>
 <pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;
 ## ✔ Writing &#39;_pkgdown.yml&#39;</code></pre>
 <pre><code>## -- Installing package into temporary library -----------------------------------
@@ -1748,6 +1836,8 @@ litr::add_vignettes(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;)</code></pre>
 ## Writing &#39;reference/xmap_drop_extra.html&#39;
 ## Reading &#39;man/xmap_reverse.Rd&#39;
 ## Writing &#39;reference/xmap_reverse.html&#39;
+## Reading &#39;man/xmap_to_matrix.Rd&#39;
+## Writing &#39;reference/xmap_to_matrix.html&#39;
 ## -- Building articles -----------------------------------------------------------
 ## Writing &#39;articles/index.html&#39;
 ## Reading &#39;vignettes/making-xmaps.Rmd&#39;
