@@ -48,6 +48,7 @@ usethis::use_package("cli")
 # Suggests
 usethis::use_package("tibble", type = "Suggests")
 usethis::use_package("testthat", type = "Suggests")
+usethis::use_package("matlib", type = "Suggests")
 ```
 
 ### Utilities
