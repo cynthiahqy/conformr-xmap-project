@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9016</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9017</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,20 +76,1118 @@
     
     
 <div class="section level2">
-<h2 id="nomenclature-transformation">Nomenclature Transformation<a class="anchor" aria-label="anchor" href="#nomenclature-transformation"></a>
+<h2 id="nomenclature-variables-and-datasets">Nomenclature Variables and Datasets<a class="anchor" aria-label="anchor" href="#nomenclature-variables-and-datasets"></a>
+</h2>
+<p>A nomenclature variable is a set of name-value pairs, where the names
+correspond to categories or classes in a particular nomenclature, and
+the values are measured on those particular categories or classes. For
+instance, consider data on population by state in Australia<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Source: &lt;a href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022" class="external-link"&gt;Australian
+Bureau of Statistics&lt;/a&gt;&lt;/p&gt;'><sup>1</sup></a> shown
+below.</p>
+<table class="table">
+<caption>Australian population by State (excl. Other
+Territories)</caption>
+<thead><tr class="header">
+<th align="left">State</th>
+<th align="right">Population (est. 30 Jun 2022)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">New South Wales</td>
+<td align="right">8153600</td>
+</tr>
+<tr class="even">
+<td align="left">Victoria</td>
+<td align="right">6613700</td>
+</tr>
+<tr class="odd">
+<td align="left">Queensland</td>
+<td align="right">5322100</td>
+</tr>
+<tr class="even">
+<td align="left">South Australia</td>
+<td align="right">1820500</td>
+</tr>
+<tr class="odd">
+<td align="left">Western Australia</td>
+<td align="right">2785300</td>
+</tr>
+<tr class="even">
+<td align="left">Tasmania</td>
+<td align="right">571500</td>
+</tr>
+<tr class="odd">
+<td align="left">Northern Territory</td>
+<td align="right">250600</td>
+</tr>
+<tr class="even">
+<td align="left">Australian Capital Territory</td>
+<td align="right">456700</td>
+</tr>
+</tbody>
+</table>
+<p>The set of all name-value pairs of state/territory name and
+population estimate for a given time period form a nomenclature variable
+observation for Australia. Furthermore, since the values form an
+aggregate pool for the total population of Australia, we can consider
+this to be a <strong>nomenclature pool variable</strong>.</p>
+<div class="section level3">
+<h3 id="tidy-nomenclature-datasets">Tidy Nomenclature datasets<a class="anchor" aria-label="anchor" href="#tidy-nomenclature-datasets"></a>
+</h3>
+<p><span class="citation">Wickham (<a href="#ref-wickham2007">2007</a>)</span> introduces a division of
+dataset variables into two types: <strong>identifier and measured
+variables:</strong></p>
+<ul>
+<li>Identifier variables identify the unit that measurements are taken
+on.</li>
+<li>Measured variables are values measured on the observation unit
+defined by the identifier variables.</li>
+</ul>
+<p>Using the additional abstraction step of splitting measured variables
+into id-value pairs, we extend this taxonomy slightly to define a “tidy
+nomeclature data” format:</p>
+<ul>
+<li>
+<strong>Observational Unit Identifier Variables</strong> are any
+identify variables used to index observational units. For example,
+country and year variables could be used to index population
+observations.</li>
+<li>
+<strong>Dimension Identifier Variables</strong> identify the
+dimension, or set of dimensions, for the observation unit which
+measurements take place on.</li>
+<li>
+<strong>Measured Variables</strong> contain values measured on the
+observation unit and dimension. The dimension id and measured variables
+form name-value pairs on a particular dimension of the observational
+unit.</li>
+</ul>
+<p><span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>’s <strong>tidy data</strong>
+(see <a href="https://tidyr.tidyverse.org/articles/tidy-data.html#defining" class="external-link"><code>vignette("tidy-data", package = "tidyr")</code></a>)
+format describes a standard way of structuring tabular datasets using
+the following data semantics:</p>
+<blockquote>
+<p>A dataset is a collection of <strong>values</strong>, usually either
+numbers (if quantitative) or strings (if qualitative). Values are
+organised in two ways. Every value belongs to a
+<strong>variable</strong> and an <strong>observation</strong>.</p>
+</blockquote>
+<p>Under these semantics, every value in a tidy dataset belongs either
+to a observational unit identifier variable or a “simple” dimension
+variable. However, <strong>nomenclature variables</strong> are
+name-value pairs split across two columns, one for the nomenclature
+“dimension” identifier variable, and one for the associated measured
+value. Furthermore, under a semantic role system <span class="citation">(<a href="#ref-kandel2011">Kandel et al.
+2011</a>)</span>, the nomenclature name column has the semantic role of
+“classification code”, while the value column would have a standard data
+type (e.g. integer). Hence, a nomenclature variable can also be thought
+of as pairings of classification code and value columns.</p>
+<p>A <strong>nomenclature dataset</strong> consists of multiple
+observations of a single nomenclature variable. In a tidy nomenclature
+dataset, each observational unit should have the same number of rows
+across a shared nomenclature.</p>
+<p>Hence for <strong>tidy nomenclature data</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>Every column is either a identifier variable, or part of a
+nomenclature name-value pair</li>
+<li>Every row is an observation on a nomenclature sub-dimension</li>
+<li>Every cell is a single value of an identifier variable, nomenclature
+node, or measured variable.</li>
+</ol>
+<!--- insert example table here ---><p>If we nest nomenclature data, we obtain a structure analogous to the
+standard tidy data format (<span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>):</p>
+<ol style="list-style-type: decimal">
+<li>Every column is a variable</li>
+<li>Every row is an observation</li>
+<li>Every cell is single value <em>or nested name-value set</em>.</li>
+</ol>
+<p>Notice that nomenclature datasets blur the distinction between
+variable and value. For example, we could describe the above table as
+containing values of a <code>population</code> variable attached to the
+observational units of <code>state</code>, rather than a single
+observation of a <code>state-population</code> nomenclature variable
+(dimension-value pair) for the observational unit of “Australia”.</p>
+<p>However, the concept of a dimension identifier variable is useful for
+defining the data structure required to use crossmaps. Just as wider
+dataset formats are useful for data entry, and longer formats are more
+suited for analysis, the two-column nomenclature variable format is
+ideal for transforming or harmonising data between nomenclature.</p>
+<p>The format is particularly suitable for cases where the original
+nomenclature:</p>
+<ol style="list-style-type: lower-alpha">
+<li>has sufficiently many category nodes that a wider format is
+difficult to work with,</li>
+<li>and/or will be transformed using a crossmap</li>
+<li>is expected to change relatively frequently (e.g. occupation or
+product classifications)</li>
+<li>is one layer of a larger hierarchical nomenclature
+(e.g. administrative regions or geographic areas)</li>
+</ol>
+<!--- wide format vs. nomenclature format // makes sense in the context of transformation // nomenclature is sort of an observation id variable, except its not fixed the same way an observation id variable is ---><!---- show examples --->
+</div>
+</div>
+<div class="section level2">
+<h2 id="nomenclature-transformations">Nomenclature Transformations<a class="anchor" aria-label="anchor" href="#nomenclature-transformations"></a>
 </h2>
 <div class="section level3">
-<h3 id="table-joins-single-variable">Table Joins (single variable)<a class="anchor" aria-label="anchor" href="#table-joins-single-variable"></a>
+<h3 id="crossmap-transformations">Crossmap Transformations<a class="anchor" aria-label="anchor" href="#crossmap-transformations"></a>
 </h3>
+<p>The utility of defining a nomenclature variable and the crossmap
+format is most evident when we look at the transformation of values from
+a source nomenclature into a target nomenclature as a set of matrix
+operations. To demonstrate, we use the
+<code><a href="../reference/xmap_to_matrix.html">xmap::xmap_to_matrix()</a></code> function to take a valid crossmap
+(<code>abc_xmap</code>) and convert it into a incidence matrix
+(<code>b_mtx</code>):</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
+<span><span class="co">## define crossmap</span></span>
+<span><span class="va">abc_xmap</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>      <span class="op">~</span><span class="va">origin</span>, <span class="op">~</span><span class="va">dest</span>, <span class="op">~</span><span class="va">link</span>,</span>
+<span>          <span class="st">"a"</span>,  <span class="st">"AA"</span>,     <span class="fl">1</span>,</span>
+<span>          <span class="st">"b"</span>,  <span class="st">"AA"</span>,     <span class="fl">1</span>,</span>
+<span>          <span class="st">"c"</span>,  <span class="st">"AA"</span>,     <span class="fl">1</span>,</span>
+<span>          <span class="st">"d"</span>,  <span class="st">"BB"</span>,     <span class="fl">1</span>,</span>
+<span>          <span class="st">"e"</span>,  <span class="st">"CC"</span>,     <span class="fl">1</span>,</span>
+<span>          <span class="st">"f"</span>,  <span class="st">"DD"</span>,   <span class="fl">0.3</span>,</span>
+<span>          <span class="st">"f"</span>,  <span class="st">"EE"</span>,   <span class="fl">0.3</span>,</span>
+<span>          <span class="st">"f"</span>,  <span class="st">"FF"</span>,   <span class="fl">0.4</span></span>
+<span>      <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">origin</span>, to <span class="op">=</span> <span class="va">dest</span>, <span class="va">link</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## convert to matrix</span></span>
+<span><span class="va">b_mtx</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/xmap_to_matrix.html">xmap_to_matrix</a></span><span class="op">(</span><span class="va">abc_xmap</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">b_mtx</span></span></code></pre></div>
+<pre><code><span><span class="co">##       dest</span></span>
+<span><span class="co">## origin  AA  BB  CC  DD  EE  FF</span></span>
+<span><span class="co">##      a 1.0 0.0 0.0 0.0 0.0 0.0</span></span>
+<span><span class="co">##      b 1.0 0.0 0.0 0.0 0.0 0.0</span></span>
+<span><span class="co">##      c 1.0 0.0 0.0 0.0 0.0 0.0</span></span>
+<span><span class="co">##      d 0.0 1.0 0.0 0.0 0.0 0.0</span></span>
+<span><span class="co">##      e 0.0 0.0 1.0 0.0 0.0 0.0</span></span>
+<span><span class="co">##      f 0.0 0.0 0.0 0.3 0.3 0.4</span></span></code></pre>
+<!--- it would be cool to colour the matrix by relation type --->
+<p>Let <span class="math inline">\(\bf{B}\)</span> be the <span class="math inline">\(n \times m\)</span> incidence matrix describing
+the graph representation of a valid crossmap. <span class="math inline">\(\bf{B}\)</span> is row indexed by the source
+nomenclature, and column indexed by the target nomenclature.</p>
+<p>The two conditions for a valid crossmap can be expressed as
+properties of the incidence matrix <span class="math inline">\(\bf{B}\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li>Each node in the source or target set indexes <em>one</em> row or
+column respectively, providing at most one non-zero link between nodes
+in the source and target nomenclature.</li>
+<li>Each row contains the weights for all outgoing links from a given
+source node. Thus, each row of the matrix should sum to 1 (i.e. <span class="math inline">\(\bf{B1} = \bf{1}\)</span> where <span class="math inline">\(\bf{1}\)</span> is unit vector of length <span class="math inline">\(n\)</span>).</li>
+</ol>
+<p>Now, let <span class="math inline">\(\bf{x}\)</span> be a vector of
+length <span class="math inline">\(n\)</span> containing numeric values
+to be transformed. If <span class="math inline">\(\bf{x}\)</span> is
+also row-indexed by the source nomenclature node, then the index-value
+pair forms a nomenclature variable. Assume the values are count
+variables such that <span class="math inline">\(\bf{x}\)</span> is a
+nomenclature pool variable.</p>
+<p>To redistribute <span class="math inline">\(\bf{x}\)</span> from the
+source nomenclature into the target nomenclature, we simply take <span class="math inline">\(\bf{y} = \bf{B}'\bf{x}\)</span>. Hence, using
+a valid crossmap to transform a nomenclature variable is equivalent to a
+matrix transformation of <span class="math inline">\(\bf{x}\)</span> by
+the incidence matrix <span class="math inline">\(\bf{B}\)</span>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## define example data</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep_len</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">b_mtx</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">b_mtx</span><span class="op">)</span>, <span class="st">"x"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## apply transformation</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">b_mtx</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">x</span></span>
+<span></span>
+<span><span class="co">## print</span></span>
+<span><span class="fu">matlib</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/matlib/man/printMatEqn.html" class="external-link">printMatEqn</a></span><span class="op">(</span>`B'` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">b_mtx</span><span class="op">)</span>, <span class="va">x</span>, <span class="st">"="</span>, <span class="va">y</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                       B'   x       y</span></span>
+<span><span class="co">##  1.0 1.0 1.0 0.0 0.0 0.0 100  =  300</span></span>
+<span><span class="co">##  0.0 0.0 0.0 1.0 0.0 0.0 100     100</span></span>
+<span><span class="co">##  0.0 0.0 0.0 0.0 1.0 0.0 100     100</span></span>
+<span><span class="co">##  0.0 0.0 0.0 0.0 0.0 0.3 100      30</span></span>
+<span><span class="co">##  0.0 0.0 0.0 0.0 0.0 0.3 100      30</span></span>
+<span><span class="co">##  0.0 0.0 0.0 0.0 0.0 0.4 100      40</span></span></code></pre>
+<p>Given this equivalence, it is clear to see how the two conditions
+that define a crossmap guarantee that the total sum before and after the
+nomenclature transform remains the same. Moreover, we can be sure of
+this without checking the total of the resultant variable <span class="math inline">\(\bf{y}\)</span>.</p>
+</div>
+<div class="section level3">
+<h3 id="comparison-to-iterative-or-case-wise-transformation">Comparison to Iterative or Case-Wise Transformation<a class="anchor" aria-label="anchor" href="#comparison-to-iterative-or-case-wise-transformation"></a>
+</h3>
+<p>Contrast this to a more traditional iterative or case-wise approach
+to implementing a nomenclature transformation. Regardless of whether you
+code the transformation as a distribution of value from the source
+nomenclature nodes or collection of value by the target nomenclature
+nodes, there are only ad-hoc ways of validating node-by-node
+transformations.</p>
+<p>For instance, one could calculate and compare the sums of <span class="math inline">\(\bf{x}\)</span> and <span class="math inline">\(\bf{y}\)</span>. However, even if these two totals
+are equal, this does not guarantee that each source value is fully
+redistributed into the target nomenclature, as it is possible, though
+highly unlikely, that two mistakes could offset each other. Furthermore,
+in the case where the two totals do not match, it is not obvious how to
+identify which nodes are involved in the mistake. This second issue
+scales with the size of the nomenclature as the number of lines of code
+required to execute the transformation increases.</p>
+<!--- counting rows? ---->
+<p>To illustrate, consider the following imperative code for
+transforming <span class="math inline">\(\bf{x}\)</span> into the target
+nomenclature:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>y <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a>y<span class="sc">$</span>AA <span class="ot">=</span> x[<span class="st">"a"</span>, ] <span class="sc">+</span> x[<span class="st">"b"</span>, ] <span class="sc">+</span> x[<span class="st">"c"</span>, ]</span>
+<span id="cb5-4"><a href="#cb5-4"></a>y<span class="sc">$</span>BB <span class="ot">=</span> x[<span class="st">"d"</span>, ]</span>
+<span id="cb5-5"><a href="#cb5-5"></a>y<span class="sc">$</span>CC <span class="ot">=</span> x[<span class="st">"c"</span>, ]</span>
+<span id="cb5-6"><a href="#cb5-6"></a>y<span class="sc">$</span>DD <span class="ot">=</span> <span class="fl">0.3</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
+<span id="cb5-7"><a href="#cb5-7"></a>y<span class="sc">$</span>EE <span class="ot">=</span> <span class="fl">0.2</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
+<span id="cb5-8"><a href="#cb5-8"></a>y<span class="sc">$</span>FF <span class="ot">=</span> <span class="fl">0.4</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a>y <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>()</span></code></pre></div>
+<pre><code><span><span class="co">##    [,1]</span></span>
+<span><span class="co">## AA 300 </span></span>
+<span><span class="co">## BB 100 </span></span>
+<span><span class="co">## CC 100 </span></span>
+<span><span class="co">## DD 30  </span></span>
+<span><span class="co">## EE 20  </span></span>
+<span><span class="co">## FF 40</span></span></code></pre>
+<p>Observe the following:</p>
+<ul>
+<li>The value attached to source node <code>c</code> is mistakenly
+distributed twice (lines 3 and 4) into the transformed vector <span class="math inline">\(\bf{y}\)</span>, whilst the source value for
+<code>e</code> has not been distributed at all.</li>
+<li>The source node <code>f</code> in the <code>origin</code> source
+nomenclature is split by three outgoing links to <code>DD</code>,
+<code>EE</code> and <code>FF</code>. Notice that we would need to check
+three lines of code (6-8) to validate that the weights sum to one. In
+fact, the weights above only sum to <code>0.9</code>.</li>
+<li>The total sum of <span class="math inline">\(\bf{x}\)</span> is
+<code>600</code>, and does not match the total sum of <span class="math inline">\(\bf{y}\)</span> which is <code>590</code>.
+However, this mismatch can be fixed by detecting and correcting the
+second weights error alone, and provides no insight on the first double
+distribution error.</li>
+</ul>
+<!---- reference validate, assertr packages? --->
+</div>
+<div class="section level3">
+<h3 id="comparison-to-existing-crosswalk-approaches">Comparison to Existing Crosswalk approaches<a class="anchor" aria-label="anchor" href="#comparison-to-existing-crosswalk-approaches"></a>
+</h3>
+<blockquote>
+<ul>
+<li>Crosswalk or lookup table approaches are better than above</li>
+<li>but are still limited when it comes to dealing with split relations
+and complex xmaps</li>
+<li>unambiguous matches are left to the user, not supported</li>
+</ul>
+</blockquote>
+<!---- existing packages // forcats, recode etc. --->
+</div>
+<div class="section level3">
+<h3 id="additional-benefits">Additional Benefits<a class="anchor" aria-label="anchor" href="#additional-benefits"></a>
+</h3>
+<div class="section level4">
+<h4 id="code-agnostic-dataset-design">Code-Agnostic Dataset Design<a class="anchor" aria-label="anchor" href="#code-agnostic-dataset-design"></a>
+</h4>
+<p>In addition to circumventing the need for ad-hoc checks, the crossmap
+format provides a code-agnostic method of specifying, communicating and
+checking dataset design decisions. This means that team members who are
+not fluent in R can have confidence that harmonised or integrated
+datasets match the intended design without having to audit long data
+wrangling scripts. This is particularly important in cross-disciplinary
+teams, where domain knowledge is necessary for designing link
+weights.</p>
+<p>As more and more datasets are created by integrating data from
+multiple sources, principled methods for recording, validating and
+sharing design choices such as ex-post harmonisation, or disaggregation
+and re-aggregation schemes can facilitate trust and transparency.</p>
+</div>
+<div class="section level4">
+<h4 id="multiple-related-nomenclature-transformations-future-work">Multiple related nomenclature transformations (FUTURE WORK)<a class="anchor" aria-label="anchor" href="#multiple-related-nomenclature-transformations-future-work"></a>
+</h4>
+<p>Returning to the tidy nomenclature format, note that each nested
+name-value set is analogous to <span class="math inline">\(\bf{x}\)</span>, where the name column indexes the
+measured values.</p>
+<blockquote>
+<ul>
+<li>kronecker product for multiple observation vectors in the same
+source nomenclature to same target nomenclature</li>
+<li>list/nested approach for multiple observation vectors in different
+source noemncalture but same target nomenclature</li>
+<li>resolving discrepancies between aggregation levels</li>
+</ul>
+</blockquote>
+<!--- treat each nested name-value set as a named column vector // and crossmaps as a transformation matrix. Overly complicated for a single crossmap, but useful for different crossmaps -->
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="xmap-usage-conditions">
+<code>xmap</code> Usage Conditions<a class="anchor" aria-label="anchor" href="#xmap-usage-conditions"></a>
+</h2>
+<!--- practical considerations --->
+<div class="section level3">
+<h3 id="structure-of-original-dataset">Structure of Original Dataset<a class="anchor" aria-label="anchor" href="#structure-of-original-dataset"></a>
+</h3>
+<blockquote>
+<p>Does this depend on the kind of transformation? what is the
+requirement from <code>{conformr}</code> to check validity</p>
+</blockquote>
+</div>
+<div class="section level3">
+<h3 id="dataset-coverage-requirement">Dataset Coverage Requirement<a class="anchor" aria-label="anchor" href="#dataset-coverage-requirement"></a>
+</h3>
+<p>The source nodes in the crossmap must fully cover the nomenclature of
+the data to be transformed. This is equivalent to saying that the
+crossmap should contain transformation instructions for every single
+piece of data in the original dataset. In the figure below, the
+name-value pair for the category <code>x7285!</code> in the source data
+(shown in purple) does not have an associated set of relations in the
+proposed transformation crossmap (shown in blue).</p>
+<p><img src="plot-coverage-matrix.png" style="width:100.0%">Depending
+on how the transformation is implemented, coverage mismatches can result
+in both explicit and implicit/hidden errors. In particular, having
+conformable matrix dimensions is not sufficient to avoid corrupting data
+unless you check that the indices match.</p>
+</div>
+<div class="section level3">
+<h3 id="only-split-or-collapse-nomenclature-pool-variables">Only split or collapse nomenclature pool variables<a class="anchor" aria-label="anchor" href="#only-split-or-collapse-nomenclature-pool-variables"></a>
+</h3>
+<p>Crossmaps with split or collapse relations should only be applied to
+nomenclature pool variables where the measured values are counts which
+are part of the same aggregate pool. For example, a crossmap could be
+used to aggregate or further disaggregate the occupation counts shown
+below:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## table 5: https://www.abs.gov.au/statistics/labour/jobs/jobs-australia/2015-16-2019-20</span></span>
+<span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>                                  <span class="op">~</span><span class="va">Occupation</span>, <span class="op">~</span><span class="va">`Male.('000.persons)`</span>, <span class="op">~</span><span class="va">`Female.('000.persons)`</span>,</span>
+<span>                                   <span class="st">"Managers"</span>,                  <span class="fl">934.4</span>,                    <span class="fl">668.5</span>,</span>
+<span>                              <span class="st">"Professionals"</span>,                 <span class="fl">1190.9</span>,                   <span class="fl">1542.2</span>,</span>
+<span>             <span class="st">"Technicians and trades workers"</span>,                 <span class="fl">1229.7</span>,                      <span class="fl">225</span>,</span>
+<span>     <span class="st">"Community and personal service workers"</span>,                    <span class="fl">443</span>,                    <span class="fl">998.1</span>,</span>
+<span>        <span class="st">"Clerical and administrative workers"</span>,                  <span class="fl">373.5</span>,                   <span class="fl">1203.7</span>,</span>
+<span>                              <span class="st">"Sales workers"</span>,                  <span class="fl">382.6</span>,                    <span class="fl">651.4</span>,</span>
+<span>            <span class="st">"Machinery operators and drivers"</span>,                  <span class="fl">621.3</span>,                     <span class="fl">81.3</span>,</span>
+<span>                                  <span class="st">"Labourers"</span>,                  <span class="fl">815.5</span>,                      <span class="fl">437</span></span>
+<span>     <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="48%">
+<col width="24%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Occupation</th>
+<th align="right">Male.(’000.persons)</th>
+<th align="right">Female.(’000.persons)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Managers</td>
+<td align="right">934.4</td>
+<td align="right">668.5</td>
+</tr>
+<tr class="even">
+<td align="left">Professionals</td>
+<td align="right">1190.9</td>
+<td align="right">1542.2</td>
+</tr>
+<tr class="odd">
+<td align="left">Technicians and trades workers</td>
+<td align="right">1229.7</td>
+<td align="right">225.0</td>
+</tr>
+<tr class="even">
+<td align="left">Community and personal service workers</td>
+<td align="right">443.0</td>
+<td align="right">998.1</td>
+</tr>
+<tr class="odd">
+<td align="left">Clerical and administrative workers</td>
+<td align="right">373.5</td>
+<td align="right">1203.7</td>
+</tr>
+<tr class="even">
+<td align="left">Sales workers</td>
+<td align="right">382.6</td>
+<td align="right">651.4</td>
+</tr>
+<tr class="odd">
+<td align="left">Machinery operators and drivers</td>
+<td align="right">621.3</td>
+<td align="right">81.3</td>
+</tr>
+<tr class="even">
+<td align="left">Labourers</td>
+<td align="right">815.5</td>
+<td align="right">437.0</td>
+</tr>
+</tbody>
+</table>
+<p>On the other hand, non-count numeric variables such as averages
+should not be aggregated or disaggregated. In this case, it only makes
+sense to use recoding crossmaps, since they are effectively crosswalks
+or lookup tables that leave the measured values unmodified. For example,
+beyond recoding the industry labels, any other nomenclature
+transformation of the average weekly total cash earnings shown below
+requires knowledge of employee counts.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Table: All employees, average weekly total cash earnings - industry</span></span>
+<span><span class="co">## https://www.abs.gov.au/statistics/labour/earnings-and-working-conditions/employee-earnings-and-hours-australia/may-2021</span></span>
+<span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>                                              <span class="op">~</span><span class="va">industry</span>,  <span class="op">~</span><span class="va">avg_weekly_earnings</span>,</span>
+<span>                                               <span class="st">"Mining"</span>, <span class="st">"2,798.40"</span>,</span>
+<span>                                        <span class="st">"Manufacturing"</span>, <span class="st">"1,457.40"</span>,</span>
+<span>           <span class="st">"Electricity, gas, water and waste services"</span>, <span class="st">"2,060.90"</span>,</span>
+<span>                                         <span class="st">"Construction"</span>, <span class="st">"1,600.40"</span>,</span>
+<span>                                      <span class="st">"Wholesale trade"</span>, <span class="st">"1,468.20"</span>,</span>
+<span>                                         <span class="st">"Retail trade"</span>,   <span class="st">"864.50"</span>,</span>
+<span>                      <span class="st">"Accommodation and food services"</span>,   <span class="st">"664.70"</span>,</span>
+<span>                    <span class="st">"Transport, postal and warehousing"</span>, <span class="st">"1,587.70"</span>,</span>
+<span>             <span class="st">"Information media and telecommunications"</span>, <span class="st">"1,797.40"</span>,</span>
+<span>                       <span class="st">"Finance and insurance services"</span>, <span class="st">"1,990.40"</span>,</span>
+<span>              <span class="st">"Rental, hiring and real estate services"</span>, <span class="st">"1,381.70"</span>,</span>
+<span>      <span class="st">"Professional, scientific and technical services"</span>, <span class="st">"1,911.30"</span>,</span>
+<span>                  <span class="st">"Administrative and support services"</span>, <span class="st">"1,234.50"</span>,</span>
+<span>                     <span class="st">"Public administration and safety"</span>, <span class="st">"1,745.40"</span>,</span>
+<span>                               <span class="st">"Education and training"</span>, <span class="st">"1,374.80"</span>,</span>
+<span>                    <span class="st">"Health care and social assistance"</span>, <span class="st">"1,287.40"</span>,</span>
+<span>                         <span class="st">"Arts and recreation services"</span>, <span class="st">"1,032.90"</span>,</span>
+<span>                                       <span class="st">"Other services"</span>, <span class="st">"1,043.10"</span>,</span>
+<span>                                       <span class="st">"**All industries**"</span>, <span class="st">"**1,394.10**"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">industry</th>
+<th align="left">avg_weekly_earnings</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mining</td>
+<td align="left">2,798.40</td>
+</tr>
+<tr class="even">
+<td align="left">Manufacturing</td>
+<td align="left">1,457.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Electricity, gas, water and waste services</td>
+<td align="left">2,060.90</td>
+</tr>
+<tr class="even">
+<td align="left">Construction</td>
+<td align="left">1,600.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Wholesale trade</td>
+<td align="left">1,468.20</td>
+</tr>
+<tr class="even">
+<td align="left">Retail trade</td>
+<td align="left">864.50</td>
+</tr>
+<tr class="odd">
+<td align="left">Accommodation and food services</td>
+<td align="left">664.70</td>
+</tr>
+<tr class="even">
+<td align="left">Transport, postal and warehousing</td>
+<td align="left">1,587.70</td>
+</tr>
+<tr class="odd">
+<td align="left">Information media and telecommunications</td>
+<td align="left">1,797.40</td>
+</tr>
+<tr class="even">
+<td align="left">Finance and insurance services</td>
+<td align="left">1,990.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Rental, hiring and real estate services</td>
+<td align="left">1,381.70</td>
+</tr>
+<tr class="even">
+<td align="left">Professional, scientific and technical services</td>
+<td align="left">1,911.30</td>
+</tr>
+<tr class="odd">
+<td align="left">Administrative and support services</td>
+<td align="left">1,234.50</td>
+</tr>
+<tr class="even">
+<td align="left">Public administration and safety</td>
+<td align="left">1,745.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Education and training</td>
+<td align="left">1,374.80</td>
+</tr>
+<tr class="even">
+<td align="left">Health care and social assistance</td>
+<td align="left">1,287.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Arts and recreation services</td>
+<td align="left">1,032.90</td>
+</tr>
+<tr class="even">
+<td align="left">Other services</td>
+<td align="left">1,043.10</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>All industries</strong></td>
+<td align="left"><strong>1,394.10</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="handle-missing-values-before-crossmap-transformation">Handle missing values before crossmap transformation<a class="anchor" aria-label="anchor" href="#handle-missing-values-before-crossmap-transformation"></a>
+</h3>
+<p>Missing values should be dealt with prior to transformation as they
+can silently corrupt data in collapse or split transformations. The
+figure below shows a nomenclature variable with a missing value which
+cannot be unambiguously resolved in the crossmap transformation. The
+missing value belongs to a source node which is part of both a split and
+collapse relations.</p>
+<p><img src="plot-missing-val-bigraph.png" style="width:100.0%"></p>
+<p>Naive application of the crossmap transformation implicitly attempts
+to apply arithmetic operations on missing values. However, missing
+values are not numbers, and as such, it does not make sense to split an
+<code>NA</code> in half as illustrated in the outgoing links from the
+<code>x5555</code> node. Similarly, the target node <code>D6</code>
+receives both <code>NA</code> and numeric values from multiple source
+nodes and cannot be combined without additional preprocessing decisions.
+Handling missing values prior to applying the crossmap explicitly
+records such decisions.</p>
+<p>For instance, in R, the function <code><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum()</a></code> takes the
+argument <code>na.rm</code> which when <code>TRUE</code> removes missing
+values from the sum. This is equivalent to treating missing values as
+<code>0</code> when collapsing multiple source values into a target
+node, and hence should be handled explicitly before applying the
+crossmap transformation.</p>
+<p>Exactly how missing values should be treated will vary from dataset
+to dataset. This could involve replace the missing values with zeroes or
+some imputed values, or to remove them completely. Lastly, note that
+crossmaps with only one-to-one recode relations avoids this
+“<strong>missing value arithmetic</strong>” issue since missing values
+can be passed unmodified in to the target nomenclature. Nevertheless, it
+is still advisable to handle missing values prior to applying the
+crossmap so that missing value decisions and nomenclature
+transformations are encoded in separate steps.</p>
+</div>
+<div class="section level3">
+<h3 id="avoid-multiple-observations-for-each-source-node">Avoid multiple observations for each source node<a class="anchor" aria-label="anchor" href="#avoid-multiple-observations-for-each-source-node"></a>
+</h3>
+<p>In addition to the tidy structure requirement described above, for
+each observational unit in the dataset, which can span multiple rows,
+there should ideally only be one name-value pair for each unique node in
+the original nomenclature. This ensures that only one numeric value is
+transformed for each source-target link.</p>
+<p>This is not a strict requirement when applying crossmap
+transformations with mutating joins, but avoids hidden aggregation
+across source nodes. Returning to the matrix representation, this
+requirement is equivalent to having a uniquely indexed source value
+vector.</p>
+<!--- also ensures the source values can be converted into an indexed vector -->
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">origin_tidy_sub</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>  <span class="op">~</span><span class="va">country</span>, <span class="op">~</span><span class="va">year</span>, <span class="op">~</span><span class="va">sector</span>, <span class="op">~</span><span class="va">subsector</span>, <span class="op">~</span><span class="va">output</span>,</span>
+<span>  <span class="st">"AU"</span>, <span class="fl">2012</span>, <span class="st">"AGR"</span>, <span class="st">"FISH"</span>, <span class="fl">3983</span>,</span>
+<span>  <span class="st">"AU"</span>, <span class="fl">2012</span>, <span class="st">"AGR"</span>, <span class="st">"LIVE"</span>, <span class="fl">432</span>,</span>
+<span>  <span class="st">"AU"</span>, <span class="fl">2013</span>, <span class="st">"AGR"</span>, <span class="st">"FISH"</span>, <span class="fl">3983</span>,</span>
+<span>  <span class="st">"AU"</span>, <span class="fl">2013</span>, <span class="st">"AGR"</span>, <span class="st">"LIVE"</span>, <span class="cn">NA</span>,</span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">origin_tidy_sub</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 4 × 5</span></span></span>
+<span><span class="co">##   country  year sector subsector output</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> AU       <span style="text-decoration: underline;">2</span>012 AGR    FISH        <span style="text-decoration: underline;">3</span>983</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> AU       <span style="text-decoration: underline;">2</span>012 AGR    LIVE         432</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> AU       <span style="text-decoration: underline;">2</span>013 AGR    FISH        <span style="text-decoration: underline;">3</span>983</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span> AU       <span style="text-decoration: underline;">2</span>013 AGR    LIVE          <span style="color: #BB0000;">NA</span></span></span></code></pre>
+<p>The above dataset is tidy for a crossmap with <code>subsector</code>
+source nodes, but would not be considered tidy for a crossmap with
+<code>sector</code> source nodes. To solve this, we simply aggregate up
+to the <code>sector</code> level, and obtain a set unique set of
+name-value pairs for the <code>sector</code> level nomenclature
+variable.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">origin_tidy_sec</span> <span class="op">&lt;-</span> <span class="va">origin_tidy_sub</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">country</span>, <span class="va">year</span>, <span class="va">sector</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">output</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">origin_tidy_sec</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
+<span><span class="co">##   country  year sector output</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> AU       <span style="text-decoration: underline;">2</span>012 AGR      <span style="text-decoration: underline;">4</span>415</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> AU       <span style="text-decoration: underline;">2</span>013 AGR      <span style="text-decoration: underline;">3</span>983</span></span></code></pre>
+</div>
+</div>
+<div class="section level2">
+<h2 id="transformation-via-mutating-joins">Transformation via Mutating Joins<a class="anchor" aria-label="anchor" href="#transformation-via-mutating-joins"></a>
+</h2>
 <p>This vignette illustrates with simple examples how crossmaps can be
 used to complete recode, split and collapse transformation.</p>
+<p>Notice that all crossmaps transformations can be decomposed into
+multiple “standard” transformation steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>recode node labels to target nomenclature</p></li>
+<li><p>mutate node values</p></li>
+<li><p>summarise mutated values by target node</p></li>
+</ol>
+<div class="section level3">
+<h3 id="wild-caught-hierarchical-nomenclature-data">Wild Caught (Hierarchical) Nomenclature Data<a class="anchor" aria-label="anchor" href="#wild-caught-hierarchical-nomenclature-data"></a>
+</h3>
+<p>Let’s tidy a wild caught dataset:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">aus_pop</span> <span class="op">&lt;-</span> <span class="st">"data-raw/abs-population_2022.xlsx"</span></span>
+<span><span class="va">aus_pop</span> <span class="op">&lt;-</span> <span class="fu">readabs</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/readabs/man/download_abs_data_cube.html" class="external-link">download_abs_data_cube</a></span><span class="op">(</span><span class="st">"national-state-and-territory-population"</span>, <span class="st">"31010do001_202206.xlsx"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raw_abs_pop</span> <span class="op">&lt;-</span> <span class="fu">readxl</span><span class="fu">::</span><span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span><span class="va">aus_pop</span>,</span>
+<span>                               sheet <span class="op">=</span> <span class="st">"Table_3"</span>, range <span class="op">=</span> <span class="st">"A6:D23"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raw_abs_pop</span> <span class="op">&lt;-</span>     <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>                                       <span class="op">~</span><span class="va">...1</span>,     <span class="op">~</span><span class="va">X2002</span>,     <span class="op">~</span><span class="va">X2012</span>,     <span class="op">~</span><span class="va">X2022</span>,</span>
+<span>                                          <span class="cn">NA</span>,      <span class="st">"no."</span>,      <span class="st">"no."</span>,      <span class="st">"no."</span>,</span>
+<span>                 <span class="st">"Australia–at 30 September"</span>,         <span class="cn">NA</span>,         <span class="cn">NA</span>,         <span class="cn">NA</span>,</span>
+<span>                           <span class="st">"New South Wales"</span>,  <span class="st">"6580807"</span>,  <span class="st">"7304244"</span>,  <span class="st">"8153584"</span>,</span>
+<span>                                  <span class="st">"Victoria"</span>,  <span class="st">"4817774"</span>,  <span class="st">"5651091"</span>,  <span class="st">"6613727"</span>,</span>
+<span>                                <span class="st">"Queensland"</span>,  <span class="st">"3653123"</span>,  <span class="st">"4568687"</span>,  <span class="st">"5322058"</span>,</span>
+<span>                           <span class="st">"South Australia"</span>,  <span class="st">"1511567"</span>,  <span class="st">"1656725"</span>,  <span class="st">"1820530"</span>,</span>
+<span>                         <span class="st">"Western Australia"</span>,  <span class="st">"1928512"</span>,  <span class="st">"2425507"</span>,  <span class="st">"2785312"</span>,</span>
+<span>                                  <span class="st">"Tasmania"</span>,   <span class="st">"474152"</span>,   <span class="st">"511724"</span>,   <span class="st">"571517"</span>,</span>
+<span>                        <span class="st">"Northern Territory"</span>,   <span class="st">"202251"</span>,   <span class="st">"235915"</span>,   <span class="st">"250635"</span>,</span>
+<span>              <span class="st">"Australian Capital Territory"</span>,   <span class="st">"324627"</span>,   <span class="st">"376539"</span>,   <span class="st">"456652"</span>,</span>
+<span>                         <span class="st">"Other Territories"</span>,         <span class="cn">NA</span>,         <span class="cn">NA</span>,         <span class="cn">NA</span>,</span>
+<span>                      <span class="st">"Jervis Bay Territory"</span>,      <span class="st">"464"</span>,      <span class="st">"380"</span>,      <span class="st">"312"</span>,</span>
+<span>             <span class="st">"Territory of Christmas Island"</span>,     <span class="st">"1365"</span>,     <span class="st">"2107"</span>,     <span class="st">"1781"</span>,</span>
+<span>      <span class="st">"Territory of Cocos (Keeling) Islands"</span>,      <span class="st">"568"</span>,      <span class="st">"546"</span>,      <span class="st">"614"</span>,</span>
+<span>                            <span class="st">"Norfolk Island"</span>,        <span class="st">"0"</span>,        <span class="st">"0"</span>,     <span class="st">"2213"</span>,</span>
+<span>                   <span class="st">"Total Other Territories"</span>,     <span class="st">"2397"</span>,     <span class="st">"3033"</span>,     <span class="st">"4920"</span>,</span>
+<span>                           <span class="st">"Total Australia"</span>, <span class="st">"19495210"</span>, <span class="st">"22733465"</span>, <span class="st">"25978935"</span></span>
+<span>      <span class="op">)</span></span></code></pre></div>
+<p>Let’s start by doing some standard data import tidying: removing the
+first two rows of table notes and giving the first column a sensible
+name.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">abs_pop</span> <span class="op">&lt;-</span> <span class="va">raw_abs_pop</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>area <span class="op">=</span> <span class="va">`...1`</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">abs_pop</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">area</th>
+<th align="left">X2002</th>
+<th align="left">X2012</th>
+<th align="left">X2022</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">New South Wales</td>
+<td align="left">6580807</td>
+<td align="left">7304244</td>
+<td align="left">8153584</td>
+</tr>
+<tr class="even">
+<td align="left">Victoria</td>
+<td align="left">4817774</td>
+<td align="left">5651091</td>
+<td align="left">6613727</td>
+</tr>
+<tr class="odd">
+<td align="left">Queensland</td>
+<td align="left">3653123</td>
+<td align="left">4568687</td>
+<td align="left">5322058</td>
+</tr>
+<tr class="even">
+<td align="left">South Australia</td>
+<td align="left">1511567</td>
+<td align="left">1656725</td>
+<td align="left">1820530</td>
+</tr>
+<tr class="odd">
+<td align="left">Western Australia</td>
+<td align="left">1928512</td>
+<td align="left">2425507</td>
+<td align="left">2785312</td>
+</tr>
+<tr class="even">
+<td align="left">Tasmania</td>
+<td align="left">474152</td>
+<td align="left">511724</td>
+<td align="left">571517</td>
+</tr>
+<tr class="odd">
+<td align="left">Northern Territory</td>
+<td align="left">202251</td>
+<td align="left">235915</td>
+<td align="left">250635</td>
+</tr>
+<tr class="even">
+<td align="left">Australian Capital Territory</td>
+<td align="left">324627</td>
+<td align="left">376539</td>
+<td align="left">456652</td>
+</tr>
+<tr class="odd">
+<td align="left">Other Territories</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">Jervis Bay Territory</td>
+<td align="left">464</td>
+<td align="left">380</td>
+<td align="left">312</td>
+</tr>
+<tr class="odd">
+<td align="left">Territory of Christmas Island</td>
+<td align="left">1365</td>
+<td align="left">2107</td>
+<td align="left">1781</td>
+</tr>
+<tr class="even">
+<td align="left">Territory of Cocos (Keeling) Islands</td>
+<td align="left">568</td>
+<td align="left">546</td>
+<td align="left">614</td>
+</tr>
+<tr class="odd">
+<td align="left">Norfolk Island</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2213</td>
+</tr>
+<tr class="even">
+<td align="left">Total Other Territories</td>
+<td align="left">2397</td>
+<td align="left">3033</td>
+<td align="left">4920</td>
+</tr>
+<tr class="odd">
+<td align="left">Total Australia</td>
+<td align="left">19495210</td>
+<td align="left">22733465</td>
+<td align="left">25978935</td>
+</tr>
+</tbody>
+</table>
+<p>The above table is unfortunately not in tidy nomenclature format.</p>
 <div class="section level4">
-<h4 id="aggregation">Aggregation<a class="anchor" aria-label="anchor" href="#aggregation"></a>
+<h4 id="issue-1-multiple-nomenclature-variables-in-the-same-table">Issue 1: Multiple Nomenclature Variables in the Same Table<a class="anchor" aria-label="anchor" href="#issue-1-multiple-nomenclature-variables-in-the-same-table"></a>
 </h4>
+<p>First, the table contains values at multiple hierarchical levels. In
+particular, it has aggregate values at both the country level
+(Australia), and sub-group level (Other Territories). Assume that the
+most disaggregated values are the nomenclature variable we are
+interested in.</p>
+<p>Now, split the table to remove totals and the “Other Territories”
+divider row:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">abs_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">abs_pop</span>, <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">abs_pop</span><span class="op">$</span><span class="va">area</span>, <span class="st">"Total|Other Territories"</span>, negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">state_pop</span> <span class="op">&lt;-</span> <span class="va">abs_split</span><span class="op">$</span><span class="va">`TRUE`</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">state_pop</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">area</th>
+<th align="left">X2002</th>
+<th align="left">X2012</th>
+<th align="left">X2022</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">New South Wales</td>
+<td align="left">6580807</td>
+<td align="left">7304244</td>
+<td align="left">8153584</td>
+</tr>
+<tr class="even">
+<td align="left">Victoria</td>
+<td align="left">4817774</td>
+<td align="left">5651091</td>
+<td align="left">6613727</td>
+</tr>
+<tr class="odd">
+<td align="left">Queensland</td>
+<td align="left">3653123</td>
+<td align="left">4568687</td>
+<td align="left">5322058</td>
+</tr>
+<tr class="even">
+<td align="left">South Australia</td>
+<td align="left">1511567</td>
+<td align="left">1656725</td>
+<td align="left">1820530</td>
+</tr>
+<tr class="odd">
+<td align="left">Western Australia</td>
+<td align="left">1928512</td>
+<td align="left">2425507</td>
+<td align="left">2785312</td>
+</tr>
+<tr class="even">
+<td align="left">Tasmania</td>
+<td align="left">474152</td>
+<td align="left">511724</td>
+<td align="left">571517</td>
+</tr>
+<tr class="odd">
+<td align="left">Northern Territory</td>
+<td align="left">202251</td>
+<td align="left">235915</td>
+<td align="left">250635</td>
+</tr>
+<tr class="even">
+<td align="left">Australian Capital Territory</td>
+<td align="left">324627</td>
+<td align="left">376539</td>
+<td align="left">456652</td>
+</tr>
+<tr class="odd">
+<td align="left">Jervis Bay Territory</td>
+<td align="left">464</td>
+<td align="left">380</td>
+<td align="left">312</td>
+</tr>
+<tr class="even">
+<td align="left">Territory of Christmas Island</td>
+<td align="left">1365</td>
+<td align="left">2107</td>
+<td align="left">1781</td>
+</tr>
+<tr class="odd">
+<td align="left">Territory of Cocos (Keeling) Islands</td>
+<td align="left">568</td>
+<td align="left">546</td>
+<td align="left">614</td>
+</tr>
+<tr class="even">
+<td align="left">Norfolk Island</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">2213</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level4">
+<h4 id="issue-2-observation-units-split-across-columns">Issue 2: Observation Units split across columns<a class="anchor" aria-label="anchor" href="#issue-2-observation-units-split-across-columns"></a>
+</h4>
+<p>Further notice that the observational unit that we would want to
+apply the aggregation transformation on is year. Hence, we pivot the
+dataset longer:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">state_nom</span> <span class="op">&lt;-</span> <span class="va">state_pop</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="op">-</span><span class="va">area</span>, names_to <span class="op">=</span> <span class="st">"year"</span>, values_to <span class="op">=</span> <span class="st">"population"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">state_nom</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">year</th>
+<th align="left">area</th>
+<th align="left">population</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">X2002</td>
+<td align="left">New South Wales</td>
+<td align="left">6580807</td>
+</tr>
+<tr class="even">
+<td align="left">X2002</td>
+<td align="left">Victoria</td>
+<td align="left">4817774</td>
+</tr>
+<tr class="odd">
+<td align="left">X2002</td>
+<td align="left">Queensland</td>
+<td align="left">3653123</td>
+</tr>
+<tr class="even">
+<td align="left">X2002</td>
+<td align="left">South Australia</td>
+<td align="left">1511567</td>
+</tr>
+<tr class="odd">
+<td align="left">X2002</td>
+<td align="left">Western Australia</td>
+<td align="left">1928512</td>
+</tr>
+<tr class="even">
+<td align="left">X2002</td>
+<td align="left">Tasmania</td>
+<td align="left">474152</td>
+</tr>
+<tr class="odd">
+<td align="left">X2002</td>
+<td align="left">Northern Territory</td>
+<td align="left">202251</td>
+</tr>
+<tr class="even">
+<td align="left">X2002</td>
+<td align="left">Australian Capital Territory</td>
+<td align="left">324627</td>
+</tr>
+<tr class="odd">
+<td align="left">X2002</td>
+<td align="left">Jervis Bay Territory</td>
+<td align="left">464</td>
+</tr>
+<tr class="even">
+<td align="left">X2002</td>
+<td align="left">Territory of Christmas Island</td>
+<td align="left">1365</td>
+</tr>
+<tr class="odd">
+<td align="left">X2002</td>
+<td align="left">Territory of Cocos (Keeling) Islands</td>
+<td align="left">568</td>
+</tr>
+<tr class="even">
+<td align="left">X2002</td>
+<td align="left">Norfolk Island</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left">X2012</td>
+<td align="left">New South Wales</td>
+<td align="left">7304244</td>
+</tr>
+<tr class="even">
+<td align="left">X2012</td>
+<td align="left">Victoria</td>
+<td align="left">5651091</td>
+</tr>
+<tr class="odd">
+<td align="left">X2012</td>
+<td align="left">Queensland</td>
+<td align="left">4568687</td>
+</tr>
+<tr class="even">
+<td align="left">X2012</td>
+<td align="left">South Australia</td>
+<td align="left">1656725</td>
+</tr>
+<tr class="odd">
+<td align="left">X2012</td>
+<td align="left">Western Australia</td>
+<td align="left">2425507</td>
+</tr>
+<tr class="even">
+<td align="left">X2012</td>
+<td align="left">Tasmania</td>
+<td align="left">511724</td>
+</tr>
+<tr class="odd">
+<td align="left">X2012</td>
+<td align="left">Northern Territory</td>
+<td align="left">235915</td>
+</tr>
+<tr class="even">
+<td align="left">X2012</td>
+<td align="left">Australian Capital Territory</td>
+<td align="left">376539</td>
+</tr>
+<tr class="odd">
+<td align="left">X2012</td>
+<td align="left">Jervis Bay Territory</td>
+<td align="left">380</td>
+</tr>
+<tr class="even">
+<td align="left">X2012</td>
+<td align="left">Territory of Christmas Island</td>
+<td align="left">2107</td>
+</tr>
+<tr class="odd">
+<td align="left">X2012</td>
+<td align="left">Territory of Cocos (Keeling) Islands</td>
+<td align="left">546</td>
+</tr>
+<tr class="even">
+<td align="left">X2012</td>
+<td align="left">Norfolk Island</td>
+<td align="left">0</td>
+</tr>
+<tr class="odd">
+<td align="left">X2022</td>
+<td align="left">New South Wales</td>
+<td align="left">8153584</td>
+</tr>
+<tr class="even">
+<td align="left">X2022</td>
+<td align="left">Victoria</td>
+<td align="left">6613727</td>
+</tr>
+<tr class="odd">
+<td align="left">X2022</td>
+<td align="left">Queensland</td>
+<td align="left">5322058</td>
+</tr>
+<tr class="even">
+<td align="left">X2022</td>
+<td align="left">South Australia</td>
+<td align="left">1820530</td>
+</tr>
+<tr class="odd">
+<td align="left">X2022</td>
+<td align="left">Western Australia</td>
+<td align="left">2785312</td>
+</tr>
+<tr class="even">
+<td align="left">X2022</td>
+<td align="left">Tasmania</td>
+<td align="left">571517</td>
+</tr>
+<tr class="odd">
+<td align="left">X2022</td>
+<td align="left">Northern Territory</td>
+<td align="left">250635</td>
+</tr>
+<tr class="even">
+<td align="left">X2022</td>
+<td align="left">Australian Capital Territory</td>
+<td align="left">456652</td>
+</tr>
+<tr class="odd">
+<td align="left">X2022</td>
+<td align="left">Jervis Bay Territory</td>
+<td align="left">312</td>
+</tr>
+<tr class="even">
+<td align="left">X2022</td>
+<td align="left">Territory of Christmas Island</td>
+<td align="left">1781</td>
+</tr>
+<tr class="odd">
+<td align="left">X2022</td>
+<td align="left">Territory of Cocos (Keeling) Islands</td>
+<td align="left">614</td>
+</tr>
+<tr class="even">
+<td align="left">X2022</td>
+<td align="left">Norfolk Island</td>
+<td align="left">2213</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section level3">
+<h3 id="aggregation-via-crossmaps">Aggregation via crossmaps<a class="anchor" aria-label="anchor" href="#aggregation-via-crossmaps"></a>
+</h3>
 <p>Let’s consider a simple case where we have some disaggregated
 population figures which we want to aggregate.</p>
 <p>First, define a crossmap for the aggregation.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">agg_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ctr <span class="op">=</span> <span class="st">"AU"</span>,</span>
@@ -97,7 +1195,7 @@ population figures which we want to aggregate.</p>
 <span>                      link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span><span class="va">adm1</span>, <span class="va">ctr</span>, <span class="va">link</span><span class="op">)</span></span></code></pre></div>
 <p>Second, load in our state-level figures</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">state_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>                              <span class="op">~</span><span class="va">state</span>,    <span class="op">~</span><span class="va">adm1</span>,    <span class="op">~</span><span class="va">Pop</span>,</span>
 <span>                   <span class="st">"New South Wales"</span>, <span class="st">"AU-NSW"</span>, <span class="fl">8153600</span>,</span>
@@ -117,7 +1215,7 @@ involves two steps:</p>
 </li>
 <li>Summarising values for each group</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_data</span>, <span class="va">agg_map</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adm1"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>x_pop <span class="op">=</span> <span class="va">Pop</span> <span class="op">*</span> <span class="va">link</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ctr</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -128,20 +1226,19 @@ involves two steps:</p>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span> AU    25<span style="text-decoration: underline;">974</span>000</span></span></code></pre>
 <p>Or using <code>apply_xmap()</code> from the <code>conformr</code>
 package:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">conformr</span><span class="fu">::</span><span class="fu">apply_xmap</span><span class="op">(</span>data_in <span class="op">=</span> <span class="va">state_data</span>, xmap <span class="op">=</span> <span class="va">agg_map</span>,</span>
 <span>                     in_codes <span class="op">=</span> <span class="va">adm1</span>, in_values <span class="op">=</span> <span class="va">Pop</span>,</span>
 <span>                     out_codes <span class="op">=</span> <span class="cn">NULL</span>, out_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p>which also checks that the nomenclature in <code>data_in</code> is
 fully covered by your <code>xmap</code> – i.e. you don’t lose any rows
 during the join.</p>
-</div>
 <div class="section level4">
 <h4 id="disaggregation">Disaggregation<a class="anchor" aria-label="anchor" href="#disaggregation"></a>
 </h4>
 <p>We can reverse the aggregation (assuming we retained appropriate
 weights) using:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">apply_xmap</span><span class="op">(</span>data_in <span class="op">=</span> <span class="va">ctr_data</span>, xmap <span class="op">=</span> <span class="va">disagg_map</span>, in_codes <span class="op">=</span> <span class="va">ctr</span>, in_values <span class="op">=</span> <span class="va">Pop</span>, out_codes <span class="op">=</span> <span class="cn">NULL</span>, out_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -151,14 +1248,37 @@ weights) using:</p>
 a bit tedious given you can achieve the same transformation with some
 simple join and mutate statements, coupled with some ad-hoc validation.
 However, crossmpas are best suited for cases where you have multiple
-types of transformations being applied at once.</p>
+types of transformations being applied at once. In particular, they
+circumvent the need to count the number of observations after merging,
+and hence can insure against duplication and erroneous drops even in
+cases where it is difficult to calculate the expected number of
+post-transformations rows (i.e. many-to-many relations with both split
+and collapse transformations)</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="matrix-multiple-variables-at-once">Matrix (multiple variables at once)<a class="anchor" aria-label="anchor" href="#matrix-multiple-variables-at-once"></a>
-</h3>
+</div>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-kandel2011" class="csl-entry">
+Kandel, Sean, Andreas Paepcke, Joseph Hellerstein, and Jeffrey Heer.
+2011. <span>“Wrangler: Interactive Visual Specification of Data
+Transformation Scripts.”</span> In <em>Proceedings of the SIGCHI
+Conference on Human Factors in Computing Systems</em>, 3363–72. CHI ’11.
+New York, NY, USA: Association for Computing Machinery. <a href="https://doi.org/10.1145/1978942.1979444" class="external-link">https://doi.org/10.1145/1978942.1979444</a>.
+</div>
+<div id="ref-wickham2007" class="csl-entry">
+Wickham, Hadley. 2007. <span>“Reshaping Data with the Reshape
+Package.”</span> <em>Journal of Statistical Software</em> 21 (12). <a href="https://doi.org/10.18637/jss.v021.i12" class="external-link">https://doi.org/10.18637/jss.v021.i12</a>.
+</div>
+<div id="ref-wickham2014" class="csl-entry">
+———. 2014. <span>“Tidy Data.”</span> <em>Journal of Statistical
+Software</em> 59 (10). <a href="https://doi.org/10.18637/jss.v059.i10" class="external-link">https://doi.org/10.18637/jss.v059.i10</a>.
 </div>
 </div>
+</div>
+
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>

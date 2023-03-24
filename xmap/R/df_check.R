@@ -1,3 +1,5 @@
+# Generated from create-xmap.Rmd: do not edit by hand
+
 #' xmap_df validation helpers
 #'
 #' @description

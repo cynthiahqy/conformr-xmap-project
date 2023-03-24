@@ -2,14 +2,17 @@
 % Please edit documentation in create-xmap.Rmd.
 \name{as_xmap_df}
 \alias{as_xmap_df}
-\title{Coerce objects to xmap}
+\alias{as_xmap_df.data.frame}
+\title{Coerce objects to xmap_df}
 \usage{
 as_xmap_df(x, from, to, weights, subclass = c("xmap_df"), ...)
+
+\method{as_xmap_df}{data.frame}(x, from, to, weights, subclass = "xmap_df", .drop_extra = TRUE)
 }
 \arguments{
 \item{x}{\itemize{
-\item For \code{as_xmap()}: An object to coerce
-\item For \code{is_xmap()}: An object to test.
+\item For \code{as_xmap_df()}: An object to coerce
+\item For \code{is_xmap_df()}: An object to test.
 }}
 
 \item{from, to}{Columns in \code{x} specifying the source and target nodes}
@@ -24,5 +27,23 @@ as_xmap_df(x, from, to, weights, subclass = c("xmap_df"), ...)
 A validated \code{xmap} object.
 }
 \description{
-Validates and creates a valid crossmap \code{xmap} object of the same type as the input.
+Validates and creates a valid crossmap \code{xmap_df} object.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{as_xmap_df(data.frame)}: Coerce a \code{data.frame} to \code{xmap}
+
+}}
+\examples{
+# For a well formed crossmap:
+links <- data.frame(
+  a = "AUS",
+  b = c("VIC", "NSW", "WA", "OTHER"),
+  w = c(0.1, 0.15, 0.25, 0.5)
+)
+as_xmap_df(links, from = a, to = b, weights = w)
+
+# extra columns are dropped,
+links$extra <- c(2, 4, 5, 6)
+as_xmap_df(links, from = a, to = b, weights = w)
 }

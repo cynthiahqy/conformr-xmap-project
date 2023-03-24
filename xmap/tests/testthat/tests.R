@@ -216,6 +216,28 @@ testthat::test_that(
   }
 )
 
+testthat::test_that("xmap_to_matrix handles xmaps with different column counts",{
+  links <- tibble::tribble(
+    ~f, ~t, ~w,
+    "A1", "B01", 1,
+    "A2", "B02", 1,
+    "A3", "B02", 1,
+    "A4", "B03", 0.25,
+    "A4", "B04", 0.75
+  ) 
+  xmap_small <- new_xmap_df(links, "f", "t", "w")
+
+  links_extra <- links |> 
+    dplyr::mutate(ex = "extra")
+  xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
+  
+  xmap_matrix_small <- xmap_small |> xmap_to_matrix()
+  xmap_matrix_extra <- xmap_extra |> xmap_to_matrix()
+  
+  testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
+  }
+  )
+
 testthat::test_that('xmap_drop_extra works as expected', {
   links <- tibble::tribble(
   ~f, ~t, ~w,
@@ -225,11 +247,12 @@ testthat::test_that('xmap_drop_extra works as expected', {
   "A4", "B03", 0.25,
   "A4", "B04", 0.75
   ) 
-  xmap_small <- as_xmap_df(links, f, t, w)
+  xmap_small <- new_xmap_df(links, "f", "t", "w")
 
   links_extra <- links |> 
     dplyr::mutate(ex = "extra")
-  xmap_extra <- as_xmap_df(links_extra, f, t, w, .drop_extra = FALSE)
+  xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
+  
   xmap_drop_df <- xmap_extra |> xmap_drop_extra.xmap_df()
   xmap_drop <- xmap_extra |> xmap_drop_extra()
   

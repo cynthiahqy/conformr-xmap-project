@@ -1,3 +1,5 @@
+# Generated from create-xmap.Rmd: do not edit by hand
+
 #'
 .get_xmap_subclass_attr <- function(subclass = c("xmap_df")){
   subclass <- rlang::arg_match(subclass)

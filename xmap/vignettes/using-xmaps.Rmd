@@ -3,19 +3,395 @@ title: "Using Crossmaps to Transform Data"
 output:
   rmarkdown::html_vignette:
     toc: yes
+bibliography: using-xmaps.bib
+link-citations: yes
 vignette: >
   %\VignetteIndexEntry{Using Crossmaps to Transform Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-## Nomenclature Transformation
+## Nomenclature Variables and Datasets
 
-### Table Joins (single variable)
+```{r echo=FALSE}
+state_data <- tibble::tribble(
+                              ~State,    ~`Population (est. 30 Jun 2022)`,
+                   "New South Wales", 8153600,
+                          "Victoria", 6613700,
+                        "Queensland", 5322100,
+                   "South Australia", 1820500,
+                 "Western Australia", 2785300,
+                          "Tasmania",  571500,
+                "Northern Territory",  250600,
+      "Australian Capital Territory",  456700
+)
+
+total_pop_ex <- round(sum(state_data$`Population (est. 30 Jun 2022)`) / 10^6, 2)
+```
+
+A nomenclature variable is a set of name-value pairs, where the names correspond to categories or classes in a particular nomenclature, and the values are measured on those particular categories or classes. For instance, consider data on population by state in Australia[^1] shown below.
+
+[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022)
+
+```{r echo=FALSE}
+knitr::kable(state_data, caption = "Australian population by State (excl. Other Territories)")
+```
+
+The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. Furthermore, since the values form an aggregate pool for the total population of Australia, we can consider this to be a **nomenclature pool variable**.
+
+### Tidy Nomenclature datasets
+
+@wickham2007 introduces a division of dataset variables into two types: **identifier and measured variables:**
+
+-   Identifier variables identify the unit that measurements are taken on.
+-   Measured variables are values measured on the observation unit defined by the identifier variables.
+
+Using the additional abstraction step of splitting measured variables into id-value pairs, we extend this taxonomy slightly to define a "tidy nomeclature data" format:
+
+-   **Observational Unit Identifier Variables** are any identify variables used to index observational units. For example, country and year variables could be used to index population observations.
+-   **Dimension Identifier Variables** identify the dimension, or set of dimensions, for the observation unit which measurements take place on.
+-   **Measured Variables** contain values measured on the observation unit and dimension. The dimension id and measured variables form name-value pairs on a particular dimension of the observational unit.
+
+@wickham2014's **tidy data** (see [`vignette("tidy-data", package = "tidyr")`](https://tidyr.tidyverse.org/articles/tidy-data.html#defining)) format describes a standard way of structuring tabular datasets using the following data semantics:
+
+> A dataset is a collection of **values**, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
+
+Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. Furthermore, under a semantic role system [@kandel2011], the nomenclature name column has the semantic role of "classification code", while the value column would have a standard data type (e.g. integer). Hence, a nomenclature variable can also be thought of as pairings of classification code and value columns.
+
+A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature.
+
+Hence for **tidy nomenclature data**:
+
+1.  Every column is either a identifier variable, or part of a nomenclature name-value pair
+2.  Every row is an observation on a nomenclature sub-dimension
+3.  Every cell is a single value of an identifier variable, nomenclature node, or measured variable.
+
+<!--- insert example table here --->
+
+If we nest nomenclature data, we obtain a structure analogous to the standard tidy data format (@wickham2014):
+
+1.  Every column is a variable
+2.  Every row is an observation
+3.  Every cell is single value *or nested name-value set*.
+
+Notice that nomenclature datasets blur the distinction between variable and value. For example, we could describe the above table as containing values of a `population` variable attached to the observational units of `state`, rather than a single observation of a `state-population` nomenclature variable (dimension-value pair) for the observational unit of "Australia".
+
+However, the concept of a dimension identifier variable is useful for defining the data structure required to use crossmaps. Just as wider dataset formats are useful for data entry, and longer formats are more suited for analysis, the two-column nomenclature variable format is ideal for transforming or harmonising data between nomenclature.
+
+The format is particularly suitable for cases where the original nomenclature:
+
+a.  has sufficiently many category nodes that a wider format is difficult to work with,
+b.  and/or will be transformed using a crossmap
+c.  is expected to change relatively frequently (e.g. occupation or product classifications)
+d.  is one layer of a larger hierarchical nomenclature (e.g. administrative regions or geographic areas)
+
+<!--- wide format vs. nomenclature format // makes sense in the context of transformation // nomenclature is sort of an observation id variable, except its not fixed the same way an observation id variable is --->
+
+<!---- show examples --->
+
+## Nomenclature Transformations
+
+### Crossmap Transformations
+
+The utility of defining a nomenclature variable and the crossmap format is most evident when we look at the transformation of values from a source nomenclature into a target nomenclature as a set of matrix operations. To demonstrate, we use the `xmap::xmap_to_matrix()` function to take a valid crossmap (`abc_xmap`) and convert it into a incidence matrix (`b_mtx`):
+
+```{r}
+library(xmap)
+## define crossmap
+abc_xmap <- tibble::tribble(
+      ~origin, ~dest, ~link,
+          "a",  "AA",     1,
+          "b",  "AA",     1,
+          "c",  "AA",     1,
+          "d",  "BB",     1,
+          "e",  "CC",     1,
+          "f",  "DD",   0.3,
+          "f",  "EE",   0.3,
+          "f",  "FF",   0.4
+      ) |>
+  as_xmap_df(from = origin, to = dest, link)
+
+## convert to matrix
+b_mtx <- xmap_to_matrix(abc_xmap, sparse = FALSE)
+b_mtx
+```
+
+<!--- it would be cool to colour the matrix by relation type --->
+
+Let $\bf{B}$ be the $n \times m$ incidence matrix describing the graph representation of a valid crossmap. $\bf{B}$ is row indexed by the source nomenclature, and column indexed by the target nomenclature.
+
+The two conditions for a valid crossmap can be expressed as properties of the incidence matrix $\bf{B}$:
+
+1.  Each node in the source or target set indexes *one* row or column respectively, providing at most one non-zero link between nodes in the source and target nomenclature.
+2.  Each row contains the weights for all outgoing links from a given source node. Thus, each row of the matrix should sum to 1 (i.e. $\bf{B1} = \bf{1}$ where $\bf{1}$ is unit vector of length $n$).
+
+Now, let $\bf{x}$ be a vector of length $n$ containing numeric values to be transformed. If $\bf{x}$ is also row-indexed by the source nomenclature node, then the index-value pair forms a nomenclature variable. Assume the values are count variables such that $\bf{x}$ is a nomenclature pool variable.
+
+To redistribute $\bf{x}$ from the source nomenclature into the target nomenclature, we simply take $\bf{y} = \bf{B}'\bf{x}$. Hence, using a valid crossmap to transform a nomenclature variable is equivalent to a matrix transformation of $\bf{x}$ by the incidence matrix $\bf{B}$.
+
+```{r}
+## define example data
+x <- matrix(rep_len(100, nrow(b_mtx)))
+dimnames(x) <- list(row.names(b_mtx), "x")
+
+## apply transformation
+y <- t(b_mtx) %*% x
+
+## print
+matlib::printMatEqn(`B'` = t(b_mtx), x, "=", y)
+```
+
+Given this equivalence, it is clear to see how the two conditions that define a crossmap guarantee that the total sum before and after the nomenclature transform remains the same. Moreover, we can be sure of this without checking the total of the resultant variable $\bf{y}$.
+
+### Comparison to Iterative or Case-Wise Transformation
+
+Contrast this to a more traditional iterative or case-wise approach to implementing a nomenclature transformation. Regardless of whether you code the transformation as a distribution of value from the source nomenclature nodes or collection of value by the target nomenclature nodes, there are only ad-hoc ways of validating node-by-node transformations.
+
+For instance, one could calculate and compare the sums of $\bf{x}$ and $\bf{y}$. However, even if these two totals are equal, this does not guarantee that each source value is fully redistributed into the target nomenclature, as it is possible, though highly unlikely, that two mistakes could offset each other. Furthermore, in the case where the two totals do not match, it is not obvious how to identify which nodes are involved in the mistake. This second issue scales with the size of the nomenclature as the number of lines of code required to execute the transformation increases.
+
+<!--- counting rows? ---->
+
+To illustrate, consider the following imperative code for transforming $\bf{x}$ into the target nomenclature:
+
+```{r, attr.source='.numberLines'}
+y <- list()
+
+y$AA = x["a", ] + x["b", ] + x["c", ]
+y$BB = x["d", ]
+y$CC = x["c", ]
+y$DD = 0.3 * x["f", ]
+y$EE = 0.2 * x["f", ]
+y$FF = 0.4 * x["f", ]
+
+y |> as.matrix()
+```
+
+Observe the following:
+
+-   The value attached to source node `c` is mistakenly distributed twice (lines 3 and 4) into the transformed vector $\bf{y}$, whilst the source value for `e` has not been distributed at all.
+-   The source node `f` in the `origin` source nomenclature is split by three outgoing links to `DD`, `EE` and `FF`. Notice that we would need to check three lines of code (6-8) to validate that the weights sum to one. In fact, the weights above only sum to `0.9`.
+-   The total sum of $\bf{x}$ is `600`, and does not match the total sum of $\bf{y}$ which is `590`. However, this mismatch can be fixed by detecting and correcting the second weights error alone, and provides no insight on the first double distribution error.
+
+<!---- reference validate, assertr packages? --->
+
+### Comparison to Existing Crosswalk approaches
+
+> -   Crosswalk or lookup table approaches are better than above
+> -   but are still limited when it comes to dealing with split relations and complex xmaps
+> -   unambiguous matches are left to the user, not supported
+
+<!---- existing packages // forcats, recode etc. --->
+
+### Additional Benefits
+
+#### Code-Agnostic Dataset Design
+
+In addition to circumventing the need for ad-hoc checks, the crossmap format provides a code-agnostic method of specifying, communicating and checking dataset design decisions. This means that team members who are not fluent in R can have confidence that harmonised or integrated datasets match the intended design without having to audit long data wrangling scripts. This is particularly important in cross-disciplinary teams, where domain knowledge is necessary for designing link weights.
+
+As more and more datasets are created by integrating data from multiple sources, principled methods for recording, validating and sharing design choices such as ex-post harmonisation, or disaggregation and re-aggregation schemes can facilitate trust and transparency.
+
+#### Multiple related nomenclature transformations (FUTURE WORK)
+
+Returning to the tidy nomenclature format, note that each nested name-value set is analogous to $\bf{x}$, where the name column indexes the measured values.
+
+> -   kronecker product for multiple observation vectors in the same source nomenclature to same target nomenclature
+> -   list/nested approach for multiple observation vectors in different source noemncalture but same target nomenclature
+> -   resolving discrepancies between aggregation levels
+
+<!--- treat each nested name-value set as a named column vector // and crossmaps as a transformation matrix. Overly complicated for a single crossmap, but useful for different crossmaps -->
+
+## `xmap` Usage Conditions
+
+<!--- practical considerations --->
+
+### Structure of Original Dataset
+
+> Does this depend on the kind of transformation? what is the requirement from `{conformr}` to check validity
+
+### Dataset Coverage Requirement
+
+The source nodes in the crossmap must fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
+
+![](plot-coverage-matrix.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match.
+
+### Only split or collapse nomenclature pool variables
+
+Crossmaps with split or collapse relations should only be applied to nomenclature pool variables where the measured values are counts which are part of the same aggregate pool. For example, a crossmap could be used to aggregate or further disaggregate the occupation counts shown below:
+
+```{r}
+## table 5: https://www.abs.gov.au/statistics/labour/jobs/jobs-australia/2015-16-2019-20
+tibble::tribble(
+                                  ~Occupation, ~`Male.('000.persons)`, ~`Female.('000.persons)`,
+                                   "Managers",                  934.4,                    668.5,
+                              "Professionals",                 1190.9,                   1542.2,
+             "Technicians and trades workers",                 1229.7,                      225,
+     "Community and personal service workers",                    443,                    998.1,
+        "Clerical and administrative workers",                  373.5,                   1203.7,
+                              "Sales workers",                  382.6,                    651.4,
+            "Machinery operators and drivers",                  621.3,                     81.3,
+                                  "Labourers",                  815.5,                      437
+     ) |> knitr::kable()
+```
+
+On the other hand, non-count numeric variables such as averages should not be aggregated or disaggregated. In this case, it only makes sense to use recoding crossmaps, since they are effectively crosswalks or lookup tables that leave the measured values unmodified. For example, beyond recoding the industry labels, any other nomenclature transformation of the average weekly total cash earnings shown below requires knowledge of employee counts.
+
+```{r}
+## Table: All employees, average weekly total cash earnings - industry
+## https://www.abs.gov.au/statistics/labour/earnings-and-working-conditions/employee-earnings-and-hours-australia/may-2021
+tibble::tribble(
+                                              ~industry,  ~avg_weekly_earnings,
+                                               "Mining", "2,798.40",
+                                        "Manufacturing", "1,457.40",
+           "Electricity, gas, water and waste services", "2,060.90",
+                                         "Construction", "1,600.40",
+                                      "Wholesale trade", "1,468.20",
+                                         "Retail trade",   "864.50",
+                      "Accommodation and food services",   "664.70",
+                    "Transport, postal and warehousing", "1,587.70",
+             "Information media and telecommunications", "1,797.40",
+                       "Finance and insurance services", "1,990.40",
+              "Rental, hiring and real estate services", "1,381.70",
+      "Professional, scientific and technical services", "1,911.30",
+                  "Administrative and support services", "1,234.50",
+                     "Public administration and safety", "1,745.40",
+                               "Education and training", "1,374.80",
+                    "Health care and social assistance", "1,287.40",
+                         "Arts and recreation services", "1,032.90",
+                                       "Other services", "1,043.10",
+                                       "**All industries**", "**1,394.10**"
+) |> knitr::kable()
+```
+
+### Handle missing values before crossmap transformation
+
+Missing values should be dealt with prior to transformation as they can silently corrupt data in collapse or split transformations. The figure below shows a nomenclature variable with a missing value which cannot be unambiguously resolved in the crossmap transformation. The missing value belongs to a source node which is part of both a split and collapse relations.
+
+![](plot-missing-val-bigraph.png){width="100%"}
+
+Naive application of the crossmap transformation implicitly attempts to apply arithmetic operations on missing values. However, missing values are not numbers, and as such, it does not make sense to split an `NA` in half as illustrated in the outgoing links from the `x5555` node. Similarly, the target node `D6` receives both `NA` and numeric values from multiple source nodes and cannot be combined without additional preprocessing decisions. Handling missing values prior to applying the crossmap explicitly records such decisions.
+
+For instance, in R, the function `sum()` takes the argument `na.rm` which when `TRUE` removes missing values from the sum. This is equivalent to treating missing values as `0` when collapsing multiple source values into a target node, and hence should be handled explicitly before applying the crossmap transformation.
+
+Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. Lastly, note that crossmaps with only one-to-one recode relations avoids this "**missing value arithmetic**" issue since missing values can be passed unmodified in to the target nomenclature. Nevertheless, it is still advisable to handle missing values prior to applying the crossmap so that missing value decisions and nomenclature transformations are encoded in separate steps.
+
+### Avoid multiple observations for each source node
+
+In addition to the tidy structure requirement described above, for each observational unit in the dataset, which can span multiple rows, there should ideally only be one name-value pair for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link.
+
+This is not a strict requirement when applying crossmap transformations with mutating joins, but avoids hidden aggregation across source nodes. Returning to the matrix representation, this requirement is equivalent to having a uniquely indexed source value vector.
+
+<!--- also ensures the source values can be converted into an indexed vector -->
+
+```{r}
+origin_tidy_sub <- tibble::tribble(
+  ~country, ~year, ~sector, ~subsector, ~output,
+  "AU", 2012, "AGR", "FISH", 3983,
+  "AU", 2012, "AGR", "LIVE", 432,
+  "AU", 2013, "AGR", "FISH", 3983,
+  "AU", 2013, "AGR", "LIVE", NA,
+)
+
+origin_tidy_sub
+```
+
+The above dataset is tidy for a crossmap with `subsector` source nodes, but would not be considered tidy for a crossmap with `sector` source nodes. To solve this, we simply aggregate up to the `sector` level, and obtain a set unique set of name-value pairs for the `sector` level nomenclature variable.
+
+```{r}
+origin_tidy_sec <- origin_tidy_sub |>
+  dplyr::group_by(country, year, sector) |>
+  dplyr::summarise(output = sum(output, na.rm = TRUE), .groups = "drop")
+
+origin_tidy_sec
+```
+
+## Transformation via Mutating Joins
 
 This vignette illustrates with simple examples how crossmaps can be used to complete recode, split and collapse transformation.
 
-#### Aggregation
+Notice that all crossmaps transformations can be decomposed into multiple "standard" transformation steps:
+
+1.  recode node labels to target nomenclature
+
+2.  mutate node values
+
+3.  summarise mutated values by target node
+
+### Wild Caught (Hierarchical) Nomenclature Data
+
+Let's tidy a wild caught dataset:
+
+``` r
+aus_pop <- "data-raw/abs-population_2022.xlsx"
+aus_pop <- readabs::download_abs_data_cube("national-state-and-territory-population", "31010do001_202206.xlsx")
+```
+
+``` r
+raw_abs_pop <- readxl::read_xlsx(aus_pop,
+                               sheet = "Table_3", range = "A6:D23")
+```
+
+```{r}
+raw_abs_pop <-     tibble::tribble(
+                                       ~...1,     ~X2002,     ~X2012,     ~X2022,
+                                          NA,      "no.",      "no.",      "no.",
+                 "Australia–at 30 September",         NA,         NA,         NA,
+                           "New South Wales",  "6580807",  "7304244",  "8153584",
+                                  "Victoria",  "4817774",  "5651091",  "6613727",
+                                "Queensland",  "3653123",  "4568687",  "5322058",
+                           "South Australia",  "1511567",  "1656725",  "1820530",
+                         "Western Australia",  "1928512",  "2425507",  "2785312",
+                                  "Tasmania",   "474152",   "511724",   "571517",
+                        "Northern Territory",   "202251",   "235915",   "250635",
+              "Australian Capital Territory",   "324627",   "376539",   "456652",
+                         "Other Territories",         NA,         NA,         NA,
+                      "Jervis Bay Territory",      "464",      "380",      "312",
+             "Territory of Christmas Island",     "1365",     "2107",     "1781",
+      "Territory of Cocos (Keeling) Islands",      "568",      "546",      "614",
+                            "Norfolk Island",        "0",        "0",     "2213",
+                   "Total Other Territories",     "2397",     "3033",     "4920",
+                           "Total Australia", "19495210", "22733465", "25978935"
+      )
+```
+
+Let's start by doing some standard data import tidying: removing the first two rows of table notes and giving the first column a sensible name.
+
+```{r}
+abs_pop <- raw_abs_pop |>
+  dplyr::slice(3:dplyr::n()) |>
+  dplyr::rename(area = `...1`)
+
+knitr::kable(abs_pop)
+```
+
+The above table is unfortunately not in tidy nomenclature format.
+
+#### Issue 1: Multiple Nomenclature Variables in the Same Table
+
+First, the table contains values at multiple hierarchical levels. In particular, it has aggregate values at both the country level (Australia), and sub-group level (Other Territories). Assume that the most disaggregated values are the nomenclature variable we are interested in.
+
+Now, split the table to remove totals and the "Other Territories" divider row:
+
+```{r}
+abs_split <- split(abs_pop, stringr::str_detect(abs_pop$area, "Total|Other Territories", negate = TRUE))
+state_pop <- abs_split$`TRUE`
+
+knitr::kable(state_pop)
+```
+
+#### Issue 2: Observation Units split across columns
+
+Further notice that the observational unit that we would want to apply the aggregation transformation on is year. Hence, we pivot the dataset longer:
+
+```{r}
+state_nom <- state_pop |>
+  tidyr::pivot_longer(cols = -area, names_to = "year", values_to = "population") |>
+  dplyr::select(year, dplyr::everything()) |>
+  dplyr::arrange(year)
+
+knitr::kable(state_nom)
+```
+
+### Aggregation via crossmaps
 
 Let's consider a simple case where we have some disaggregated population figures which we want to aggregate.
 
@@ -78,6 +454,6 @@ apply_xmap(data_in = ctr_data, xmap = disagg_map, in_codes = ctr, in_values = Po
 
 #### Complex Maps
 
-Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmpas are best suited for cases where you have multiple types of transformations being applied at once.
+Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmpas are best suited for cases where you have multiple types of transformations being applied at once. In particular, they circumvent the need to count the number of observations after merging, and hence can insure against duplication and erroneous drops even in cases where it is difficult to calculate the expected number of post-transformations rows (i.e. many-to-many relations with both split and collapse transformations)
 
-### Matrix (multiple variables at once)
+## References
