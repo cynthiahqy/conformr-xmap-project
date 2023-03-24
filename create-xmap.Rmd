@@ -747,16 +747,16 @@ testthat::test_that(
 
 ## Coercion
 
-### Generic: `as_xmap()`
+### Generic: `as_xmap_df()`
 
 ```{r send_to="R/as_xmap.R"}
-#' Coerce objects to xmap
+#' Coerce objects to xmap_df
 #' 
-#' Validates and creates a valid crossmap `xmap` object of the same type as the input.
+#' Validates and creates a valid crossmap `xmap_df` object.
 #' 
 #' @param x
-#'  * For `as_xmap()`: An object to coerce
-#'  * For `is_xmap()`: An object to test.
+#'  * For `as_xmap_df()`: An object to coerce
+#'  * For `is_xmap_df()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
@@ -780,7 +780,7 @@ as_xmap_df <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
     -   [x] any validation failures via `validate_xmap_df()`
 
 ```{r send_to="R/as_xmap.R"}
-#' @describeIn as_xmap Coerce a `data.frame` to `xmap`
+#' @describeIn as_xmap_df Coerce a `data.frame` to `xmap`
 #'
 #' @export
 #' @examples
@@ -856,6 +856,62 @@ testthat::test_that(
                                .get_xmap_subclass_attr("xmap_df"))
   }
 )
+```
+
+### Conversion: `xmap_to_matrix()`
+
+```{r}
+#' Extract incidence matrix from xmap objects
+#' 
+#' Transforms `xmap` objects into incidence matrix.
+#' 
+#' @param x an xmap object
+#' @param sparse logical specifying if the result should be a sparse matrix. Defaults to TRUE.
+#' @param ... Unused
+#' 
+#' @return A matrix or sparse matrix object
+#' 
+#' @export
+xmap_to_matrix <- function(x, sparse, ...) {
+  UseMethod("xmap_to_matrix")
+}
+```
+
+#### Method: `xmap_to_matrix.xmap_df()`
+
+```{r xmap-matrix}
+#' @describeIn xmap_to_matrix Coerce a `data.frame` to `xmap`
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' abc_xmap <- data.frame(
+#'  stringsAsFactors = FALSE,
+#'                  origin = c("a","b","c","d","e",
+#'                           "f","g","h","i","i","j","j","j"),
+#'                    dest = c("AA","AA","AA","AA",
+#'                           "BB","BB","CC","DD","EE","FF","GG","HH","II"),
+#'            link = c(1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.3, 0.3, 0.4)
+#'  ) |>
+#' as_xmap_df(origin, dest, link)
+#' xmap_to_matrix(abc_xmap)
+xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
+  x_attrs <- attributes(x)
+  fm <- paste(x_attrs$col_weights, "~", x_attrs$col_from, "+", x_attrs$col_to,
+              collapse = "")
+  x_df <- x |>
+    as.data.frame(stringsAsFactors = TRUE)
+  
+  if(sparse){
+    x_mtx <- stats::xtabs(as.formula(fm), x_df, sparse = TRUE)
+  } else {
+    x_mtx <- stats::xtabs(as.formula(fm), x_df, sparse = FALSE)
+    attr(x_mtx, "call") <- NULL
+    unclass(x_mtx)
+  }
+  return(x_mtx)
+}
 ```
 
 ### Helper: `xmap_drop_extra()`
