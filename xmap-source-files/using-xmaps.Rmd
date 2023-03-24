@@ -83,17 +83,17 @@ The format is particularly suitable for cases where the original nomenclature:
 a.  has sufficiently many category nodes that a wider format is difficult to work with,
 b.  and/or will be transformed using a crossmap
 c.  is expected to change relatively frequently (e.g. occupation or product classifications)
-d.  is one layer of a larger hierarchical nomenclature
+d.  is one layer of a larger hierarchical nomenclature (e.g. administrative regions or geographic areas)
 
 <!--- wide format vs. nomenclature format // makes sense in the context of transformation // nomenclature is sort of an observation id variable, except its not fixed the same way an observation id variable is --->
 
 <!---- show examples --->
 
-### Transformation Concepts
+## Nomenclature Transformations
 
-The utility of the tidy nomenclature format is most evident when we look at transforming a nomenclature variable into a target nomenclature as a set of matrix operations.
+### Crossmap Transformations
 
-Let $\bf{B}$ be the $n \times m$ incidence matrix describing the graph representation of a valid crossmap. $\bf{B}$ is row indexed by the source nomenclature, and column indexed by the target nomenclature. For example, we can take a `xmap_df` and convert it into a matrix:
+The utility of defining a nomenclature variable and the crossmap format is most evident when we look at the transformation of values from a source nomenclature into a target nomenclature as a set of matrix operations. To demonstrate, we use the `xmap::xmap_to_matrix()` function to take a valid crossmap (`abc_xmap`) and convert it into a incidence matrix (`b_mtx`):
 
 ```{r}
 library(xmap)
@@ -118,7 +118,9 @@ b_mtx
 
 <!--- it would be cool to colour the matrix by relation type --->
 
-Notice that we can re-express the two conditions for a valid crossmap in terms of properties of the incidence matrix $\bf{B}$:
+Let $\bf{B}$ be the $n \times m$ incidence matrix describing the graph representation of a valid crossmap. $\bf{B}$ is row indexed by the source nomenclature, and column indexed by the target nomenclature.
+
+The two conditions for a valid crossmap can be expressed as properties of the incidence matrix $\bf{B}$:
 
 1.  Each node in the source or target set indexes *one* row or column respectively, providing at most one non-zero link between nodes in the source and target nomenclature.
 2.  Each row contains the weights for all outgoing links from a given source node. Thus, each row of the matrix should sum to 1 (i.e. $\bf{B1} = \bf{1}$ where $\bf{1}$ is unit vector of length $n$).
@@ -128,7 +130,7 @@ Now, let $\bf{x}$ be a vector of length $n$ containing numeric values to be tran
 To redistribute $\bf{x}$ from the source nomenclature into the target nomenclature, we simply take $\bf{y} = \bf{B}'\bf{x}$. Hence, using a valid crossmap to transform a nomenclature variable is equivalent to a matrix transformation of $\bf{x}$ by the incidence matrix $\bf{B}$.
 
 ```{r}
-## define data
+## define example data
 x <- matrix(rep_len(100, nrow(b_mtx)))
 dimnames(x) <- list(row.names(b_mtx), "x")
 
@@ -141,7 +143,7 @@ matlib::printMatEqn(`B'` = t(b_mtx), x, "=", y)
 
 Given this equivalence, it is clear to see how the two conditions that define a crossmap guarantee that the total sum before and after the nomenclature transform remains the same. Moreover, we can be sure of this without checking the total of the resultant variable $\bf{y}$.
 
-#### Comparison to Iterative or Case-Wise code
+### Comparison to Iterative or Case-Wise Transformation
 
 Contrast this to a more traditional iterative or case-wise approach to implementing a nomenclature transformation. Regardless of whether you code the transformation as a distribution of value from the source nomenclature nodes or collection of value by the target nomenclature nodes, there are only ad-hoc ways of validating node-by-node transformations.
 
@@ -183,15 +185,19 @@ Returning to the tidy nomenclature format, note that each nested name-value set 
 
 <!--- treat each nested name-value set as a named column vector // and crossmaps as a transformation matrix. Overly complicated for a single crossmap, but useful for different crossmaps -->
 
-## Crossmap Usage Conditions
+## `xmap` Usage Conditions
 
-### Tidy Original Dataset
+<!--- practical considerations --->
+
+### Structure of Original Dataset
+
+> Does this depend on the kind of transformation? what is the requirement from `{conformr}` to check validity
 
 ### Dataset Coverage Requirement
 
 The source nodes in the crossmap must fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
 
-![](plot-coverage-matrix.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match. This is a common issue with using matrices for data wrangling, so using database operations to apply the transformation is advised.
+![](plot-coverage-matrix.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match.
 
 ### Only split or collapse nomenclature pool variables
 
@@ -255,10 +261,13 @@ Exactly how missing values should be treated will vary from dataset to dataset. 
 
 ### Avoid multiple observations for each source node
 
-In addition to the tidy structure requirement described above, for each observational unit in the dataset, which can span multiple rows, there should ideally only be one name-value pair for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link. This is not a strict requirement, but avoids hidden aggregation across source nodes.
+In addition to the tidy structure requirement described above, for each observational unit in the dataset, which can span multiple rows, there should ideally only be one name-value pair for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link.
+
+This is not a strict requirement when applying crossmap transformations with mutating joins, but avoids hidden aggregation across source nodes. Returning to the matrix representation, this requirement is equivalent to having a uniquely indexed source value vector.
+
+<!--- also ensures the source values can be converted into an indexed vector -->
 
 ```{r}
-## basically summarise numeric values into a single origin node.
 origin_tidy_sub <- tibble::tribble(
   ~country, ~year, ~sector, ~subsector, ~output,
   "AU", 2012, "AGR", "FISH", 3983,
@@ -270,7 +279,7 @@ origin_tidy_sub <- tibble::tribble(
 origin_tidy_sub
 ```
 
-The above dataset is tidy for a crossmap with `subsector` source nodes, but would not be considered tidy for a crossmap with `sector` source nodes.
+The above dataset is tidy for a crossmap with `subsector` source nodes, but would not be considered tidy for a crossmap with `sector` source nodes. To solve this, we simply aggregate up to the `sector` level, and obtain a set unique set of name-value pairs for the `sector` level nomenclature variable.
 
 ```{r}
 origin_tidy_sec <- origin_tidy_sub |>
