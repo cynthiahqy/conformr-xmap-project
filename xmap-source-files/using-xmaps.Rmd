@@ -200,7 +200,29 @@ Returning to the tidy nomenclature format, note that each nested name-value set 
 
 <!--- treat each nested name-value set as a named column vector // and crossmaps as a transformation matrix. Overly complicated for a single crossmap, but useful for different crossmaps -->
 
-## `xmap` Usage Conditions
+## Apply `xmap` to data using Mutating Joins
+
+All crossmaps transformations can be decomposed into multiple "standard" transformation steps:
+
+1.  **Rename source node labels into target nomenclature.** This can be achieved via a left-join between source data and the crossmap by the source node labels.
+
+2.  **Mutate source node values by link weight.** This can be achieved by multiplying the source value with the joined link weights.
+
+3.  **Summarise mutated values by target node.** This can be achieved by grouping and summarising the mutated values from step 2 by the joined target node labels.
+
+### Transformation effects by relation type
+
+The combined effect of these steps differs depending on the type of relation present in a given crossmap. For all types of relations, step 1 is a data modifying step since it attaches target nodes and links to the original data via the source node labels.
+
+For recoding relations, step 1 is the only data modifying step. Step 1 effectively "renames" the source nodes into the target nomenclature. For the remaining steps, multiplying the source values by unit weights leaves the values unchanged, and since recoding involves only one-to-one relations summarising by target node also leaves values unchanged. The number of rows in the original data and the transformed data remain the same.
+
+For collapsing relations, step 3 is the additional data modifying steps. Similar to recoding, the source values are multiplied by unit weights, leaving them unchanged. Then in step 3, the unmodified source values are "modified" via aggregation, which reduces the number of rows in the data relative to the original data.
+
+For split relations, step 1 and 2 are data modifying. Step 1 expands the row count compared to the original data, as at least one row will have a source label associated with multiple target nodes. The source values are "duplicated" row-wise to each source-target link. Then in step 2, source values are modified according to the fractional link weights. Step 2 effectively "distributes" value between the linked target nodes. In step 3, no further modification is performed since, by definition, split relations do not contain any many-to-one links. The number of row remains the same as after step 1, with more rows relative to the original data.
+
+Finally, for many-to-many relations, which are a combination of the above relation types, all three steps are data modifying. Similar to collapsing relations, step 3 modifies via aggregation. However, prior to aggregation, some source values will be duplicated and modified by fractional link weights as in split relations. The overall effect on the number of rows depends on how many rows the collapse relations aggregates relative to how many rows the split relations create.
+
+### `xmap` Usage Conditions
 
 <!--- practical considerations --->
 
