@@ -26,4 +26,4 @@ Depends:
     R (>= 2.10)
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: dba829f6ec1e196481ceaa1fcf6fb84c
+LitrId: 206e4db4132e40f0e666598ebe200452

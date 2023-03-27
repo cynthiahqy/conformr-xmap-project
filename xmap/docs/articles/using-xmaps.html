@@ -301,6 +301,8 @@ the incidence matrix <span class="math inline">\(\bf{B}\)</span>.</p>
 <span></span>
 <span><span class="co">## print</span></span>
 <span><span class="fu">matlib</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/matlib/man/printMatEqn.html" class="external-link">printMatEqn</a></span><span class="op">(</span>`B'` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">b_mtx</span><span class="op">)</span>, <span class="va">x</span>, <span class="st">"="</span>, <span class="va">y</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</span></span></code></pre>
+<pre><code><span><span class="co">## Warning: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.</span></span></code></pre>
 <pre><code><span><span class="co">##                       B'   x       y</span></span>
 <span><span class="co">##  1.0 1.0 1.0 0.0 0.0 0.0 100  =  300</span></span>
 <span><span class="co">##  0.0 0.0 0.0 1.0 0.0 0.0 100     100</span></span>
@@ -314,14 +316,27 @@ nomenclature transform remains the same. Moreover, we can be sure of
 this without checking the total of the resultant variable <span class="math inline">\(\bf{y}\)</span>.</p>
 </div>
 <div class="section level3">
-<h3 id="comparison-to-iterative-or-case-wise-transformation">Comparison to Iterative or Case-Wise Transformation<a class="anchor" aria-label="anchor" href="#comparison-to-iterative-or-case-wise-transformation"></a>
+<h3 id="comparison-to-existing-appraoches">Comparison to Existing Appraoches<a class="anchor" aria-label="anchor" href="#comparison-to-existing-appraoches"></a>
 </h3>
-<p>Contrast this to a more traditional iterative or case-wise approach
-to implementing a nomenclature transformation. Regardless of whether you
-code the transformation as a distribution of value from the source
-nomenclature nodes or collection of value by the target nomenclature
-nodes, there are only ad-hoc ways of validating node-by-node
-transformations.</p>
+<p>Using crossmaps for recoding, aggregation or disaggregation can seem
+a bit tedious given you can achieve the same transformation with some
+simple join and mutate statements, coupled with some ad-hoc validation.
+However, crossmaps provide assurance for transformations with multiple
+mapping relations being applied at once that is not possible with ad-hoc
+validation. In particular, it circumvent the need to count the number of
+observations after merging, and hence can insure against duplication and
+erroneous drops even in cases where it is difficult to calculate the
+expected number of post-transformations rows (i.e. many-to-many
+relations with both split and collapse transformations).</p>
+<div class="section level4">
+<h4 id="iterative-or-case-wise-transformation">Iterative or Case-Wise Transformation<a class="anchor" aria-label="anchor" href="#iterative-or-case-wise-transformation"></a>
+</h4>
+<p>To further illustrate the advantages of the crossmap approach,
+consider iterative or case-wise approach whereby data are transformed on
+a node by node basis. Regardless of whether you code the transformation
+as a distribution of value from the source nomenclature nodes or
+collection of value by the target nomenclature nodes, there are only
+ad-hoc ways of validating node-by-node transformations.</p>
 <p>For instance, one could calculate and compare the sums of <span class="math inline">\(\bf{x}\)</span> and <span class="math inline">\(\bf{y}\)</span>. However, even if these two totals
 are equal, this does not guarantee that each source value is fully
 redistributed into the target nomenclature, as it is possible, though
@@ -331,19 +346,17 @@ identify which nodes are involved in the mistake. This second issue
 scales with the size of the nomenclature as the number of lines of code
 required to execute the transformation increases.</p>
 <!--- counting rows? ---->
-<p>To illustrate, consider the following imperative code for
-transforming <span class="math inline">\(\bf{x}\)</span> into the target
-nomenclature:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>y <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb5-2"><a href="#cb5-2"></a></span>
-<span id="cb5-3"><a href="#cb5-3"></a>y<span class="sc">$</span>AA <span class="ot">=</span> x[<span class="st">"a"</span>, ] <span class="sc">+</span> x[<span class="st">"b"</span>, ] <span class="sc">+</span> x[<span class="st">"c"</span>, ]</span>
-<span id="cb5-4"><a href="#cb5-4"></a>y<span class="sc">$</span>BB <span class="ot">=</span> x[<span class="st">"d"</span>, ]</span>
-<span id="cb5-5"><a href="#cb5-5"></a>y<span class="sc">$</span>CC <span class="ot">=</span> x[<span class="st">"c"</span>, ]</span>
-<span id="cb5-6"><a href="#cb5-6"></a>y<span class="sc">$</span>DD <span class="ot">=</span> <span class="fl">0.3</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
-<span id="cb5-7"><a href="#cb5-7"></a>y<span class="sc">$</span>EE <span class="ot">=</span> <span class="fl">0.2</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
-<span id="cb5-8"><a href="#cb5-8"></a>y<span class="sc">$</span>FF <span class="ot">=</span> <span class="fl">0.4</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>y <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>()</span></code></pre></div>
+<p>Consider the following imperative code for transforming <span class="math inline">\(\bf{x}\)</span> into the target nomenclature:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r numberLines"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>y <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a>y<span class="sc">$</span>AA <span class="ot">=</span> x[<span class="st">"a"</span>, ] <span class="sc">+</span> x[<span class="st">"b"</span>, ] <span class="sc">+</span> x[<span class="st">"c"</span>, ]</span>
+<span id="cb7-4"><a href="#cb7-4"></a>y<span class="sc">$</span>BB <span class="ot">=</span> x[<span class="st">"d"</span>, ]</span>
+<span id="cb7-5"><a href="#cb7-5"></a>y<span class="sc">$</span>CC <span class="ot">=</span> x[<span class="st">"c"</span>, ]</span>
+<span id="cb7-6"><a href="#cb7-6"></a>y<span class="sc">$</span>DD <span class="ot">=</span> <span class="fl">0.3</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
+<span id="cb7-7"><a href="#cb7-7"></a>y<span class="sc">$</span>EE <span class="ot">=</span> <span class="fl">0.2</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
+<span id="cb7-8"><a href="#cb7-8"></a>y<span class="sc">$</span>FF <span class="ot">=</span> <span class="fl">0.4</span> <span class="sc">*</span> x[<span class="st">"f"</span>, ]</span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a>y <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>()</span></code></pre></div>
 <pre><code><span><span class="co">##    [,1]</span></span>
 <span><span class="co">## AA 300 </span></span>
 <span><span class="co">## BB 100 </span></span>
@@ -369,9 +382,9 @@ distribution error.</li>
 </ul>
 <!---- reference validate, assertr packages? --->
 </div>
-<div class="section level3">
-<h3 id="comparison-to-existing-crosswalk-approaches">Comparison to Existing Crosswalk approaches<a class="anchor" aria-label="anchor" href="#comparison-to-existing-crosswalk-approaches"></a>
-</h3>
+<div class="section level4">
+<h4 id="crosswalk-and-lookup-table-approaches">Crosswalk and Lookup Table approaches<a class="anchor" aria-label="anchor" href="#crosswalk-and-lookup-table-approaches"></a>
+</h4>
 <blockquote>
 <ul>
 <li>Crosswalk or lookup table approaches are better than above</li>
@@ -381,6 +394,7 @@ and complex xmaps</li>
 </ul>
 </blockquote>
 <!---- existing packages // forcats, recode etc. --->
+</div>
 </div>
 <div class="section level3">
 <h3 id="additional-benefits">Additional Benefits<a class="anchor" aria-label="anchor" href="#additional-benefits"></a>
@@ -400,6 +414,11 @@ weights.</p>
 multiple sources, principled methods for recording, validating and
 sharing design choices such as ex-post harmonisation, or disaggregation
 and re-aggregation schemes can facilitate trust and transparency.</p>
+<blockquote>
+<ul>
+<li>maybe add-in <code><a href="../articles/vis-xmaps.html">vignette("vis-xmaps")</a></code> content here?</li>
+</ul>
+</blockquote>
 </div>
 <div class="section level4">
 <h4 id="multiple-related-nomenclature-transformations-future-work">Multiple related nomenclature transformations (FUTURE WORK)<a class="anchor" aria-label="anchor" href="#multiple-related-nomenclature-transformations-future-work"></a>
@@ -421,21 +440,130 @@ source noemncalture but same target nomenclature</li>
 </div>
 </div>
 <div class="section level2">
-<h2 id="xmap-usage-conditions">
-<code>xmap</code> Usage Conditions<a class="anchor" aria-label="anchor" href="#xmap-usage-conditions"></a>
+<h2 id="apply-xmap-to-data-using-mutating-joins">Apply <code>xmap</code> to data using Mutating Joins<a class="anchor" aria-label="anchor" href="#apply-xmap-to-data-using-mutating-joins"></a>
 </h2>
-<!--- practical considerations --->
+<p>All crossmaps transformations can be decomposed into multiple
+“standard” transformation steps:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Rename source node labels into target
+nomenclature.</strong> This can be achieved via a left-join between
+source data and the crossmap by the source node labels.</p></li>
+<li><p><strong>Mutate source node values by link weight.</strong> This
+can be achieved by multiplying the source value with the joined link
+weights.</p></li>
+<li><p><strong>Summarise mutated values by target node.</strong> This
+can be achieved by grouping and summarising the mutated values from step
+2 by the joined target node labels.</p></li>
+</ol>
 <div class="section level3">
-<h3 id="structure-of-original-dataset">Structure of Original Dataset<a class="anchor" aria-label="anchor" href="#structure-of-original-dataset"></a>
+<h3 id="transformation-effects-by-relation-type">Transformation effects by relation type<a class="anchor" aria-label="anchor" href="#transformation-effects-by-relation-type"></a>
 </h3>
+<p>The combined effect of these steps differs depending on the type of
+relation present in a given crossmap. For all types of relations, step 1
+is a data modifying step since it attaches target nodes and links to the
+original data via the source node labels.</p>
+<p>For recoding relations, step 1 is the only data modifying step. Step
+1 effectively “renames” the source nodes into the target nomenclature.
+For the remaining steps, multiplying the source values by unit weights
+leaves the values unchanged, and since recoding involves only one-to-one
+relations summarising by target node also leaves values unchanged. The
+number of rows in the original data and the transformed data remain the
+same.</p>
+<p>For collapsing relations, step 3 is the additional data modifying
+steps. Similar to recoding, the source values are multiplied by unit
+weights, leaving them unchanged. Then in step 3, the unmodified source
+values are “modified” via aggregation, which reduces the number of rows
+in the data relative to the original data.</p>
+<p>For split relations, step 1 and 2 are data modifying. Step 1 expands
+the row count compared to the original data, as at least one row will
+have a source label associated with multiple target nodes. The source
+values are “duplicated” row-wise to each source-target link. Then in
+step 2, source values are modified according to the fractional link
+weights. Step 2 effectively “distributes” value between the linked
+target nodes. In step 3, no further modification is performed since, by
+definition, split relations do not contain any many-to-one links. The
+number of row remains the same as after step 1, with more rows relative
+to the original data.</p>
+<p>Finally, for many-to-many relations, which are a combination of the
+above relation types, all three steps are data modifying. Similar to
+collapsing relations, step 3 modifies via aggregation. However, prior to
+aggregation, some source values will be duplicated and modified by
+fractional link weights as in split relations. The overall effect on the
+number of rows depends on how many rows the collapse relations
+aggregates relative to how many rows the split relations create.</p>
+</div>
+<div class="section level3">
+<h3 id="xmap-usage-conditions">
+<code>xmap</code> Usage Conditions<a class="anchor" aria-label="anchor" href="#xmap-usage-conditions"></a>
+</h3>
+<!--- practical considerations --->
+<div class="section level4">
+<h4 id="structure-of-original-dataset">Structure of Original Dataset<a class="anchor" aria-label="anchor" href="#structure-of-original-dataset"></a>
+</h4>
 <blockquote>
 <p>Does this depend on the kind of transformation? what is the
 requirement from <code>{conformr}</code> to check validity</p>
 </blockquote>
 </div>
-<div class="section level3">
-<h3 id="dataset-coverage-requirement">Dataset Coverage Requirement<a class="anchor" aria-label="anchor" href="#dataset-coverage-requirement"></a>
-</h3>
+<div class="section level4">
+<h4 id="recoding-categorical-variables">Recoding Categorical Variables<a class="anchor" aria-label="anchor" href="#recoding-categorical-variables"></a>
+</h4>
+<blockquote>
+<ul>
+<li>getting categorical variables into nomenclature variable format is a
+bit tedious and unnecessary,</li>
+<li>but is it useful to show the equivalence?</li>
+<li>one-hot encoded categorical variables = nomenclature format</li>
+</ul>
+</blockquote>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">baby_pets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"puppy"</span>, <span class="st">"kitten"</span>, <span class="st">"chick"</span><span class="op">)</span></span>
+<span><span class="va">adult_pets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog"</span>, <span class="st">"cat"</span>, <span class="st">"bird"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pet_xmap</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>baby <span class="op">=</span> <span class="va">baby_pets</span>,</span>
+<span>                           adult <span class="op">=</span> <span class="va">adult_pets</span>,</span>
+<span>                           link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## some data on pets</span></span>
+<span><span class="va">pet_df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>obs_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, pet_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">baby_pets</span>, <span class="fl">5</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, bool <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## categorical variable format</span></span>
+<span><span class="va">pet_df</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 3</span></span></span>
+<span><span class="co">##   obs_id pet_type  bool</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>      1 chick        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>      2 puppy        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>      3 chick        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>      4 chick        1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>      5 kitten       1</span></span></code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## the format needed to use apply_xmap()</span></span>
+<span><span class="va">pet_df</span> <span class="op">|&gt;</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="st">"pet_type"</span>, values_from <span class="op">=</span> <span class="st">"bool"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols<span class="op">=</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">all_of</a></span><span class="op">(</span><span class="va">baby_pets</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html" class="external-link">replace_na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 15 × 3</span></span></span>
+<span><span class="co">##    obs_id name   value</span></span>
+<span><span class="co">##     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span>      1 puppy      0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span>      1 kitten     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span>      1 chick      1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span>      2 puppy      1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span>      2 kitten     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span>      2 chick      0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span>      3 puppy      0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span>      3 kitten     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span>      3 chick      1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span>      4 puppy      0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span>      4 kitten     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">12</span>      4 chick      1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">13</span>      5 puppy      0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">14</span>      5 kitten     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">15</span>      5 chick      0</span></span></code></pre>
+</div>
+<div class="section level4">
+<h4 id="dataset-coverage-requirement">Dataset Coverage Requirement<a class="anchor" aria-label="anchor" href="#dataset-coverage-requirement"></a>
+</h4>
 <p>The source nodes in the crossmap must fully cover the nomenclature of
 the data to be transformed. This is equivalent to saying that the
 crossmap should contain transformation instructions for every single
@@ -449,15 +577,15 @@ in both explicit and implicit/hidden errors. In particular, having
 conformable matrix dimensions is not sufficient to avoid corrupting data
 unless you check that the indices match.</p>
 </div>
-<div class="section level3">
-<h3 id="only-split-or-collapse-nomenclature-pool-variables">Only split or collapse nomenclature pool variables<a class="anchor" aria-label="anchor" href="#only-split-or-collapse-nomenclature-pool-variables"></a>
-</h3>
+<div class="section level4">
+<h4 id="only-split-or-collapse-nomenclature-pool-variables">Only split or collapse nomenclature pool variables<a class="anchor" aria-label="anchor" href="#only-split-or-collapse-nomenclature-pool-variables"></a>
+</h4>
 <p>Crossmaps with split or collapse relations should only be applied to
 nomenclature pool variables where the measured values are counts which
 are part of the same aggregate pool. For example, a crossmap could be
 used to aggregate or further disaggregate the occupation counts shown
 below:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## table 5: https://www.abs.gov.au/statistics/labour/jobs/jobs-australia/2015-16-2019-20</span></span>
 <span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>                                  <span class="op">~</span><span class="va">Occupation</span>, <span class="op">~</span><span class="va">`Male.('000.persons)`</span>, <span class="op">~</span><span class="va">`Female.('000.persons)`</span>,</span>
@@ -531,7 +659,7 @@ or lookup tables that leave the measured values unmodified. For example,
 beyond recoding the industry labels, any other nomenclature
 transformation of the average weekly total cash earnings shown below
 requires knowledge of employee counts.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Table: All employees, average weekly total cash earnings - industry</span></span>
 <span><span class="co">## https://www.abs.gov.au/statistics/labour/earnings-and-working-conditions/employee-earnings-and-hours-australia/may-2021</span></span>
 <span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
@@ -641,9 +769,9 @@ requires knowledge of employee counts.</p>
 </tbody>
 </table>
 </div>
-<div class="section level3">
-<h3 id="handle-missing-values-before-crossmap-transformation">Handle missing values before crossmap transformation<a class="anchor" aria-label="anchor" href="#handle-missing-values-before-crossmap-transformation"></a>
-</h3>
+<div class="section level4">
+<h4 id="handle-missing-values-before-crossmap-transformation">Handle missing values before crossmap transformation<a class="anchor" aria-label="anchor" href="#handle-missing-values-before-crossmap-transformation"></a>
+</h4>
 <p>Missing values should be dealt with prior to transformation as they
 can silently corrupt data in collapse or split transformations. The
 figure below shows a nomenclature variable with a missing value which
@@ -676,9 +804,9 @@ is still advisable to handle missing values prior to applying the
 crossmap so that missing value decisions and nomenclature
 transformations are encoded in separate steps.</p>
 </div>
-<div class="section level3">
-<h3 id="avoid-multiple-observations-for-each-source-node">Avoid multiple observations for each source node<a class="anchor" aria-label="anchor" href="#avoid-multiple-observations-for-each-source-node"></a>
-</h3>
+<div class="section level4">
+<h4 id="avoid-multiple-observations-for-each-source-node">Avoid multiple observations for each source node<a class="anchor" aria-label="anchor" href="#avoid-multiple-observations-for-each-source-node"></a>
+</h4>
 <p>In addition to the tidy structure requirement described above, for
 each observational unit in the dataset, which can span multiple rows,
 there should ideally only be one name-value pair for each unique node in
@@ -690,7 +818,7 @@ across source nodes. Returning to the matrix representation, this
 requirement is equivalent to having a uniquely indexed source value
 vector.</p>
 <!--- also ensures the source values can be converted into an indexed vector -->
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">origin_tidy_sub</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">country</span>, <span class="op">~</span><span class="va">year</span>, <span class="op">~</span><span class="va">sector</span>, <span class="op">~</span><span class="va">subsector</span>, <span class="op">~</span><span class="va">output</span>,</span>
 <span>  <span class="st">"AU"</span>, <span class="fl">2012</span>, <span class="st">"AGR"</span>, <span class="st">"FISH"</span>, <span class="fl">3983</span>,</span>
@@ -713,7 +841,7 @@ source nodes, but would not be considered tidy for a crossmap with
 to the <code>sector</code> level, and obtain a set unique set of
 name-value pairs for the <code>sector</code> level nomenclature
 variable.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">origin_tidy_sec</span> <span class="op">&lt;-</span> <span class="va">origin_tidy_sub</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">country</span>, <span class="va">year</span>, <span class="va">sector</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">output</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
@@ -726,29 +854,93 @@ variable.</p>
 <span><span class="co">## <span style="color: #BCBCBC;">2</span> AU       <span style="text-decoration: underline;">2</span>013 AGR      <span style="text-decoration: underline;">3</span>983</span></span></code></pre>
 </div>
 </div>
+</div>
 <div class="section level2">
-<h2 id="transformation-via-mutating-joins">Transformation via Mutating Joins<a class="anchor" aria-label="anchor" href="#transformation-via-mutating-joins"></a>
+<h2 id="example-xmap-transformations">Example <code>xmap</code> Transformations<a class="anchor" aria-label="anchor" href="#example-xmap-transformations"></a>
 </h2>
-<p>This vignette illustrates with simple examples how crossmaps can be
-used to complete recode, split and collapse transformation.</p>
-<p>Notice that all crossmaps transformations can be decomposed into
-multiple “standard” transformation steps:</p>
+<blockquote>
+<p>what examples do I want to include?</p>
+</blockquote>
+<div class="section level3">
+<h3 id="xmap-aggregation">
+<code>xmap</code> Aggregation<a class="anchor" aria-label="anchor" href="#xmap-aggregation"></a>
+</h3>
+<p>Let’s consider a simple case where we have some disaggregated
+population figures which we want to aggregate.</p>
+<p>First, define a crossmap for the aggregation.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">agg_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ctr <span class="op">=</span> <span class="st">"AU"</span>,</span>
+<span>                      adm1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AU-NSW"</span>, <span class="st">"AU-QLD"</span>, <span class="st">"AU-SA"</span>, <span class="st">"AU-TAS"</span>, <span class="st">"AU-VIC"</span>, <span class="st">"AU-WA"</span>, <span class="st">"AU-ACT"</span>, <span class="st">"AU-NT"</span><span class="op">)</span>,</span>
+<span>                      link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span><span class="va">adm1</span>, <span class="va">ctr</span>, <span class="va">link</span><span class="op">)</span></span></code></pre></div>
+<p>Second, load in our state-level figures</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">state_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>                              <span class="op">~</span><span class="va">state</span>,    <span class="op">~</span><span class="va">adm1</span>,    <span class="op">~</span><span class="va">Pop</span>,</span>
+<span>                   <span class="st">"New South Wales"</span>, <span class="st">"AU-NSW"</span>, <span class="fl">8153600</span>,</span>
+<span>                          <span class="st">"Victoria"</span>, <span class="st">"AU-VIC"</span>, <span class="fl">6613700</span>,</span>
+<span>                        <span class="st">"Queensland"</span>, <span class="st">"AU-QLD"</span>, <span class="fl">5322100</span>,</span>
+<span>                   <span class="st">"South Australia"</span>,  <span class="st">"AU-SA"</span>, <span class="fl">1820500</span>,</span>
+<span>                 <span class="st">"Western Australia"</span>,  <span class="st">"AU-WA"</span>, <span class="fl">2785300</span>,</span>
+<span>                          <span class="st">"Tasmania"</span>, <span class="st">"AU-TAS"</span>,  <span class="fl">571500</span>,</span>
+<span>                <span class="st">"Northern Territory"</span>,  <span class="st">"AU-NT"</span>,  <span class="fl">250600</span>,</span>
+<span>      <span class="st">"Australian Capital Territory"</span>, <span class="st">"AU-ACT"</span>,  <span class="fl">456700</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Now, assuming your crossmap fully covers your data the
+transformation:</p>
 <ol style="list-style-type: decimal">
-<li><p>recode node labels to target nomenclature</p></li>
-<li><p>mutate node values</p></li>
-<li><p>summarise mutated values by target node</p></li>
+<li>Join the aggregate groups (<code>state</code>) to each row in
+<code>state_data</code> via the source labels (<code>adm1</code>)</li>
+<li>Mutate the source values (<code>Pop</code>)</li>
+<li>Summarising values for each group (<code>state</code>)</li>
 </ol>
+<blockquote>
+<p>would this be a good place to put a small-set illustration?</p>
+</blockquote>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_data</span>, <span class="va">agg_map</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adm1"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>x_pop <span class="op">=</span> <span class="va">Pop</span> <span class="op">*</span> <span class="va">link</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ctr</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>agg_pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x_pop</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 2</span></span></span>
+<span><span class="co">##   ctr    agg_pop</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> AU    25<span style="text-decoration: underline;">974</span>000</span></span></code></pre>
+<p>Or using <code>apply_xmap()</code> from the <code>conformr</code>
+package:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">conformr</span><span class="fu">::</span><span class="fu">apply_xmap</span><span class="op">(</span>data_in <span class="op">=</span> <span class="va">state_data</span>, xmap <span class="op">=</span> <span class="va">agg_map</span>,</span>
+<span>                     in_codes <span class="op">=</span> <span class="va">adm1</span>, in_values <span class="op">=</span> <span class="va">Pop</span>,</span>
+<span>                     out_codes <span class="op">=</span> <span class="cn">NULL</span>, out_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p>which also checks that the nomenclature in <code>data_in</code> is
+fully covered by your <code>xmap</code> – i.e. you don’t lose any source
+values during the step 1 join.</p>
+</div>
+<div class="section level3">
+<h3 id="xmap-disaggregation">
+<code>xmap</code> Disaggregation<a class="anchor" aria-label="anchor" href="#xmap-disaggregation"></a>
+</h3>
+<p>We can reverse the aggregation (assuming we retained appropriate
+weights) using:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">apply_xmap</span><span class="op">(</span>data_in <span class="op">=</span> <span class="va">ctr_data</span>, xmap <span class="op">=</span> <span class="va">disagg_map</span>, in_codes <span class="op">=</span> <span class="va">ctr</span>, in_values <span class="op">=</span> <span class="va">Pop</span>, out_codes <span class="op">=</span> <span class="cn">NULL</span>, out_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p>add simple example</p>
+</blockquote>
+</div>
 <div class="section level3">
 <h3 id="wild-caught-hierarchical-nomenclature-data">Wild Caught (Hierarchical) Nomenclature Data<a class="anchor" aria-label="anchor" href="#wild-caught-hierarchical-nomenclature-data"></a>
 </h3>
 <p>Let’s tidy a wild caught dataset:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aus_pop</span> <span class="op">&lt;-</span> <span class="st">"data-raw/abs-population_2022.xlsx"</span></span>
 <span><span class="va">aus_pop</span> <span class="op">&lt;-</span> <span class="fu">readabs</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/readabs/man/download_abs_data_cube.html" class="external-link">download_abs_data_cube</a></span><span class="op">(</span><span class="st">"national-state-and-territory-population"</span>, <span class="st">"31010do001_202206.xlsx"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">raw_abs_pop</span> <span class="op">&lt;-</span> <span class="fu">readxl</span><span class="fu">::</span><span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span><span class="va">aus_pop</span>,</span>
 <span>                               sheet <span class="op">=</span> <span class="st">"Table_3"</span>, range <span class="op">=</span> <span class="st">"A6:D23"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">raw_abs_pop</span> <span class="op">&lt;-</span>     <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>                                       <span class="op">~</span><span class="va">...1</span>,     <span class="op">~</span><span class="va">X2002</span>,     <span class="op">~</span><span class="va">X2012</span>,     <span class="op">~</span><span class="va">X2022</span>,</span>
 <span>                                          <span class="cn">NA</span>,      <span class="st">"no."</span>,      <span class="st">"no."</span>,      <span class="st">"no."</span>,</span>
@@ -772,7 +964,7 @@ multiple “standard” transformation steps:</p>
 <p>Let’s start by doing some standard data import tidying: removing the
 first two rows of table notes and giving the first column a sensible
 name.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">abs_pop</span> <span class="op">&lt;-</span> <span class="va">raw_abs_pop</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>area <span class="op">=</span> <span class="va">`...1`</span><span class="op">)</span></span>
@@ -889,7 +1081,7 @@ most disaggregated values are the nomenclature variable we are
 interested in.</p>
 <p>Now, split the table to remove totals and the “Other Territories”
 divider row:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">abs_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">abs_pop</span>, <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">abs_pop</span><span class="op">$</span><span class="va">area</span>, <span class="st">"Total|Other Territories"</span>, negate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">state_pop</span> <span class="op">&lt;-</span> <span class="va">abs_split</span><span class="op">$</span><span class="va">`TRUE`</span></span>
 <span></span>
@@ -983,7 +1175,7 @@ divider row:</p>
 <p>Further notice that the observational unit that we would want to
 apply the aggregation transformation on is year. Hence, we pivot the
 dataset longer:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">state_nom</span> <span class="op">&lt;-</span> <span class="va">state_pop</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="op">-</span><span class="va">area</span>, names_to <span class="op">=</span> <span class="st">"year"</span>, values_to <span class="op">=</span> <span class="st">"population"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">year</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1179,81 +1371,6 @@ dataset longer:</p>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section level3">
-<h3 id="aggregation-via-crossmaps">Aggregation via crossmaps<a class="anchor" aria-label="anchor" href="#aggregation-via-crossmaps"></a>
-</h3>
-<p>Let’s consider a simple case where we have some disaggregated
-population figures which we want to aggregate.</p>
-<p>First, define a crossmap for the aggregation.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">agg_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>ctr <span class="op">=</span> <span class="st">"AU"</span>,</span>
-<span>                      adm1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AU-NSW"</span>, <span class="st">"AU-QLD"</span>, <span class="st">"AU-SA"</span>, <span class="st">"AU-TAS"</span>, <span class="st">"AU-VIC"</span>, <span class="st">"AU-WA"</span>, <span class="st">"AU-ACT"</span>, <span class="st">"AU-NT"</span><span class="op">)</span>,</span>
-<span>                      link <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span><span class="va">adm1</span>, <span class="va">ctr</span>, <span class="va">link</span><span class="op">)</span></span></code></pre></div>
-<p>Second, load in our state-level figures</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">state_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>                              <span class="op">~</span><span class="va">state</span>,    <span class="op">~</span><span class="va">adm1</span>,    <span class="op">~</span><span class="va">Pop</span>,</span>
-<span>                   <span class="st">"New South Wales"</span>, <span class="st">"AU-NSW"</span>, <span class="fl">8153600</span>,</span>
-<span>                          <span class="st">"Victoria"</span>, <span class="st">"AU-VIC"</span>, <span class="fl">6613700</span>,</span>
-<span>                        <span class="st">"Queensland"</span>, <span class="st">"AU-QLD"</span>, <span class="fl">5322100</span>,</span>
-<span>                   <span class="st">"South Australia"</span>,  <span class="st">"AU-SA"</span>, <span class="fl">1820500</span>,</span>
-<span>                 <span class="st">"Western Australia"</span>,  <span class="st">"AU-WA"</span>, <span class="fl">2785300</span>,</span>
-<span>                          <span class="st">"Tasmania"</span>, <span class="st">"AU-TAS"</span>,  <span class="fl">571500</span>,</span>
-<span>                <span class="st">"Northern Territory"</span>,  <span class="st">"AU-NT"</span>,  <span class="fl">250600</span>,</span>
-<span>      <span class="st">"Australian Capital Territory"</span>, <span class="st">"AU-ACT"</span>,  <span class="fl">456700</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Now, assuming your crossmap fully covers your data the transformation
-involves two steps:</p>
-<ol style="list-style-type: decimal">
-<li>Joining the aggregate group to each row in
-<code>state_data</code>
-</li>
-<li>Summarising values for each group</li>
-</ol>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">state_data</span>, <span class="va">agg_map</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"adm1"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>x_pop <span class="op">=</span> <span class="va">Pop</span> <span class="op">*</span> <span class="va">link</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">ctr</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>agg_pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x_pop</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 1 × 2</span></span></span>
-<span><span class="co">##   ctr    agg_pop</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> AU    25<span style="text-decoration: underline;">974</span>000</span></span></code></pre>
-<p>Or using <code>apply_xmap()</code> from the <code>conformr</code>
-package:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">conformr</span><span class="fu">::</span><span class="fu">apply_xmap</span><span class="op">(</span>data_in <span class="op">=</span> <span class="va">state_data</span>, xmap <span class="op">=</span> <span class="va">agg_map</span>,</span>
-<span>                     in_codes <span class="op">=</span> <span class="va">adm1</span>, in_values <span class="op">=</span> <span class="va">Pop</span>,</span>
-<span>                     out_codes <span class="op">=</span> <span class="cn">NULL</span>, out_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<p>which also checks that the nomenclature in <code>data_in</code> is
-fully covered by your <code>xmap</code> – i.e. you don’t lose any rows
-during the join.</p>
-<div class="section level4">
-<h4 id="disaggregation">Disaggregation<a class="anchor" aria-label="anchor" href="#disaggregation"></a>
-</h4>
-<p>We can reverse the aggregation (assuming we retained appropriate
-weights) using:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">apply_xmap</span><span class="op">(</span>data_in <span class="op">=</span> <span class="va">ctr_data</span>, xmap <span class="op">=</span> <span class="va">disagg_map</span>, in_codes <span class="op">=</span> <span class="va">ctr</span>, in_values <span class="op">=</span> <span class="va">Pop</span>, out_codes <span class="op">=</span> <span class="cn">NULL</span>, out_values <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="complex-maps">Complex Maps<a class="anchor" aria-label="anchor" href="#complex-maps"></a>
-</h4>
-<p>Using crossmaps for recoding, aggregation or disaggregation can seem
-a bit tedious given you can achieve the same transformation with some
-simple join and mutate statements, coupled with some ad-hoc validation.
-However, crossmpas are best suited for cases where you have multiple
-types of transformations being applied at once. In particular, they
-circumvent the need to count the number of observations after merging,
-and hence can insure against duplication and erroneous drops even in
-cases where it is difficult to calculate the expected number of
-post-transformations rows (i.e. many-to-many relations with both split
-and collapse transformations)</p>
 </div>
 </div>
 </div>

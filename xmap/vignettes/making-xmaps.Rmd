@@ -45,7 +45,7 @@ It is helpful when thinking about special cases to define some familiar types of
 
 ### Recode maps
 
-Crossmaps with only one-to-one relations recode source labels to target labels, leaving any attached values untouched. For a crossmap to be a recode map it must only have unit weights, and the cardinality of the source and target node sets must be equal. Notice that Schema Crosswalks and category recoding functions could also be implemented as Recode Maps.
+Crossmaps with only one-to-one relations recode source labels to target labels, leaving any attached values untouched. For a crossmap to be a recode map it must have binary weights, and the cardinality of the source and target node sets must be equal. Notice that Schema Crosswalks, lookup tables and category recoding functions could all be implemented as Recode Maps.
 
 ### Collapse or Aggregation maps
 
