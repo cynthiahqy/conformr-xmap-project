@@ -143,15 +143,19 @@ matlib::printMatEqn(`B'` = t(b_mtx), x, "=", y)
 
 Given this equivalence, it is clear to see how the two conditions that define a crossmap guarantee that the total sum before and after the nomenclature transform remains the same. Moreover, we can be sure of this without checking the total of the resultant variable $\bf{y}$.
 
-### Comparison to Iterative or Case-Wise Transformation
+### Comparison to Existing Appraoches
 
-Contrast this to a more traditional iterative or case-wise approach to implementing a nomenclature transformation. Regardless of whether you code the transformation as a distribution of value from the source nomenclature nodes or collection of value by the target nomenclature nodes, there are only ad-hoc ways of validating node-by-node transformations.
+Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmaps provide assurance for transformations with multiple mapping relations being applied at once that is not possible with ad-hoc validation. In particular, it circumvent the need to count the number of observations after merging, and hence can insure against duplication and erroneous drops even in cases where it is difficult to calculate the expected number of post-transformations rows (i.e. many-to-many relations with both split and collapse transformations).
+
+#### Iterative or Case-Wise Transformation
+
+To further illustrate the advantages of the crossmap approach, consider iterative or case-wise approach whereby data are transformed on a node by node basis. Regardless of whether you code the transformation as a distribution of value from the source nomenclature nodes or collection of value by the target nomenclature nodes, there are only ad-hoc ways of validating node-by-node transformations.
 
 For instance, one could calculate and compare the sums of $\bf{x}$ and $\bf{y}$. However, even if these two totals are equal, this does not guarantee that each source value is fully redistributed into the target nomenclature, as it is possible, though highly unlikely, that two mistakes could offset each other. Furthermore, in the case where the two totals do not match, it is not obvious how to identify which nodes are involved in the mistake. This second issue scales with the size of the nomenclature as the number of lines of code required to execute the transformation increases.
 
 <!--- counting rows? ---->
 
-To illustrate, consider the following imperative code for transforming $\bf{x}$ into the target nomenclature:
+Consider the following imperative code for transforming $\bf{x}$ into the target nomenclature:
 
 ```{r, attr.source='.numberLines'}
 y <- list()
@@ -174,7 +178,7 @@ Observe the following:
 
 <!---- reference validate, assertr packages? --->
 
-### Comparison to Existing Crosswalk approaches
+#### Crosswalk and Lookup Table approaches
 
 > -   Crosswalk or lookup table approaches are better than above
 > -   but are still limited when it comes to dealing with split relations and complex xmaps
@@ -189,6 +193,8 @@ Observe the following:
 In addition to circumventing the need for ad-hoc checks, the crossmap format provides a code-agnostic method of specifying, communicating and checking dataset design decisions. This means that team members who are not fluent in R can have confidence that harmonised or integrated datasets match the intended design without having to audit long data wrangling scripts. This is particularly important in cross-disciplinary teams, where domain knowledge is necessary for designing link weights.
 
 As more and more datasets are created by integrating data from multiple sources, principled methods for recording, validating and sharing design choices such as ex-post harmonisation, or disaggregation and re-aggregation schemes can facilitate trust and transparency.
+
+> -   maybe add-in `vignette("vis-xmaps")` content here?
 
 #### Multiple related nomenclature transformations (FUTURE WORK)
 
@@ -226,17 +232,43 @@ Finally, for many-to-many relations, which are a combination of the above relati
 
 <!--- practical considerations --->
 
-### Structure of Original Dataset
+#### Structure of Original Dataset
 
 > Does this depend on the kind of transformation? what is the requirement from `{conformr}` to check validity
 
-### Dataset Coverage Requirement
+#### Recoding Categorical Variables
+
+> -   getting categorical variables into nomenclature variable format is a bit tedious and unnecessary,
+> -   but is it useful to show the equivalence?
+> -   one-hot encoded categorical variables = nomenclature format
+
+```{r}
+baby_pets <- c("puppy", "kitten", "chick")
+adult_pets <- c("dog", "cat", "bird")
+
+pet_xmap <- tibble::tibble(baby = baby_pets,
+                           adult = adult_pets,
+                           link = 1)
+
+## some data on pets
+pet_df <- tibble::tibble(obs_id = 1:5, pet_type = sample(baby_pets, 5, replace = TRUE), bool = 1)
+
+## categorical variable format
+pet_df
+
+## the format needed to use apply_xmap()
+pet_df |> tidyr::pivot_wider(names_from = "pet_type", values_from = "bool") |>
+  tidyr::pivot_longer(cols=dplyr::all_of(baby_pets)) |>
+  tidyr::replace_na(list(value = 0))
+```
+
+#### Dataset Coverage Requirement
 
 The source nodes in the crossmap must fully cover the nomenclature of the data to be transformed. This is equivalent to saying that the crossmap should contain transformation instructions for every single piece of data in the original dataset. In the figure below, the name-value pair for the category `x7285!` in the source data (shown in purple) does not have an associated set of relations in the proposed transformation crossmap (shown in blue).
 
 ![](plot-coverage-matrix.png){width="100%"}Depending on how the transformation is implemented, coverage mismatches can result in both explicit and implicit/hidden errors. In particular, having conformable matrix dimensions is not sufficient to avoid corrupting data unless you check that the indices match.
 
-### Only split or collapse nomenclature pool variables
+#### Only split or collapse nomenclature pool variables
 
 Crossmaps with split or collapse relations should only be applied to nomenclature pool variables where the measured values are counts which are part of the same aggregate pool. For example, a crossmap could be used to aggregate or further disaggregate the occupation counts shown below:
 
@@ -284,7 +316,7 @@ tibble::tribble(
 ) |> knitr::kable()
 ```
 
-### Handle missing values before crossmap transformation
+#### Handle missing values before crossmap transformation
 
 Missing values should be dealt with prior to transformation as they can silently corrupt data in collapse or split transformations. The figure below shows a nomenclature variable with a missing value which cannot be unambiguously resolved in the crossmap transformation. The missing value belongs to a source node which is part of both a split and collapse relations.
 
@@ -296,7 +328,7 @@ For instance, in R, the function `sum()` takes the argument `na.rm` which when `
 
 Exactly how missing values should be treated will vary from dataset to dataset. This could involve replace the missing values with zeroes or some imputed values, or to remove them completely. Lastly, note that crossmaps with only one-to-one recode relations avoids this "**missing value arithmetic**" issue since missing values can be passed unmodified in to the target nomenclature. Nevertheless, it is still advisable to handle missing values prior to applying the crossmap so that missing value decisions and nomenclature transformations are encoded in separate steps.
 
-### Avoid multiple observations for each source node
+#### Avoid multiple observations for each source node
 
 In addition to the tidy structure requirement described above, for each observational unit in the dataset, which can span multiple rows, there should ideally only be one name-value pair for each unique node in the original nomenclature. This ensures that only one numeric value is transformed for each source-target link.
 
@@ -326,17 +358,75 @@ origin_tidy_sec <- origin_tidy_sub |>
 origin_tidy_sec
 ```
 
-## Transformation via Mutating Joins
+## Example `xmap` Transformations
 
-This vignette illustrates with simple examples how crossmaps can be used to complete recode, split and collapse transformation.
+> what examples do I want to include?
 
-Notice that all crossmaps transformations can be decomposed into multiple "standard" transformation steps:
+### `xmap` Aggregation
 
-1.  recode node labels to target nomenclature
+Let's consider a simple case where we have some disaggregated population figures which we want to aggregate.
 
-2.  mutate node values
+First, define a crossmap for the aggregation.
 
-3.  summarise mutated values by target node
+```{r}
+library(xmap)
+
+agg_map <- data.frame(ctr = "AU",
+                      adm1 = c("AU-NSW", "AU-QLD", "AU-SA", "AU-TAS", "AU-VIC", "AU-WA", "AU-ACT", "AU-NT"),
+                      link = 1) |>
+  as_xmap_df(adm1, ctr, link)
+```
+
+Second, load in our state-level figures
+
+```{r}
+state_data <- tibble::tribble(
+                              ~state,    ~adm1,    ~Pop,
+                   "New South Wales", "AU-NSW", 8153600,
+                          "Victoria", "AU-VIC", 6613700,
+                        "Queensland", "AU-QLD", 5322100,
+                   "South Australia",  "AU-SA", 1820500,
+                 "Western Australia",  "AU-WA", 2785300,
+                          "Tasmania", "AU-TAS",  571500,
+                "Northern Territory",  "AU-NT",  250600,
+      "Australian Capital Territory", "AU-ACT",  456700
+)
+```
+
+Now, assuming your crossmap fully covers your data the transformation:
+
+1.  Join the aggregate groups (`state`) to each row in `state_data` via the source labels (`adm1`)
+2.  Mutate the source values (`Pop`)
+3.  Summarising values for each group (`state`)
+
+> would this be a good place to put a small-set illustration?
+
+```{r}
+dplyr::left_join(state_data, agg_map, by = c("adm1")) |>
+  dplyr::mutate(x_pop = Pop * link) |>
+  dplyr::group_by(ctr) |>
+  dplyr::summarise(agg_pop = sum(x_pop))
+```
+
+Or using `apply_xmap()` from the `conformr` package:
+
+``` r
+conformr::apply_xmap(data_in = state_data, xmap = agg_map,
+                     in_codes = adm1, in_values = Pop,
+                     out_codes = NULL, out_values = NULL)
+```
+
+which also checks that the nomenclature in `data_in` is fully covered by your `xmap` -- i.e. you don't lose any source values during the step 1 join.
+
+### `xmap` Disaggregation
+
+We can reverse the aggregation (assuming we retained appropriate weights) using:
+
+``` r
+apply_xmap(data_in = ctr_data, xmap = disagg_map, in_codes = ctr, in_values = Pop, out_codes = NULL, out_values = NULL)
+```
+
+> add simple example
 
 ### Wild Caught (Hierarchical) Nomenclature Data
 
@@ -412,70 +502,5 @@ state_nom <- state_pop |>
 
 knitr::kable(state_nom)
 ```
-
-### Aggregation via crossmaps
-
-Let's consider a simple case where we have some disaggregated population figures which we want to aggregate.
-
-First, define a crossmap for the aggregation.
-
-```{r}
-library(xmap)
-
-agg_map <- data.frame(ctr = "AU",
-                      adm1 = c("AU-NSW", "AU-QLD", "AU-SA", "AU-TAS", "AU-VIC", "AU-WA", "AU-ACT", "AU-NT"),
-                      link = 1) |>
-  as_xmap_df(adm1, ctr, link)
-```
-
-Second, load in our state-level figures
-
-```{r}
-state_data <- tibble::tribble(
-                              ~state,    ~adm1,    ~Pop,
-                   "New South Wales", "AU-NSW", 8153600,
-                          "Victoria", "AU-VIC", 6613700,
-                        "Queensland", "AU-QLD", 5322100,
-                   "South Australia",  "AU-SA", 1820500,
-                 "Western Australia",  "AU-WA", 2785300,
-                          "Tasmania", "AU-TAS",  571500,
-                "Northern Territory",  "AU-NT",  250600,
-      "Australian Capital Territory", "AU-ACT",  456700
-)
-```
-
-Now, assuming your crossmap fully covers your data the transformation involves two steps:
-
-1.  Joining the aggregate group to each row in `state_data`
-2.  Summarising values for each group
-
-```{r}
-dplyr::left_join(state_data, agg_map, by = c("adm1")) |>
-  dplyr::mutate(x_pop = Pop * link) |>
-  dplyr::group_by(ctr) |>
-  dplyr::summarise(agg_pop = sum(x_pop))
-```
-
-Or using `apply_xmap()` from the `conformr` package:
-
-``` r
-conformr::apply_xmap(data_in = state_data, xmap = agg_map,
-                     in_codes = adm1, in_values = Pop,
-                     out_codes = NULL, out_values = NULL)
-```
-
-which also checks that the nomenclature in `data_in` is fully covered by your `xmap` -- i.e. you don't lose any rows during the join.
-
-#### Disaggregation
-
-We can reverse the aggregation (assuming we retained appropriate weights) using:
-
-``` r
-apply_xmap(data_in = ctr_data, xmap = disagg_map, in_codes = ctr, in_values = Pop, out_codes = NULL, out_values = NULL)
-```
-
-#### Complex Maps
-
-Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmpas are best suited for cases where you have multiple types of transformations being applied at once. In particular, they circumvent the need to count the number of observations after merging, and hence can insure against duplication and erroneous drops even in cases where it is difficult to calculate the expected number of post-transformations rows (i.e. many-to-many relations with both split and collapse transformations)
 
 ## References
