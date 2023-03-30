@@ -91,7 +91,7 @@ d.  is one layer of a larger hierarchical nomenclature (e.g. administrative regi
 
 ## Nomenclature Transformations
 
-### Crossmap Transformations
+### Crossmaps as Transformation Matrices
 
 The utility of defining a nomenclature variable and the crossmap format is most evident when we look at the transformation of values from a source nomenclature into a target nomenclature as a set of matrix operations. To demonstrate, we use the `xmap::xmap_to_matrix()` function to take a valid crossmap (`abc_xmap`) and convert it into a incidence matrix (`b_mtx`):
 
@@ -143,7 +143,7 @@ matlib::printMatEqn(`B'` = t(b_mtx), x, "=", y)
 
 Given this equivalence, it is clear to see how the two conditions that define a crossmap guarantee that the total sum before and after the nomenclature transform remains the same. Moreover, we can be sure of this without checking the total of the resultant variable $\bf{y}$.
 
-### Comparison to Existing Appraoches
+### Comparison to Existing Approaches
 
 Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmaps provide assurance for transformations with multiple mapping relations being applied at once that is not possible with ad-hoc validation. In particular, it circumvent the need to count the number of observations after merging, and hence can insure against duplication and erroneous drops even in cases where it is difficult to calculate the expected number of post-transformations rows (i.e. many-to-many relations with both split and collapse transformations).
 
@@ -208,7 +208,7 @@ Returning to the tidy nomenclature format, note that each nested name-value set 
 
 ## Apply `xmap` to data using Mutating Joins
 
-All crossmaps transformations can be decomposed into multiple "standard" transformation steps:
+All crossmaps transformations can be decomposed into multiple "standard" data manipulation steps:
 
 1.  **Rename source node labels into target nomenclature.** This can be achieved via a left-join between source data and the crossmap by the source node labels.
 
