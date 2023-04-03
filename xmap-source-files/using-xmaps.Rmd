@@ -203,6 +203,7 @@ Observe the following:
 #### Crosswalk and Lookup Table approaches
 
 > -   Crosswalk or lookup table approaches are better than above
+> -   consistent format for m:m crosswalks
 > -   but are still limited when it comes to dealing with split relations and complex xmaps
 > -   unambiguous matches are left to the user, not supported
 
@@ -380,7 +381,7 @@ origin_tidy_sec <- origin_tidy_sub |>
 origin_tidy_sec
 ```
 
-## Example `xmap` Transformations
+## (WIP) Example `xmap` Transformations
 
 > what examples do I want to include?
 
