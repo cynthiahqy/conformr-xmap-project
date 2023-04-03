@@ -13,6 +13,67 @@ vignette: >
 
 ## Nomenclature Variables and Datasets
 
+### Merging Data with related but distinct semantics
+
+Merging datasets is a common part of data wrangling. The easiest kind of integration involves merging semantically identical data from multiple sources or tables. This somewhat trivial type of integration can be achieved simply by concatenating records. Slightly less trivial, but still relatively straightforward is merging datasets with semantically identical variables stored under different column names. Schema crosswalks, also known as Metadata crosswalks, are often used to encode and share the necessary schema transformations, such as renaming variables or matching metadata fields. Next, data with the same underlying semantics but differences in structure (physical layout) must be reshaped before integration. Tidy data principles @wickham2014 provide a standard way of tidying such data so that then can be concatenated together. However, relatively little work has been done on improving methods for wrangling data which have related but distinct semantics.
+
+Data with related but distinct semantics most often arise when nomenclature are updated to reflect changing in some underlying phenomena of interest. For instance, the semantics of labour force occupation statistics will change when the nomenclature for classifying labour force participants into occupations is updated to reflect real world changes in the kinds of jobs available in the economy. Data collected before and after a occupation nomenclature update are clearly related but have distinct semantics.
+
+**quote from @ehling2003**
+
+> Harmonisation creates a desired degree of comparability...
+
+**Ex-post harmonisation exists in many areas of social science: labour econ, household and consumer surveys, trade econ**
+
+### Nomenclature Variables
+
+Let us define a **nomenclature variable** as a collection of values indexed by a set of names, where the names correspond to categories or classes in a particular nomenclature, and the values are measured on those particular categories or classes. Multiple nomenclature variables can share the same name index. Now, define a **nomenclature transformation** as the transformation of variables from one nomenclature to another. Such transformations must involve the renaming or recoding of the name index, and may also modify the indexed values depending on the mapping between nomenclatures. The most common type of modification is aggregation of numeric values, which occurs when the nomenclature transformation collapses multiple nodes of the source nomenclature into a single node in the target nomenclature.
+
+Hence, **ex-post harmonisation** can be understood as the nomenclature transformation and merging of multiple nomenclature variables which contain semantically related values and are indexed by distinct but related nomenclatures. Moreover, transformations which modify measured numeric values should only be applied to nomenclature variables where the values form an aggregate pool. In practice this means the indexed values should be counts, since applying a nomenclature transformation effectively pools these semantically related values and redistributes them into a common nomenclature. From here one, we refere to such variables as **nomenclature count variables**.
+
+### Tidy Nomenclature datasets
+
+@wickham2007 introduces a division of dataset variables into two types: **identifier and measured variables:**
+
+-   Identifier variables identify the unit that measurements are taken on.
+-   Measured variables are values measured on the observation unit defined by the identifier variables.
+
+Using the additional abstraction step of splitting measured variables into id-value pairs, we extend this taxonomy slightly to define a "tidy nomeclature data" format:
+
+-   **Observational Unit Identifier Variables** are any identify variables used to index observational units. For example, country and year variables could be used to index population observations.
+-   **Nomenclature Index (Identifier) Variables** identify the dimension, or set of dimensions, for the observation unit which measurements take place on.
+-   **Measured Variables** contain values measured on the observation unit and dimension. The dimension id and measured variables form name-value pairs on a particular dimension of the observational unit.
+
+@wickham2014's **tidy data** (see [`vignette("tidy-data", package = "tidyr")`](https://tidyr.tidyverse.org/articles/tidy-data.html#defining)) format describes a standard way of structuring tabular datasets using the following data semantics:
+
+> A dataset is a collection of **values**, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
+
+Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. Furthermore, under a semantic role system [@kandel2011], the nomenclature name column has the semantic role of "classification code", while the value column would have a standard data type (e.g. integer). Hence, a nomenclature variable can also be thought of as pairings of classification code and value columns.
+
+A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature.
+
+Hence for **tidy nomenclature data**:
+
+1.  Every column is either a identifier variable, or a measured value
+2.  Every row is an observation on a nomenclature sub-dimension
+3.  Every cell is a single value of an identifier variable, nomenclature index label, or measured variable.
+
+Moreover, since observational unit variables and dimensions
+
+<!--- insert example table here --->
+
+If we nest nomenclature data, we obtain a structure analogous to the standard tidy data format (@wickham2014):
+
+1.  Every column is a variable
+2.  Every row is an observation
+3.  Every cell is single value *or nested name-value set*.
+
+### Example Nomenclature Dataset
+
+To illustrate, consider data on population by state in Australia[^1] shown below.
+
+[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022)
+
 ```{r echo=FALSE}
 state_data <- tibble::tribble(
                               ~State,    ~`Population (est. 30 Jun 2022)`,
@@ -29,50 +90,11 @@ state_data <- tibble::tribble(
 total_pop_ex <- round(sum(state_data$`Population (est. 30 Jun 2022)`) / 10^6, 2)
 ```
 
-A nomenclature variable is a set of name-value pairs, where the names correspond to categories or classes in a particular nomenclature, and the values are measured on those particular categories or classes. For instance, consider data on population by state in Australia[^1] shown below.
-
-[^1]: Source: [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022)
-
 ```{r echo=FALSE}
 knitr::kable(state_data, caption = "Australian population by State (excl. Other Territories)")
 ```
 
-The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. Furthermore, since the values form an aggregate pool for the total population of Australia, we can consider this to be a **nomenclature pool variable**.
-
-### Tidy Nomenclature datasets
-
-@wickham2007 introduces a division of dataset variables into two types: **identifier and measured variables:**
-
--   Identifier variables identify the unit that measurements are taken on.
--   Measured variables are values measured on the observation unit defined by the identifier variables.
-
-Using the additional abstraction step of splitting measured variables into id-value pairs, we extend this taxonomy slightly to define a "tidy nomeclature data" format:
-
--   **Observational Unit Identifier Variables** are any identify variables used to index observational units. For example, country and year variables could be used to index population observations.
--   **Dimension Identifier Variables** identify the dimension, or set of dimensions, for the observation unit which measurements take place on.
--   **Measured Variables** contain values measured on the observation unit and dimension. The dimension id and measured variables form name-value pairs on a particular dimension of the observational unit.
-
-@wickham2014's **tidy data** (see [`vignette("tidy-data", package = "tidyr")`](https://tidyr.tidyverse.org/articles/tidy-data.html#defining)) format describes a standard way of structuring tabular datasets using the following data semantics:
-
-> A dataset is a collection of **values**, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a **variable** and an **observation**.
-
-Under these semantics, every value in a tidy dataset belongs either to a observational unit identifier variable or a "simple" dimension variable. However, **nomenclature variables** are name-value pairs split across two columns, one for the nomenclature "dimension" identifier variable, and one for the associated measured value. Furthermore, under a semantic role system [@kandel2011], the nomenclature name column has the semantic role of "classification code", while the value column would have a standard data type (e.g. integer). Hence, a nomenclature variable can also be thought of as pairings of classification code and value columns.
-
-A **nomenclature dataset** consists of multiple observations of a single nomenclature variable. In a tidy nomenclature dataset, each observational unit should have the same number of rows across a shared nomenclature.
-
-Hence for **tidy nomenclature data**:
-
-1.  Every column is either a identifier variable, or part of a nomenclature name-value pair
-2.  Every row is an observation on a nomenclature sub-dimension
-3.  Every cell is a single value of an identifier variable, nomenclature node, or measured variable.
-
-<!--- insert example table here --->
-
-If we nest nomenclature data, we obtain a structure analogous to the standard tidy data format (@wickham2014):
-
-1.  Every column is a variable
-2.  Every row is an observation
-3.  Every cell is single value *or nested name-value set*.
+The set of all name-value pairs of state/territory name and population estimate for a given time period form a nomenclature variable observation for Australia. Furthermore, since the values form an aggregate pool for the total population of Australia, we can consider this to be a **nomenclature count variable**.
 
 Notice that nomenclature datasets blur the distinction between variable and value. For example, we could describe the above table as containing values of a `population` variable attached to the observational units of `state`, rather than a single observation of a `state-population` nomenclature variable (dimension-value pair) for the observational unit of "Australia".
 
@@ -91,7 +113,7 @@ d.  is one layer of a larger hierarchical nomenclature (e.g. administrative regi
 
 ## Nomenclature Transformations
 
-### Crossmap Transformations
+### Crossmaps as Transformation Matrices
 
 The utility of defining a nomenclature variable and the crossmap format is most evident when we look at the transformation of values from a source nomenclature into a target nomenclature as a set of matrix operations. To demonstrate, we use the `xmap::xmap_to_matrix()` function to take a valid crossmap (`abc_xmap`) and convert it into a incidence matrix (`b_mtx`):
 
@@ -143,7 +165,7 @@ matlib::printMatEqn(`B'` = t(b_mtx), x, "=", y)
 
 Given this equivalence, it is clear to see how the two conditions that define a crossmap guarantee that the total sum before and after the nomenclature transform remains the same. Moreover, we can be sure of this without checking the total of the resultant variable $\bf{y}$.
 
-### Comparison to Existing Appraoches
+### Comparison to Existing Approaches
 
 Using crossmaps for recoding, aggregation or disaggregation can seem a bit tedious given you can achieve the same transformation with some simple join and mutate statements, coupled with some ad-hoc validation. However, crossmaps provide assurance for transformations with multiple mapping relations being applied at once that is not possible with ad-hoc validation. In particular, it circumvent the need to count the number of observations after merging, and hence can insure against duplication and erroneous drops even in cases where it is difficult to calculate the expected number of post-transformations rows (i.e. many-to-many relations with both split and collapse transformations).
 
@@ -181,6 +203,7 @@ Observe the following:
 #### Crosswalk and Lookup Table approaches
 
 > -   Crosswalk or lookup table approaches are better than above
+> -   consistent format for m:m crosswalks
 > -   but are still limited when it comes to dealing with split relations and complex xmaps
 > -   unambiguous matches are left to the user, not supported
 
@@ -208,7 +231,7 @@ Returning to the tidy nomenclature format, note that each nested name-value set 
 
 ## Apply `xmap` to data using Mutating Joins
 
-All crossmaps transformations can be decomposed into multiple "standard" transformation steps:
+All crossmaps transformations can be decomposed into multiple "standard" data manipulation steps:
 
 1.  **Rename source node labels into target nomenclature.** This can be achieved via a left-join between source data and the crossmap by the source node labels.
 
@@ -358,7 +381,7 @@ origin_tidy_sec <- origin_tidy_sub |>
 origin_tidy_sec
 ```
 
-## Example `xmap` Transformations
+## (WIP) Example `xmap` Transformations
 
 > what examples do I want to include?
 
