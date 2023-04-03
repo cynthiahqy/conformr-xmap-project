@@ -78,10 +78,143 @@
 <div class="section level2">
 <h2 id="nomenclature-variables-and-datasets">Nomenclature Variables and Datasets<a class="anchor" aria-label="anchor" href="#nomenclature-variables-and-datasets"></a>
 </h2>
-<p>A nomenclature variable is a set of name-value pairs, where the names
+<div class="section level3">
+<h3 id="merging-data-with-related-but-distinct-semantics">Merging Data with related but distinct semantics<a class="anchor" aria-label="anchor" href="#merging-data-with-related-but-distinct-semantics"></a>
+</h3>
+<p>Merging datasets is a common part of data wrangling. The easiest kind
+of integration involves merging semantically identical data from
+multiple sources or tables. This somewhat trivial type of integration
+can be achieved simply by concatenating records. Slightly less trivial,
+but still relatively straightforward is merging datasets with
+semantically identical variables stored under different column names.
+Schema crosswalks, also known as Metadata crosswalks, are often used to
+encode and share the necessary schema transformations, such as renaming
+variables or matching metadata fields. Next, data with the same
+underlying semantics but differences in structure (physical layout) must
+be reshaped before integration. Tidy data principles <span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>
+provide a standard way of tidying such data so that then can be
+concatenated together. However, relatively little work has been done on
+improving methods for wrangling data which have related but distinct
+semantics.</p>
+<p>Data with related but distinct semantics most often arise when
+nomenclature are updated to reflect changing in some underlying
+phenomena of interest. For instance, the semantics of labour force
+occupation statistics will change when the nomenclature for classifying
+labour force participants into occupations is updated to reflect real
+world changes in the kinds of jobs available in the economy. Data
+collected before and after a occupation nomenclature update are clearly
+related but have distinct semantics.</p>
+<p><strong>quote from <span class="citation">Ehling (<a href="#ref-ehling2003">2003</a>)</span></strong></p>
+<blockquote>
+<p>Harmonisation creates a desired degree of comparability…</p>
+</blockquote>
+<p><strong>Ex-post harmonisation exists in many areas of social science:
+labour econ, household and consumer surveys, trade econ</strong></p>
+</div>
+<div class="section level3">
+<h3 id="nomenclature-variables">Nomenclature Variables<a class="anchor" aria-label="anchor" href="#nomenclature-variables"></a>
+</h3>
+<p>Let us define a <strong>nomenclature variable</strong> as a
+collection of values indexed by a set of names, where the names
 correspond to categories or classes in a particular nomenclature, and
-the values are measured on those particular categories or classes. For
-instance, consider data on population by state in Australia<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Source: &lt;a href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022" class="external-link"&gt;Australian
+the values are measured on those particular categories or classes.
+Multiple nomenclature variables can share the same name index. Now,
+define a <strong>nomenclature transformation</strong> as the
+transformation of variables from one nomenclature to another. Such
+transformations must involve the renaming or recoding of the name index,
+and may also modify the indexed values depending on the mapping between
+nomenclatures. The most common type of modification is aggregation of
+numeric values, which occurs when the nomenclature transformation
+collapses multiple nodes of the source nomenclature into a single node
+in the target nomenclature.</p>
+<p>Hence, <strong>ex-post harmonisation</strong> can be understood as
+the nomenclature transformation and merging of multiple nomenclature
+variables which contain semantically related values and are indexed by
+distinct but related nomenclatures. Moreover, transformations which
+modify measured numeric values should only be applied to nomenclature
+variables where the values form an aggregate pool. In practice this
+means the indexed values should be counts, since applying a nomenclature
+transformation effectively pools these semantically related values and
+redistributes them into a common nomenclature. From here one, we refere
+to such variables as <strong>nomenclature count variables</strong>.</p>
+</div>
+<div class="section level3">
+<h3 id="tidy-nomenclature-datasets">Tidy Nomenclature datasets<a class="anchor" aria-label="anchor" href="#tidy-nomenclature-datasets"></a>
+</h3>
+<p><span class="citation">Wickham (<a href="#ref-wickham2007">2007</a>)</span> introduces a division of
+dataset variables into two types: <strong>identifier and measured
+variables:</strong></p>
+<ul>
+<li>Identifier variables identify the unit that measurements are taken
+on.</li>
+<li>Measured variables are values measured on the observation unit
+defined by the identifier variables.</li>
+</ul>
+<p>Using the additional abstraction step of splitting measured variables
+into id-value pairs, we extend this taxonomy slightly to define a “tidy
+nomeclature data” format:</p>
+<ul>
+<li>
+<strong>Observational Unit Identifier Variables</strong> are any
+identify variables used to index observational units. For example,
+country and year variables could be used to index population
+observations.</li>
+<li>
+<strong>Nomenclature Index (Identifier) Variables</strong> identify
+the dimension, or set of dimensions, for the observation unit which
+measurements take place on.</li>
+<li>
+<strong>Measured Variables</strong> contain values measured on the
+observation unit and dimension. The dimension id and measured variables
+form name-value pairs on a particular dimension of the observational
+unit.</li>
+</ul>
+<p><span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>’s <strong>tidy data</strong>
+(see <a href="https://tidyr.tidyverse.org/articles/tidy-data.html#defining" class="external-link"><code>vignette("tidy-data", package = "tidyr")</code></a>)
+format describes a standard way of structuring tabular datasets using
+the following data semantics:</p>
+<blockquote>
+<p>A dataset is a collection of <strong>values</strong>, usually either
+numbers (if quantitative) or strings (if qualitative). Values are
+organised in two ways. Every value belongs to a
+<strong>variable</strong> and an <strong>observation</strong>.</p>
+</blockquote>
+<p>Under these semantics, every value in a tidy dataset belongs either
+to a observational unit identifier variable or a “simple” dimension
+variable. However, <strong>nomenclature variables</strong> are
+name-value pairs split across two columns, one for the nomenclature
+“dimension” identifier variable, and one for the associated measured
+value. Furthermore, under a semantic role system <span class="citation">(<a href="#ref-kandel2011">Kandel et al.
+2011</a>)</span>, the nomenclature name column has the semantic role of
+“classification code”, while the value column would have a standard data
+type (e.g. integer). Hence, a nomenclature variable can also be thought
+of as pairings of classification code and value columns.</p>
+<p>A <strong>nomenclature dataset</strong> consists of multiple
+observations of a single nomenclature variable. In a tidy nomenclature
+dataset, each observational unit should have the same number of rows
+across a shared nomenclature.</p>
+<p>Hence for <strong>tidy nomenclature data</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>Every column is either a identifier variable, or a measured
+value</li>
+<li>Every row is an observation on a nomenclature sub-dimension</li>
+<li>Every cell is a single value of an identifier variable, nomenclature
+index label, or measured variable.</li>
+</ol>
+<p>Moreover, since observational unit variables and dimensions</p>
+<!--- insert example table here --->
+<p>If we nest nomenclature data, we obtain a structure analogous to the
+standard tidy data format (<span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>):</p>
+<ol style="list-style-type: decimal">
+<li>Every column is a variable</li>
+<li>Every row is an observation</li>
+<li>Every cell is single value <em>or nested name-value set</em>.</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="example-nomenclature-dataset">Example Nomenclature Dataset<a class="anchor" aria-label="anchor" href="#example-nomenclature-dataset"></a>
+</h3>
+<p>To illustrate, consider data on population by state in Australia<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Source: &lt;a href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022" class="external-link"&gt;Australian
 Bureau of Statistics&lt;/a&gt;&lt;/p&gt;'><sup>1</sup></a> shown
 below.</p>
 <table class="table">
@@ -130,77 +263,7 @@ Territories)</caption>
 population estimate for a given time period form a nomenclature variable
 observation for Australia. Furthermore, since the values form an
 aggregate pool for the total population of Australia, we can consider
-this to be a <strong>nomenclature pool variable</strong>.</p>
-<div class="section level3">
-<h3 id="tidy-nomenclature-datasets">Tidy Nomenclature datasets<a class="anchor" aria-label="anchor" href="#tidy-nomenclature-datasets"></a>
-</h3>
-<p><span class="citation">Wickham (<a href="#ref-wickham2007">2007</a>)</span> introduces a division of
-dataset variables into two types: <strong>identifier and measured
-variables:</strong></p>
-<ul>
-<li>Identifier variables identify the unit that measurements are taken
-on.</li>
-<li>Measured variables are values measured on the observation unit
-defined by the identifier variables.</li>
-</ul>
-<p>Using the additional abstraction step of splitting measured variables
-into id-value pairs, we extend this taxonomy slightly to define a “tidy
-nomeclature data” format:</p>
-<ul>
-<li>
-<strong>Observational Unit Identifier Variables</strong> are any
-identify variables used to index observational units. For example,
-country and year variables could be used to index population
-observations.</li>
-<li>
-<strong>Dimension Identifier Variables</strong> identify the
-dimension, or set of dimensions, for the observation unit which
-measurements take place on.</li>
-<li>
-<strong>Measured Variables</strong> contain values measured on the
-observation unit and dimension. The dimension id and measured variables
-form name-value pairs on a particular dimension of the observational
-unit.</li>
-</ul>
-<p><span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>’s <strong>tidy data</strong>
-(see <a href="https://tidyr.tidyverse.org/articles/tidy-data.html#defining" class="external-link"><code>vignette("tidy-data", package = "tidyr")</code></a>)
-format describes a standard way of structuring tabular datasets using
-the following data semantics:</p>
-<blockquote>
-<p>A dataset is a collection of <strong>values</strong>, usually either
-numbers (if quantitative) or strings (if qualitative). Values are
-organised in two ways. Every value belongs to a
-<strong>variable</strong> and an <strong>observation</strong>.</p>
-</blockquote>
-<p>Under these semantics, every value in a tidy dataset belongs either
-to a observational unit identifier variable or a “simple” dimension
-variable. However, <strong>nomenclature variables</strong> are
-name-value pairs split across two columns, one for the nomenclature
-“dimension” identifier variable, and one for the associated measured
-value. Furthermore, under a semantic role system <span class="citation">(<a href="#ref-kandel2011">Kandel et al.
-2011</a>)</span>, the nomenclature name column has the semantic role of
-“classification code”, while the value column would have a standard data
-type (e.g. integer). Hence, a nomenclature variable can also be thought
-of as pairings of classification code and value columns.</p>
-<p>A <strong>nomenclature dataset</strong> consists of multiple
-observations of a single nomenclature variable. In a tidy nomenclature
-dataset, each observational unit should have the same number of rows
-across a shared nomenclature.</p>
-<p>Hence for <strong>tidy nomenclature data</strong>:</p>
-<ol style="list-style-type: decimal">
-<li>Every column is either a identifier variable, or part of a
-nomenclature name-value pair</li>
-<li>Every row is an observation on a nomenclature sub-dimension</li>
-<li>Every cell is a single value of an identifier variable, nomenclature
-node, or measured variable.</li>
-</ol>
-<!--- insert example table here ---><p>If we nest nomenclature data, we obtain a structure analogous to the
-standard tidy data format (<span class="citation">Wickham (<a href="#ref-wickham2014">2014</a>)</span>):</p>
-<ol style="list-style-type: decimal">
-<li>Every column is a variable</li>
-<li>Every row is an observation</li>
-<li>Every cell is single value <em>or nested name-value set</em>.</li>
-</ol>
+this to be a <strong>nomenclature count variable</strong>.</p>
 <p>Notice that nomenclature datasets blur the distinction between
 variable and value. For example, we could describe the above table as
 containing values of a <code>population</code> variable attached to the
@@ -230,7 +293,7 @@ product classifications)</li>
 <h2 id="nomenclature-transformations">Nomenclature Transformations<a class="anchor" aria-label="anchor" href="#nomenclature-transformations"></a>
 </h2>
 <div class="section level3">
-<h3 id="crossmap-transformations">Crossmap Transformations<a class="anchor" aria-label="anchor" href="#crossmap-transformations"></a>
+<h3 id="crossmaps-as-transformation-matrices">Crossmaps as Transformation Matrices<a class="anchor" aria-label="anchor" href="#crossmaps-as-transformation-matrices"></a>
 </h3>
 <p>The utility of defining a nomenclature variable and the crossmap
 format is most evident when we look at the transformation of values from
@@ -316,7 +379,7 @@ nomenclature transform remains the same. Moreover, we can be sure of
 this without checking the total of the resultant variable <span class="math inline">\(\bf{y}\)</span>.</p>
 </div>
 <div class="section level3">
-<h3 id="comparison-to-existing-appraoches">Comparison to Existing Appraoches<a class="anchor" aria-label="anchor" href="#comparison-to-existing-appraoches"></a>
+<h3 id="comparison-to-existing-approaches">Comparison to Existing Approaches<a class="anchor" aria-label="anchor" href="#comparison-to-existing-approaches"></a>
 </h3>
 <p>Using crossmaps for recoding, aggregation or disaggregation can seem
 a bit tedious given you can achieve the same transformation with some
@@ -388,6 +451,7 @@ distribution error.</li>
 <blockquote>
 <ul>
 <li>Crosswalk or lookup table approaches are better than above</li>
+<li>consistent format for m:m crosswalks</li>
 <li>but are still limited when it comes to dealing with split relations
 and complex xmaps</li>
 <li>unambiguous matches are left to the user, not supported</li>
@@ -443,7 +507,7 @@ source noemncalture but same target nomenclature</li>
 <h2 id="apply-xmap-to-data-using-mutating-joins">Apply <code>xmap</code> to data using Mutating Joins<a class="anchor" aria-label="anchor" href="#apply-xmap-to-data-using-mutating-joins"></a>
 </h2>
 <p>All crossmaps transformations can be decomposed into multiple
-“standard” transformation steps:</p>
+“standard” data manipulation steps:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Rename source node labels into target
 nomenclature.</strong> This can be achieved via a left-join between
@@ -535,8 +599,8 @@ bit tedious and unnecessary,</li>
 <span><span class="co">## <span style="color: #BCBCBC;">1</span>      1 chick        1</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">2</span>      2 puppy        1</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">3</span>      3 chick        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>      4 chick        1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>      5 kitten       1</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>      4 kitten       1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>      5 chick        1</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## the format needed to use apply_xmap()</span></span>
 <span><span class="va">pet_df</span> <span class="op">|&gt;</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="st">"pet_type"</span>, values_from <span class="op">=</span> <span class="st">"bool"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -555,11 +619,11 @@ bit tedious and unnecessary,</li>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span>      3 kitten     0</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span>      3 chick      1</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span>      4 puppy      0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">11</span>      4 kitten     0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">12</span>      4 chick      1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span>      4 kitten     1</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">12</span>      4 chick      0</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">13</span>      5 puppy      0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">14</span>      5 kitten     1</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">15</span>      5 chick      0</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">14</span>      5 kitten     0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">15</span>      5 chick      1</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="dataset-coverage-requirement">Dataset Coverage Requirement<a class="anchor" aria-label="anchor" href="#dataset-coverage-requirement"></a>
@@ -856,7 +920,7 @@ variable.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="example-xmap-transformations">Example <code>xmap</code> Transformations<a class="anchor" aria-label="anchor" href="#example-xmap-transformations"></a>
+<h2 id="wip-example-xmap-transformations">(WIP) Example <code>xmap</code> Transformations<a class="anchor" aria-label="anchor" href="#wip-example-xmap-transformations"></a>
 </h2>
 <blockquote>
 <p>what examples do I want to include?</p>
@@ -1378,6 +1442,11 @@ dataset longer:</p>
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-ehling2003" class="csl-entry">
+Ehling, Manfred. 2003. <span>“Harmonising Data in Official
+Statistics.”</span> In, edited by Jürgen H. P. Hoffmeyer-Zlotnik and
+Christof Wolf, 17–31. Boston, MA: Springer US. <a href="https://doi.org/10.1007/978-1-4419-9186-7_2" class="external-link">https://doi.org/10.1007/978-1-4419-9186-7_2</a>.
+</div>
 <div id="ref-kandel2011" class="csl-entry">
 Kandel, Sean, Andreas Paepcke, Joseph Hellerstein, and Jeffrey Heer.
 2011. <span>“Wrangler: Interactive Visual Specification of Data
