@@ -161,6 +161,26 @@ simple_xmap <- tibble::tribble(~f, ~t, ~w,
 )
 ```
 
+### API Design & Functionality
+
+[Issue #67 Comment](https://github.com/cynthiahqy/conformr-project/issues/67#issuecomment-1436365643):
+
+I'm not sure offering helpers for modifying crossmaps is necessary or even desirable.
+
+-   Lists of maps make more sense from a "using xmaps" perspective,
+-   Combining multiple crossmaps into a single table add a flexible quality to xmaps that goes against the purpose of the structure as a data-provenance object.
+-   Users can still manipulate and store multiple sets of weights or other xmap variants in a "parent table", from which they create multiple xmap.
+-   Manipulation of xmaps creates risk around invalidating the map -- i.e. modifying values in the weights column is technically possible for an xmap (since it is just a data.frame column), but not desirable since the map is not revalidated after the manipulation -- i.e. `xmap |> dplyr::mutate()` should probably return a tibble rather than an xmap.
+
+[Issue #93: 14 Apr 2023](https://github.com/cynthiahqy/conformr-project/issues/93#issuecomment-1508073958)
+
+-   Rather than classes, I think it makes the most sense to have a single xmap class (i.e. xmap_df), and everything else be "candidate links" -- which can be input into the as_xmap() generic.
+-   Candidate links can also be validated as crossmaps, without coercion, allowing users to validate transformation objects in existing workflows. Coercion into xmap classes should be reserved for facilitating "advanced" or "extension" tasks --- i.e. visualisation, perturbation, multi-map transformations.
+-   Some xmap class variants could include:
+    -   "long" or "short" formats for ggplot;
+    -   recode/collapse variants which drop the weights columns (since it is implied);
+    -   igraph objects for spatial aggregation/transformation -- noting the similarity between spatial weighting matrices and crossmaps (see this Vignette from [SpatialReg](https://r-spatial.github.io/spatialreg/articles/nb_igraph.html).
+
 ## Class Structure
 
 The package uses the class `xmap` as the superclass for all representations of a crossmaps, and subclasses: `xmap_df`
