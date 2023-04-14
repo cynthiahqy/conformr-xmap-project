@@ -43,6 +43,9 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/links_from_list.html</loc>
+  </url>
+  <url>
     <loc>/reference/new_xmap.html</loc>
   </url>
   <url>
@@ -62,6 +65,9 @@
   </url>
   <url>
     <loc>/reference/xmap_reverse.html</loc>
+  </url>
+  <url>
+    <loc>/reference/xmap_to_list.html</loc>
   </url>
   <url>
     <loc>/reference/xmap_to_matrix.html</loc>

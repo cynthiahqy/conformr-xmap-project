@@ -12,7 +12,7 @@
 }
 
 #' Low Level Constructors for xmap subclasses
-#' @param x data-frame like object.
+#' @param x data-frame object containing candidate links.
 #' @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
 #' @return xmap_df object. Note that this function unclasses tibbles.
 #' @name new_xmap

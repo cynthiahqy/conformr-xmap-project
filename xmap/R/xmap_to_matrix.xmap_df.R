@@ -1,6 +1,6 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' @describeIn xmap_to_matrix Coerce a `data.frame` to `xmap`
+#' @describeIn xmap_to_matrix Coerce a `xmap_df` to a Matrix
 #'
 #' @return
 #' @export

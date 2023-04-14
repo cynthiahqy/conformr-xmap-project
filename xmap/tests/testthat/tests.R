@@ -238,26 +238,14 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
   }
   )
 
-testthat::test_that('xmap_drop_extra works as expected', {
-  links <- tibble::tribble(
-  ~f, ~t, ~w,
-  "A1", "B01", 1,
-  "A2", "B02", 1,
-  "A3", "B02", 1,
-  "A4", "B03", 0.25,
-  "A4", "B04", 0.75
-  ) 
-  xmap_small <- new_xmap_df(links, "f", "t", "w")
-
-  links_extra <- links |> 
-    dplyr::mutate(ex = "extra")
-  xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
-  
-  xmap_drop_df <- xmap_extra |> xmap_drop_extra.xmap_df()
-  xmap_drop <- xmap_extra |> xmap_drop_extra()
-  
-  testthat::expect_identical(xmap_small, xmap_drop_df)
-  testthat::expect_identical(xmap_small, xmap_drop)
+testthat::test_that("xmap_to_list works as expected", {
+  tar_list <- list(AA = c("x3", "x4", "x6"),
+                  BB = c("x1", "x5"),
+                  CC = c("x2"))
+  xmap_c <- links_from_list(tar_list, "source", "target", "weights") |>
+            new_xmap_df("source", "target", "weights")
+  out_list <- xmap_to_list(xmap_c)
+  testthat::expect_identical(tar_list, out_list)
 })
 
 testthat::test_that(
@@ -299,4 +287,26 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
   testthat::expect_identical(df_check_reversible(df_x,"to"), df_x)
 }
 )
+
+testthat::test_that('xmap_drop_extra works as expected', {
+  links <- tibble::tribble(
+  ~f, ~t, ~w,
+  "A1", "B01", 1,
+  "A2", "B02", 1,
+  "A3", "B02", 1,
+  "A4", "B03", 0.25,
+  "A4", "B04", 0.75
+  ) 
+  xmap_small <- new_xmap_df(links, "f", "t", "w")
+
+  links_extra <- links |> 
+    dplyr::mutate(ex = "extra")
+  xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
+  
+  xmap_drop_df <- xmap_extra |> xmap_drop_extra.xmap_df()
+  xmap_drop <- xmap_extra |> xmap_drop_extra()
+  
+  testthat::expect_identical(xmap_small, xmap_drop_df)
+  testthat::expect_identical(xmap_small, xmap_drop)
+})
 
