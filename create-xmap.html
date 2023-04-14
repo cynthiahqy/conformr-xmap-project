@@ -388,8 +388,10 @@ properties</a></li>
 <ul>
 <li><a href="#helper-for-subclass-attributes" id="toc-helper-for-subclass-attributes">Helper for subclass
 attributes</a></li>
-<li><a href="#xmap_df-constructor-method" id="toc-xmap_df-constructor-method"><code>xmap_df</code> Constructor
-Method</a></li>
+<li><a href="#convert-list-to-links-data-frame" id="toc-convert-list-to-links-data-frame">Convert List to Links Data
+Frame</a></li>
+<li><a href="#construct-from-links-data-frame" id="toc-construct-from-links-data-frame">Construct From Links Data
+Frame</a></li>
 <li><a href="#class-tests" id="toc-class-tests">Class Tests</a></li>
 </ul></li>
 <li><a href="#validation" id="toc-validation">Validation</a>
@@ -404,10 +406,12 @@ Method</a></li>
 <li><a href="#generic-as_xmap_df" id="toc-generic-as_xmap_df">Generic:
 <code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code></a></li>
 <li><a href="#as_xmap_df.data.frame" id="toc-as_xmap_df.data.frame"><code><a href='create-xmap.html#as_xmap_df.data.frame'>as_xmap_df.data.frame</a>()</code></a></li>
-<li><a href="#conversion-xmap_to_matrix" id="toc-conversion-xmap_to_matrix">Conversion:
-<code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></a></li>
-<li><a href="#helper-xmap_drop_extra" id="toc-helper-xmap_drop_extra">Helper:
-<code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></a></li>
+</ul></li>
+<li><a href="#conversion" id="toc-conversion">Conversion</a>
+<ul>
+<li><a href="#to-matrix" id="toc-to-matrix">to Matrix</a></li>
+<li><a href="#to-list-xmap_to_list" id="toc-to-list-xmap_to_list">to
+List: <code><a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>()</code></a></li>
 </ul></li>
 <li><a href="#description-tools" id="toc-description-tools">Description
 Tools</a>
@@ -420,6 +424,8 @@ classification</a></li>
 <ul>
 <li><a href="#generic-xmap_reverse" id="toc-generic-xmap_reverse">Generic:
 <code><a href='create-xmap.html#xmap_reverse'>xmap_reverse</a>()</code></a></li>
+<li><a href="#helper-xmap_drop_extra" id="toc-helper-xmap_drop_extra">Helper:
+<code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></a></li>
 </ul></li>
 <li><a href="#visualisation" id="toc-visualisation">Visualisation</a>
 <ul>
@@ -457,7 +463,7 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9017&quot;,
+    Version = &quot;0.0.0.9018&quot;,
     Title = &quot;xmap: A data-structure for extending crosswalks&quot;,
     Description = &quot;Provides &#39;xmap&#39; S3 classes (the &#39;Crossmap&#39;) for use in {conformr} package.&quot;,
     `Authors@R` = person(
@@ -473,29 +479,43 @@ usethis::use_mit_license(copyright_holder = &quot;C. Huang&quot;)</code></pre>
 </div>
 <div id="dependencies" class="section level3">
 <h3>Dependencies</h3>
-<pre class="r"><code># Imports
+<pre class="r"><code># Imports for Validation
+usethis::use_package(&quot;R&quot;, min_version = &quot;4.1&quot;)
 usethis::use_package(&quot;rlang&quot;, min_version = &quot;1.0.0&quot;)
 usethis::use_package(&quot;cli&quot;)
 
-# Suggests
-usethis::use_package(&quot;tibble&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;matlib&quot;, type = &quot;Suggests&quot;)</code></pre>
-<pre><code>## ✔ Adding &#39;rlang&#39; to Imports field in DESCRIPTION
-## • Refer to functions with `rlang::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;cli&#39; to Imports field in DESCRIPTION
-## • Refer to functions with `cli::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;tibble&#39; to Suggests field in DESCRIPTION
-## • In your package code, use `rlang::is_installed(&quot;tibble&quot;)` or `rlang::check_installed(&quot;tibble&quot;)` to test if tibble is installed
-## • Then directly refer to functions with `tibble::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;testthat&#39; to Suggests field in DESCRIPTION
-## • In your package code, use `rlang::is_installed(&quot;testthat&quot;)` or `rlang::check_installed(&quot;testthat&quot;)` to test if testthat is installed
-## • Then directly refer to functions with `testthat::fun()`</code></pre>
-<pre><code>## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</code></pre>
-<pre><code>## Warning: &#39;rgl.init&#39; failed, running with &#39;rgl.useNULL = TRUE&#39;.</code></pre>
+# Imports for Construction Helpers
+usethis::use_package(&quot;tibble&quot;)
+usethis::use_package(&quot;tidyr&quot;)
+
+# Suggests for Vignettes and Tests
+usethis::use_package(&quot;Matrix&quot;, type = &quot;Suggests&quot;) ## for sparse matrices
+usethis::use_package(&quot;matlib&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)</code></pre>
+<pre><code>## ✔ Adding &#39;R&#39; to Imports field in DESCRIPTION</code></pre>
+<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
+<pre><code>## • Refer to functions with `R::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;rlang&#39; to Imports field in DESCRIPTION</code></pre>
+<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
+<pre><code>## • Refer to functions with `rlang::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;cli&#39; to Imports field in DESCRIPTION</code></pre>
+<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
+<pre><code>## • Refer to functions with `cli::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;tibble&#39; to Imports field in DESCRIPTION</code></pre>
+<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
+<pre><code>## • Refer to functions with `tibble::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;tidyr&#39; to Imports field in DESCRIPTION</code></pre>
+<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
+<pre><code>## • Refer to functions with `tidyr::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;Matrix&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;Matrix&quot;)` or `rlang::check_installed(&quot;Matrix&quot;)` to test if Matrix is installed
+## • Then directly refer to functions with `Matrix::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;matlib&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;matlib&quot;)` or `rlang::check_installed(&quot;matlib&quot;)` to test if matlib is installed
 ## • Then directly refer to functions with `matlib::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;testthat&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;testthat&quot;)` or `rlang::check_installed(&quot;testthat&quot;)` to test if testthat is installed
+## • Then directly refer to functions with `testthat::fun()`</code></pre>
 </div>
 <div id="utilities" class="section level3">
 <h3>Utilities</h3>
@@ -580,7 +600,7 @@ int_dat &lt;- list(&quot;input_df&quot; = input_df)
 
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 </code></pre>
-<pre><code>## ✔ Adding &#39;R&#39; to Depends field in DESCRIPTION
+<pre><code>## ✔ Moving &#39;R&#39; from Imports to Depends field in DESCRIPTION
 ## ✔ Saving &#39;int_dat&#39; to &#39;R/sysdata.rda&#39;</code></pre>
 <pre class="r"><code>simple_xmap &lt;- tibble::tribble(~f, ~t, ~w,
                                 &quot;x1111&quot;, &quot;A1&quot;, 1,
@@ -661,10 +681,91 @@ a numeric vector - <code>X</code> inherits from the class
                     {
                       testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
-<div id="xmap_df-constructor-method" class="section level3">
-<h3><code>xmap_df</code> Constructor Method</h3>
+<div id="convert-list-to-links-data-frame" class="section level3">
+<h3>Convert List to Links Data Frame</h3>
+<p>One-to-one and many-to-one mappings could easily be encoded as list
+objects, where each element of the list is a member of the target set,
+and contains a vector of all the source nodes that link to it. For
+instance:</p>
+<pre class="r"><code>link_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
+                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
+                  CC = c(&quot;x2&quot;)
+                  )</code></pre>
+<p>Convert to tibble:</p>
+<pre class="r"><code>col_from = &quot;source&quot;
+col_to = &quot;target&quot;
+col_weights = &quot;weights&quot;
+
+link_list |&gt; 
+  tibble::enframe(name = col_to, value = col_from) |&gt;
+  tidyr::unnest_longer(col=c(col_from)) |&gt;
+  dplyr::mutate(&quot;{col_weights}&quot; := 1)</code></pre>
+<pre><code>## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+## ℹ Please use `all_of()` or `any_of()` instead.
+##   # Was:
+##   data %&gt;% select(col_from)
+## 
+##   # Now:
+##   data %&gt;% select(all_of(col_from))
+## 
+## See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.</code></pre>
+<pre><code>## # A tibble: 6 × 3
+##   target source weights
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
+## 1 AA     x3           1
+## 2 AA     x4           1
+## 3 AA     x6           1
+## 4 BB     x1           1
+## 5 BB     x5           1
+## 6 CC     x2           1</code></pre>
+<div id="links_from_list" class="section level4">
+<h4><code><a href='create-xmap.html#links_from_list'>links_from_list</a>()</code></h4>
+<pre class="r"><code>xmap::<a href='create-xmap.html#links_from_list'>links_from_list</a>(list = link_list,
+                      col_from = &quot;source&quot;,
+                      col_to = &quot;target&quot;,
+                      col_weights = &quot;weights&quot;)</code></pre>
+<pre class="r"><code>#&#39; Make candidate links from list
+#&#39; 
+#&#39; Convert a named list of one-to-one or many-to-one relations into a table of
+#&#39; candidate links for validation or coercion into a crossmap \(i.e. via `<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()`\).
+#&#39;
+#&#39; @param x_list named list. Each item contains a vector of source nodes which map to #&#39; the target node named.
+#&#39; @param col_from,col_to,col_weights character string names for columns containing
+#&#39; source nodes, target nodes and numeric weights.
+#&#39;
+#&#39; @return tibble containing candidate links for conversion to xmap.
+#&#39; @export
+#&#39;
+#&#39; @examples
+#&#39; tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
+#&#39;                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
+#&#39;                  CC = c(&quot;x2&quot;))
+#&#39; <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
+<span id='links_from_list'>links_from_list</span> &lt;- function(x_list, col_from, col_to, col_weights){
+  stopifnot(is.vector(x_list))
+  links &lt;- x_list |&gt;
+    tibble::enframe(name = col_to, value = col_from) |&gt;
+    tidyr::unnest_longer(col=c(col_from))
+    #dplyr::mutate(&quot;{col_weights}&quot; := 1)
+  links[[col_weights]] &lt;- 1
+  return(links)
+}</code></pre>
+<p>Convert to dataframe: – how to unnest???</p>
+<pre class="r"><code># convert list to data.frame
+links &lt;- as.matrix(link_list) |&gt;
+  as.data.frame()
+
+# convert row names to column
+from_name &lt;- &quot;source&quot;
+to_name &lt;- &quot;target&quot;
+links[[to_name]] = row.names(links)
+names(links)[1] = from_name</code></pre>
+</div>
+</div>
+<div id="construct-from-links-data-frame" class="section level3">
+<h3>Construct From Links Data Frame</h3>
 <p>The low-level constructor takes in:</p>
 <ul>
 <li>one data argument (<code>x</code>), accepts base objects of type
@@ -706,7 +807,7 @@ which:</p>
 </ul></li>
 </ul>
 <pre class="r"><code>#&#39; Low Level Constructors for xmap subclasses
-#&#39; @param x data-frame like object.
+#&#39; @param x data-frame object containing candidate links.
 #&#39; @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
 #&#39; @return xmap_df object. Note that this function unclasses tibbles.
 #&#39; @name new_xmap
@@ -753,7 +854,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -864,7 +965,7 @@ vectors).</p>
                       testthat::expect_error(<a href='create-xmap.html#df_check_col_order'>df_check_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="column-type-check" class="section level4">
 <h4>Column Type Check</h4>
@@ -1000,9 +1101,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 <div id="internal-validate_xmap_df" class="section level3">
@@ -1082,7 +1183,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1186,12 +1287,12 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_weights&quot;)
   }
 )</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 </div>
@@ -1311,10 +1412,15 @@ controlled by <code>.drop</code> argument</li>
                                <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
-<div id="conversion-xmap_to_matrix" class="section level3">
-<h3>Conversion: <code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></h3>
+</div>
+<div id="conversion" class="section level2">
+<h2>Conversion</h2>
+<div id="to-matrix" class="section level3">
+<h3>to Matrix</h3>
+<div id="generic-xmap_to_matrix" class="section level4">
+<h4>Generic: <code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></h4>
 <pre class="r"><code>#&#39; Extract incidence matrix from xmap objects
 #&#39; 
 #&#39; Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
@@ -1330,9 +1436,10 @@ controlled by <code>.drop</code> argument</li>
 <span id='xmap_to_matrix'>xmap_to_matrix</span> &lt;- function(x, sparse, ...) {
   UseMethod(&quot;xmap_to_matrix&quot;)
 }</code></pre>
+</div>
 <div id="method-xmap_to_matrix.xmap_df" class="section level4">
 <h4>Method: <code><a href='create-xmap.html#xmap_to_matrix.xmap_df'>xmap_to_matrix.xmap_df</a>()</code></h4>
-<pre class="r"><code>#&#39; @describeIn xmap_to_matrix Coerce a `data.frame` to `xmap`
+<pre class="r"><code>#&#39; @describeIn xmap_to_matrix Coerce a `xmap_df` to a Matrix
 #&#39;
 #&#39; @return
 #&#39; @export
@@ -1385,55 +1492,107 @@ controlled by <code>.drop</code> argument</li>
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
   }
   )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-</div>
-</div>
-<div id="helper-xmap_drop_extra" class="section level3">
-<h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
-<pre class="r"><code>#&#39; Drop extra columns from `xmap` objects
-#&#39;
-#&#39; @export
-<span id='xmap_drop_extra'>xmap_drop_extra</span> &lt;- function(x){
-  UseMethod(&quot;xmap_drop_extra&quot;)
-}
-
-#&#39; @export
-<span id='xmap_drop_extra.xmap_df'>xmap_drop_extra.xmap_df</span> &lt;- function(x){
-  stopifnot(<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>(x))
-  
-  col_strings &lt;- simplify2array(<a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(x))
-  
-  z_attrs &lt;- attributes(x)
-  z_attrs$names &lt;- unname(col_strings)
-  
-  z &lt;- as.data.frame(x)
-  z &lt;- z[,col_strings]
-  attributes(z) &lt;- z_attrs
-  
-  return(z)
-}</code></pre>
-<pre class="r"><code>testthat::test_that(&#39;xmap_drop_extra works as expected&#39;, {
-  links &lt;- tibble::tribble(
-  ~f, ~t, ~w,
-  &quot;A1&quot;, &quot;B01&quot;, 1,
-  &quot;A2&quot;, &quot;B02&quot;, 1,
-  &quot;A3&quot;, &quot;B02&quot;, 1,
-  &quot;A4&quot;, &quot;B03&quot;, 0.25,
-  &quot;A4&quot;, &quot;B04&quot;, 0.75
-  ) 
-  xmap_small &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
-
-  links_extra &lt;- links |&gt; 
-    dplyr::mutate(ex = &quot;extra&quot;)
-  xmap_extra &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links_extra, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
-  
-  xmap_drop_df &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_drop_extra.xmap_df'>xmap_drop_extra.xmap_df</a>()
-  xmap_drop &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()
-  
-  testthat::expect_identical(xmap_small, xmap_drop_df)
-  testthat::expect_identical(xmap_small, xmap_drop)
-})</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
+</div>
+</div>
+<div id="to-list-xmap_to_list" class="section level3">
+<h3>to List: <code><a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>()</code></h3>
+<pre class="r"><code>#&#39; Coerce a unit weights `xmap_df` to a List
+#&#39;
+#&#39; @param x xmap with only unit weights
+#&#39;
+#&#39; @return named list. Each item contains a vector of source nodes which map to 
+#&#39; the target node named.
+#&#39; @export
+#&#39;
+#&#39; @examples
+#&#39; tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
+#&#39;                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
+#&#39;                  CC = c(&quot;x2&quot;))
+#&#39; xmap_c &lt;- <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;) |&gt;
+#&#39;            <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(source, target, weights)
+#&#39; <a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_c)
+<span id='xmap_to_list'>xmap_to_list</span> &lt;- function(x) {
+  x_attrs &lt;- attributes(x)
+  # check only unit weights
+  w &lt;- x[[x_attrs$col_weights]]
+  stopifnot(all(w == 1))
+  
+  # convert
+  x |&gt;
+    subset(select = c(x_attrs$col_to, x_attrs$col_from)) |&gt;
+    tidyr::nest(source = c(x_attrs$col_from)) |&gt;
+    tibble::deframe() |&gt;
+    sapply(as.matrix) |&gt;
+    sapply(as.vector)
+}</code></pre>
+<pre class="r"><code>testthat::test_that(&quot;xmap_to_list works as expected&quot;, {
+  tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
+                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
+                  CC = c(&quot;x2&quot;))
+  xmap_c &lt;- <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;) |&gt;
+            <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
+  out_list &lt;- <a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_c)
+  testthat::expect_identical(tar_list, out_list)
+})</code></pre>
+<pre><code>## ── Warning (&#39;&lt;text&gt;:5&#39;): xmap_to_list works as expected ────────────────────────
+## Using an external vector in selections was deprecated in tidyselect 1.1.0.
+## i Please use `all_of()` or `any_of()` instead.
+##   # Was:
+##   data %&gt;% select(col_from)
+## 
+##   # Now:
+##   data %&gt;% select(all_of(col_from))
+## 
+## See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+## Backtrace:
+##   1. global <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(...)
+##   4. global <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
+##   5. tidyr::unnest_longer(...)
+##   6. tidyselect::eval_select(enquo(col), data)
+##   7. tidyselect:::eval_select_impl(...)
+##  11. tidyselect:::vars_select_eval(...)
+##  12. tidyselect:::walk_data_tree(expr, data_mask, context_mask)
+##  13. tidyselect:::eval_c(expr, data_mask, context_mask)
+##  14. tidyselect:::reduce_sels(node, data_mask, context_mask, init = init)
+##  15. tidyselect:::walk_data_tree(new, data_mask, context_mask)
+##  16. tidyselect:::eval_sym(expr, data_mask, context_mask)</code></pre>
+<p>Dev example:</p>
+<pre class="r"><code>xmap_flist &lt;- 
+  <a href='create-xmap.html#links_from_list'>links_from_list</a>(link_list,
+                  &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;) |&gt;
+  <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(source, target, weights)</code></pre>
+<p>with dplyr:</p>
+<pre class="r"><code>links_df &lt;- 
+  <a href='create-xmap.html#links_from_list'>links_from_list</a>(link_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
+
+links_df |&gt; 
+  dplyr::group_by(target) |&gt;
+  dplyr::summarise(source = list(source)) |&gt;
+  tibble::deframe()</code></pre>
+<pre><code>## $AA
+## [1] &quot;x3&quot; &quot;x4&quot; &quot;x6&quot;
+## 
+## $BB
+## [1] &quot;x1&quot; &quot;x5&quot;
+## 
+## $CC
+## [1] &quot;x2&quot;</code></pre>
+<p>without dplyr:</p>
+<pre class="r"><code>links_df |&gt; 
+  subset(select = c(&quot;target&quot;, &quot;source&quot;)) |&gt;
+  tidyr::nest(source = c(&quot;source&quot;)) |&gt;
+  tibble::deframe() |&gt;
+  sapply(as.matrix) |&gt;
+  sapply(as.vector)</code></pre>
+<pre><code>## $AA
+## [1] &quot;x3&quot; &quot;x4&quot; &quot;x6&quot;
+## 
+## $BB
+## [1] &quot;x1&quot; &quot;x5&quot;
+## 
+## $CC
+## [1] &quot;x2&quot;</code></pre>
 </div>
 </div>
 <div id="description-tools" class="section level2">
@@ -1481,7 +1640,7 @@ has_collapse &lt;- has_1fromM</code></pre>
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
@@ -1570,7 +1729,54 @@ has_collapse &lt;- has_1fromM</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#df_check_reversible'>df_check_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+</div>
+<div id="helper-xmap_drop_extra" class="section level3">
+<h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
+<pre class="r"><code>#&#39; Drop extra columns from `xmap` objects
+#&#39;
+#&#39; @export
+<span id='xmap_drop_extra'>xmap_drop_extra</span> &lt;- function(x){
+  UseMethod(&quot;xmap_drop_extra&quot;)
+}
+
+#&#39; @export
+<span id='xmap_drop_extra.xmap_df'>xmap_drop_extra.xmap_df</span> &lt;- function(x){
+  stopifnot(<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>(x))
+  
+  col_strings &lt;- simplify2array(<a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(x))
+  
+  z_attrs &lt;- attributes(x)
+  z_attrs$names &lt;- unname(col_strings)
+  
+  z &lt;- as.data.frame(x)
+  z &lt;- z[,col_strings]
+  attributes(z) &lt;- z_attrs
+  
+  return(z)
+}</code></pre>
+<pre class="r"><code>testthat::test_that(&#39;xmap_drop_extra works as expected&#39;, {
+  links &lt;- tibble::tribble(
+  ~f, ~t, ~w,
+  &quot;A1&quot;, &quot;B01&quot;, 1,
+  &quot;A2&quot;, &quot;B02&quot;, 1,
+  &quot;A3&quot;, &quot;B02&quot;, 1,
+  &quot;A4&quot;, &quot;B03&quot;, 0.25,
+  &quot;A4&quot;, &quot;B04&quot;, 0.75
+  ) 
+  xmap_small &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+
+  links_extra &lt;- links |&gt; 
+    dplyr::mutate(ex = &quot;extra&quot;)
+  xmap_extra &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links_extra, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+  
+  xmap_drop_df &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_drop_extra.xmap_df'>xmap_drop_extra.xmap_df</a>()
+  xmap_drop &lt;- xmap_extra |&gt; <a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()
+  
+  testthat::expect_identical(xmap_small, xmap_drop_df)
+  testthat::expect_identical(xmap_small, xmap_drop)
+})</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level2">
@@ -1583,8 +1789,8 @@ usethis::use_package(&quot;ggbump&quot;, type = &quot;suggests&quot;)</code></pr
 <pre><code>## ✔ Adding &#39;dplyr&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;dplyr&quot;)` or `rlang::check_installed(&quot;dplyr&quot;)` to test if dplyr is installed
 ## • Then directly refer to functions with `dplyr::fun()`</code></pre>
-<pre><code>## • In your package code, use `rlang::is_installed(&quot;tibble&quot;)` or `rlang::check_installed(&quot;tibble&quot;)` to test if tibble is installed
-## • Then directly refer to functions with `tibble::fun()`</code></pre>
+<pre><code>## Warning: Package &#39;tibble&#39; is already listed in &#39;Imports&#39; in DESCRIPTION, no
+## change made.</code></pre>
 <pre><code>## ✔ Adding &#39;ggplot2&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;ggplot2&quot;)` or `rlang::check_installed(&quot;ggplot2&quot;)` to test if ggplot2 is installed
 ## • Then directly refer to functions with `ggplot2::fun()`</code></pre>
@@ -1696,13 +1902,10 @@ NULL
   cat(paste0(&quot;xmap_df:\n&quot;,  x_type, &quot;\n&quot;, x_direction, &quot;\n&quot;))
   print(x_links)
 }</code></pre>
-<pre><code>## Dropped additional columns in
-## `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight,
-## &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1,
-## &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;,
-## 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;,
-## &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col =
-## &quot;stuff&quot;)`</code></pre>
+<pre><code>## Dropped additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight, &quot;mining&quot;, `, `
+## &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1, &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;,
+## &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;,
+## &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`</code></pre>
 <pre><code>## xmap_df:
 ## recode, split, and collapse  
 ## (sector -&gt; new_sec) BY weight
@@ -1795,6 +1998,7 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;as_xmap_df.Rd&#39;
 ## Writing &#39;df_check.Rd&#39;
 ## Writing &#39;as_xmap.Rd&#39;
+## Writing &#39;links_from_list.Rd&#39;
 ## Writing &#39;new_xmap.Rd&#39;
 ## Writing &#39;print.xmap.Rd&#39;
 ## Writing &#39;op-null-default.Rd&#39;
@@ -1802,13 +2006,14 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;xmap-has.Rd&#39;
 ## Writing &#39;xmap_drop_extra.Rd&#39;
 ## Writing &#39;xmap_reverse.Rd&#39;
+## Writing &#39;xmap_to_list.Rd&#39;
 ## Writing &#39;xmap_to_matrix.Rd&#39;</code></pre>
 <pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;
 ## ✔ Writing &#39;_pkgdown.yml&#39;</code></pre>
 <pre><code>## -- Installing package into temporary library -----------------------------------
 ## == Building pkgdown site =======================================================
-## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap&#39;
-## Writing to:   &#39;/Users/cynthiahqy/Dropbox/WORK/RA_2022/conformr-project/xmap/docs&#39;
+## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-project/xmap&#39;
+## Writing to:   &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-project/xmap/docs&#39;
 ## -- Initialising site -----------------------------------------------------------
 ## Copying &#39;../../../../../../../Library/Frameworks/R.framework/Versions/4.2/Resources/library/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
 ## Copying &#39;../../../../../../../Library/Frameworks/R.framework/Versions/4.2/Resources/library/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
@@ -1826,6 +2031,8 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;reference/as_xmap_df.html&#39;
 ## Reading &#39;man/df_check.Rd&#39;
 ## Writing &#39;reference/df_check.html&#39;
+## Reading &#39;man/links_from_list.Rd&#39;
+## Writing &#39;reference/links_from_list.html&#39;
 ## Reading &#39;man/new_xmap.Rd&#39;
 ## Writing &#39;reference/new_xmap.html&#39;
 ## Reading &#39;man/op-null-default.Rd&#39;
@@ -1840,6 +2047,8 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;reference/xmap_drop_extra.html&#39;
 ## Reading &#39;man/xmap_reverse.Rd&#39;
 ## Writing &#39;reference/xmap_reverse.html&#39;
+## Reading &#39;man/xmap_to_list.Rd&#39;
+## Writing &#39;reference/xmap_to_list.html&#39;
 ## Reading &#39;man/xmap_to_matrix.Rd&#39;
 ## Writing &#39;reference/xmap_to_matrix.html&#39;
 ## -- Building articles -----------------------------------------------------------
@@ -1855,10 +2064,8 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;sitemap.xml&#39;
 ## -- Building search index -------------------------------------------------------
 ## == DONE ========================================================================
-## Warning messages:
-## 1: In rgl.init(initValue, onlyNULL) : RGL: unable to open X11 display
-## 2: &#39;rgl.init&#39; failed, running with &#39;rgl.useNULL = TRUE&#39;. 
-## 3: The vignette title specified in \VignetteIndexEntry{} is different from the title in the YAML metadata. The former is &quot;Intro to Crossmaps for Data Transformation in R&quot;, and the latter is &quot;Crossmaps for Data Transformation in R&quot;. If that is intentional, you may set options(rmarkdown.html_vignette.check_title = FALSE) to suppress this check.</code></pre>
+## Warning message:
+## The vignette title specified in \VignetteIndexEntry{} is different from the title in the YAML metadata. The former is &quot;Intro to Crossmaps for Data Transformation in R&quot;, and the latter is &quot;Crossmaps for Data Transformation in R&quot;. If that is intentional, you may set options(rmarkdown.html_vignette.check_title = FALSE) to suppress this check.</code></pre>
 </div>
 </div>
 
