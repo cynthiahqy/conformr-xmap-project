@@ -259,11 +259,11 @@ links_from_list <- function(x_list, col_from, col_to, col_weights){
 }
 ```
 
-### Validation: Links
+### Link Properties: `has_*(x_)`
 
 `has_*(x_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
 
-```{r send_to="R/xmap-has.R"}
+```{r send_to="R/has.R"}
 #' Boolean flags for properties of candidate and validated xmap links
 #'
 #' @description
@@ -271,17 +271,22 @@ links_from_list <- function(x_list, col_from, col_to, col_weights){
 #' The functions only accepts equal length vector inputs to support multiple link formats,
 #' but does not check if the inputs are from the same xmap.
 #' @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
-#' @name xmap-has
+#' 
+#' @return TRUE or FALSE
+#' 
+#' @name has-links
 NULL
 ```
+
+#### Crossmap Property Flags
 
 A valid Crossmap satisfies the following conditions:
 
 1.  There is at most one link between each distinct source and target node (`has_dup_pairs()`)
 2.  For each source node, the sum of weights attached to all outgoing links sums to one. (`has_complete_weights()`)
 
-```{r send_to="R/xmap-has.R"}
-#' @describeIn xmap-has Returns TRUE if xmap does not have 
+```{r send_to="R/has.R"}
+#' @describeIn has-links Returns TRUE if xmap does not have 
 #' duplicate pairs of source-target nodes (irrespective of weights)
 #'
 has_no_dup_pairs <- function(x_from, x_to) {
@@ -294,9 +299,12 @@ has_no_dup_pairs <- function(x_from, x_to) {
 }
 ```
 
-```{r send_to="R/xmap-has.R"}
-#' @describeIn xmap-has Returns TRUE if xmap has valid weights
-has_complete_weights <- function(x_from, x_weights) {
+```{r send_to="R/has.R"}
+#' @describeIn has-links Returns TRUE if all weights for a given `from` label
+#' sum to one (approximately)
+#' @param tol Tolerance of comparison. Passed through to the `tolerance` arg of
+#' `base::all.equal()`.
+has_complete_weights <- function(x_from, x_weights, tol = .Machine$double.eps^0.5) {
   stopifnot(is.vector(x_from))
   stopifnot(is.vector(x_weights))
   stopifnot(identical(length(x_from), length(x_weights)))
@@ -308,13 +316,30 @@ has_complete_weights <- function(x_from, x_weights) {
   ) |> as.vector()
   names(sum_w) <- NULL
   ones <- rep(1, length(sum_w))
-  all(isTRUE(all.equal(sum_w, ones)))
+  all(isTRUE(all.equal(sum_w, ones, tolerance = tol)))
+}
+```
+
+```{r}
+#' @describeIn has-links Returns TRUE if links have no duplicate pairs and complete weights
+has_xmap_props <- function(x_from, x_to, x_weights){
+  ## check vectors are equal length
+  x_list <- list(x_from, x_to, x_weights)
+  x_lengths <- sapply(x_list, length)
+  stopifnot(length(unique(x_lengths)) == 1)
+  
+  ## check properties
+  x_props <- c(
+    pairs = has_no_dup_pairs(x_from, x_to),
+    weights = has_complete_weights(x_from, x_weights)
+  ) 
+  all(x_props)
 }
 ```
 
 ```{r test-has-flags}
 testthat::test_that(
-  "has_* validation helpers work as expected on valid df",
+  "has_* xmap validation helpers work as expected on valid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -326,11 +351,12 @@ testthat::test_that(
     )
     testthat::expect_true(has_no_dup_pairs(df$from, df$to))
     testthat::expect_true(has_complete_weights(df$from, df$weights))
+    testthat::expect_true(has_xmap_props(df$from, df$to, df$weights))
   }
 )
 
 testthat::test_that(
-  "has_* validation helpers catch invalid df",
+  "has_* xmap validation helpers catch invalid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -355,12 +381,12 @@ testthat::test_that(
 )
 ```
 
-### Helper: xmap link classification
+#### Relation Type Flags
 
 -   used for print methods, reverse
 
-```{r print-helpers, send_to="R/xmap-has.R"}
-#' @describeIn xmap-has Return TRUE if xmap recodes labels between `from` and `to`
+```{r print-helpers, send_to="R/has.R"}
+#' @describeIn has-links Return TRUE if xmap recodes labels between `from` and `to`
 has_1to1 <- function(x_weights) {
   stopifnot(is.vector(x_weights))
   any(x_weights == 1)
@@ -368,7 +394,7 @@ has_1to1 <- function(x_weights) {
 #'
 has_recode <- has_1to1
 
-#' @describeIn xmap-has Return TRUE if xmap has splitting links between `from` and `to`
+#' @describeIn has-links Return TRUE if xmap has splitting links between `from` and `to`
 has_1toM <- function(x_weights) {
   stopifnot(is.vector(x_weights))
   any(x_weights < 1)
@@ -376,7 +402,7 @@ has_1toM <- function(x_weights) {
 #'
 has_split <- has_1toM
 
-#' @describeIn xmap-has Return TRUE if xmap has collapsing links between `from` and `to`
+#' @describeIn has-links Return TRUE if xmap has collapsing links between `from` and `to`
 has_1fromM <- function(x_to){
   stopifnot(is.vector(x_to))
   as.logical(anyDuplicated(x_to))
@@ -387,7 +413,7 @@ has_collapse <- has_1fromM
 
 ```{r}
 testthat::test_that(
-  "has_* split, recode, collapse checkers work as expected",
+  "has_* relation type flag functions work as expected",
   {
     w_1to1 <- rep(1, 10)
     w_1toM <- rep(1/6, 6)
@@ -399,6 +425,94 @@ testthat::test_that(
     testthat::expect_true(has_collapse(to_1fromM))
   }
 )
+```
+
+### Helper: df property checks
+
+#### Abort Missing Columns
+
+```{r send_to="R/abort.R"}
+#' Abort if named columns can't be found in df
+#'
+abort_missing_cols <- function(df, cols) {
+  missing_cols <- setdiff(cols, names(df))
+  if (length(missing_cols) != 0) {
+    cli::cli_abort(
+      message = "The column{?s} {.var {missing_cols}} {?was/were} not found.",
+      class = "abort_missing_cols"
+    )
+  }
+  invisible(df)
+}
+```
+
+#### Abort Missing Values
+
+```{r send_to="R/abort.R"}
+#' Abort if xmap_df has missing values
+#'
+abort_any_na <- function(df) {
+  if (base::anyNA(df)) {
+    cli::cli_abort(
+      message = "NA values found. Please enter missing `from` or `to` node labels and/or convert NA weights",
+      class = "abort_na"
+    )
+  }
+  invisible(df)
+}
+```
+
+### Validate: Links
+
+`check_*(df,...)` all take an data.frame for first argument, and character values or vectors for the remaining arguments. They throw an error if the validation condition does not pass, and `NULL` otherwise.
+
+```{r send_to="R/check.R"}
+#' Validation messages for xmap or candidate links
+#'
+#' @description
+#' Checks issues with data.frame like objects containing validated `xmap` or candidate links.
+#'
+#' @param df a data.frame-like object containing links
+#' @param col_from, col_to, col_weights character vector or values naming columns from `df`
+#'
+#' @returns An error if the validation condition fails,
+#' and invisibly returns `df` otherwise.
+#'
+#' @name check-df
+NULL
+```
+
+#### No Duplicate Node Pairs (links)
+
+```{r send_to="R/check.R"}
+#' @describeIn check-df Abort if duplicate source-target pairs are found
+#'
+check_dup_pairs <- function(df, col_from, col_to) {
+  if (!has_no_dup_pairs(df[[col_from]], df[[col_to]])) {
+    cli::cli_abort(
+      message = "Duplicate `from`-`to` links were found.
+      Please remove or collapse duplicates.",
+      class = "abort_dup_pairs"
+    )
+  }
+  invisible(df)
+}
+```
+
+#### Complete Mapping Weights
+
+```{r fnc-check-weights, send_to="R/check.R"}
+#' @describeIn check-df Abort if invalid mapping weights are found
+#'
+check_bad_weights <- function(df, col_from, col_weights) {
+  if (!has_complete_weights(df[[col_from]], df[[col_weights]])) {
+    cli::cli_abort(
+      message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
+      class = "abort_bad_weights"
+    )
+  }
+  invisible(df)
+}
 ```
 
 ## `xmap` Class Structure
@@ -580,63 +694,11 @@ is_xmap_df <- function(x) {
 
 The conventions for validation helpers:
 
-`df_check_*(df,...)` all take an data.frame for first argument, and character values or vectors for the remaining arguments. They throw an error if the validation condition does not pass, and `NULL` otherwise.
-
-```{r send_to="R/df_check.R"}
-#' xmap_df validation helpers
-#'
-#' @description
-#' Checks issues with an xmap_df object.
-#'
-#' @param df a data.frame-like object containing an crossmap
-#' @param col_* character vector or values naming columns from `df`
-#'
-#' @returns An error if the validation condition fails,
-#' and invisibly returns `df` otherwise.
-#'
-#' @name df_check
-NULL
-```
-
-#### Missing Columns Check
-
-```{r send_to="R/df_check.R"}
-#' @describeIn df_check Abort if named columns can't be found in xmap_df
-#'
-df_check_cols <- function(df, col_attrs) {
-  stopifnot(length(col_attrs) == 3)
-  missing_cols <- setdiff(col_attrs, names(df))
-  if (length(missing_cols) != 0) {
-    cli::cli_abort(
-      message = "The column{?s} {.var {missing_cols}} {?was/were} not found.",
-      class = "abort_missing_cols"
-    )
-  }
-  invisible(df)
-}
-```
-
-#### Missing Value Check
-
-```{r send_to="R/df_check.R"}
-#' @describeIn df_check Abort if xmap_df has missing values
-#'
-df_check_na <- function(df) {
-  if (base::anyNA(df)) {
-    cli::cli_abort(
-      message = "NA values found. Please enter missing `from` or `to` node labels and/or convert NA weights",
-      class = "abort_na"
-    )
-  }
-  invisible(df)
-}
-```
-
 #### Column Order Check
 
-```{r send_to="R/df_check.R"}
-#' @describeIn df_check Abort if xmap_df columns are not in order
-df_check_col_order <- function(df, col_from, col_to, col_weights){
+```{r send_to="R/xmap_check.R"}
+#' @describeIn check Abort if xmap_df columns are not in order
+check_col_order <- function(df, col_from, col_to, col_weights){
   correct_order <- c(col_from, col_to, col_weights)
   first_three <- names(df[1:3])
   if(!identical(first_three, correct_order)){
@@ -650,22 +712,22 @@ df_check_col_order <- function(df, col_from, col_to, col_weights){
 ```
 
 ```{r}
-testthat::test_that("df_check_col_order() works as expected",
+testthat::test_that("check_col_order() works as expected",
                     {
                       df <- data.frame(a = 1, b = 2, c = 3)
-                      testthat::expect_invisible(df_check_col_order(df, "a", "b", "c"))
-                      testthat::expect_identical(df_check_col_order(df, "a", "b", "c"), df)
-                      testthat::expect_error(df_check_col_order(df, "b", "a", "c"),
+                      testthat::expect_invisible(check_col_order(df, "a", "b", "c"))
+                      testthat::expect_identical(check_col_order(df, "a", "b", "c"), df)
+                      testthat::expect_error(check_col_order(df, "b", "a", "c"),
                                              class = "abort_col_order")
                     })
 ```
 
 #### Column Type Check
 
-```{r send_to="R/df_check.R"}
-#' @describeIn df_check Abort if xmap_df has wrong column types
+```{r send_to="R/xmap_check.R"}
+#' @describeIn check Abort if xmap_df has wrong column types
 #'
-df_check_col_type <- function(df, col_weights) {
+check_weights_col_type <- function(df, col_weights) {
   if (!is.numeric(df[[col_weights]])) {
     cli::cli_abort(
       message = "The column `{col_weights}` should be of type numeric",
@@ -678,46 +740,13 @@ df_check_col_type <- function(df, col_weights) {
 
 #### From Set Check
 
-```{r send_to="R/df_check.R"}
-#' @describeIn df_check Abort if from_set attribute doesn't match xmap_df values
+```{r send_to="R/xmap_check.R"}
+#' @describeIn validate_xmap Abort if from_set attribute doesn't match xmap_df values
 #'
-df_check_from_set <- function(df, col_from, from_set) {
+check_from_set <- function(df, col_from, from_set) {
   col_from_set <- as.character(unique(df[[col_from]]))
   stopifnot(identical(col_from_set, from_set))
 
-  invisible(df)
-}
-```
-
-#### No Duplicate Node Pairs (links)
-
-```{r send_to="R/df_check.R"}
-#' @describeIn df_check Abort if xmap_df has duplicate links
-#'
-df_check_links <- function(df, col_from, col_to) {
-  if (!has_no_dup_pairs(df[[col_from]], df[[col_to]])) {
-    cli::cli_abort(
-      message = "Duplicate `from`-`to` links were found.
-      Please remove or collapse duplicates.",
-      class = "abort_dup"
-    )
-  }
-  invisible(df)
-}
-```
-
-#### Complete Mapping Weights
-
-```{r fnc-check-weights, send_to="R/df_check.R"}
-#' @describeIn df_check Abort if df has invalid mapping weights
-#'
-df_check_weights <- function(df, col_from, col_weights) {
-  if (!has_complete_weights(df[[col_from]], df[[col_weights]])) {
-    cli::cli_abort(
-      message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
-      class = "abort_weights"
-    )
-  }
   invisible(df)
 }
 ```
@@ -759,19 +788,20 @@ validate_xmap_df <- function(x) {
 
   df <- data.frame(x) # unclass(x)
   x_attrs <- attributes(x)
-  col_strings <- simplify2array(.get_col_attrs.xmap_df(x))
+  col_attrs <- c(x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights) 
 
   ## ---- df attributes ----
-  df_check_cols(df, col_strings)
-  df_check_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
-  df_check_na(df)
-  df_check_col_type(df, x_attrs$col_weights)
-  df_check_from_set(df, x_attrs$col_from, x_attrs$from_set)
-
+  abort_missing_cols(df, col_attrs)
+  abort_any_na(df)
+  
+  ## ---- xmap_df attributes ---
+  check_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
+  check_weights_col_type(df, x_attrs$col_weights)
+  check_from_set(df, x_attrs$col_from, x_attrs$from_set)
 
   ## ---- xmap graph properties ----
-  df_check_links(df, x_attrs$col_from, x_attrs$col_to)
-  df_check_weights(df, x_attrs$col_from, x_attrs$col_weights)
+  check_dup_pairs(df, x_attrs$col_from, x_attrs$col_to)
+  check_bad_weights(df, x_attrs$col_from, x_attrs$col_weights)
 
   ## return original object
   invisible(x)
@@ -809,7 +839,7 @@ testthat::test_that(
       "A1", "B01", 1
     )
     x <- new_xmap_df(df, "from", "missing_col", "weights")
-    testthat::expect_error(df_check_cols(df, c("from", "missing_col", "weights")),
+    testthat::expect_error(abort_missing_cols(df, c("from", "missing_col", "weights")),
       class = "abort_missing_cols"
     )
     testthat::expect_error(validate_xmap_df(x),
@@ -845,7 +875,7 @@ testthat::test_that(
       "A4", "B04", 0.75
     ) |>
       dplyr::mutate(weights = as.character(weights))
-    testthat::expect_error(df_check_col_type(df, "weights"),
+    testthat::expect_error(check_weights_col_type(df, "weights"),
       class = "abort_col_type"
     )
     x <- new_xmap_df(df, "from", "to", "weights")
@@ -866,7 +896,7 @@ testthat::test_that(
       "A4", "B04", 0.75
     )
     bad_set <- c("bad set", "of", "nodes")
-    testthat::expect_error(df_check_from_set(df, "from", bad_set))
+    testthat::expect_error(check_from_set(df, "from", bad_set))
     x <- new_xmap_df(df, "from", "to", "weights", from_set = bad_set)
     testthat::expect_error(validate_xmap_df(x))
   }
@@ -881,9 +911,9 @@ testthat::test_that(
       "A1", "B02", 0.3,
       "A1", "B02", 1
     )
-    testthat::expect_error(df_check_links(df, "from", "to"))
+    testthat::expect_error(check_dup_pairs(df, "from", "to"), class = "abort_dup_pairs")
     x <- new_xmap_df(df, "from", "to", "weights")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_dup")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
   }
 )
 
@@ -896,11 +926,11 @@ testthat::test_that(
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(df_check_weights(df, "from", "weights"),
-      class = "abort_weights"
+    testthat::expect_error(check_bad_weights(df, "from", "weights"),
+      class = "abort_bad_weights"
     )
     x <- new_xmap_df(df, "from", "to", "weights")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_weights")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_bad_weights")
   }
 )
 ```
@@ -965,7 +995,7 @@ as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .d
   col_weights <- deparse(substitute(weights))
   col_strings <- c(col_from, col_to, col_weights)
   ## check columns exist
-  df_check_cols(x, col_strings)
+  abort_missing_cols(x, col_strings)
 
   ## drop additional columns
   if (.drop_extra) {
