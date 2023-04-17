@@ -266,6 +266,8 @@ Finally, for many-to-many relations, which are a combination of the above relati
 > -   one-hot encoded categorical variables = nomenclature format
 
 ```{r}
+set.seed(1294)
+
 baby_pets <- c("puppy", "kitten", "chick")
 adult_pets <- c("dog", "cat", "bird")
 

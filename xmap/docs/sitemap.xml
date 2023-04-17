@@ -31,13 +31,22 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/abort_any_na.html</loc>
+  </url>
+  <url>
+    <loc>/reference/abort_missing_cols.html</loc>
+  </url>
+  <url>
     <loc>/reference/as_xmap.html</loc>
   </url>
   <url>
     <loc>/reference/as_xmap_df.html</loc>
   </url>
   <url>
-    <loc>/reference/df_check.html</loc>
+    <loc>/reference/check-df.html</loc>
+  </url>
+  <url>
+    <loc>/reference/has-links.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -56,9 +65,6 @@
   </url>
   <url>
     <loc>/reference/validate_xmap_df.html</loc>
-  </url>
-  <url>
-    <loc>/reference/xmap-has.html</loc>
   </url>
   <url>
     <loc>/reference/xmap_drop_extra.html</loc>
