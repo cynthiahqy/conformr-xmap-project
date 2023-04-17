@@ -1,24 +1,25 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' Boolean flags for xmap properties
+#' Boolean flags for properties of candidate and validated xmap links
 #'
 #' @description
-#' `has_*()` and `is_*()` functions check properties used to validate and/or print xmaps.
-#' The functions only accepts equal length vector inputs to support all subclasses of `xmap`,
+#' `has_*()` functions check properties of xmap links and/or candidate links.
+#' The functions only accepts equal length vector inputs to support multiple link formats,
 #' but does not check if the inputs are from the same xmap.
 #' @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
 #' @name xmap-has
 NULL
 
-#' @describeIn xmap-has Returns TRUE if xmap has duplicate links
+#' @describeIn xmap-has Returns TRUE if xmap does not have 
+#' duplicate pairs of source-target nodes (irrespective of weights)
 #'
-has_dup_links <- function(x_from, x_to) {
+has_no_dup_pairs <- function(x_from, x_to) {
   stopifnot(is.vector(x_from))
   stopifnot(is.vector(x_to))
   stopifnot(identical(length(x_from), length(x_to)))
   links <- data.frame(x_from, x_to)
   dup_idx <- anyDuplicated(links)
-  as.logical(dup_idx)
+  !as.logical(dup_idx)
 }
 
 #' @describeIn xmap-has Returns TRUE if xmap has valid weights

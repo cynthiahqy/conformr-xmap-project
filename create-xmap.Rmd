@@ -181,7 +181,227 @@ I'm not sure offering helpers for modifying crossmaps is necessary or even desir
     -   recode/collapse variants which drop the weights columns (since it is implied);
     -   igraph objects for spatial aggregation/transformation -- noting the similarity between spatial weighting matrices and crossmaps (see this Vignette from [SpatialReg](https://r-spatial.github.io/spatialreg/articles/nb_igraph.html).
 
-## Class Structure
+## Candidate Links
+
+### Convert: List to Links Data Frame
+
+One-to-one and many-to-one mappings could easily be encoded as list objects, where each element of the list is a member of the target set, and contains a vector of all the source nodes that link to it. For instance:
+
+```{r}
+link_list <- list(AA = c("x3", "x4", "x6"),
+                  BB = c("x1", "x5"),
+                  CC = c("x2")
+                  )
+```
+
+Convert to tibble:
+
+```{r}
+col_from = "source"
+col_to = "target"
+col_weights = "weights"
+
+link_list |> 
+  tibble::enframe(name = col_to, value = col_from) |>
+  tidyr::unnest_longer(col=c(col_from)) |>
+  dplyr::mutate("{col_weights}" := 1)
+```
+
+Convert to dataframe: -- how to unnest???
+
+```{r}
+# convert list to data.frame
+links <- as.matrix(link_list) |>
+  as.data.frame()
+
+# convert row names to column
+from_name <- "source"
+to_name <- "target"
+links[[to_name]] = row.names(links)
+names(links)[1] = from_name
+```
+
+#### `links_from_list()`
+
+``` r
+xmap::links_from_list(list = link_list,
+                      col_from = "source",
+                      col_to = "target",
+                      col_weights = "weights")
+```
+
+```{r fnc-list-to-links}
+#' Make candidate links from list
+#' 
+#' Convert a named list of one-to-one or many-to-one relations into a table of
+#' candidate links for validation or coercion into a crossmap \(i.e. via `as_xmap_df()`\).
+#'
+#' @param x_list named list. Each item contains a vector of source nodes which map to #' the target node named.
+#' @param col_from,col_to,col_weights character string names for columns containing
+#' source nodes, target nodes and numeric weights.
+#'
+#' @return tibble containing candidate links for conversion to xmap.
+#' @export
+#'
+#' @examples
+#' tar_list <- list(AA = c("x3", "x4", "x6"),
+#'                  BB = c("x1", "x5"),
+#'                  CC = c("x2"))
+#' links_from_list(tar_list, "source", "target", "weights")
+links_from_list <- function(x_list, col_from, col_to, col_weights){
+  stopifnot(is.vector(x_list))
+  links <- x_list |>
+    tibble::enframe(name = col_to, value = col_from) |>
+    tidyr::unnest_longer(col=c(col_from))
+    #dplyr::mutate("{col_weights}" := 1)
+  links[[col_weights]] <- 1
+  return(links)
+}
+```
+
+### Validation: Links
+
+`has_*(x_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
+
+```{r send_to="R/xmap-has.R"}
+#' Boolean flags for properties of candidate and validated xmap links
+#'
+#' @description
+#' `has_*()` functions check properties of xmap links and/or candidate links.
+#' The functions only accepts equal length vector inputs to support multiple link formats,
+#' but does not check if the inputs are from the same xmap.
+#' @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
+#' @name xmap-has
+NULL
+```
+
+A valid Crossmap satisfies the following conditions:
+
+1.  There is at most one link between each distinct source and target node (`has_dup_pairs()`)
+2.  For each source node, the sum of weights attached to all outgoing links sums to one. (`has_complete_weights()`)
+
+```{r send_to="R/xmap-has.R"}
+#' @describeIn xmap-has Returns TRUE if xmap does not have 
+#' duplicate pairs of source-target nodes (irrespective of weights)
+#'
+has_no_dup_pairs <- function(x_from, x_to) {
+  stopifnot(is.vector(x_from))
+  stopifnot(is.vector(x_to))
+  stopifnot(identical(length(x_from), length(x_to)))
+  links <- data.frame(x_from, x_to)
+  dup_idx <- anyDuplicated(links)
+  !as.logical(dup_idx)
+}
+```
+
+```{r send_to="R/xmap-has.R"}
+#' @describeIn xmap-has Returns TRUE if xmap has valid weights
+has_complete_weights <- function(x_from, x_weights) {
+  stopifnot(is.vector(x_from))
+  stopifnot(is.vector(x_weights))
+  stopifnot(identical(length(x_from), length(x_weights)))
+  sum_w <- tapply(
+    X = x_weights,
+    INDEX = x_from,
+    FUN = sum,
+    simplify = TRUE
+  ) |> as.vector()
+  names(sum_w) <- NULL
+  ones <- rep(1, length(sum_w))
+  all(isTRUE(all.equal(sum_w, ones)))
+}
+```
+
+```{r test-has-flags}
+testthat::test_that(
+  "has_* validation helpers work as expected on valid df",
+  {
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A2", "B02", 1,
+      "A3", "B02", 1,
+      "A4", "B03", 0.67,
+      "A4", "B04", 0.33
+    )
+    testthat::expect_true(has_no_dup_pairs(df$from, df$to))
+    testthat::expect_true(has_complete_weights(df$from, df$weights))
+  }
+)
+
+testthat::test_that(
+  "has_* validation helpers catch invalid df",
+  {
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A2", "B02", 0.3,
+      "A2", "B02", 0.5
+    )
+    testthat::expect_false(has_complete_weights(df$from, df$weights))
+    testthat::expect_false(has_no_dup_pairs(df$from, df$to))
+  }
+)
+
+testthat::test_that(
+  "has_complete_weights() works on recurring fractional weights",
+  {
+    df <- data.frame(key1 = rep("A1", 3),
+                     key2 = c("B01", "B02", "B03"),
+                     share = rep(1/3, 3))
+
+    testthat::expect_true(has_complete_weights(df$key1, df$share))
+  }
+)
+```
+
+### Helper: xmap link classification
+
+-   used for print methods, reverse
+
+```{r print-helpers, send_to="R/xmap-has.R"}
+#' @describeIn xmap-has Return TRUE if xmap recodes labels between `from` and `to`
+has_1to1 <- function(x_weights) {
+  stopifnot(is.vector(x_weights))
+  any(x_weights == 1)
+}
+#'
+has_recode <- has_1to1
+
+#' @describeIn xmap-has Return TRUE if xmap has splitting links between `from` and `to`
+has_1toM <- function(x_weights) {
+  stopifnot(is.vector(x_weights))
+  any(x_weights < 1)
+}
+#'
+has_split <- has_1toM
+
+#' @describeIn xmap-has Return TRUE if xmap has collapsing links between `from` and `to`
+has_1fromM <- function(x_to){
+  stopifnot(is.vector(x_to))
+  as.logical(anyDuplicated(x_to))
+}
+#'
+has_collapse <- has_1fromM
+```
+
+```{r}
+testthat::test_that(
+  "has_* split, recode, collapse checkers work as expected",
+  {
+    w_1to1 <- rep(1, 10)
+    w_1toM <- rep(1/6, 6)
+    to_1fromM <- rep("country", 4)
+    testthat::expect_true(has_recode(w_1to1))
+    testthat::expect_false(has_recode(w_1toM))
+    testthat::expect_true(has_split(w_1toM))
+    testthat::expect_false(has_split(w_1to1))
+    testthat::expect_true(has_collapse(to_1fromM))
+  }
+)
+```
+
+## `xmap` Class Structure
 
 The package uses the class `xmap` as the superclass for all representations of a crossmaps, and subclasses: `xmap_df`
 
@@ -233,82 +453,6 @@ testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
                     {
                       testthat::expect_error(.get_xmap_subclass_attr("unknown"))
                     })
-```
-
-### Convert List to Links Data Frame
-
-One-to-one and many-to-one mappings could easily be encoded as list objects, where each element of the list is a member of the target set, and contains a vector of all the source nodes that link to it. For instance:
-
-```{r}
-link_list <- list(AA = c("x3", "x4", "x6"),
-                  BB = c("x1", "x5"),
-                  CC = c("x2")
-                  )
-```
-
-Convert to tibble:
-
-```{r}
-col_from = "source"
-col_to = "target"
-col_weights = "weights"
-
-link_list |> 
-  tibble::enframe(name = col_to, value = col_from) |>
-  tidyr::unnest_longer(col=c(col_from)) |>
-  dplyr::mutate("{col_weights}" := 1)
-```
-
-#### `links_from_list()`
-
-``` r
-xmap::links_from_list(list = link_list,
-                      col_from = "source",
-                      col_to = "target",
-                      col_weights = "weights")
-```
-
-```{r fnc-list-to-links}
-#' Make candidate links from list
-#' 
-#' Convert a named list of one-to-one or many-to-one relations into a table of
-#' candidate links for validation or coercion into a crossmap \(i.e. via `as_xmap_df()`\).
-#'
-#' @param x_list named list. Each item contains a vector of source nodes which map to #' the target node named.
-#' @param col_from,col_to,col_weights character string names for columns containing
-#' source nodes, target nodes and numeric weights.
-#'
-#' @return tibble containing candidate links for conversion to xmap.
-#' @export
-#'
-#' @examples
-#' tar_list <- list(AA = c("x3", "x4", "x6"),
-#'                  BB = c("x1", "x5"),
-#'                  CC = c("x2"))
-#' links_from_list(tar_list, "source", "target", "weights")
-links_from_list <- function(x_list, col_from, col_to, col_weights){
-  stopifnot(is.vector(x_list))
-  links <- x_list |>
-    tibble::enframe(name = col_to, value = col_from) |>
-    tidyr::unnest_longer(col=c(col_from))
-    #dplyr::mutate("{col_weights}" := 1)
-  links[[col_weights]] <- 1
-  return(links)
-}
-```
-
-Convert to dataframe: -- how to unnest???
-
-```{r}
-# convert list to data.frame
-links <- as.matrix(link_list) |>
-  as.data.frame()
-
-# convert row names to column
-from_name <- "source"
-to_name <- "target"
-links[[to_name]] = row.names(links)
-names(links)[1] = from_name
 ```
 
 ### Construct From Links Data Frame
@@ -430,7 +574,7 @@ is_xmap_df <- function(x) {
 }
 ```
 
-## Validation
+## Validation: `xmap_df`
 
 ### Diagnostic Helpers (`validate-helpers.R`)
 
@@ -453,8 +597,6 @@ The conventions for validation helpers:
 #' @name df_check
 NULL
 ```
-
-`has_*(x_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
 
 #### Missing Columns Check
 
@@ -549,34 +691,11 @@ df_check_from_set <- function(df, col_from, from_set) {
 
 #### No Duplicate Node Pairs (links)
 
-```{r send_to="R/xmap-has.R"}
-#' Boolean flags for xmap properties
-#'
-#' @description
-#' `has_*()` and `is_*()` functions check properties used to validate and/or print xmaps.
-#' The functions only accepts equal length vector inputs to support all subclasses of `xmap`,
-#' but does not check if the inputs are from the same xmap.
-#' @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
-#' @name xmap-has
-NULL
-
-#' @describeIn xmap-has Returns TRUE if xmap has duplicate links
-#'
-has_dup_links <- function(x_from, x_to) {
-  stopifnot(is.vector(x_from))
-  stopifnot(is.vector(x_to))
-  stopifnot(identical(length(x_from), length(x_to)))
-  links <- data.frame(x_from, x_to)
-  dup_idx <- anyDuplicated(links)
-  as.logical(dup_idx)
-}
-```
-
 ```{r send_to="R/df_check.R"}
 #' @describeIn df_check Abort if xmap_df has duplicate links
 #'
 df_check_links <- function(df, col_from, col_to) {
-  if (has_dup_links(df[[col_from]], df[[col_to]])) {
+  if (!has_no_dup_pairs(df[[col_from]], df[[col_to]])) {
     cli::cli_abort(
       message = "Duplicate `from`-`to` links were found.
       Please remove or collapse duplicates.",
@@ -588,24 +707,6 @@ df_check_links <- function(df, col_from, col_to) {
 ```
 
 #### Complete Mapping Weights
-
-```{r send_to="R/xmap-has.R"}
-#' @describeIn xmap-has Returns TRUE if xmap has valid weights
-has_complete_weights <- function(x_from, x_weights) {
-  stopifnot(is.vector(x_from))
-  stopifnot(is.vector(x_weights))
-  stopifnot(identical(length(x_from), length(x_weights)))
-  sum_w <- tapply(
-    X = x_weights,
-    INDEX = x_from,
-    FUN = sum,
-    simplify = TRUE
-  ) |> as.vector()
-  names(sum_w) <- NULL
-  ones <- rep(1, length(sum_w))
-  all(isTRUE(all.equal(sum_w, ones)))
-}
-```
 
 ```{r fnc-check-weights, send_to="R/df_check.R"}
 #' @describeIn df_check Abort if df has invalid mapping weights
@@ -623,50 +724,7 @@ df_check_weights <- function(df, col_from, col_weights) {
 
 #### Tests
 
-`df_check*` fncs are currently checked along with the Master Validator.
-
-```{r test-has-flags}
-testthat::test_that(
-  "has_* validation helpers work as expected on valid df",
-  {
-    df <- tibble::tribble(
-      ~from, ~to, ~weights,
-      "A1", "B01", 1,
-      "A2", "B02", 1,
-      "A3", "B02", 1,
-      "A4", "B03", 0.67,
-      "A4", "B04", 0.33
-    )
-    testthat::expect_false(has_dup_links(df$from, df$to))
-    testthat::expect_true(has_complete_weights(df$from, df$weights))
-  }
-)
-
-testthat::test_that(
-  "has_* validation helpers catch invalid df",
-  {
-    df <- tibble::tribble(
-      ~from, ~to, ~weights,
-      "A1", "B01", 1,
-      "A2", "B02", 0.3,
-      "A2", "B02", 0.5
-    )
-    testthat::expect_false(has_complete_weights(df$from, df$weights))
-    testthat::expect_true(has_dup_links(df$from, df$to))
-  }
-)
-
-testthat::test_that(
-  "has_complete_weights() works on recurring fractional weights",
-  {
-    df <- data.frame(key1 = rep("A1", 3),
-                     key2 = c("B01", "B02", "B03"),
-                     share = rep(1/3, 3))
-
-    testthat::expect_true(has_complete_weights(df$key1, df$share))
-  }
-)
-```
+`df_check*` fncs are currently checked as part of the master validator `validate_xmap_df()`.
 
 ### Internal: `validate_xmap_df()`
 
@@ -1126,52 +1184,6 @@ links_df |>
 ## Description Tools
 
 See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues/63)
-
-### Helper: xmap link classification
-
--   used for print methods, reverse
-
-```{r print-helpers, send_to="R/xmap-has.R"}
-#' @describeIn xmap-has Return TRUE if xmap recodes labels between `from` and `to`
-has_1to1 <- function(x_weights) {
-  stopifnot(is.vector(x_weights))
-  any(x_weights == 1)
-}
-#'
-has_recode <- has_1to1
-
-#' @describeIn xmap-has Return TRUE if xmap has splitting links between `from` and `to`
-has_1toM <- function(x_weights) {
-  stopifnot(is.vector(x_weights))
-  any(x_weights < 1)
-}
-#'
-has_split <- has_1toM
-
-#' @describeIn xmap-has Return TRUE if xmap has collapsing links between `from` and `to`
-has_1fromM <- function(x_to){
-  stopifnot(is.vector(x_to))
-  as.logical(anyDuplicated(x_to))
-}
-#'
-has_collapse <- has_1fromM
-```
-
-```{r}
-testthat::test_that(
-  "has_* split, recode, collapse checkers work as expected",
-  {
-    w_1to1 <- rep(1, 10)
-    w_1toM <- rep(1/6, 6)
-    to_1fromM <- rep("country", 4)
-    testthat::expect_true(has_recode(w_1to1))
-    testthat::expect_false(has_recode(w_1toM))
-    testthat::expect_true(has_split(w_1toM))
-    testthat::expect_false(has_split(w_1to1))
-    testthat::expect_true(has_collapse(to_1fromM))
-  }
-)
-```
 
 ### Helper: xmap is reversible
 
