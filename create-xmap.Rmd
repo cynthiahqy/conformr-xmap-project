@@ -252,7 +252,7 @@ links_from_list <- function(x_list, col_from, col_to, col_weights){
   stopifnot(is.vector(x_list))
   links <- x_list |>
     tibble::enframe(name = col_to, value = col_from) |>
-    tidyr::unnest_longer(col=c(col_from))
+    tidyr::unnest_longer(col=tidyr::all_of(col_from))
     #dplyr::mutate("{col_weights}" := 1)
   links[[col_weights]] <- 1
   return(links)
