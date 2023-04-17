@@ -2,14 +2,14 @@
 % Please edit documentation in create-xmap.Rmd.
 \name{xmap-has}
 \alias{xmap-has}
-\alias{has_dup_links}
+\alias{has_no_dup_pairs}
 \alias{has_complete_weights}
 \alias{has_1to1}
 \alias{has_1toM}
 \alias{has_1fromM}
-\title{Boolean flags for xmap properties}
+\title{Boolean flags for properties of candidate and validated xmap links}
 \usage{
-has_dup_links(x_from, x_to)
+has_no_dup_pairs(x_from, x_to)
 
 has_complete_weights(x_from, x_weights)
 
@@ -23,13 +23,14 @@ has_1fromM(x_to)
 \item{x_from, x_to, x_weights}{equal length vectors containing the source-target node pairs}
 }
 \description{
-\verb{has_*()} and \verb{is_*()} functions check properties used to validate and/or print xmaps.
-The functions only accepts equal length vector inputs to support all subclasses of \code{xmap},
+\verb{has_*()} functions check properties of xmap links and/or candidate links.
+The functions only accepts equal length vector inputs to support multiple link formats,
 but does not check if the inputs are from the same xmap.
 }
 \section{Functions}{
 \itemize{
-\item \code{has_dup_links()}: Returns TRUE if xmap has duplicate links
+\item \code{has_no_dup_pairs()}: Returns TRUE if xmap does not have
+duplicate pairs of source-target nodes (irrespective of weights)
 
 \item \code{has_complete_weights()}: Returns TRUE if xmap has valid weights
 

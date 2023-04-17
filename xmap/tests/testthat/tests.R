@@ -1,4 +1,59 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
+testthat::test_that(
+  "has_* validation helpers work as expected on valid df",
+  {
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A2", "B02", 1,
+      "A3", "B02", 1,
+      "A4", "B03", 0.67,
+      "A4", "B04", 0.33
+    )
+    testthat::expect_true(has_no_dup_pairs(df$from, df$to))
+    testthat::expect_true(has_complete_weights(df$from, df$weights))
+  }
+)
+
+testthat::test_that(
+  "has_* validation helpers catch invalid df",
+  {
+    df <- tibble::tribble(
+      ~from, ~to, ~weights,
+      "A1", "B01", 1,
+      "A2", "B02", 0.3,
+      "A2", "B02", 0.5
+    )
+    testthat::expect_false(has_complete_weights(df$from, df$weights))
+    testthat::expect_false(has_no_dup_pairs(df$from, df$to))
+  }
+)
+
+testthat::test_that(
+  "has_complete_weights() works on recurring fractional weights",
+  {
+    df <- data.frame(key1 = rep("A1", 3),
+                     key2 = c("B01", "B02", "B03"),
+                     share = rep(1/3, 3))
+
+    testthat::expect_true(has_complete_weights(df$key1, df$share))
+  }
+)
+
+testthat::test_that(
+  "has_* split, recode, collapse checkers work as expected",
+  {
+    w_1to1 <- rep(1, 10)
+    w_1toM <- rep(1/6, 6)
+    to_1fromM <- rep("country", 4)
+    testthat::expect_true(has_recode(w_1to1))
+    testthat::expect_false(has_recode(w_1toM))
+    testthat::expect_true(has_split(w_1toM))
+    testthat::expect_false(has_split(w_1to1))
+    testthat::expect_true(has_collapse(to_1fromM))
+  }
+)
+
 testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
                     {
                       testthat::expect_error(.get_xmap_subclass_attr("unknown"))
@@ -30,47 +85,6 @@ testthat::test_that("df_check_col_order() works as expected",
                       testthat::expect_error(df_check_col_order(df, "b", "a", "c"),
                                              class = "abort_col_order")
                     })
-
-testthat::test_that(
-  "has_* validation helpers work as expected on valid df",
-  {
-    df <- tibble::tribble(
-      ~from, ~to, ~weights,
-      "A1", "B01", 1,
-      "A2", "B02", 1,
-      "A3", "B02", 1,
-      "A4", "B03", 0.67,
-      "A4", "B04", 0.33
-    )
-    testthat::expect_false(has_dup_links(df$from, df$to))
-    testthat::expect_true(has_complete_weights(df$from, df$weights))
-  }
-)
-
-testthat::test_that(
-  "has_* validation helpers catch invalid df",
-  {
-    df <- tibble::tribble(
-      ~from, ~to, ~weights,
-      "A1", "B01", 1,
-      "A2", "B02", 0.3,
-      "A2", "B02", 0.5
-    )
-    testthat::expect_false(has_complete_weights(df$from, df$weights))
-    testthat::expect_true(has_dup_links(df$from, df$to))
-  }
-)
-
-testthat::test_that(
-  "has_complete_weights() works on recurring fractional weights",
-  {
-    df <- data.frame(key1 = rep("A1", 3),
-                     key2 = c("B01", "B02", "B03"),
-                     share = rep(1/3, 3))
-
-    testthat::expect_true(has_complete_weights(df$key1, df$share))
-  }
-)
 
 testthat::test_that(
   "validate_xmap_df() accepts well-formed xmaps",
@@ -247,20 +261,6 @@ testthat::test_that("xmap_to_list works as expected", {
   out_list <- xmap_to_list(xmap_c)
   testthat::expect_identical(tar_list, out_list)
 })
-
-testthat::test_that(
-  "has_* split, recode, collapse checkers work as expected",
-  {
-    w_1to1 <- rep(1, 10)
-    w_1toM <- rep(1/6, 6)
-    to_1fromM <- rep("country", 4)
-    testthat::expect_true(has_recode(w_1to1))
-    testthat::expect_false(has_recode(w_1toM))
-    testthat::expect_true(has_split(w_1toM))
-    testthat::expect_false(has_split(w_1to1))
-    testthat::expect_true(has_collapse(to_1fromM))
-  }
-)
 
 testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
   df_x <- tibble::tribble(

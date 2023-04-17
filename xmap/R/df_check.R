@@ -77,7 +77,7 @@ df_check_from_set <- function(df, col_from, from_set) {
 #' @describeIn df_check Abort if xmap_df has duplicate links
 #'
 df_check_links <- function(df, col_from, col_to) {
-  if (has_dup_links(df[[col_from]], df[[col_to]])) {
+  if (!has_no_dup_pairs(df[[col_from]], df[[col_to]])) {
     cli::cli_abort(
       message = "Duplicate `from`-`to` links were found.
       Please remove or collapse duplicates.",
