@@ -1,6 +1,6 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
 testthat::test_that(
-  "has_* validation helpers work as expected on valid df",
+  "has_* xmap validation helpers work as expected on valid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -12,11 +12,12 @@ testthat::test_that(
     )
     testthat::expect_true(has_no_dup_pairs(df$from, df$to))
     testthat::expect_true(has_complete_weights(df$from, df$weights))
+    testthat::expect_true(has_xmap_props(df$from, df$to, df$weights))
   }
 )
 
 testthat::test_that(
-  "has_* validation helpers catch invalid df",
+  "has_* xmap validation helpers catch invalid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -41,7 +42,7 @@ testthat::test_that(
 )
 
 testthat::test_that(
-  "has_* split, recode, collapse checkers work as expected",
+  "has_* relation type flag functions work as expected",
   {
     w_1to1 <- rep(1, 10)
     w_1toM <- rep(1/6, 6)
@@ -77,12 +78,12 @@ testthat::test_that(
   }
 )
 
-testthat::test_that("df_check_col_order() works as expected",
+testthat::test_that("check_col_order() works as expected",
                     {
                       df <- data.frame(a = 1, b = 2, c = 3)
-                      testthat::expect_invisible(df_check_col_order(df, "a", "b", "c"))
-                      testthat::expect_identical(df_check_col_order(df, "a", "b", "c"), df)
-                      testthat::expect_error(df_check_col_order(df, "b", "a", "c"),
+                      testthat::expect_invisible(check_col_order(df, "a", "b", "c"))
+                      testthat::expect_identical(check_col_order(df, "a", "b", "c"), df)
+                      testthat::expect_error(check_col_order(df, "b", "a", "c"),
                                              class = "abort_col_order")
                     })
 
@@ -112,7 +113,7 @@ testthat::test_that(
       "A1", "B01", 1
     )
     x <- new_xmap_df(df, "from", "missing_col", "weights")
-    testthat::expect_error(df_check_cols(df, c("from", "missing_col", "weights")),
+    testthat::expect_error(abort_missing_cols(df, c("from", "missing_col", "weights")),
       class = "abort_missing_cols"
     )
     testthat::expect_error(validate_xmap_df(x),
@@ -148,7 +149,7 @@ testthat::test_that(
       "A4", "B04", 0.75
     ) |>
       dplyr::mutate(weights = as.character(weights))
-    testthat::expect_error(df_check_col_type(df, "weights"),
+    testthat::expect_error(check_weights_col_type(df, "weights"),
       class = "abort_col_type"
     )
     x <- new_xmap_df(df, "from", "to", "weights")
@@ -169,7 +170,7 @@ testthat::test_that(
       "A4", "B04", 0.75
     )
     bad_set <- c("bad set", "of", "nodes")
-    testthat::expect_error(df_check_from_set(df, "from", bad_set))
+    testthat::expect_error(check_from_set(df, "from", bad_set))
     x <- new_xmap_df(df, "from", "to", "weights", from_set = bad_set)
     testthat::expect_error(validate_xmap_df(x))
   }
@@ -184,9 +185,9 @@ testthat::test_that(
       "A1", "B02", 0.3,
       "A1", "B02", 1
     )
-    testthat::expect_error(df_check_links(df, "from", "to"))
+    testthat::expect_error(check_dup_pairs(df, "from", "to"), class = "abort_dup_pairs")
     x <- new_xmap_df(df, "from", "to", "weights")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_dup")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
   }
 )
 
@@ -199,11 +200,11 @@ testthat::test_that(
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(df_check_weights(df, "from", "weights"),
-      class = "abort_weights"
+    testthat::expect_error(check_bad_weights(df, "from", "weights"),
+      class = "abort_bad_weights"
     )
     x <- new_xmap_df(df, "from", "to", "weights")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_weights")
+    testthat::expect_error(validate_xmap_df(x), class = "abort_bad_weights")
   }
 )
 

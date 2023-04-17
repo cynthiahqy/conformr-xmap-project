@@ -44,7 +44,7 @@ as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .d
   col_weights <- deparse(substitute(weights))
   col_strings <- c(col_from, col_to, col_weights)
   ## check columns exist
-  df_check_cols(x, col_strings)
+  abort_missing_cols(x, col_strings)
 
   ## drop additional columns
   if (.drop_extra) {
