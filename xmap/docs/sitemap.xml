@@ -10,40 +10,19 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/making-xmaps.html</loc>
-  </url>
-  <url>
-    <loc>/articles/using-xmaps.html</loc>
-  </url>
-  <url>
-    <loc>/articles/vis-xmaps.html</loc>
-  </url>
-  <url>
-    <loc>/articles/xmap.html</loc>
-  </url>
-  <url>
     <loc>/authors.html</loc>
   </url>
   <url>
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/reference/abort_any_na.html</loc>
-  </url>
-  <url>
-    <loc>/reference/abort_missing_cols.html</loc>
+    <loc>/reference/abort.html</loc>
   </url>
   <url>
     <loc>/reference/as_xmap.html</loc>
   </url>
   <url>
     <loc>/reference/as_xmap_df.html</loc>
-  </url>
-  <url>
-    <loc>/reference/check-df.html</loc>
   </url>
   <url>
     <loc>/reference/has-links.html</loc>
@@ -62,6 +41,9 @@
   </url>
   <url>
     <loc>/reference/print.xmap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/validate_links_as_xmap.html</loc>
   </url>
   <url>
     <loc>/reference/validate_xmap_df.html</loc>

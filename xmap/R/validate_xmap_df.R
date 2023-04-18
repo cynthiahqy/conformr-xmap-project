@@ -14,13 +14,13 @@ validate_xmap_df <- function(x) {
   abort_any_na(df)
   
   ## ---- xmap_df attributes ---
-  check_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
-  check_weights_col_type(df, x_attrs$col_weights)
-  check_from_set(df, x_attrs$col_from, x_attrs$from_set)
+  abort_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
+  abort_from_set(df, x_attrs$col_from, x_attrs$from_set)
 
   ## ---- xmap graph properties ----
-  check_dup_pairs(df, x_attrs$col_from, x_attrs$col_to)
-  check_bad_weights(df, x_attrs$col_from, x_attrs$col_weights)
+  abort_weights_col_type(df, x_attrs$col_weights)
+  abort_dup_pairs(df, x_attrs$col_from, x_attrs$col_to)
+  abort_bad_weights(df, x_attrs$col_from, x_attrs$col_weights)
 
   ## return original object
   invisible(x)

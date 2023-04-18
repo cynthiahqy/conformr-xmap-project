@@ -18,19 +18,8 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item">
-  <a class="nav-link" href="../articles/xmap.html">Get started</a>
-</li>
-<li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/making-xmaps.html">Making Valid Crossmaps</a>
-    <a class="dropdown-item" href="../articles/using-xmaps.html">Using Crossmaps to Transform Data</a>
-    <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
-  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -58,14 +47,9 @@
 
       <dl><dt>
           
-          <code><a href="abort_any_na.html">abort_any_na()</a></code> 
+          <code><a href="abort.html">abort_missing_cols()</a></code> <code><a href="abort.html">abort_any_na()</a></code> <code><a href="abort.html">abort_weights_col_type()</a></code> <code><a href="abort.html">abort_dup_pairs()</a></code> <code><a href="abort.html">abort_bad_weights()</a></code> <code><a href="abort.html">abort_col_order()</a></code> <code><a href="abort.html">abort_from_set()</a></code> 
         </dt>
-        <dd>Abort if xmap_df has missing values</dd>
-      </dl><dl><dt>
-          
-          <code><a href="abort_missing_cols.html">abort_missing_cols()</a></code> 
-        </dt>
-        <dd>Abort if named columns can't be found in df</dd>
+        <dd>Validation messages for xmap or candidate links</dd>
       </dl><dl><dt>
           
           <code><a href="as_xmap.html">is_xmap()</a></code> <code><a href="as_xmap.html">is_xmap_df()</a></code> 
@@ -76,11 +60,6 @@
           <code><a href="as_xmap_df.html">as_xmap_df()</a></code> 
         </dt>
         <dd>Coerce objects to xmap_df</dd>
-      </dl><dl><dt>
-          
-          <code><a href="check-df.html">check_dup_pairs()</a></code> <code><a href="check-df.html">check_bad_weights()</a></code> <code><a href="check-df.html">check_links_as_xmap()</a></code> 
-        </dt>
-        <dd>Validation messages for xmap or candidate links</dd>
       </dl><dl><dt>
           
           <code><a href="has-links.html">has_no_dup_pairs()</a></code> <code><a href="has-links.html">has_complete_weights()</a></code> <code><a href="has-links.html">has_1to1()</a></code> <code><a href="has-links.html">has_1toM()</a></code> <code><a href="has-links.html">has_1fromM()</a></code> <code><a href="has-links.html">has_xmap_props()</a></code> 
@@ -106,6 +85,11 @@
           <code><a href="print.xmap.html">print(<i>&lt;xmap_df&gt;</i>)</a></code> 
         </dt>
         <dd>Print an <code>xmap</code> object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="validate_links_as_xmap.html">validate_links_as_xmap()</a></code> 
+        </dt>
+        <dd>Check if candidate links meet crossmap properties</dd>
       </dl><dl><dt>
           
           <code><a href="validate_xmap_df.html">validate_xmap_df()</a></code> 
