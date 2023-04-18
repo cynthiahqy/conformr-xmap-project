@@ -914,11 +914,11 @@ validate_xmap_df <- function(x) {
 }
 ```
 
-#### Tests
+#### Tests for `validate & verify()`
 
 ```{r test-validator-success}
 testthat::test_that(
-  "validate_xmap_df() accepts well-formed xmaps",
+  "validate & verify xmap fncs accept well-formed xmaps",
   {
     df <- tibble::tribble(
       ~node_A, ~node_B, ~w_AB,
@@ -931,6 +931,7 @@ testthat::test_that(
     x <- new_xmap_df(df, "node_A", "node_B", "w_AB")
     out <- testthat::expect_invisible(validate_xmap_df(x))
     testthat::expect_identical(out, x)
+    testthat::expect_identical(df, verify_links_as_xmap(df, node_A, node_B, w_AB))
   }
 )
 ```
@@ -938,7 +939,7 @@ testthat::test_that(
 ```{r test-validator-malformed}
 ## columns present
 testthat::test_that(
-  "validate_xmap_df() rejects missing columns",
+  "validate & verify fncs reject missing columns",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -951,12 +952,14 @@ testthat::test_that(
     testthat::expect_error(validate_xmap_df(x),
       class = "abort_missing_cols"
     )
+    testthat::expect_error(verify_links_as_xmap(df, node_A, node_B, w_AB),
+                           class = "abort_missing_cols")
   }
 )
 
 ## any NA values
 testthat::test_that(
-  "validate_xmap_df() rejects missing values",
+  "validate & verify xmap fncs reject missing values",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -966,28 +969,32 @@ testthat::test_that(
     )
     x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_na")
+    testthat::expect_error(verify_links_as_xmap(df, from, to, weights),
+                           class = "abort_na")
   }
 )
 
 
 ## column type
 testthat::test_that(
-  "validate_xmap_df() rejects non-numeric weight columns",
+  "validate & verify xmap fncs reject non-numeric weight columns",
   {
     df <- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       "A1", "B01", 1,
       "A4", "B03", 0.25,
       "A4", "B04", 0.75
     ) |>
-      dplyr::mutate(weights = as.character(weights))
+      dplyr::mutate(w = as.character(w))
     testthat::expect_error(abort_weights_col_type(df, "weights"),
       class = "abort_col_type"
     )
-    x <- new_xmap_df(df, "from", "to", "weights")
+    x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(validate_xmap_df(x),
       class = "abort_col_type"
     )
+    testthat::expect_error(verify_links_as_xmap(df, f, t, w),
+                           class = "abort_col_type")
   }
 )
 
@@ -1010,33 +1017,37 @@ testthat::test_that(
 
 ## duplicate links
 testthat::test_that(
-  "validate_xmap_df() rejects duplicate from-to links",
+  "validate and verify xmap fncs reject duplicate from-to links",
   {
     df <- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       "A1", "B02", 0.3,
       "A1", "B02", 1
     )
-    testthat::expect_error(abort_dup_pairs(df, "from", "to"), class = "abort_dup_pairs")
-    x <- new_xmap_df(df, "from", "to", "weights")
+    testthat::expect_error(abort_dup_pairs(df, "f", "t"), class = "abort_dup_pairs")
+    x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
+    testthat::expect_error(verify_links_as_xmap(df, f, t, w),
+                           class = "abort_dup_pairs")
   }
 )
 
 ## complete weights
 testthat::test_that(
-  "validate_xmap_df() rejects invalid weights",
+  "validate & verify xmap fncs rejects invalid weights",
   {
     df <- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(abort_bad_weights(df, "from", "weights"),
+    testthat::expect_error(abort_bad_weights(df, "f", "w"),
       class = "abort_bad_weights"
     )
-    x <- new_xmap_df(df, "from", "to", "weights")
+    x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(validate_xmap_df(x), class = "abort_bad_weights")
+    testthat::expect_error(verify_links_as_xmap(df, f, t, w),
+                           class = "abort_bad_weights")
   }
 )
 ```
