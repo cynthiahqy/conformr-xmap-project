@@ -1244,9 +1244,9 @@ See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues
 ### Helper: xmap is reversible
 
 ```{r}
-#' @describeIn df_check Abort if xmap_df has wrong column types
+#' @describeIn abort Abort if xmap_df is not reversible without new weights
 #'
-df_check_reversible <- function(df, col_to) {
+abort_not_reversible <- function(df, col_to) {
   x_to <- df[[col_to]]
   if (has_collapse(x_to)){
     cli::cli_abort("Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.")
@@ -1285,7 +1285,7 @@ xmap_reverse.xmap_df <- function(x, weights_into = "r_weights"){
   df <- as.data.frame(x)
   
   ## check xmap can be reversed
-  df_check_reversible(df, x_attrs$col_to)
+  abort_not_reversible(df, x_attrs$col_to)
 
   ## make new xmap
   df[[weights_into]] <- 1
@@ -1330,7 +1330,7 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
   
   # output checks
   testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
-  testthat::expect_identical(df_check_reversible(df_x,"to"), df_x)
+  testthat::expect_identical(abort_not_reversible(df_x,"to"), df_x)
 }
 )
 ```
