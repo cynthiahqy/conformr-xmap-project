@@ -285,7 +285,7 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
   
   # output checks
   testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
-  testthat::expect_identical(df_check_reversible(df_x,"to"), df_x)
+  testthat::expect_identical(abort_not_reversible(df_x,"to"), df_x)
 }
 )
 

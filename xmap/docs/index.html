@@ -24,7 +24,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="index.html">xmap</a>
 
@@ -38,24 +38,59 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
+  <a class="nav-link" href="articles/xmap.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/making-xmaps.html">Making Valid Crossmaps</a>
+    <a class="dropdown-item" href="articles/using-xmaps.html">Using Crossmaps to Transform Data</a>
+    <a class="dropdown-item" href="articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
+  </div>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/cynthiahqy/conformr-project/tree/main/xmap">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Provides 'xmap' S3 classes (the 'Crossmap') for use in
-    {conformr} package.
-  </main><aside class="col-md-3"><div class="license">
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="xmap-crossmaps-for-data-integration-in-r">
+<code>xmap</code> crossmaps for data integration in R<a class="anchor" aria-label="anchor" href="#xmap-crossmaps-for-data-integration-in-r"></a>
+</h1></div>
+<p>xmap provides tools for creating, validating and modifying Nomenclature Crossmaps for use in Data Integration and Harmonisation workflows (i.e. in <code>{conformr}</code>).</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>To install the latest development version of <code>xmap</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cynthiahqy/conformr-project"</span>, subdir <span class="op">=</span> <span class="st">"xmap"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/cynthiahqy/conformr-project/tree/main/xmap" class="external-link">Browse source code</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -74,7 +109,8 @@ Provides 'xmap' S3 classes (the 'Crossmap') for use in
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Cynthia Huang <br><small class="roles"> Author, maintainer </small>  </li>
+<li>
+<a href="https://www.cynthiahqy.com" class="external-link">Cynthia Huang</a> <br><small class="roles"> Author, maintainer </small>  </li>
 </ul>
 </div>
 
@@ -86,7 +122,7 @@ Provides 'xmap' S3 classes (the 'Crossmap') for use in
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Cynthia Huang.</p>
+<p>Developed by <a href="https://www.cynthiahqy.com" class="external-link">Cynthia Huang</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">

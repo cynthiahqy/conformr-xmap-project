@@ -6,6 +6,10 @@
 #' @inheritParams as_xmap_df
 #' 
 #' @export
+#' @examples
+#' tar_list <- list(AA = c("x3", "x4", "x6"),
+#'                  BB = c("x1", "x5"),
+#'                  CC = c("x2"))
 validate_links_as_xmap <- function(df, from, to, weights){
   col_from <- deparse(substitute(from))
   col_to <- deparse(substitute(to))
