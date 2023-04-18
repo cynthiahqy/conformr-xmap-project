@@ -775,6 +775,19 @@ testthat::test_that("abort_col_order() works as expected",
 
 #### From Set Check
 
+```{r send_to="R/calc.R"}
+#'
+.calc_unique_sets.xmap_df <- function(x){
+  stopifnot(is_xmap_df(x))
+  df <- data.frame(x)
+  x_attrs <- attributes(x)
+  uniq_sets <- list()
+  uniq_sets$from_set <- as.character(unique(df[[x_attrs$col_from]]))
+  uniq_sets$to_set <- as.character(unique(df[[x_attrs$col_to]]))
+  return(unique_sets)
+}
+```
+
 ```{r send_to="R/abort.R"}
 #' @describeIn abort Abort if from_set attribute doesn't match xmap_df values
 #'
@@ -797,7 +810,7 @@ abort_from_set <- function(df, col_from, from_set) {
     -   contains columns named in attributes
         -   (implies df has at least `3` columns) -- ncol3 check removed as discussed in [conformr-project #57](https://github.com/cynthiahqy/conformr-project/issues/57#issuecomment-1401239494)
     -   has no missing values in ANY column
-    -   from_set attributes matches
+    -   from_set attributes matches unique values in `from` column
     -   weights column is `numeric`
 -   checks graph properties:
     -   A: duplicate source-target rows (weights should be collapsed into a single row)
