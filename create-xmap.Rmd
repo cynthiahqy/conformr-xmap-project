@@ -85,9 +85,69 @@ library(rlang)
 
 ## Package Design Notes
 
-### Naming conventions
+### Function Types and Naming conventions
 
-For `xmap` functions:
+This should correspond to `@keywords` and `send_to=` arguments.
+
+#### Internal Helpers
+
+Errors and Messages:
+
+-   `abort_*`: should raise a `cli::cli_abort()` message
+
+Properties:
+
+-   `.get_<attrs>`: should always retrieve attributes (usually of `xmap_df`)
+-   `.calc_<property>`: calculates something based on object and/or its attributes (usually of `xmap_df`)
+-   `has_`: takes in vectors, returns boolean -- might make more sense to name these as `vhas_` to remind myself these take in vector inputs
+
+Construction:
+
+-   `*_xmap_df()`: class construction functions
+-   `new_xmap_df()`
+-   `validate_xmap_df()` -- internal, quick!
+-   `as_xmap_df()`
+
+#### Non-`xmap_df` inputs
+
+Candidate Links:
+
+-   `as_pairs()` to generate crosswalks
+
+    -   `pairs_from_list()`
+    -   `pairs_from_named_vector()`
+
+-   `add_weights_*` to attach weights and return links
+
+-   `as_links()`: could be a generic that calls different (internal?) methods and adds/extracts weights like:
+
+    -   `links_from_matrix()`
+    -   `links_from_igraph()`
+
+-   `verify_links_as_xmap()`, takes tidyselect?
+
+Coerce:
+
+-   `as_xmap()` wraps construction functions, takes tidyselect
+-   `is_xmap()`
+
+#### `xmap_df` inputs
+
+Describe:
+
+-   `xmap_has`
+    -   single input variants of `vhas` fncs
+-   `verify_xmap_as_*` special types of xmaps;
+
+Modify:
+
+-   `xmap_<verb>` returns an `xmap_df`
+
+Convert:
+
+-   `xmap_to`: returns non-`xmap` outputs
+
+#### ARCHIVED: `xmap` subclasses
 
 -   functions specific to subclass end with the `_<subclass>` suffix, and/or named as S3 dispatch method (i.e. `<generic>.<subclass>`). For example `validate_xmap_df()` and `xmap_validate.xmap_df()`
 
