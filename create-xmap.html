@@ -532,6 +532,7 @@ usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)</code></
 library(rlang)</code></pre>
 <pre class="r"><code>#&#39; Defaults for NULL values
 #&#39; @name op-null-default
+#&#39; @keywords internal
 `%||%` &lt;- function(x, y) if (is.null(x)) y else x</code></pre>
 </div>
 <div id="package-level-documentation" class="section level3">
@@ -863,9 +864,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -915,7 +916,7 @@ has_collapse &lt;- has_1fromM</code></pre>
 <h3>Helper: df property checks</h3>
 <div id="abort-missing-columns" class="section level4">
 <h4>Abort Missing Columns</h4>
-<pre class="r"><code>#&#39; @describeIn abort-df Abort if named columns can&#39;t be found in df
+<pre class="r"><code>#&#39; @describeIn abort Abort if named columns can&#39;t be found in df
 #&#39;
 <span id='abort_missing_cols'>abort_missing_cols</span> &lt;- function(df, cols) {
   missing_cols &lt;- setdiff(cols, names(df))
@@ -930,7 +931,7 @@ has_collapse &lt;- has_1fromM</code></pre>
 </div>
 <div id="abort-missing-values" class="section level4">
 <h4>Abort Missing Values</h4>
-<pre class="r"><code>#&#39; @describeIn abort-df Abort if xmap_df has missing values
+<pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df has missing values
 #&#39;
 <span id='abort_any_na'>abort_any_na</span> &lt;- function(df) {
   if (base::anyNA(df)) {
@@ -1015,6 +1016,10 @@ NULL</code></pre>
 #&#39; @inheritParams as_xmap_df
 #&#39; 
 #&#39; @export
+#&#39; @examples
+#&#39; tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
+#&#39;                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
+#&#39;                  CC = c(&quot;x2&quot;))
 <span id='validate_links_as_xmap'>validate_links_as_xmap</span> &lt;- function(df, from, to, weights){
   col_from &lt;- deparse(substitute(from))
   col_to &lt;- deparse(substitute(to))
@@ -1097,7 +1102,7 @@ a numeric vector - <code>X</code> inherits from the class
                     {
                       testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -1189,7 +1194,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -1248,7 +1253,7 @@ NULL
                       testthat::expect_error(<a href='create-xmap.html#abort_col_order'>abort_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="from-set-check" class="section level4">
 <h4>From Set Check</h4>
@@ -1345,7 +1350,7 @@ single row)</li>
     testthat::expect_identical(out, x)
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
@@ -1449,12 +1454,12 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_bad_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 </div>
@@ -1574,7 +1579,7 @@ controlled by <code>.drop</code> argument</li>
                                <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="conversion" class="section level2">
@@ -1654,7 +1659,7 @@ controlled by <code>.drop</code> argument</li>
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
   }
   )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 <div id="to-list-xmap_to_list" class="section level3">
@@ -1697,7 +1702,7 @@ controlled by <code>.drop</code> argument</li>
   out_list &lt;- <a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_c)
   testthat::expect_identical(tar_list, out_list)
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <p>Dev example:</p>
 <pre class="r"><code>xmap_flist &lt;- 
   <a href='create-xmap.html#links_from_list'>links_from_list</a>(link_list,
@@ -1742,9 +1747,9 @@ links_df |&gt;
 #63</a></p>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
-<pre class="r"><code>#&#39; @describeIn df_check Abort if xmap_df has wrong column types
+<pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df is not reversible without new weights
 #&#39;
-<span id='df_check_reversible'>df_check_reversible</span> &lt;- function(df, col_to) {
+<span id='abort_not_reversible'>abort_not_reversible</span> &lt;- function(df, col_to) {
   x_to &lt;- df[[col_to]]
   if (has_collapse(x_to)){
     cli::cli_abort(&quot;Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.&quot;)
@@ -1782,7 +1787,7 @@ links_df |&gt;
   df &lt;- as.data.frame(x)
   
   ## check xmap can be reversed
-  <a href='create-xmap.html#df_check_reversible'>df_check_reversible</a>(df, x_attrs$col_to)
+  <a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df, x_attrs$col_to)
 
   ## make new xmap
   df[[weights_into]] &lt;- 1
@@ -1824,10 +1829,10 @@ links_df |&gt;
   
   # output checks
   testthat::expect_identical(<a href='create-xmap.html#xmap_reverse.xmap_df'>xmap_reverse.xmap_df</a>(df_x), df_x_rev)
-  testthat::expect_identical(<a href='create-xmap.html#df_check_reversible'>df_check_reversible</a>(df_x,&quot;to&quot;), df_x)
+  testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -1874,7 +1879,7 @@ links_df |&gt;
   testthat::expect_identical(xmap_small, xmap_drop_df)
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level2">
@@ -2092,10 +2097,6 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 <pre><code>## Warning: [
 ## conformr-project/xmap/R/xmap_to_matrix.xmap_df.Rxmap_to_matrix.xmap_df.R:5]
 ## @return requires a value</code></pre>
-<pre><code>## Warning: Skipping &#39;abort-df.Rd&#39;
-## ℹ File lacks name and/or title</code></pre>
-<pre><code>## Warning: Skipping &#39;df_check.Rd&#39;
-## ℹ File lacks name and/or title</code></pre>
 <pre><code>## Writing &#39;NAMESPACE&#39;
 ## Writing &#39;abort.Rd&#39;
 ## Writing &#39;as_xmap_df.Rd&#39;
@@ -2111,8 +2112,7 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;xmap_reverse.Rd&#39;
 ## Writing &#39;xmap_to_list.Rd&#39;
 ## Writing &#39;xmap_to_matrix.Rd&#39;</code></pre>
-<pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;
-## ✔ Writing &#39;_pkgdown.yml&#39;</code></pre>
+<pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;</code></pre>
 <pre><code>## -- Installing package into temporary library -----------------------------------
 ## == Building pkgdown site =======================================================
 ## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-project/xmap&#39;

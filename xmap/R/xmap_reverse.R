@@ -22,7 +22,7 @@ xmap_reverse.xmap_df <- function(x, weights_into = "r_weights"){
   df <- as.data.frame(x)
   
   ## check xmap can be reversed
-  df_check_reversible(df, x_attrs$col_to)
+  abort_not_reversible(df, x_attrs$col_to)
 
   ## make new xmap
   df[[weights_into]] <- 1

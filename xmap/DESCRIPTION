@@ -19,10 +19,13 @@ Suggests:
     dplyr,
     ggbump,
     ggplot2,
+    knitr,
     matlib,
     Matrix,
+    rmarkdown,
     testthat (>= 3.0.0)
 Depends: 
     R (>= 2.10)
+VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: 781e62efa8e1820cdbbaf980156a3abe
+LitrId: 6d31956a05bbb033ce40994bda6a88c3
