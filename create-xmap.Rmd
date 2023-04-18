@@ -66,6 +66,7 @@ library(rlang)
 ```{r send_to="R/utils.R"}
 #' Defaults for NULL values
 #' @name op-null-default
+#' @keywords internal
 `%||%` <- function(x, y) if (is.null(x)) y else x
 ```
 
@@ -1579,7 +1580,8 @@ We finish by running commands that will document, build, and install the package
 ```{r}
 rm(list = ls())
 litr::document() # <-- use instead of devtools::document()
-litr::add_pkgdown()
+pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
+litr::add_pkgdown(pkgdown_yml)
 # devtools::run_examples()
 # devtools::build()
 # devtools::install()
