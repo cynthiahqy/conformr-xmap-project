@@ -78,12 +78,12 @@ testthat::test_that(
   }
 )
 
-testthat::test_that("check_col_order() works as expected",
+testthat::test_that("abort_col_order() works as expected",
                     {
                       df <- data.frame(a = 1, b = 2, c = 3)
-                      testthat::expect_invisible(check_col_order(df, "a", "b", "c"))
-                      testthat::expect_identical(check_col_order(df, "a", "b", "c"), df)
-                      testthat::expect_error(check_col_order(df, "b", "a", "c"),
+                      testthat::expect_invisible(abort_col_order(df, "a", "b", "c"))
+                      testthat::expect_identical(abort_col_order(df, "a", "b", "c"), df)
+                      testthat::expect_error(abort_col_order(df, "b", "a", "c"),
                                              class = "abort_col_order")
                     })
 
@@ -149,7 +149,7 @@ testthat::test_that(
       "A4", "B04", 0.75
     ) |>
       dplyr::mutate(weights = as.character(weights))
-    testthat::expect_error(check_weights_col_type(df, "weights"),
+    testthat::expect_error(abort_weights_col_type(df, "weights"),
       class = "abort_col_type"
     )
     x <- new_xmap_df(df, "from", "to", "weights")
@@ -170,7 +170,7 @@ testthat::test_that(
       "A4", "B04", 0.75
     )
     bad_set <- c("bad set", "of", "nodes")
-    testthat::expect_error(check_from_set(df, "from", bad_set))
+    testthat::expect_error(abort_from_set(df, "from", bad_set))
     x <- new_xmap_df(df, "from", "to", "weights", from_set = bad_set)
     testthat::expect_error(validate_xmap_df(x))
   }
@@ -185,7 +185,7 @@ testthat::test_that(
       "A1", "B02", 0.3,
       "A1", "B02", 1
     )
-    testthat::expect_error(check_dup_pairs(df, "from", "to"), class = "abort_dup_pairs")
+    testthat::expect_error(abort_dup_pairs(df, "from", "to"), class = "abort_dup_pairs")
     x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
   }
@@ -200,7 +200,7 @@ testthat::test_that(
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(check_bad_weights(df, "from", "weights"),
+    testthat::expect_error(abort_bad_weights(df, "from", "weights"),
       class = "abort_bad_weights"
     )
     x <- new_xmap_df(df, "from", "to", "weights")

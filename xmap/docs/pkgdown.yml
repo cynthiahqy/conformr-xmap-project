@@ -1,10 +1,6 @@
 pandoc: 3.1.1
 pkgdown: 2.0.6
 pkgdown_sha: ~
-articles:
-  making-xmaps: making-xmaps.html
-  using-xmaps: using-xmaps.html
-  vis-xmaps: vis-xmaps.html
-  xmap: xmap.html
-last_built: 2023-04-17T06:38Z
+articles: {}
+last_built: 2023-04-18T02:14Z
 
