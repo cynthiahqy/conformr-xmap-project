@@ -660,7 +660,7 @@ Eventually support matrix, graph, and data.frame?
 
 ```{r send_to="R/new_xmap.R"}
 #'
-.get_xmap_subclass_attr <- function(subclass = c("xmap_df")){
+.calc_xmap_subclass_attr <- function(subclass = c("xmap_df")){
   subclass <- rlang::arg_match(subclass)
 
   class_attr <- switch(subclass,
@@ -672,9 +672,9 @@ Eventually support matrix, graph, and data.frame?
 ```
 
 ```{r}
-testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
+testthat::test_that(".calc_xmap_subclass_attr() rejects unknown subclass",
                     {
-                      testthat::expect_error(.get_xmap_subclass_attr("unknown"))
+                      testthat::expect_error(.calc_xmap_subclass_attr("unknown"))
                     })
 ```
 
@@ -730,7 +730,7 @@ new_xmap_df <- function(x, col_from, col_to, col_weights, from_set = NULL) {
 
   #' @return `x` with additional subclasses `xmap_df` and `xmap`
 
-  class(x) <- .get_xmap_subclass_attr("xmap_df")
+  class(x) <- .calc_xmap_subclass_attr("xmap_df")
   structure(x,
     col_from = col_from,
     col_to = col_to,
@@ -753,7 +753,7 @@ testthat::test_that(
     )
     xmap <- new_xmap_df(x = df, "x", "y", "z")
     xmap_attrs <- attributes(xmap)
-    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_df"))
+    testthat::expect_s3_class(xmap, .calc_xmap_subclass_attr("xmap_df"))
     testthat::expect_identical(xmap_attrs$col_from, "x")
     testthat::expect_identical(xmap_attrs$col_to, "y")
     testthat::expect_identical(xmap_attrs$col_weights, "z")
@@ -1156,11 +1156,11 @@ testthat::test_that(
      
      ## default subclasses work as expected
      testthat::expect_s3_class(as_xmap_df(df_links, f, t, w),
-                               .get_xmap_subclass_attr("xmap_df"))
+                               .calc_xmap_subclass_attr("xmap_df"))
      
      ## override subclass works as well
      testthat::expect_s3_class(as_xmap_df(tbl_links, f, t, w, subclass = "xmap_df"),
-                               .get_xmap_subclass_attr("xmap_df"))
+                               .calc_xmap_subclass_attr("xmap_df"))
   }
 )
 ```
