@@ -99,7 +99,7 @@ Properties:
 
 -   `.get_<attrs>`: should always retrieve attributes (usually of `xmap_df`)
 -   `.calc_<property>`: calculates something based on object and/or its attributes (usually of `xmap_df`)
--   `has_`: takes in vectors, returns boolean -- might make more sense to name these as `vhas_` to remind myself these take in vector inputs
+-   `vhas_`: takes in vectors, returns boolean
 
 Construction:
 
@@ -320,22 +320,22 @@ links_from_list <- function(x_list, col_from, col_to, col_weights){
 }
 ```
 
-### Link Properties: `has_*(x_)`
+### Link Properties: `vhas_*(x_)`
 
-`has_*(x_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
+`vhas_*(v_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
 
-```{r send_to="R/has.R"}
+```{r send_to="R/vhas.R"}
 #' Boolean flags for properties of candidate and validated xmap links
 #'
 #' @description
-#' `has_*()` functions check properties of xmap links and/or candidate links.
+#' `vhas_*()` functions check properties of xmap links and/or candidate links.
 #' The functions only accepts equal length vector inputs to support multiple link formats,
 #' but does not check if the inputs are from the same xmap.
-#' @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
+#' @param v_from,v_to,v_weights equal length vectors containing the source-target node pairs
 #' 
 #' @return TRUE or FALSE
 #' 
-#' @name has-links
+#' @name vhas
 NULL
 ```
 
@@ -346,32 +346,32 @@ A valid Crossmap satisfies the following conditions:
 1.  There is at most one link between each distinct source and target node (`has_dup_pairs()`)
 2.  For each source node, the sum of weights attached to all outgoing links sums to one. (`has_complete_weights()`)
 
-```{r send_to="R/has.R"}
-#' @describeIn has-links Returns TRUE if xmap does not have 
+```{r send_to="R/vhas.R"}
+#' @describeIn vhas Returns TRUE if xmap does not have 
 #' duplicate pairs of source-target nodes (irrespective of weights)
 #'
-has_no_dup_pairs <- function(x_from, x_to) {
-  stopifnot(is.vector(x_from))
-  stopifnot(is.vector(x_to))
-  stopifnot(identical(length(x_from), length(x_to)))
-  links <- data.frame(x_from, x_to)
+vhas_no_dup_pairs <- function(v_from, v_to) {
+  stopifnot(is.vector(v_from))
+  stopifnot(is.vector(v_to))
+  stopifnot(identical(length(v_from), length(v_to)))
+  links <- data.frame(v_from, v_to)
   dup_idx <- anyDuplicated(links)
   !as.logical(dup_idx)
 }
 ```
 
-```{r send_to="R/has.R"}
-#' @describeIn has-links Returns TRUE if all weights for a given `from` label
+```{r send_to="R/vhas.R"}
+#' @describeIn vhas Returns TRUE if all weights for a given `from` label
 #' sum to one (approximately)
 #' @param tol Tolerance of comparison. Passed through to the `tolerance` arg of
 #' `base::all.equal()`.
-has_complete_weights <- function(x_from, x_weights, tol = .Machine$double.eps^0.5) {
-  stopifnot(is.vector(x_from))
-  stopifnot(is.vector(x_weights))
-  stopifnot(identical(length(x_from), length(x_weights)))
+vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0.5) {
+  stopifnot(is.vector(v_from))
+  stopifnot(is.vector(v_weights))
+  stopifnot(identical(length(v_from), length(v_weights)))
   sum_w <- tapply(
-    X = x_weights,
-    INDEX = x_from,
+    X = v_weights,
+    INDEX = v_from,
     FUN = sum,
     simplify = TRUE
   ) |> as.vector()
@@ -381,26 +381,26 @@ has_complete_weights <- function(x_from, x_weights, tol = .Machine$double.eps^0.
 }
 ```
 
-```{r send_to="R/has.R"}
-#' @describeIn has-links Returns TRUE if links have no duplicate pairs and complete weights
-has_xmap_props <- function(x_from, x_to, x_weights){
+```{r send_to="R/vhas.R"}
+#' @describeIn vhas Returns TRUE if links have no duplicate pairs and complete weights
+vhas_xmap_props <- function(v_from, v_to, v_weights){
   ## check vectors are equal length
-  x_list <- list(x_from, x_to, x_weights)
-  x_lengths <- sapply(x_list, length)
-  stopifnot(length(unique(x_lengths)) == 1)
+  v_list <- list(v_from, v_to, v_weights)
+  v_lengths <- sapply(v_list, length)
+  stopifnot(length(unique(v_lengths)) == 1)
   
   ## check properties
-  x_props <- c(
-    pairs = has_no_dup_pairs(x_from, x_to),
-    weights = has_complete_weights(x_from, x_weights)
+  v_props <- c(
+    pairs = vhas_no_dup_pairs(v_from, v_to),
+    weights = vhas_complete_weights(v_from, v_weights)
   ) 
-  all(x_props)
+  all(v_props)
 }
 ```
 
 ```{r test-has-flags}
 testthat::test_that(
-  "has_* xmap validation helpers work as expected on valid df",
+  "vhas_* xmap validation helpers work as expected on valid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -410,14 +410,14 @@ testthat::test_that(
       "A4", "B03", 0.67,
       "A4", "B04", 0.33
     )
-    testthat::expect_true(has_no_dup_pairs(df$from, df$to))
-    testthat::expect_true(has_complete_weights(df$from, df$weights))
-    testthat::expect_true(has_xmap_props(df$from, df$to, df$weights))
+    testthat::expect_true(vhas_no_dup_pairs(df$from, df$to))
+    testthat::expect_true(vhas_complete_weights(df$from, df$weights))
+    testthat::expect_true(vhas_xmap_props(df$from, df$to, df$weights))
   }
 )
 
 testthat::test_that(
-  "has_* xmap validation helpers catch invalid df",
+  "vhas_* xmap validation helpers catch invalid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -425,19 +425,19 @@ testthat::test_that(
       "A2", "B02", 0.3,
       "A2", "B02", 0.5
     )
-    testthat::expect_false(has_complete_weights(df$from, df$weights))
-    testthat::expect_false(has_no_dup_pairs(df$from, df$to))
+    testthat::expect_false(vhas_complete_weights(df$from, df$weights))
+    testthat::expect_false(vhas_no_dup_pairs(df$from, df$to))
   }
 )
 
 testthat::test_that(
-  "has_complete_weights() works on recurring fractional weights",
+  "vhas_complete_weights() works on recurring fractional weights",
   {
     df <- data.frame(key1 = rep("A1", 3),
                      key2 = c("B01", "B02", "B03"),
                      share = rep(1/3, 3))
 
-    testthat::expect_true(has_complete_weights(df$key1, df$share))
+    testthat::expect_true(vhas_complete_weights(df$key1, df$share))
   }
 )
 ```
@@ -446,44 +446,44 @@ testthat::test_that(
 
 -   used for print methods, reverse
 
-```{r print-helpers, send_to="R/has.R"}
-#' @describeIn has-links Return TRUE if xmap recodes labels between `from` and `to`
-has_1to1 <- function(x_weights) {
-  stopifnot(is.vector(x_weights))
-  any(x_weights == 1)
+```{r print-helpers, send_to="R/vhas.R"}
+#' @describeIn vhas Return TRUE if xmap recodes labels between `from` and `to`
+vhas_1to1 <- function(v_weights) {
+  stopifnot(is.vector(v_weights))
+  any(v_weights == 1)
 }
 #'
-has_recode <- has_1to1
+vhas_recode <- vhas_1to1
 
-#' @describeIn has-links Return TRUE if xmap has splitting links between `from` and `to`
-has_1toM <- function(x_weights) {
-  stopifnot(is.vector(x_weights))
-  any(x_weights < 1)
+#' @describeIn vhas Return TRUE if xmap has splitting links between `from` and `to`
+vhas_1toM <- function(v_weights) {
+  stopifnot(is.vector(v_weights))
+  any(v_weights < 1)
 }
 #'
-has_split <- has_1toM
+vhas_split <- vhas_1toM
 
-#' @describeIn has-links Return TRUE if xmap has collapsing links between `from` and `to`
-has_1fromM <- function(x_to){
-  stopifnot(is.vector(x_to))
-  as.logical(anyDuplicated(x_to))
+#' @describeIn vhas Return TRUE if xmap has collapsing links between `from` and `to`
+vhas_1fromM <- function(v_to){
+  stopifnot(is.vector(v_to))
+  as.logical(anyDuplicated(v_to))
 }
 #'
-has_collapse <- has_1fromM
+vhas_collapse <- vhas_1fromM
 ```
 
 ```{r}
 testthat::test_that(
-  "has_* relation type flag functions work as expected",
+  "vhas_* relation type flag functions work as expected",
   {
     w_1to1 <- rep(1, 10)
     w_1toM <- rep(1/6, 6)
     to_1fromM <- rep("country", 4)
-    testthat::expect_true(has_recode(w_1to1))
-    testthat::expect_false(has_recode(w_1toM))
-    testthat::expect_true(has_split(w_1toM))
-    testthat::expect_false(has_split(w_1to1))
-    testthat::expect_true(has_collapse(to_1fromM))
+    testthat::expect_true(vhas_recode(w_1to1))
+    testthat::expect_false(vhas_recode(w_1toM))
+    testthat::expect_true(vhas_split(w_1toM))
+    testthat::expect_false(vhas_split(w_1to1))
+    testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )
 ```
@@ -565,7 +565,7 @@ abort_weights_col_type <- function(df, col_weights) {
 #' @describeIn abort Abort if duplicate source-target pairs are found
 #'
 abort_dup_pairs <- function(df, col_from, col_to) {
-  if (!has_no_dup_pairs(df[[col_from]], df[[col_to]])) {
+  if (!vhas_no_dup_pairs(df[[col_from]], df[[col_to]])) {
     cli::cli_abort(
       message = "Duplicate `from`-`to` links were found.
       Please remove or collapse duplicates.",
@@ -582,7 +582,7 @@ abort_dup_pairs <- function(df, col_from, col_to) {
 #' @describeIn abort Abort if invalid mapping weights are found
 #'
 abort_bad_weights <- function(df, col_from, col_weights) {
-  if (!has_complete_weights(df[[col_from]], df[[col_weights]])) {
+  if (!vhas_complete_weights(df[[col_from]], df[[col_weights]])) {
     cli::cli_abort(
       message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
       class = "abort_bad_weights"
@@ -1339,7 +1339,7 @@ See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues
 #'
 abort_not_reversible <- function(df, col_to) {
   x_to <- df[[col_to]]
-  if (has_collapse(x_to)){
+  if (vhas_collapse(x_to)){
     cli::cli_abort("Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.")
   }
   invisible(df)
@@ -1561,9 +1561,9 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
   x_to <- xmap_df[[x_attrs$col_to]]
   
   flags <- c(
-      "recode" = has_recode(x_weights),
-      "split" = has_split(x_weights),
-      "collapse" = has_collapse(x_to)
+      "recode" = vhas_recode(x_weights),
+      "split" = vhas_split(x_weights),
+      "collapse" = vhas_collapse(x_to)
     )
   types <- names(flags[flags == TRUE])
   type <- cli::pluralize("{types} {? }")
