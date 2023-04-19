@@ -3,7 +3,7 @@ xmap : create-xmap.Rmd xmap_clean
 
 xmap_build : create-xmap.Rmd xmap
 	Rscript -e "devtools::build('xmap')"
-	echo 'git commit -a -m ":package: render {xmap} v.0.0.0.9xxx"
+	echo 'git commit -a -m ":package: render {xmap} v.0.0.0.9xxx"'
 
 .PHONY: xmap_clean
 xmap_clean:
