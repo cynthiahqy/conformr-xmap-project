@@ -54,7 +54,7 @@ abort_weights_col_type <- function(df, col_weights) {
 #' @describeIn abort Abort if duplicate source-target pairs are found
 #'
 abort_dup_pairs <- function(df, col_from, col_to) {
-  if (!has_no_dup_pairs(df[[col_from]], df[[col_to]])) {
+  if (!vhas_no_dup_pairs(df[[col_from]], df[[col_to]])) {
     cli::cli_abort(
       message = "Duplicate `from`-`to` links were found.
       Please remove or collapse duplicates.",
@@ -67,7 +67,7 @@ abort_dup_pairs <- function(df, col_from, col_to) {
 #' @describeIn abort Abort if invalid mapping weights are found
 #'
 abort_bad_weights <- function(df, col_from, col_weights) {
-  if (!has_complete_weights(df[[col_from]], df[[col_weights]])) {
+  if (!vhas_complete_weights(df[[col_from]], df[[col_weights]])) {
     cli::cli_abort(
       message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
       class = "abort_bad_weights"
@@ -97,3 +97,14 @@ abort_from_set <- function(df, col_from, from_set) {
 
   invisible(df)
 }
+
+#' @describeIn abort Abort if xmap_df is not reversible without new weights
+#'
+abort_not_reversible <- function(df, col_to) {
+  x_to <- df[[col_to]]
+  if (vhas_collapse(x_to)){
+    cli::cli_abort("Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.")
+  }
+  invisible(df)
+}
+  

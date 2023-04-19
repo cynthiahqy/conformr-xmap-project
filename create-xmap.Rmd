@@ -1351,21 +1351,22 @@ testthat::test_that("xmap_to_list() reverses pairs_from_named()", {
 with dplyr:
 
 ```{r}
-links_df <- 
-  links_from_list(link_list, "source", "target", "weights")
+pairs_df <- 
+     pairs_from_named(link_list,
+                  "capital", "xvars") 
 
-links_df |> 
-  dplyr::group_by(target) |>
-  dplyr::summarise(source = list(source)) |>
+pairs_df |> 
+  dplyr::group_by(capital) |>
+  dplyr::summarise(source = list(xvars)) |>
   tibble::deframe()
 ```
 
 without dplyr:
 
 ```{r}
-links_df |> 
-  subset(select = c("target", "source")) |>
-  tidyr::nest(source = c("source")) |>
+pairs_df |> 
+  subset(select = c("capital", "xvars")) |>
+  tidyr::nest(source = c("xvars")) |>
   tibble::deframe() |>
   sapply(as.matrix) |>
   sapply(as.vector)

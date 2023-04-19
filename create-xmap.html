@@ -370,7 +370,7 @@ Documentation</a></li>
 </ul></li>
 <li><a href="#package-design-notes" id="toc-package-design-notes">Package Design Notes</a>
 <ul>
-<li><a href="#naming-conventions" id="toc-naming-conventions">Naming
+<li><a href="#function-types-and-naming-conventions" id="toc-function-types-and-naming-conventions">Function Types and Naming
 conventions</a></li>
 <li><a href="#reference-index" id="toc-reference-index">Reference
 Index</a></li>
@@ -383,12 +383,12 @@ Links</a>
 <ul>
 <li><a href="#convert-list-to-links-data-frame" id="toc-convert-list-to-links-data-frame">Convert: List to Links Data
 Frame</a></li>
-<li><a href="#link-properties-has_x_" id="toc-link-properties-has_x_">Link Properties:
-<code>has_*(x_)</code></a></li>
+<li><a href="#link-properties-vhas_x_" id="toc-link-properties-vhas_x_">Link Properties:
+<code>vhas_*(x_)</code></a></li>
 <li><a href="#helper-df-property-checks" id="toc-helper-df-property-checks">Helper: df property checks</a></li>
 <li><a href="#validate-links" id="toc-validate-links">Validate:
 Links</a></li>
-<li><a href="#validate_links_as_xmap" id="toc-validate_links_as_xmap"><code><a href='create-xmap.html#validate_links_as_xmap'>validate_links_as_xmap</a>()</code></a></li>
+<li><a href="#verify_links_as_xmap" id="toc-verify_links_as_xmap"><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code></a></li>
 </ul></li>
 <li><a href="#xmap-class-structure" id="toc-xmap-class-structure"><code>xmap</code> Class Structure</a>
 <ul>
@@ -542,9 +542,80 @@ library(rlang)</code></pre>
 </div>
 <div id="package-design-notes" class="section level2">
 <h2>Package Design Notes</h2>
-<div id="naming-conventions" class="section level3">
-<h3>Naming conventions</h3>
-<p>For <code>xmap</code> functions:</p>
+<div id="function-types-and-naming-conventions" class="section level3">
+<h3>Function Types and Naming conventions</h3>
+<p>This should correspond to <code>@keywords</code> and
+<code>send_to=</code> arguments.</p>
+<div id="internal-helpers" class="section level4">
+<h4>Internal Helpers</h4>
+<p>Errors and Messages:</p>
+<ul>
+<li><code>abort_*</code>: should raise a <code>cli::cli_abort()</code>
+message</li>
+</ul>
+<p>Properties:</p>
+<ul>
+<li><code>.get_&lt;attrs&gt;</code>: should always retrieve attributes
+(usually of <code>xmap_df</code>)</li>
+<li><code>.calc_&lt;property&gt;</code>: calculates something based on
+object and/or its attributes (usually of <code>xmap_df</code>)</li>
+<li><code>vhas_</code>: takes in vectors, returns boolean</li>
+</ul>
+<p>Construction:</p>
+<ul>
+<li><code>*_xmap_df()</code>: class construction functions</li>
+<li><code><a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>()</code></li>
+<li><code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code> – internal, quick!</li>
+<li><code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code></li>
+</ul>
+</div>
+<div id="non-xmap_df-inputs" class="section level4">
+<h4>Non-<code>xmap_df</code> inputs</h4>
+<p>Candidate Links:</p>
+<ul>
+<li><p><code>as_pairs()</code> to generate crosswalks</p>
+<ul>
+<li><code>pairs_from_list()</code></li>
+<li><code>pairs_from_named_vector()</code></li>
+</ul></li>
+<li><p><code>add_weights_*</code> to attach weights and return
+links</p></li>
+<li><p><code>as_links()</code>: could be a generic that calls different
+(internal?) methods and adds/extracts weights like:</p>
+<ul>
+<li><code>links_from_matrix()</code></li>
+<li><code>links_from_igraph()</code></li>
+</ul></li>
+<li><p><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code>, takes tidyselect?</p></li>
+</ul>
+<p>Coerce:</p>
+<ul>
+<li><code>as_xmap()</code> wraps construction functions, takes
+tidyselect</li>
+<li><code><a href='create-xmap.html#is_xmap'>is_xmap</a>()</code></li>
+</ul>
+</div>
+<div id="xmap_df-inputs" class="section level4">
+<h4><code>xmap_df</code> inputs</h4>
+<p>Describe:</p>
+<ul>
+<li><code>xmap_has</code>
+<ul>
+<li>single input variants of <code>vhas</code> fncs</li>
+</ul></li>
+<li><code>verify_xmap_as_*</code> special types of xmaps;</li>
+</ul>
+<p>Modify:</p>
+<ul>
+<li><code>xmap_&lt;verb&gt;</code> returns an <code>xmap_df</code></li>
+</ul>
+<p>Convert:</p>
+<ul>
+<li><code>xmap_to</code>: returns non-<code>xmap</code> outputs</li>
+</ul>
+</div>
+<div id="archived-xmap-subclasses" class="section level4">
+<h4>ARCHIVED: <code>xmap</code> subclasses</h4>
 <ul>
 <li><p>functions specific to subclass end with the
 <code>_&lt;subclass&gt;</code> suffix, and/or named as S3 dispatch
@@ -574,6 +645,7 @@ using these functions in a conformr workflow.</p></li>
 should end with the suffice <code>_&lt;subclass&gt;</code>. For example
 <code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code> and <code><a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>()</code></li>
 </ul>
+</div>
 </div>
 <div id="reference-index" class="section level3">
 <h3>Reference Index</h3>
@@ -718,58 +790,73 @@ from_name &lt;- &quot;source&quot;
 to_name &lt;- &quot;target&quot;
 links[[to_name]] = row.names(links)
 names(links)[1] = from_name</code></pre>
-<div id="links_from_list" class="section level4">
-<h4><code><a href='create-xmap.html#links_from_list'>links_from_list</a>()</code></h4>
-<pre class="r"><code>xmap::<a href='create-xmap.html#links_from_list'>links_from_list</a>(list = link_list,
+<pre class="r"><code>xmap::<a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>(list = link_list,
                       col_from = &quot;source&quot;,
                       col_to = &quot;target&quot;,
                       col_weights = &quot;weights&quot;)</code></pre>
-<pre class="r"><code>#&#39; Make candidate links from list
+<div id="helper-node-pairs-from-named-list-or-vector" class="section level4">
+<h4>Helper: Node pairs from Named List or Vector</h4>
+<pre class="r"><code>#&#39; Make candidate links from named list or vector
 #&#39; 
-#&#39; Convert a named list of one-to-one or many-to-one relations into a table of
-#&#39; candidate links for validation or coercion into a crossmap \(i.e. via `<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()`\).
+#&#39; Convert a named list of one-to-one (named vector) or many-to-one (named list) relations 
+#&#39; into a table of node pairs. It extracts the vector or list element names into one set of nodes,
+#&#39; and the values into a second set of names, unnesting where necessary.
 #&#39;
-#&#39; @param x_list named list. Each item contains a vector of source nodes which map to #&#39; the target node named.
-#&#39; @param col_from,col_to,col_weights character string names for columns containing
-#&#39; source nodes, target nodes and numeric weights.
+#&#39; @param x named list. Each item contains a vector of source nodes which map to #&#39; the target node named.
+#&#39; @param names_to,values_to character vector specify the new columns to pass the information in `x` into.
 #&#39;
-#&#39; @return tibble containing candidate links for conversion to xmap.
+#&#39; @return tibble containing .
 #&#39; @export
 #&#39;
 #&#39; @examples
-#&#39; tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
-#&#39;                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
-#&#39;                  CC = c(&quot;x2&quot;))
-#&#39; <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
-<span id='links_from_list'>links_from_list</span> &lt;- function(x_list, col_from, col_to, col_weights){
-  stopifnot(is.vector(x_list))
-  links &lt;- x_list |&gt;
-    tibble::enframe(name = col_to, value = col_from) |&gt;
-    tidyr::unnest_longer(col=tidyr::all_of(col_from))
-    #dplyr::mutate(&quot;{col_weights}&quot; := 1)
-  links[[col_weights]] &lt;- 1
-  return(links)
+#&#39; tar_list &lt;- list(MAMM = c(&quot;elephant&quot;, &quot;whale&quot;, &quot;monkey&quot;),
+#&#39;                  REPT = c(&quot;lizard&quot;, &quot;turtle&quot;),
+#&#39;                  CRUS = c(&quot;crab&quot;))
+#&#39; <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>(tar_list, &quot;class&quot;, &quot;animal&quot;)
+#&#39; 
+#&#39; tar_vec &lt;- c(eggplant = &quot;aubergine&quot;, zucchini = &quot;courgette&quot;)
+#&#39; <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>(tar_vec, &quot;au_eng&quot;, &quot;uk_eng&quot;)
+<span id='pairs_from_named'>pairs_from_named</span> &lt;- function(x, names_to = &quot;name&quot;, values_to = &quot;value&quot;){
+  stopifnot(is.vector(x))
+  node_pairs &lt;- x |&gt;
+    tibble::enframe(name = names_to, value = values_to) |&gt;
+    tidyr::unnest_longer(col=tidyr::all_of(values_to))
+  return(node_pairs)
 }</code></pre>
 </div>
+<div id="todo-test-for-pairs_from_named" class="section level4">
+<h4>TODO: test for <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>()</h4>
 </div>
-<div id="link-properties-has_x_" class="section level3">
-<h3>Link Properties: <code>has_*(x_)</code></h3>
-<p><code>has_*(x_)</code> functions take in vector arguments only, and
+<div id="helper-add-weights-to-pairs" class="section level4">
+<h4>Helper: Add weights to pairs</h4>
+<pre class="r"><code></code></pre>
+</div>
+</div>
+<div id="link-properties-vhas_x_" class="section level3">
+<h3>Link Properties: <code>vhas_*(x_)</code></h3>
+<p><code>vhas_*(v_)</code> functions take in vector arguments only, and
 are designed to be able to validate the graph features of non-data.frame
 xmaps (so long as the links can be decomposed into from,to,weight
 vectors).</p>
-<pre class="r"><code>#&#39; Boolean flags for properties of candidate and validated xmap links
+<pre class="r"><code>#&#39; Add unit weights to node pairs table
 #&#39;
-#&#39; @description
-#&#39; `has_*()` functions check properties of xmap links and/or candidate links.
-#&#39; The functions only accepts equal length vector inputs to support multiple link formats,
-#&#39; but does not check if the inputs are from the same xmap.
-#&#39; @param x_from,x_to,x_weights equal length vectors containing the source-target node pairs
-#&#39; 
-#&#39; @return TRUE or FALSE
-#&#39; 
-#&#39; @name has-links
-NULL</code></pre>
+#&#39; Attaches column of unit weights to pairs of source-target nodes.
+#&#39; The resultant weighted links can be verified or coerced into `xmap`.
+#&#39;
+#&#39; @param pairs data.frame or tibble containing node pairs
+#&#39; @param weights_into character string naming new column to store link weights in
+#&#39;
+#&#39; @return `pairs` with additional column of ones
+#&#39; @export
+#&#39;
+#&#39; @examples
+#&#39; AUS_list &lt;- list(AUS = c(&quot;NSW&quot;, &quot;QLD&quot;, &quot;SA&quot;, &quot;TAS&quot;, &quot;VIC&quot;, &quot;WA&quot;, &quot;ACT&quot;, &quot;NT&quot;))
+#&#39; <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>(AUS_list, names_to = &quot;ctr&quot;, values_to = &quot;state&quot;) |&gt;
+#&#39;   <a href='create-xmap.html#add_weights_unit'>add_weights_unit</a>(weights_into = &quot;weights&quot;)
+<span id='add_weights_unit'>add_weights_unit</span> &lt;- function(pairs, weights_into = &quot;weights&quot;){
+  pairs[,weights_into] &lt;- 1
+  return(pairs)
+}</code></pre>
 <pre><code>## NULL</code></pre>
 <div id="crossmap-property-flags" class="section level4">
 <h4>Crossmap Property Flags</h4>
@@ -778,30 +865,42 @@ NULL</code></pre>
 <li>There is at most one link between each distinct source and target
 node (<code>has_dup_pairs()</code>)</li>
 <li>For each source node, the sum of weights attached to all outgoing
-links sums to one. (<code><a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>()</code>)</li>
+links sums to one. (<code>has_complete_weights()</code>)</li>
 </ol>
-<pre class="r"><code>#&#39; @describeIn has-links Returns TRUE if xmap does not have 
+<pre class="r"><code>#&#39; Boolean flags for properties of candidate and validated xmap links
+#&#39;
+#&#39; @description
+#&#39; `vhas_*()` functions check properties of xmap links and/or candidate links.
+#&#39; The functions only accepts equal length vector inputs to support multiple link formats,
+#&#39; but does not check if the inputs are from the same xmap.
+#&#39; @param v_from,v_to,v_weights equal length vectors containing the source-target node pairs
+#&#39; 
+#&#39; @return TRUE or FALSE
+#&#39; 
+#&#39; @name vhas
+NULL</code></pre>
+<pre class="r"><code>#&#39; @describeIn vhas Returns TRUE if xmap does not have 
 #&#39; duplicate pairs of source-target nodes (irrespective of weights)
 #&#39;
-<span id='has_no_dup_pairs'>has_no_dup_pairs</span> &lt;- function(x_from, x_to) {
-  stopifnot(is.vector(x_from))
-  stopifnot(is.vector(x_to))
-  stopifnot(identical(length(x_from), length(x_to)))
-  links &lt;- data.frame(x_from, x_to)
+<span id='vhas_no_dup_pairs'>vhas_no_dup_pairs</span> &lt;- function(v_from, v_to) {
+  stopifnot(is.vector(v_from))
+  stopifnot(is.vector(v_to))
+  stopifnot(identical(length(v_from), length(v_to)))
+  links &lt;- data.frame(v_from, v_to)
   dup_idx &lt;- anyDuplicated(links)
   !as.logical(dup_idx)
 }</code></pre>
-<pre class="r"><code>#&#39; @describeIn has-links Returns TRUE if all weights for a given `from` label
+<pre class="r"><code>#&#39; @describeIn vhas Returns TRUE if all weights for a given `from` label
 #&#39; sum to one (approximately)
 #&#39; @param tol Tolerance of comparison. Passed through to the `tolerance` arg of
 #&#39; `base::all.equal()`.
-<span id='has_complete_weights'>has_complete_weights</span> &lt;- function(x_from, x_weights, tol = .Machine$double.eps^0.5) {
-  stopifnot(is.vector(x_from))
-  stopifnot(is.vector(x_weights))
-  stopifnot(identical(length(x_from), length(x_weights)))
+<span id='vhas_complete_weights'>vhas_complete_weights</span> &lt;- function(v_from, v_weights, tol = .Machine$double.eps^0.5) {
+  stopifnot(is.vector(v_from))
+  stopifnot(is.vector(v_weights))
+  stopifnot(identical(length(v_from), length(v_weights)))
   sum_w &lt;- tapply(
-    X = x_weights,
-    INDEX = x_from,
+    X = v_weights,
+    INDEX = v_from,
     FUN = sum,
     simplify = TRUE
   ) |&gt; as.vector()
@@ -809,22 +908,31 @@ links sums to one. (<code><a href='create-xmap.html#has_complete_weights'>has_co
   ones &lt;- rep(1, length(sum_w))
   all(isTRUE(all.equal(sum_w, ones, tolerance = tol)))
 }</code></pre>
-<pre class="r"><code>#&#39; @describeIn has-links Returns TRUE if links have no duplicate pairs and complete weights
-<span id='has_xmap_props'>has_xmap_props</span> &lt;- function(x_from, x_to, x_weights){
+<pre class="r"><code>#&#39; @describeIn vhas Returns TRUE if links have no duplicate pairs and complete weights
+<span id='vhas_xmap_props'>vhas_xmap_props</span> &lt;- function(v_from, v_to, v_weights){
   ## check vectors are equal length
-  x_list &lt;- list(x_from, x_to, x_weights)
-  x_lengths &lt;- sapply(x_list, length)
-  stopifnot(length(unique(x_lengths)) == 1)
+  v_list &lt;- list(v_from, v_to, v_weights)
+  v_lengths &lt;- sapply(v_list, length)
+  stopifnot(length(unique(v_lengths)) == 1)
   
   ## check properties
-  x_props &lt;- c(
-    pairs = <a href='create-xmap.html#has_no_dup_pairs'>has_no_dup_pairs</a>(x_from, x_to),
-    weights = <a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(x_from, x_weights)
+  v_props &lt;- c(
+    pairs = <a href='create-xmap.html#vhas_no_dup_pairs'>vhas_no_dup_pairs</a>(v_from, v_to),
+    weights = <a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(v_from, v_weights)
   ) 
-  all(x_props)
+  all(v_props)
 }</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
+</div>
+<div id="relation-type-flags" class="section level4">
+<h4>Relation Type Flags</h4>
+<ul>
+<li>used for print methods, reverse</li>
+</ul>
 <pre class="r"><code>testthat::test_that(
-  &quot;has_* xmap validation helpers work as expected on valid df&quot;,
+  &quot;vhas_* xmap validation helpers work as expected on valid df&quot;,
   {
     df &lt;- tibble::tribble(
       ~from, ~to, ~weights,
@@ -834,14 +942,14 @@ links sums to one. (<code><a href='create-xmap.html#has_complete_weights'>has_co
       &quot;A4&quot;, &quot;B03&quot;, 0.67,
       &quot;A4&quot;, &quot;B04&quot;, 0.33
     )
-    testthat::expect_true(<a href='create-xmap.html#has_no_dup_pairs'>has_no_dup_pairs</a>(df$from, df$to))
-    testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$from, df$weights))
-    testthat::expect_true(<a href='create-xmap.html#has_xmap_props'>has_xmap_props</a>(df$from, df$to, df$weights))
+    testthat::expect_true(<a href='create-xmap.html#vhas_no_dup_pairs'>vhas_no_dup_pairs</a>(df$from, df$to))
+    testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$from, df$weights))
+    testthat::expect_true(<a href='create-xmap.html#vhas_xmap_props'>vhas_xmap_props</a>(df$from, df$to, df$weights))
   }
 )
 
 testthat::test_that(
-  &quot;has_* xmap validation helpers catch invalid df&quot;,
+  &quot;vhas_* xmap validation helpers catch invalid df&quot;,
   {
     df &lt;- tibble::tribble(
       ~from, ~to, ~weights,
@@ -849,73 +957,67 @@ testthat::test_that(
       &quot;A2&quot;, &quot;B02&quot;, 0.3,
       &quot;A2&quot;, &quot;B02&quot;, 0.5
     )
-    testthat::expect_false(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$from, df$weights))
-    testthat::expect_false(<a href='create-xmap.html#has_no_dup_pairs'>has_no_dup_pairs</a>(df$from, df$to))
+    testthat::expect_false(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$from, df$weights))
+    testthat::expect_false(<a href='create-xmap.html#vhas_no_dup_pairs'>vhas_no_dup_pairs</a>(df$from, df$to))
   }
 )
 
 testthat::test_that(
-  &quot;<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>() works on recurring fractional weights&quot;,
+  &quot;<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>() works on recurring fractional weights&quot;,
   {
     df &lt;- data.frame(key1 = rep(&quot;A1&quot;, 3),
                      key2 = c(&quot;B01&quot;, &quot;B02&quot;, &quot;B03&quot;),
                      share = rep(1/3, 3))
 
-    testthat::expect_true(<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df$key1, df$share))
+    testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-</div>
-<div id="relation-type-flags" class="section level4">
-<h4>Relation Type Flags</h4>
-<ul>
-<li>used for print methods, reverse</li>
-</ul>
-<pre class="r"><code>#&#39; @describeIn has-links Return TRUE if xmap recodes labels between `from` and `to`
-<span id='has_1to1'>has_1to1</span> &lt;- function(x_weights) {
-  stopifnot(is.vector(x_weights))
-  any(x_weights == 1)
+<pre class="r"><code>#&#39; @describeIn vhas Return TRUE if xmap recodes labels between `from` and `to`
+<span id='vhas_1to1'>vhas_1to1</span> &lt;- function(v_weights) {
+  stopifnot(is.vector(v_weights))
+  any(v_weights == 1)
 }
 #&#39;
-has_recode &lt;- has_1to1
+vhas_recode &lt;- vhas_1to1
 
-#&#39; @describeIn has-links Return TRUE if xmap has splitting links between `from` and `to`
-<span id='has_1toM'>has_1toM</span> &lt;- function(x_weights) {
-  stopifnot(is.vector(x_weights))
-  any(x_weights &lt; 1)
+#&#39; @describeIn vhas Return TRUE if xmap has splitting links between `from` and `to`
+<span id='vhas_1toM'>vhas_1toM</span> &lt;- function(v_weights) {
+  stopifnot(is.vector(v_weights))
+  any(v_weights &lt; 1)
 }
 #&#39;
-has_split &lt;- has_1toM
+vhas_split &lt;- vhas_1toM
 
-#&#39; @describeIn has-links Return TRUE if xmap has collapsing links between `from` and `to`
-<span id='has_1fromM'>has_1fromM</span> &lt;- function(x_to){
-  stopifnot(is.vector(x_to))
-  as.logical(anyDuplicated(x_to))
+#&#39; @describeIn vhas Return TRUE if xmap has collapsing links between `from` and `to`
+<span id='vhas_1fromM'>vhas_1fromM</span> &lt;- function(v_to){
+  stopifnot(is.vector(v_to))
+  as.logical(anyDuplicated(v_to))
 }
 #&#39;
-has_collapse &lt;- has_1fromM</code></pre>
-<pre class="r"><code>testthat::test_that(
-  &quot;has_* relation type flag functions work as expected&quot;,
-  {
-    w_1to1 &lt;- rep(1, 10)
-    w_1toM &lt;- rep(1/6, 6)
-    to_1fromM &lt;- rep(&quot;country&quot;, 4)
-    testthat::expect_true(has_recode(w_1to1))
-    testthat::expect_false(has_recode(w_1toM))
-    testthat::expect_true(has_split(w_1toM))
-    testthat::expect_false(has_split(w_1to1))
-    testthat::expect_true(has_collapse(to_1fromM))
-  }
-)</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+vhas_collapse &lt;- vhas_1fromM</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
 <h3>Helper: df property checks</h3>
 <div id="abort-missing-columns" class="section level4">
 <h4>Abort Missing Columns</h4>
+<pre class="r"><code>testthat::test_that(
+  &quot;vhas_* relation type flag functions work as expected&quot;,
+  {
+    w_1to1 &lt;- rep(1, 10)
+    w_1toM &lt;- rep(1/6, 6)
+    to_1fromM &lt;- rep(&quot;country&quot;, 4)
+    testthat::expect_true(vhas_recode(w_1to1))
+    testthat::expect_false(vhas_recode(w_1toM))
+    testthat::expect_true(vhas_split(w_1toM))
+    testthat::expect_false(vhas_split(w_1to1))
+    testthat::expect_true(vhas_collapse(to_1fromM))
+  }
+)</code></pre>
+</div>
+<div id="abort-missing-values" class="section level4">
+<h4>Abort Missing Values</h4>
 <pre class="r"><code>#&#39; @describeIn abort Abort if named columns can&#39;t be found in df
 #&#39;
 <span id='abort_missing_cols'>abort_missing_cols</span> &lt;- function(df, cols) {
@@ -929,8 +1031,13 @@ has_collapse &lt;- has_1fromM</code></pre>
   invisible(df)
 }</code></pre>
 </div>
-<div id="abort-missing-values" class="section level4">
-<h4>Abort Missing Values</h4>
+</div>
+<div id="validate-links" class="section level3">
+<h3>Validate: Links</h3>
+<p><code>abort_*(df,...)</code> all take an data.frame for first
+argument, and character values or vectors for the remaining arguments.
+They throw an error if the validation condition does not pass, and
+<code>NULL</code> otherwise.</p>
 <pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df has missing values
 #&#39;
 <span id='abort_any_na'>abort_any_na</span> &lt;- function(df) {
@@ -942,14 +1049,9 @@ has_collapse &lt;- has_1fromM</code></pre>
   }
   invisible(df)
 }</code></pre>
-</div>
-</div>
-<div id="validate-links" class="section level3">
-<h3>Validate: Links</h3>
-<p><code>abort_*(df,...)</code> all take an data.frame for first
-argument, and character values or vectors for the remaining arguments.
-They throw an error if the validation condition does not pass, and
-<code>NULL</code> otherwise.</p>
+<pre><code>## NULL</code></pre>
+<div id="column-type-check" class="section level4">
+<h4>Column Type Check</h4>
 <pre class="r"><code>#&#39; Validation messages for xmap or candidate links
 #&#39;
 #&#39; @description
@@ -963,9 +1065,9 @@ They throw an error if the validation condition does not pass, and
 #&#39;
 #&#39; @name abort
 NULL</code></pre>
-<pre><code>## NULL</code></pre>
-<div id="column-type-check" class="section level4">
-<h4>Column Type Check</h4>
+</div>
+<div id="no-duplicate-node-pairs-links" class="section level4">
+<h4>No Duplicate Node Pairs (links)</h4>
 <pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df has wrong column types
 #&#39;
 <span id='abort_weights_col_type'>abort_weights_col_type</span> &lt;- function(df, col_weights) {
@@ -978,12 +1080,12 @@ NULL</code></pre>
   invisible(df)
 }</code></pre>
 </div>
-<div id="no-duplicate-node-pairs-links" class="section level4">
-<h4>No Duplicate Node Pairs (links)</h4>
+<div id="complete-mapping-weights" class="section level4">
+<h4>Complete Mapping Weights</h4>
 <pre class="r"><code>#&#39; @describeIn abort Abort if duplicate source-target pairs are found
 #&#39;
 <span id='abort_dup_pairs'>abort_dup_pairs</span> &lt;- function(df, col_from, col_to) {
-  if (!<a href='create-xmap.html#has_no_dup_pairs'>has_no_dup_pairs</a>(df[[col_from]], df[[col_to]])) {
+  if (!<a href='create-xmap.html#vhas_no_dup_pairs'>vhas_no_dup_pairs</a>(df[[col_from]], df[[col_to]])) {
     cli::cli_abort(
       message = &quot;Duplicate `from`-`to` links were found.
       Please remove or collapse duplicates.&quot;,
@@ -993,46 +1095,18 @@ NULL</code></pre>
   invisible(df)
 }</code></pre>
 </div>
-<div id="complete-mapping-weights" class="section level4">
-<h4>Complete Mapping Weights</h4>
+</div>
+<div id="verify_links_as_xmap" class="section level3">
+<h3><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code></h3>
 <pre class="r"><code>#&#39; @describeIn abort Abort if invalid mapping weights are found
 #&#39;
 <span id='abort_bad_weights'>abort_bad_weights</span> &lt;- function(df, col_from, col_weights) {
-  if (!<a href='create-xmap.html#has_complete_weights'>has_complete_weights</a>(df[[col_from]], df[[col_weights]])) {
+  if (!<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df[[col_from]], df[[col_weights]])) {
     cli::cli_abort(
       message = &quot;Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1&quot;,
       class = &quot;abort_bad_weights&quot;
     )
   }
-  invisible(df)
-}</code></pre>
-</div>
-</div>
-<div id="validate_links_as_xmap" class="section level3">
-<h3><code><a href='create-xmap.html#validate_links_as_xmap'>validate_links_as_xmap</a>()</code></h3>
-<pre class="r"><code>#&#39; Check if candidate links meet crossmap properties
-#&#39; 
-#&#39; @param df data.frame like object containing candidate links 
-#&#39; @inheritParams as_xmap_df
-#&#39; 
-#&#39; @export
-#&#39; @examples
-#&#39; tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
-#&#39;                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
-#&#39;                  CC = c(&quot;x2&quot;))
-<span id='validate_links_as_xmap'>validate_links_as_xmap</span> &lt;- function(df, from, to, weights){
-  col_from &lt;- deparse(substitute(from))
-  col_to &lt;- deparse(substitute(to))
-  col_weights &lt;- departse(substitute(weights))
-  col_attrs &lt;- c(col_from, col_to, col_weights)
-
-  <a href='create-xmap.html#abort_missing_cols'>abort_missing_cols</a>(df, col_attrs)
-  <a href='create-xmap.html#abort_any_na'>abort_any_na</a>(df)
-
-  <a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, col_from, col_to)
-  <a href='create-xmap.html#abort_bad_weights'>abort_bad_weights</a>(df, col_from, col_weights)
-  <a href='create-xmap.html#abort_weights_col_type'>abort_weights_col_type</a>(df, x_attrs$col_weights)
-
   invisible(df)
 }</code></pre>
 </div>
@@ -1088,8 +1162,35 @@ a numeric vector - <code>X</code> inherits from the class
 <div id="helper-for-subclass-attributes" class="section level3">
 <h3>Helper for subclass attributes</h3>
 <p>Eventually support matrix, graph, and data.frame?</p>
+<pre class="r"><code>#&#39; Check if candidate links meet crossmap properties
+#&#39; 
+#&#39; @param df data.frame like object containing candidate links 
+#&#39; @inheritParams as_xmap_df
+#&#39; 
+#&#39; @export
+#&#39; @examples
+#&#39; # For a well formed crossmap:
+#&#39; links &lt;- data.frame(
+#&#39;   a = &quot;AUS&quot;,
+#&#39;   b = c(&quot;VIC&quot;, &quot;NSW&quot;, &quot;WA&quot;, &quot;OTHER&quot;),
+#&#39;   w = c(0.1, 0.15, 0.25, 0.5)
+#&#39; )
+#&#39; <a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(links, from = a, to = b, weights = w)
+<span id='verify_links_as_xmap'>verify_links_as_xmap</span> &lt;- function(df, from, to, weights){
+  col_from &lt;- deparse(substitute(from))
+  col_to &lt;- deparse(substitute(to))
+  col_weights &lt;- deparse(substitute(weights))
+  col_attrs &lt;- c(col_from, col_to, col_weights)
+  <a href='create-xmap.html#abort_missing_cols'>abort_missing_cols</a>(df, col_attrs)
+  <a href='create-xmap.html#abort_any_na'>abort_any_na</a>(df)
+  <a href='create-xmap.html#abort_weights_col_type'>abort_weights_col_type</a>(df, col_weights)
+  <a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, col_from, col_to)
+  <a href='create-xmap.html#abort_bad_weights'>abort_bad_weights</a>(df, col_from, col_weights)
+  
+  invisible(df)
+}</code></pre>
 <pre class="r"><code>#&#39;
-<span id='.get_xmap_subclass_attr'>.get_xmap_subclass_attr</span> &lt;- function(subclass = c(&quot;xmap_df&quot;)){
+<span id='.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</span> &lt;- function(subclass = c(&quot;xmap_df&quot;)){
   subclass &lt;- rlang::arg_match(subclass)
 
   class_attr &lt;- switch(subclass,
@@ -1098,11 +1199,7 @@ a numeric vector - <code>X</code> inherits from the class
   
   return(class_attr)
 }</code></pre>
-<pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>() rejects unknown subclass&quot;,
-                    {
-                      testthat::expect_error(<a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;unknown&quot;))
-                    })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -1146,6 +1243,12 @@ which:</p>
 <li><code>from_set</code>: source node set</li>
 </ul></li>
 </ul>
+<pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>() rejects unknown subclass&quot;,
+                    {
+                      testthat::expect_error(<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;unknown&quot;))
+                    })</code></pre>
+<pre><code>## NULL</code></pre>
+<p>Tests:</p>
 <pre class="r"><code>#&#39; Low Level Constructors for xmap subclasses
 #&#39; @param x data-frame object containing candidate links.
 #&#39; @param col_from,col_to,col_weights character strings naming columns containing source nodes, target nodes and numeric weights.
@@ -1167,7 +1270,7 @@ NULL
 
   #&#39; @return `x` with additional subclasses `xmap_df` and `xmap`
 
-  class(x) &lt;- <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;)
+  class(x) &lt;- <a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;xmap_df&quot;)
   structure(x,
     col_from = col_from,
     col_to = col_to,
@@ -1175,26 +1278,7 @@ NULL
     from_set = from_set
   )
 }</code></pre>
-<pre><code>## NULL</code></pre>
-<p>Tests:</p>
-<pre class="r"><code>testthat::test_that(
-  &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() accepts arbitrary data.frames with correct from argument&quot;,
-  {
-    df &lt;- data.frame(
-      x = letters[1:5],
-      y = 1:5,
-      z = runif(5)
-    )
-    xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(x = df, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
-    xmap_attrs &lt;- attributes(xmap)
-    testthat::expect_s3_class(xmap, <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
-    testthat::expect_identical(xmap_attrs$col_from, &quot;x&quot;)
-    testthat::expect_identical(xmap_attrs$col_to, &quot;y&quot;)
-    testthat::expect_identical(xmap_attrs$col_weights, &quot;z&quot;)
-    testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
-  }
-)</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -1209,6 +1293,32 @@ NULL
 </div>
 <div id="class-tests" class="section level3">
 <h3>Class Tests</h3>
+<pre class="r"><code>testthat::test_that(
+  &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() accepts arbitrary data.frames with correct from argument&quot;,
+  {
+    df &lt;- data.frame(
+      x = letters[1:5],
+      y = 1:5,
+      z = runif(5)
+    )
+    xmap &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(x = df, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
+    xmap_attrs &lt;- attributes(xmap)
+    testthat::expect_s3_class(xmap, <a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
+    testthat::expect_identical(xmap_attrs$col_from, &quot;x&quot;)
+    testthat::expect_identical(xmap_attrs$col_to, &quot;y&quot;)
+    testthat::expect_identical(xmap_attrs$col_weights, &quot;z&quot;)
+    testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
+  }
+)</code></pre>
+</div>
+</div>
+<div id="validation-xmap_df" class="section level2">
+<h2>Validation: <code>xmap_df</code></h2>
+<div id="diagnostic-helpers-validate-helpers.r" class="section level3">
+<h3>Diagnostic Helpers (<code>validate-helpers.R</code>)</h3>
+<p>The conventions for validation helpers:</p>
+<div id="column-order-check" class="section level4">
+<h4>Column Order Check</h4>
 <pre class="r"><code>#&#39; Test if object is a crossmap
 #&#39;
 #&#39; This function returns `TRUE` for crossmaps `xmap` or subclasses thereof (`xmap_df`), and `FALSE` for all other objects, including regular data.frames or tibbles.
@@ -1224,15 +1334,6 @@ NULL
 <span id='is_xmap_df'>is_xmap_df</span> &lt;- function(x) {
   rlang::inherits_all(x, c(&quot;xmap_df&quot;, &quot;xmap&quot;))
 }</code></pre>
-</div>
-</div>
-<div id="validation-xmap_df" class="section level2">
-<h2>Validation: <code>xmap_df</code></h2>
-<div id="diagnostic-helpers-validate-helpers.r" class="section level3">
-<h3>Diagnostic Helpers (<code>validate-helpers.R</code>)</h3>
-<p>The conventions for validation helpers:</p>
-<div id="column-order-check" class="section level4">
-<h4>Column Order Check</h4>
 <pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df columns are not in order
 <span id='abort_col_order'>abort_col_order</span> &lt;- function(df, col_from, col_to, col_weights){
   correct_order &lt;- c(col_from, col_to, col_weights)
@@ -1245,6 +1346,10 @@ NULL
   }
   invisible(df)
 }</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+</div>
+<div id="from-set-check" class="section level4">
+<h4>From Set Check</h4>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#abort_col_order'>abort_col_order</a>() works as expected&quot;,
                     {
                       df &lt;- data.frame(a = 1, b = 2, c = 3)
@@ -1253,17 +1358,15 @@ NULL
                       testthat::expect_error(<a href='create-xmap.html#abort_col_order'>abort_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-</div>
-<div id="from-set-check" class="section level4">
-<h4>From Set Check</h4>
-<pre class="r"><code>#&#39; @describeIn abort Abort if from_set attribute doesn&#39;t match xmap_df values
-#&#39;
-<span id='abort_from_set'>abort_from_set</span> &lt;- function(df, col_from, from_set) {
-  col_from_set &lt;- as.character(unique(df[[col_from]]))
-  stopifnot(identical(col_from_set, from_set))
-
-  invisible(df)
+<pre class="r"><code>#&#39;
+<span id='.calc_unique_sets.xmap_df'>.calc_unique_sets.xmap_df</span> &lt;- function(x){
+  stopifnot(<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>(x))
+  df &lt;- data.frame(x)
+  x_attrs &lt;- attributes(x)
+  uniq_sets &lt;- list()
+  uniq_sets$from_set &lt;- as.character(unique(df[[x_attrs$col_from]]))
+  uniq_sets$to_set &lt;- as.character(unique(df[[x_attrs$col_to]]))
+  return(unique_sets)
 }</code></pre>
 </div>
 <div id="tests" class="section level4">
@@ -1285,7 +1388,8 @@ removed as discussed in <a href="https://github.com/cynthiahqy/conformr-project/
 #57</a></li>
 </ul></li>
 <li>has no missing values in ANY column</li>
-<li>from_set attributes matches</li>
+<li>from_set attributes matches unique values in <code>from</code>
+column</li>
 <li>weights column is <code>numeric</code></li>
 </ul></li>
 <li>checks graph properties:
@@ -1300,6 +1404,14 @@ single row)</li>
 </ul></li>
 </ul></li>
 </ul>
+<pre class="r"><code>#&#39; @describeIn abort Abort if from_set attribute doesn&#39;t match xmap_df values
+#&#39;
+<span id='abort_from_set'>abort_from_set</span> &lt;- function(df, col_from, from_set) {
+  col_from_set &lt;- as.character(unique(df[[col_from]]))
+  stopifnot(identical(col_from_set, from_set))
+
+  invisible(df)
+}</code></pre>
 <pre class="r"><code>#&#39;
 <span id='.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</span> &lt;- function(x){
   stopifnot(<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>(x))
@@ -1307,6 +1419,8 @@ single row)</li>
   col_attrs &lt;- x_attrs[startsWith(names(x_attrs), &quot;col&quot;)]
   return(col_attrs)
 }</code></pre>
+<div id="tests-for-validate-verify" class="section level4">
+<h4>Tests for <code>validate &amp; verify()</code></h4>
 <pre class="r"><code>#&#39; Validator for `xmap_df` objects
 #&#39;
 <span id='validate_xmap_df'>validate_xmap_df</span> &lt;- function(x) {
@@ -1332,10 +1446,9 @@ single row)</li>
   ## return original object
   invisible(x)
 }</code></pre>
-<div id="tests-1" class="section level4">
-<h4>Tests</h4>
+<pre><code>## Test passed 🎊</code></pre>
 <pre class="r"><code>testthat::test_that(
-  &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() accepts well-formed xmaps&quot;,
+  &quot;validate &amp; verify xmap fncs accept well-formed xmaps&quot;,
   {
     df &lt;- tibble::tribble(
       ~node_A, ~node_B, ~w_AB,
@@ -1348,12 +1461,25 @@ single row)</li>
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;node_A&quot;, &quot;node_B&quot;, &quot;w_AB&quot;)
     out &lt;- testthat::expect_invisible(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x))
     testthat::expect_identical(out, x)
+    testthat::expect_identical(df, <a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, node_A, node_B, w_AB))
   }
 )</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+</div>
+</div>
+</div>
+<div id="coercion" class="section level2">
+<h2>Coercion</h2>
+<div id="generic-as_xmap_df" class="section level3">
+<h3>Generic: <code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code></h3>
 <pre class="r"><code>## columns present
 testthat::test_that(
-  &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing columns&quot;,
+  &quot;validate &amp; verify fncs reject missing columns&quot;,
   {
     df &lt;- tibble::tribble(
       ~from, ~to, ~weights,
@@ -1366,12 +1492,14 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x),
       class = &quot;abort_missing_cols&quot;
     )
+    testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, node_A, node_B, w_AB),
+                           class = &quot;abort_missing_cols&quot;)
   }
 )
 
 ## any NA values
 testthat::test_that(
-  &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects missing values&quot;,
+  &quot;validate &amp; verify xmap fncs reject missing values&quot;,
   {
     df &lt;- tibble::tribble(
       ~from, ~to, ~weights,
@@ -1381,28 +1509,32 @@ testthat::test_that(
     )
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;from&quot;, &quot;to&quot;, &quot;weights&quot;)
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_na&quot;)
+    testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, from, to, weights),
+                           class = &quot;abort_na&quot;)
   }
 )
 
 
 ## column type
 testthat::test_that(
-  &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects non-numeric weight columns&quot;,
+  &quot;validate &amp; verify xmap fncs reject non-numeric weight columns&quot;,
   {
     df &lt;- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       &quot;A1&quot;, &quot;B01&quot;, 1,
       &quot;A4&quot;, &quot;B03&quot;, 0.25,
       &quot;A4&quot;, &quot;B04&quot;, 0.75
     ) |&gt;
-      dplyr::mutate(weights = as.character(weights))
+      dplyr::mutate(w = as.character(w))
     testthat::expect_error(<a href='create-xmap.html#abort_weights_col_type'>abort_weights_col_type</a>(df, &quot;weights&quot;),
       class = &quot;abort_col_type&quot;
     )
-    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;from&quot;, &quot;to&quot;, &quot;weights&quot;)
+    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x),
       class = &quot;abort_col_type&quot;
     )
+    testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
+                           class = &quot;abort_col_type&quot;)
   }
 )
 
@@ -1425,66 +1557,39 @@ testthat::test_that(
 
 ## duplicate links
 testthat::test_that(
-  &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects duplicate from-to links&quot;,
+  &quot;validate and verify xmap fncs reject duplicate from-to links&quot;,
   {
     df &lt;- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       &quot;A1&quot;, &quot;B02&quot;, 0.3,
       &quot;A1&quot;, &quot;B02&quot;, 1
     )
-    testthat::expect_error(<a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, &quot;from&quot;, &quot;to&quot;), class = &quot;abort_dup_pairs&quot;)
-    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;from&quot;, &quot;to&quot;, &quot;weights&quot;)
+    testthat::expect_error(<a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, &quot;f&quot;, &quot;t&quot;), class = &quot;abort_dup_pairs&quot;)
+    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_dup_pairs&quot;)
+    testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
+                           class = &quot;abort_dup_pairs&quot;)
   }
 )
 
 ## complete weights
 testthat::test_that(
-  &quot;<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>() rejects invalid weights&quot;,
+  &quot;validate &amp; verify xmap fncs rejects invalid weights&quot;,
   {
     df &lt;- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       &quot;A1&quot;, &quot;B01&quot;, 0.4,
       &quot;A1&quot;, &quot;B02&quot;, 0.59
     )
-    testthat::expect_error(<a href='create-xmap.html#abort_bad_weights'>abort_bad_weights</a>(df, &quot;from&quot;, &quot;weights&quot;),
+    testthat::expect_error(<a href='create-xmap.html#abort_bad_weights'>abort_bad_weights</a>(df, &quot;f&quot;, &quot;w&quot;),
       class = &quot;abort_bad_weights&quot;
     )
-    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;from&quot;, &quot;to&quot;, &quot;weights&quot;)
+    x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>(x), class = &quot;abort_bad_weights&quot;)
+    testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
+                           class = &quot;abort_bad_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-</div>
-</div>
-</div>
-<div id="coercion" class="section level2">
-<h2>Coercion</h2>
-<div id="generic-as_xmap_df" class="section level3">
-<h3>Generic: <code><a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()</code></h3>
-<pre class="r"><code>#&#39; Coerce objects to xmap_df
-#&#39; 
-#&#39; Validates and creates a valid crossmap `xmap_df` object.
-#&#39; 
-#&#39; @param x
-#&#39;  * For `<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()`: An object to coerce
-#&#39;  * For `<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>()`: An object to test.
-#&#39; @param from,to Columns in `x` specifying the source and target nodes
-#&#39; @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
-#&#39; @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
-#&#39; @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
-#&#39; 
-#&#39; @return A validated `xmap` object.
-#&#39; 
-#&#39; @export
-<span id='as_xmap_df'>as_xmap_df</span> &lt;- function(x, from, to, weights, subclass = c(&quot;xmap_df&quot;), ...) {
-  UseMethod(&quot;as_xmap_df&quot;)
-}</code></pre>
 </div>
 <div id="as_xmap_df.data.frame" class="section level3">
 <h3><code><a href='create-xmap.html#as_xmap_df.data.frame'>as_xmap_df.data.frame</a>()</code></h3>
@@ -1506,6 +1611,24 @@ controlled by <code>.drop</code> argument</li>
 <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
 </ul></li>
 </ul>
+<pre class="r"><code>#&#39; Coerce objects to xmap_df
+#&#39; 
+#&#39; Validates and creates a valid crossmap `xmap_df` object.
+#&#39; 
+#&#39; @param x
+#&#39;  * For `<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>()`: An object to coerce
+#&#39;  * For `<a href='create-xmap.html#is_xmap_df'>is_xmap_df</a>()`: An object to test.
+#&#39; @param from,to Columns in `x` specifying the source and target nodes
+#&#39; @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
+#&#39; @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
+#&#39; @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
+#&#39; 
+#&#39; @return A validated `xmap` object.
+#&#39; 
+#&#39; @export
+<span id='as_xmap_df'>as_xmap_df</span> &lt;- function(x, from, to, weights, subclass = c(&quot;xmap_df&quot;), ...) {
+  UseMethod(&quot;as_xmap_df&quot;)
+}</code></pre>
 <pre class="r"><code>#&#39; @describeIn as_xmap_df Coerce a `data.frame` to `xmap`
 #&#39;
 #&#39; @export
@@ -1557,6 +1680,15 @@ controlled by <code>.drop</code> argument</li>
 
   return(xmap)
 }</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+</div>
+</div>
+<div id="conversion" class="section level2">
+<h2>Conversion</h2>
+<div id="to-matrix" class="section level3">
+<h3>to Matrix</h3>
+<div id="generic-xmap_to_matrix" class="section level4">
+<h4>Generic: <code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></h4>
 <pre class="r"><code>testthat::test_that(
   &quot;as_xmap() is returns expected xmap subclasses&quot;,
   {
@@ -1572,22 +1704,16 @@ controlled by <code>.drop</code> argument</li>
      
      ## default subclasses work as expected
      testthat::expect_s3_class(<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(df_links, f, t, w),
-                               <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
+                               <a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
      
      ## override subclass works as well
      testthat::expect_s3_class(<a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(tbl_links, f, t, w, subclass = &quot;xmap_df&quot;),
-                               <a href='create-xmap.html#.get_xmap_subclass_attr'>.get_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
+                               <a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
 </div>
-</div>
-<div id="conversion" class="section level2">
-<h2>Conversion</h2>
-<div id="to-matrix" class="section level3">
-<h3>to Matrix</h3>
-<div id="generic-xmap_to_matrix" class="section level4">
-<h4>Generic: <code><a href='create-xmap.html#xmap_to_matrix'>xmap_to_matrix</a>()</code></h4>
+<div id="method-xmap_to_matrix.xmap_df" class="section level4">
+<h4>Method: <code><a href='create-xmap.html#xmap_to_matrix.xmap_df'>xmap_to_matrix.xmap_df</a>()</code></h4>
 <pre class="r"><code>#&#39; Extract incidence matrix from xmap objects
 #&#39; 
 #&#39; Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
@@ -1603,9 +1729,6 @@ controlled by <code>.drop</code> argument</li>
 <span id='xmap_to_matrix'>xmap_to_matrix</span> &lt;- function(x, sparse, ...) {
   UseMethod(&quot;xmap_to_matrix&quot;)
 }</code></pre>
-</div>
-<div id="method-xmap_to_matrix.xmap_df" class="section level4">
-<h4>Method: <code><a href='create-xmap.html#xmap_to_matrix.xmap_df'>xmap_to_matrix.xmap_df</a>()</code></h4>
 <pre class="r"><code>#&#39; @describeIn xmap_to_matrix Coerce a `xmap_df` to a Matrix
 #&#39;
 #&#39; @return
@@ -1638,6 +1761,11 @@ controlled by <code>.drop</code> argument</li>
   }
   return(x_mtx)
 }</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+</div>
+</div>
+<div id="to-list-xmap_to_list" class="section level3">
+<h3>to List: <code><a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>()</code></h3>
 <pre class="r"><code>testthat::test_that(&quot;xmap_to_matrix handles xmaps with different column counts&quot;,{
   links &lt;- tibble::tribble(
     ~f, ~t, ~w,
@@ -1659,31 +1787,23 @@ controlled by <code>.drop</code> argument</li>
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
   }
   )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-</div>
-</div>
-<div id="to-list-xmap_to_list" class="section level3">
-<h3>to List: <code><a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>()</code></h3>
 <pre class="r"><code>#&#39; Coerce a unit weights `xmap_df` to a List
 #&#39;
-#&#39; @param x xmap with only unit weights
+#&#39; @param x xmap with only unit weights (i.e. all weights should be 1)
 #&#39;
 #&#39; @return named list. Each item contains a vector of source nodes which map to 
 #&#39; the target node named.
 #&#39; @export
 #&#39;
 #&#39; @examples
-#&#39; tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
-#&#39;                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
-#&#39;                  CC = c(&quot;x2&quot;))
-#&#39; xmap_c &lt;- <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;) |&gt;
-#&#39;            <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(source, target, weights)
-#&#39; <a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_c)
 <span id='xmap_to_list'>xmap_to_list</span> &lt;- function(x) {
   x_attrs &lt;- attributes(x)
   # check only unit weights
   w &lt;- x[[x_attrs$col_weights]]
-  stopifnot(all(w == 1))
+  if (!all(w == 1)) {
+    cli::cli_abort(&quot;`x` must only have unit weights. Can&#39;t convert to list.&quot;,
+                   class = &quot;abort_weights_not_unit&quot;)
+  }
   
   # convert
   x |&gt;
@@ -1693,29 +1813,39 @@ controlled by <code>.drop</code> argument</li>
     sapply(as.matrix) |&gt;
     sapply(as.vector)
 }</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;xmap_to_list works as expected&quot;, {
-  tar_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
-                  BB = c(&quot;x1&quot;, &quot;x5&quot;),
-                  CC = c(&quot;x2&quot;))
-  xmap_c &lt;- <a href='create-xmap.html#links_from_list'>links_from_list</a>(tar_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;) |&gt;
-            <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
-  out_list &lt;- <a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_c)
-  testthat::expect_identical(tar_list, out_list)
+  links &lt;- tibble::tribble(
+    ~f, ~t, ~w,
+    &quot;A1&quot;, &quot;B01&quot;, 1,
+    &quot;A2&quot;, &quot;B02&quot;, 1,
+    &quot;A3&quot;, &quot;B02&quot;, 1,
+    &quot;A4&quot;, &quot;B03&quot;, 0.25,
+    &quot;A4&quot;, &quot;B04&quot;, 0.75
+  )
+  ## works for collapse and recode relations
+  xmap_unit &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links[1:3,], &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+  unit_list &lt;- list(B01 = c(&quot;A1&quot;), B02 = c(&quot;A2&quot;, &quot;A3&quot;))
+  testthat::expect_identical(unit_list, <a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_unit))
+  ## rejects split relations
+  xmap_mixed &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(links, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
+  testthat::expect_error(<a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(xmap_mixed), 
+                         class = &quot;abort_weights_not_unit&quot;)
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
-<p>Dev example:</p>
-<pre class="r"><code>xmap_flist &lt;- 
-  <a href='create-xmap.html#links_from_list'>links_from_list</a>(link_list,
-                  &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;) |&gt;
-  <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(source, target, weights)</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <p>with dplyr:</p>
-<pre class="r"><code>links_df &lt;- 
-  <a href='create-xmap.html#links_from_list'>links_from_list</a>(link_list, &quot;source&quot;, &quot;target&quot;, &quot;weights&quot;)
-
-links_df |&gt; 
-  dplyr::group_by(target) |&gt;
-  dplyr::summarise(source = list(source)) |&gt;
-  tibble::deframe()</code></pre>
+<pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>() reverses <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>()&quot;, {
+  link_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
+                    BB = c(&quot;x1&quot;, &quot;x5&quot;),
+                    CC = c(&quot;x2&quot;)
+                  )
+  link_xmap &lt;-
+   <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>(link_list,
+                  &quot;capital&quot;, &quot;xvars&quot;) |&gt;
+   <a href='create-xmap.html#add_weights_unit'>add_weights_unit</a>(weights_into = &quot;w&quot;) |&gt;
+   <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;xvars&quot;, &quot;capital&quot;, &quot;w&quot;)
+  testthat::expect_identical(<a href='create-xmap.html#xmap_to_list'>xmap_to_list</a>(link_xmap), link_list)
+})</code></pre>
 <pre><code>## $AA
 ## [1] &quot;x3&quot; &quot;x4&quot; &quot;x6&quot;
 ## 
@@ -1725,12 +1855,14 @@ links_df |&gt;
 ## $CC
 ## [1] &quot;x2&quot;</code></pre>
 <p>without dplyr:</p>
-<pre class="r"><code>links_df |&gt; 
-  subset(select = c(&quot;target&quot;, &quot;source&quot;)) |&gt;
-  tidyr::nest(source = c(&quot;source&quot;)) |&gt;
-  tibble::deframe() |&gt;
-  sapply(as.matrix) |&gt;
-  sapply(as.vector)</code></pre>
+<pre class="r"><code>pairs_df &lt;- 
+     <a href='create-xmap.html#pairs_from_named'>pairs_from_named</a>(link_list,
+                  &quot;capital&quot;, &quot;xvars&quot;) 
+
+pairs_df |&gt; 
+  dplyr::group_by(capital) |&gt;
+  dplyr::summarise(source = list(xvars)) |&gt;
+  tibble::deframe()</code></pre>
 <pre><code>## $AA
 ## [1] &quot;x3&quot; &quot;x4&quot; &quot;x6&quot;
 ## 
@@ -1747,16 +1879,12 @@ links_df |&gt;
 #63</a></p>
 <div id="helper-xmap-is-reversible" class="section level3">
 <h3>Helper: xmap is reversible</h3>
-<pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df is not reversible without new weights
-#&#39;
-<span id='abort_not_reversible'>abort_not_reversible</span> &lt;- function(df, col_to) {
-  x_to &lt;- df[[col_to]]
-  if (has_collapse(x_to)){
-    cli::cli_abort(&quot;Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.&quot;)
-  }
-  invisible(df)
-}
-  </code></pre>
+<pre class="r"><code>pairs_df |&gt; 
+  subset(select = c(&quot;capital&quot;, &quot;xvars&quot;)) |&gt;
+  tidyr::nest(source = c(&quot;xvars&quot;)) |&gt;
+  tibble::deframe() |&gt;
+  sapply(as.matrix) |&gt;
+  sapply(as.vector)</code></pre>
 </div>
 </div>
 <div id="modification" class="section level2">
@@ -1765,6 +1893,16 @@ links_df |&gt;
 #67</a></p>
 <div id="generic-xmap_reverse" class="section level3">
 <h3>Generic: <code><a href='create-xmap.html#xmap_reverse'>xmap_reverse</a>()</code></h3>
+<pre class="r"><code>#&#39; @describeIn abort Abort if xmap_df is not reversible without new weights
+#&#39;
+<span id='abort_not_reversible'>abort_not_reversible</span> &lt;- function(df, col_to) {
+  x_to &lt;- df[[col_to]]
+  if (vhas_collapse(x_to)){
+    cli::cli_abort(&quot;Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.&quot;)
+  }
+  invisible(df)
+}
+  </code></pre>
 <pre class="r"><code>#&#39; Reverse xmap direction
 #&#39;
 #&#39; @param x xmap object to be reversed
@@ -1807,6 +1945,10 @@ links_df |&gt;
   
   return(xmap)
 }</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+</div>
+<div id="helper-xmap_drop_extra" class="section level3">
+<h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_reverse.xmap_df'>xmap_reverse.xmap_df</a>() works as expected&quot;,             {
   df_x &lt;- tibble::tribble(
       ~from, ~to, ~weights,
@@ -1832,10 +1974,6 @@ links_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-</div>
-<div id="helper-xmap_drop_extra" class="section level3">
-<h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
 <pre class="r"><code>#&#39; Drop extra columns from `xmap` objects
 #&#39;
 #&#39; @export
@@ -1858,6 +1996,12 @@ links_df |&gt;
   
   return(z)
 }</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+</div>
+</div>
+<div id="visualisation" class="section level2">
+<h2>Visualisation</h2>
+<p>Adding in more dependencies</p>
 <pre class="r"><code>testthat::test_that(&#39;xmap_drop_extra works as expected&#39;, {
   links &lt;- tibble::tribble(
   ~f, ~t, ~w,
@@ -1879,16 +2023,6 @@ links_df |&gt;
   testthat::expect_identical(xmap_small, xmap_drop_df)
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-</div>
-</div>
-<div id="visualisation" class="section level2">
-<h2>Visualisation</h2>
-<p>Adding in more dependencies</p>
-<pre class="r"><code>usethis::use_package(&quot;dplyr&quot;, type = &quot;suggests&quot;)
-usethis::use_package(&quot;tibble&quot;, type = &quot;suggests&quot;)
-usethis::use_package(&quot;ggplot2&quot;, type = &quot;suggests&quot;)
-usethis::use_package(&quot;ggbump&quot;, type = &quot;suggests&quot;)</code></pre>
 <pre><code>## ✔ Adding &#39;dplyr&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;dplyr&quot;)` or `rlang::check_installed(&quot;dplyr&quot;)` to test if dplyr is installed
 ## • Then directly refer to functions with `dplyr::fun()`</code></pre>
@@ -1960,55 +2094,16 @@ properly developing visualisation functions for crossmaps.</p>
 #60</a></p>
 <div id="method-xmap_df" class="section level4">
 <h4>Method: <code>xmap_df</code></h4>
-<pre class="r"><code></code></pre>
+<pre class="r"><code>usethis::use_package(&quot;dplyr&quot;, type = &quot;suggests&quot;)
+usethis::use_package(&quot;tibble&quot;, type = &quot;suggests&quot;)
+usethis::use_package(&quot;ggplot2&quot;, type = &quot;suggests&quot;)
+usethis::use_package(&quot;ggbump&quot;, type = &quot;suggests&quot;)</code></pre>
 <p>NULL</p>
 <p>Test Prints:</p>
-<pre class="r"><code>#&#39;
-<span id='.get_link_types.xmap_df'>.get_link_types.xmap_df</span> &lt;- function(xmap_df){
-  x_attrs &lt;- attributes(xmap_df)
-  x_weights &lt;- xmap_df[[x_attrs$col_weights]]
-  x_to &lt;- xmap_df[[x_attrs$col_to]]
-  
-  flags &lt;- c(
-      &quot;recode&quot; = has_recode(x_weights),
-      &quot;split&quot; = has_split(x_weights),
-      &quot;collapse&quot; = has_collapse(x_to)
-    )
-  types &lt;- names(flags[flags == TRUE])
-  type &lt;- cli::pluralize(&quot;{types} {? }&quot;)
-
-  return(type)
-}
-
-#&#39;
-<span id='.get_link_direction.xmap_df'>.get_link_direction.xmap_df</span> &lt;- function(xmap_df){
-  x_attrs &lt;- attributes(xmap_df)
-  direction &lt;- paste0(&quot;(&quot;, x_attrs$col_from, &quot; -&gt; &quot;, x_attrs$col_to, &quot;) &quot;, 
-                      &quot;BY &quot; ,x_attrs$col_weights)
-  return(direction)
-}
-
-#&#39; Print an `xmap` object
-#&#39; 
-#&#39; @name print.xmap
-NULL
-
-#&#39; @describeIn print.xmap Print an `xmap_df`
-#&#39;
-#&#39; @export
-<span id='print.xmap_df'>print.xmap_df</span> &lt;- function(x){
-  x_direction &lt;- <a href='create-xmap.html#.get_link_direction.xmap_df'>.get_link_direction.xmap_df</a>(x)
-  x_type &lt;- <a href='create-xmap.html#.get_link_types.xmap_df'>.get_link_types.xmap_df</a>(x)
-  x_links &lt;- as.data.frame(x)
-
-  ## print headers and links
-  cat(paste0(&quot;xmap_df:\n&quot;,  x_type, &quot;\n&quot;, x_direction, &quot;\n&quot;))
-  print(x_links)
-}</code></pre>
-<pre><code>## Dropped additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight, &quot;mining&quot;, `,
-## ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1, &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25,
-## &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3,
-## &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`</code></pre>
+<pre class="r"><code></code></pre>
+<pre><code>## Dropped additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight, &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1,
+## &quot;agri&quot;, &quot;FISH&quot;, 1, &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3,
+## &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`</code></pre>
 <pre><code>## xmap_df:
 ## recode, split, and collapse  
 ## (sector -&gt; new_sec) BY weight
@@ -2044,6 +2139,65 @@ NULL
 vignette_images &lt;- paste0(&quot;../&quot;,
                           list.files(&quot;xmap-source-files&quot;, pattern = &quot;plot&quot;, full.names = TRUE))
 add_vignettes(vignette_images)</code></pre>
+<pre class="r"><code>#&#39;
+<span id='.calc_link_types.xmap_df'>.calc_link_types.xmap_df</span> &lt;- function(xmap_df){
+  x_attrs &lt;- attributes(xmap_df)
+  x_weights &lt;- xmap_df[[x_attrs$col_weights]]
+  x_to &lt;- xmap_df[[x_attrs$col_to]]
+  
+  flags &lt;- c(
+      &quot;recode&quot; = vhas_recode(x_weights),
+      &quot;split&quot; = vhas_split(x_weights),
+      &quot;collapse&quot; = vhas_collapse(x_to)
+    )
+  types &lt;- names(flags[flags == TRUE])
+  type &lt;- cli::pluralize(&quot;{types} {? }&quot;)
+
+  return(type)
+}
+
+#&#39;
+<span id='.calc_link_direction.xmap_df'>.calc_link_direction.xmap_df</span> &lt;- function(xmap_df){
+  x_attrs &lt;- attributes(xmap_df)
+  direction &lt;- paste0(&quot;(&quot;, x_attrs$col_from, &quot; -&gt; &quot;, x_attrs$col_to, &quot;) &quot;, 
+                      &quot;BY &quot; ,x_attrs$col_weights)
+  return(direction)
+}
+
+#&#39; Print an `xmap` object
+#&#39; 
+#&#39; @name print.xmap
+NULL
+
+#&#39; @describeIn print.xmap Print an `xmap_df`
+#&#39;
+#&#39; @export
+<span id='print.xmap_df'>print.xmap_df</span> &lt;- function(x){
+  x_direction &lt;- <a href='create-xmap.html#.calc_link_direction.xmap_df'>.calc_link_direction.xmap_df</a>(x)
+  x_type &lt;- <a href='create-xmap.html#.calc_link_types.xmap_df'>.calc_link_types.xmap_df</a>(x)
+  x_links &lt;- as.data.frame(x)
+
+  ## print headers and links
+  cat(paste0(&quot;xmap_df:\n&quot;,  x_type, &quot;\n&quot;, x_direction, &quot;\n&quot;))
+  print(x_links)
+}</code></pre>
+<pre><code>## ✔ Writing &#39;README.Rmd&#39;
+## ✔ Adding &#39;^README\\.Rmd$&#39; to &#39;.Rbuildignore&#39;
+## ✔ Creating &#39;.git/hooks/&#39;
+## ✔ Writing &#39;.git/hooks/pre-commit&#39;</code></pre>
+</div>
+<div id="render-package" class="section level3">
+<h3>Render package</h3>
+<p>To debug without having to re-render the litr file every time use the
+<code>pkg = &quot;.&quot;</code> argument in devtools functions:</p>
+<pre class="r"><code>devtools::run_examples(&#39;xmap&#39;)
+devtools::test(&#39;xmap&#39;)
+devtools::build(&#39;xmap&#39;)
+devtools::install(&#39;xmap&#39;)
+devtools::check(&#39;xmap&#39;, document = FALSE)</code></pre>
+<p>We finish by running commands that will document, build, and install
+the package. It may also be a good idea to check the package from within
+this file.</p>
 <pre class="r"><code>valid_xmap_df &lt;-
   tibble::tribble(
     ~new_sec, ~sector, ~weight,
@@ -2062,56 +2216,31 @@ add_vignettes(vignette_images)</code></pre>
   <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(from = sector, to = new_sec, weight)
 
 print(valid_xmap_df)</code></pre>
-<pre><code>## ✔ Writing &#39;README.Rmd&#39;
-## ✔ Adding &#39;^README\\.Rmd$&#39; to &#39;.Rbuildignore&#39;
-## ✔ Creating &#39;.git/hooks/&#39;
-## ✔ Writing &#39;.git/hooks/pre-commit&#39;</code></pre>
-</div>
-<div id="render-package" class="section level3">
-<h3>Render package</h3>
-<p>To debug without having to re-render the litr file every time use the
-<code>pkg = &quot;.&quot;</code> argument in devtools functions:</p>
-<pre class="r"><code>devtools::run_examples(&#39;xmap&#39;)
-devtools::test(&#39;xmap&#39;)
-devtools::build(&#39;xmap&#39;)
-devtools::install(&#39;xmap&#39;)
-devtools::check(&#39;xmap&#39;, document = FALSE)</code></pre>
-<p>We finish by running commands that will document, build, and install
-the package. It may also be a good idea to check the package from within
-this file.</p>
-<pre class="r"><code>litr::add_readme(&quot;../xmap-source-files/README.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/xmap.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/making-xmaps.Rmd&quot;)
-litr::add_vignettes(c(&quot;../xmap-source-files/using-xmaps.Rmd&quot;,
-                      &quot;../xmap-source-files/using-xmaps.bib&quot;,
-                      &quot;../xmap-source-files/plot-coverage-matrix.png&quot;,
-                      &quot;../xmap-source-files/plot-missing-val-bigraph.png&quot;
-                    ))
-litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
-                      &quot;../xmap-source-files/plot-weight-sum-matrix.png&quot;))</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap</code></pre>
 <pre><code>## Warning: [
 ## conformr-project/xmap/R/xmap_reverse.Rxmap_reverse.R:11] @examples requires
 ## a value</code></pre>
 <pre><code>## Warning: [
-## conformr-project/xmap/R/xmap_to_matrix.xmap_df.Rxmap_to_matrix.xmap_df.R:5]
-## @return requires a value</code></pre>
+## conformr-project/xmap/R/xmap_to.Rxmap_to.R:21] @return requires a value</code></pre>
+<pre><code>## Warning: [
+## conformr-project/xmap/R/xmap_to.Rxmap_to.R:60] @examples requires a value</code></pre>
 <pre><code>## Writing &#39;NAMESPACE&#39;
 ## Writing &#39;abort.Rd&#39;
+## Writing &#39;add_weights_unit.Rd&#39;
 ## Writing &#39;as_xmap_df.Rd&#39;
-## Writing &#39;has-links.Rd&#39;
 ## Writing &#39;as_xmap.Rd&#39;
-## Writing &#39;links_from_list.Rd&#39;
-## Writing &#39;new_xmap.Rd&#39;
+## Writing &#39;pairs_from_named.Rd&#39;
 ## Writing &#39;print.xmap.Rd&#39;
 ## Writing &#39;op-null-default.Rd&#39;
-## Writing &#39;validate_links_as_xmap.Rd&#39;
 ## Writing &#39;validate_xmap_df.Rd&#39;
+## Writing &#39;verify_links_as_xmap.Rd&#39;
+## Writing &#39;vhas.Rd&#39;
+## Writing &#39;new_xmap.Rd&#39;
 ## Writing &#39;xmap_drop_extra.Rd&#39;
 ## Writing &#39;xmap_reverse.Rd&#39;
-## Writing &#39;xmap_to_list.Rd&#39;
-## Writing &#39;xmap_to_matrix.Rd&#39;</code></pre>
+## Writing &#39;xmap_to_matrix.Rd&#39;
+## Writing &#39;xmap_to_list.Rd&#39;</code></pre>
 <pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;</code></pre>
 <pre><code>## -- Installing package into temporary library -----------------------------------
 ## == Building pkgdown site =======================================================
@@ -2130,24 +2259,26 @@ litr::add_vignettes(c(&quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
 ## Writing &#39;reference/index.html&#39;
 ## Reading &#39;man/abort.Rd&#39;
 ## Writing &#39;reference/abort.html&#39;
+## Reading &#39;man/add_weights_unit.Rd&#39;
+## Writing &#39;reference/add_weights_unit.html&#39;
 ## Reading &#39;man/as_xmap.Rd&#39;
 ## Writing &#39;reference/as_xmap.html&#39;
 ## Reading &#39;man/as_xmap_df.Rd&#39;
 ## Writing &#39;reference/as_xmap_df.html&#39;
-## Reading &#39;man/has-links.Rd&#39;
-## Writing &#39;reference/has-links.html&#39;
-## Reading &#39;man/links_from_list.Rd&#39;
-## Writing &#39;reference/links_from_list.html&#39;
 ## Reading &#39;man/new_xmap.Rd&#39;
 ## Writing &#39;reference/new_xmap.html&#39;
 ## Reading &#39;man/op-null-default.Rd&#39;
 ## Writing &#39;reference/op-null-default.html&#39;
+## Reading &#39;man/pairs_from_named.Rd&#39;
+## Writing &#39;reference/pairs_from_named.html&#39;
 ## Reading &#39;man/print.xmap.Rd&#39;
 ## Writing &#39;reference/print.xmap.html&#39;
-## Reading &#39;man/validate_links_as_xmap.Rd&#39;
-## Writing &#39;reference/validate_links_as_xmap.html&#39;
 ## Reading &#39;man/validate_xmap_df.Rd&#39;
 ## Writing &#39;reference/validate_xmap_df.html&#39;
+## Reading &#39;man/verify_links_as_xmap.Rd&#39;
+## Writing &#39;reference/verify_links_as_xmap.html&#39;
+## Reading &#39;man/vhas.Rd&#39;
+## Writing &#39;reference/vhas.html&#39;
 ## Reading &#39;man/xmap_drop_extra.Rd&#39;
 ## Writing &#39;reference/xmap_drop_extra.html&#39;
 ## Reading &#39;man/xmap_reverse.Rd&#39;
