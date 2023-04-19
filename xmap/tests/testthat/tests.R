@@ -1,6 +1,6 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
 testthat::test_that(
-  "has_* xmap validation helpers work as expected on valid df",
+  "vhas_* xmap validation helpers work as expected on valid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -10,14 +10,14 @@ testthat::test_that(
       "A4", "B03", 0.67,
       "A4", "B04", 0.33
     )
-    testthat::expect_true(has_no_dup_pairs(df$from, df$to))
-    testthat::expect_true(has_complete_weights(df$from, df$weights))
-    testthat::expect_true(has_xmap_props(df$from, df$to, df$weights))
+    testthat::expect_true(vhas_no_dup_pairs(df$from, df$to))
+    testthat::expect_true(vhas_complete_weights(df$from, df$weights))
+    testthat::expect_true(vhas_xmap_props(df$from, df$to, df$weights))
   }
 )
 
 testthat::test_that(
-  "has_* xmap validation helpers catch invalid df",
+  "vhas_* xmap validation helpers catch invalid df",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -25,39 +25,39 @@ testthat::test_that(
       "A2", "B02", 0.3,
       "A2", "B02", 0.5
     )
-    testthat::expect_false(has_complete_weights(df$from, df$weights))
-    testthat::expect_false(has_no_dup_pairs(df$from, df$to))
+    testthat::expect_false(vhas_complete_weights(df$from, df$weights))
+    testthat::expect_false(vhas_no_dup_pairs(df$from, df$to))
   }
 )
 
 testthat::test_that(
-  "has_complete_weights() works on recurring fractional weights",
+  "vhas_complete_weights() works on recurring fractional weights",
   {
     df <- data.frame(key1 = rep("A1", 3),
                      key2 = c("B01", "B02", "B03"),
                      share = rep(1/3, 3))
 
-    testthat::expect_true(has_complete_weights(df$key1, df$share))
+    testthat::expect_true(vhas_complete_weights(df$key1, df$share))
   }
 )
 
 testthat::test_that(
-  "has_* relation type flag functions work as expected",
+  "vhas_* relation type flag functions work as expected",
   {
     w_1to1 <- rep(1, 10)
     w_1toM <- rep(1/6, 6)
     to_1fromM <- rep("country", 4)
-    testthat::expect_true(has_recode(w_1to1))
-    testthat::expect_false(has_recode(w_1toM))
-    testthat::expect_true(has_split(w_1toM))
-    testthat::expect_false(has_split(w_1to1))
-    testthat::expect_true(has_collapse(to_1fromM))
+    testthat::expect_true(vhas_recode(w_1to1))
+    testthat::expect_false(vhas_recode(w_1toM))
+    testthat::expect_true(vhas_split(w_1toM))
+    testthat::expect_false(vhas_split(w_1to1))
+    testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )
 
-testthat::test_that(".get_xmap_subclass_attr() rejects unknown subclass",
+testthat::test_that(".calc_xmap_subclass_attr() rejects unknown subclass",
                     {
-                      testthat::expect_error(.get_xmap_subclass_attr("unknown"))
+                      testthat::expect_error(.calc_xmap_subclass_attr("unknown"))
                     })
 
 testthat::test_that(
@@ -70,7 +70,7 @@ testthat::test_that(
     )
     xmap <- new_xmap_df(x = df, "x", "y", "z")
     xmap_attrs <- attributes(xmap)
-    testthat::expect_s3_class(xmap, .get_xmap_subclass_attr("xmap_df"))
+    testthat::expect_s3_class(xmap, .calc_xmap_subclass_attr("xmap_df"))
     testthat::expect_identical(xmap_attrs$col_from, "x")
     testthat::expect_identical(xmap_attrs$col_to, "y")
     testthat::expect_identical(xmap_attrs$col_weights, "z")
@@ -88,7 +88,7 @@ testthat::test_that("abort_col_order() works as expected",
                     })
 
 testthat::test_that(
-  "validate_xmap_df() accepts well-formed xmaps",
+  "validate & verify xmap fncs accept well-formed xmaps",
   {
     df <- tibble::tribble(
       ~node_A, ~node_B, ~w_AB,
@@ -101,12 +101,13 @@ testthat::test_that(
     x <- new_xmap_df(df, "node_A", "node_B", "w_AB")
     out <- testthat::expect_invisible(validate_xmap_df(x))
     testthat::expect_identical(out, x)
+    testthat::expect_identical(df, verify_links_as_xmap(df, node_A, node_B, w_AB))
   }
 )
 
 ## columns present
 testthat::test_that(
-  "validate_xmap_df() rejects missing columns",
+  "validate & verify fncs reject missing columns",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -119,12 +120,14 @@ testthat::test_that(
     testthat::expect_error(validate_xmap_df(x),
       class = "abort_missing_cols"
     )
+    testthat::expect_error(verify_links_as_xmap(df, node_A, node_B, w_AB),
+                           class = "abort_missing_cols")
   }
 )
 
 ## any NA values
 testthat::test_that(
-  "validate_xmap_df() rejects missing values",
+  "validate & verify xmap fncs reject missing values",
   {
     df <- tibble::tribble(
       ~from, ~to, ~weights,
@@ -134,28 +137,32 @@ testthat::test_that(
     )
     x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_na")
+    testthat::expect_error(verify_links_as_xmap(df, from, to, weights),
+                           class = "abort_na")
   }
 )
 
 
 ## column type
 testthat::test_that(
-  "validate_xmap_df() rejects non-numeric weight columns",
+  "validate & verify xmap fncs reject non-numeric weight columns",
   {
     df <- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       "A1", "B01", 1,
       "A4", "B03", 0.25,
       "A4", "B04", 0.75
     ) |>
-      dplyr::mutate(weights = as.character(weights))
+      dplyr::mutate(w = as.character(w))
     testthat::expect_error(abort_weights_col_type(df, "weights"),
       class = "abort_col_type"
     )
-    x <- new_xmap_df(df, "from", "to", "weights")
+    x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(validate_xmap_df(x),
       class = "abort_col_type"
     )
+    testthat::expect_error(verify_links_as_xmap(df, f, t, w),
+                           class = "abort_col_type")
   }
 )
 
@@ -178,33 +185,37 @@ testthat::test_that(
 
 ## duplicate links
 testthat::test_that(
-  "validate_xmap_df() rejects duplicate from-to links",
+  "validate and verify xmap fncs reject duplicate from-to links",
   {
     df <- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       "A1", "B02", 0.3,
       "A1", "B02", 1
     )
-    testthat::expect_error(abort_dup_pairs(df, "from", "to"), class = "abort_dup_pairs")
-    x <- new_xmap_df(df, "from", "to", "weights")
+    testthat::expect_error(abort_dup_pairs(df, "f", "t"), class = "abort_dup_pairs")
+    x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
+    testthat::expect_error(verify_links_as_xmap(df, f, t, w),
+                           class = "abort_dup_pairs")
   }
 )
 
 ## complete weights
 testthat::test_that(
-  "validate_xmap_df() rejects invalid weights",
+  "validate & verify xmap fncs rejects invalid weights",
   {
     df <- tibble::tribble(
-      ~from, ~to, ~weights,
+      ~f, ~t, ~w,
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(abort_bad_weights(df, "from", "weights"),
+    testthat::expect_error(abort_bad_weights(df, "f", "w"),
       class = "abort_bad_weights"
     )
-    x <- new_xmap_df(df, "from", "to", "weights")
+    x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(validate_xmap_df(x), class = "abort_bad_weights")
+    testthat::expect_error(verify_links_as_xmap(df, f, t, w),
+                           class = "abort_bad_weights")
   }
 )
 
@@ -223,11 +234,11 @@ testthat::test_that(
      
      ## default subclasses work as expected
      testthat::expect_s3_class(as_xmap_df(df_links, f, t, w),
-                               .get_xmap_subclass_attr("xmap_df"))
+                               .calc_xmap_subclass_attr("xmap_df"))
      
      ## override subclass works as well
      testthat::expect_s3_class(as_xmap_df(tbl_links, f, t, w, subclass = "xmap_df"),
-                               .get_xmap_subclass_attr("xmap_df"))
+                               .calc_xmap_subclass_attr("xmap_df"))
   }
 )
 
@@ -254,13 +265,35 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
   )
 
 testthat::test_that("xmap_to_list works as expected", {
-  tar_list <- list(AA = c("x3", "x4", "x6"),
-                  BB = c("x1", "x5"),
-                  CC = c("x2"))
-  xmap_c <- links_from_list(tar_list, "source", "target", "weights") |>
-            new_xmap_df("source", "target", "weights")
-  out_list <- xmap_to_list(xmap_c)
-  testthat::expect_identical(tar_list, out_list)
+  links <- tibble::tribble(
+    ~f, ~t, ~w,
+    "A1", "B01", 1,
+    "A2", "B02", 1,
+    "A3", "B02", 1,
+    "A4", "B03", 0.25,
+    "A4", "B04", 0.75
+  )
+  ## works for collapse and recode relations
+  xmap_unit <- new_xmap_df(links[1:3,], "f", "t", "w")
+  unit_list <- list(B01 = c("A1"), B02 = c("A2", "A3"))
+  testthat::expect_identical(unit_list, xmap_to_list(xmap_unit))
+  ## rejects split relations
+  xmap_mixed <- new_xmap_df(links, "f", "t", "w")
+  testthat::expect_error(xmap_to_list(xmap_mixed), 
+                         class = "abort_weights_not_unit")
+})
+
+testthat::test_that("xmap_to_list() reverses pairs_from_named()", {
+  link_list <- list(AA = c("x3", "x4", "x6"),
+                    BB = c("x1", "x5"),
+                    CC = c("x2")
+                  )
+  link_xmap <-
+   pairs_from_named(link_list,
+                  "capital", "xvars") |>
+   add_weights_unit(weights_into = "w") |>
+   new_xmap_df("xvars", "capital", "w")
+  testthat::expect_identical(xmap_to_list(link_xmap), link_list)
 })
 
 testthat::test_that("xmap_reverse.xmap_df() works as expected",             {

@@ -7,7 +7,7 @@
 xmap_to_list(x)
 }
 \arguments{
-\item{x}{xmap with only unit weights}
+\item{x}{xmap with only unit weights (i.e. all weights should be 1)}
 }
 \value{
 named list. Each item contains a vector of source nodes which map to
@@ -15,12 +15,4 @@ the target node named.
 }
 \description{
 Coerce a unit weights \code{xmap_df} to a List
-}
-\examples{
-tar_list <- list(AA = c("x3", "x4", "x6"),
-                 BB = c("x1", "x5"),
-                 CC = c("x2"))
-xmap_c <- links_from_list(tar_list, "source", "target", "weights") |>
-           as_xmap_df(source, target, weights)
-xmap_to_list(xmap_c)
 }

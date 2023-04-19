@@ -7,21 +7,23 @@
 #' 
 #' @export
 #' @examples
-#' tar_list <- list(AA = c("x3", "x4", "x6"),
-#'                  BB = c("x1", "x5"),
-#'                  CC = c("x2"))
-validate_links_as_xmap <- function(df, from, to, weights){
+#' # For a well formed crossmap:
+#' links <- data.frame(
+#'   a = "AUS",
+#'   b = c("VIC", "NSW", "WA", "OTHER"),
+#'   w = c(0.1, 0.15, 0.25, 0.5)
+#' )
+#' verify_links_as_xmap(links, from = a, to = b, weights = w)
+verify_links_as_xmap <- function(df, from, to, weights){
   col_from <- deparse(substitute(from))
   col_to <- deparse(substitute(to))
-  col_weights <- departse(substitute(weights))
+  col_weights <- deparse(substitute(weights))
   col_attrs <- c(col_from, col_to, col_weights)
-
   abort_missing_cols(df, col_attrs)
   abort_any_na(df)
-
+  abort_weights_col_type(df, col_weights)
   abort_dup_pairs(df, col_from, col_to)
   abort_bad_weights(df, col_from, col_weights)
-  abort_weights_col_type(df, x_attrs$col_weights)
-
+  
   invisible(df)
 }
