@@ -39,23 +39,100 @@ The conditions for valid nomenclature crossmaps defined above are sufficient to 
 It is helpful when thinking about special cases to define some familiar types of relations:
 
 -   **one-to-one**: a set of links where pairs of source and target nodes are uniquely linked to each other and no other nodes. Any links in this type of relation will have unit weights.
--   **one-to-many**: a set of links where a single source node is linked to multiple target nodes. Links in this relation will have fractional weights.
--   **one-from-many**: a set of links where a single target node is linked to multiple source nodes. Links can have either unit or fractional weights depending on whether the source nodes are part of one-to-one or one-to-many relations.
--   **many-to-many**: ???
+-   **one-to-many**: a set of links where a single source node is linked to multiple target nodes. Links in this "splitting" relation will have fractional weights.
+-   **one-from-many**: a set of links where a single target node is linked to multiple source nodes. This "collpase" relation is more commonly known as a **many-to-one**. Links can have either unit or fractional weights depending on whether the source nodes are part of one-to-one or one-to-many relations.
+-   **many-to-many**: refers to a combination of the above relations and is often used to signal that a correspondence between sets has both **one-to-many** splitting relations and **one-from-many** collapsing relations.
+
+Note that links in a crossmap can be partitioned into subgraphs according to the number of outgoing links (i.e. one-to-one and one-to-many)
 
 ### Recode maps
 
-Crossmaps with only one-to-one relations recode source labels to target labels, leaving any attached values untouched. For a crossmap to be a recode map it must have binary weights, and the cardinality of the source and target node sets must be equal. Notice that Schema Crosswalks, lookup tables and category recoding functions could all be implemented as Recode Maps.
+Crossmaps with only one-to-one relations recode source labels to target labels, leaving any attached values untouched. This implies that the weights on links are always 1. Notice that Schema Crosswalks, lookup tables and category recoding functions are all Recode Maps.
+
+A common way of implementing recodings in R is named vectors or pairwise arguments such as in `forcats::fct_recode()`. Named vectors are a convenient way to store and use one-to-one and many-to-one mappings. In general it is not necessary to convert such mappings into crossmaps unless you want to combine them with fractional weight links. However, when necessary, named vectors can be converted into `xmap` by first transforming vector into two-column table of node pairs, and then attaching the implied unit weights.
+
+```{r}
+# example using the named vector included in `mock` objects:
+mock$recode_vect
+
+recode_xmap <-
+  xmap::pairs_from_named(mock$recode_vect, names_to = "iso3", values = "ctr_name") |>
+  xmap::add_weights_unit(weights_into = "w") |>
+  xmap::as_xmap_df(from = iso3, to = ctr_name, weights = w)
+```
+
+For a crossmap to be a recode map it must have binary weights, and the cardinality of the source and target node sets must be equal. In other words, weights can only be 0 (i.e. no link) or 1, and the number of unique source and target labels should be the same. We can use this principle to verify whether or not a named vector has only one-to-one relation:
+
+```{r}
+fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
+fruit_color |>
+  verify_named_as_recode_unique() |>
+  print()
+```
+
+This approach can help identify mistakes such as accidentally assigning a value twice:
+
+```{r}
+fruit_color_mistake <- c(fruit_colors, pear = "green")
+
+fruit_color_mistake |>
+  verify_named_all_1to1()
+```
 
 ### Collapse or Aggregation maps
 
 Collapse crossmaps are similar to Recode crossmaps in that source values are unmodified when passed into the target nomenclature. However, as the name suggests, multiple source nodes can be "collapsed" into the same target node, such that at least some of the source values will be aggregated in the target nomenclature. Similar to a Recode crossmap, a Collapse crossmap must only have unit weights, but the cardinality of the source node set will be larger than the target node set. This means that at least two source nodes must be linked to the same target node since there are fewer target nodes than source nodes.
+
+Similar to the recode maps, collapse maps only have unit weights. Hence, we can use named lists to store such mappings. Consider an example such as assigning students to groups. Assume no two students share the same name:
+
+```{r}
+student_groups <- list(GRP1 = c("kate", "jane", "peter"),
+                       GRP2 = c("terry", "ben", "grace"),
+                       GRP3 = c("cindy", "lucy", "alex" ))
+```
+
+We can check that students are not assigned to multiple groups:
+
+```{r}
+student_groups <- list(GRP1 = c("kate", "jane", "peter"),
+                       GRP2 = c("terry", "ben", "grace"),
+                       GRP3 = c("cindy", "lucy", "alex" ))
+
+student_groups |>
+  verify_named_no_dup_values()
+
+## mistakenly assign kate to another group
+student_group_mistake <- list(GRP1 = c("kate", "jane", "peter"),
+                           GRP2 = c("terry", "ben", "grace"),
+                           GRP3 = c("cindy", "lucy", "kate" ))
+
+student_group_mistake |>
+  verify_named_no_dup_values()
+```
+
+Verification as crossmaps requires adding weights and is directional:
+
+```{r}
+group_links <- student_groups |>
+  as_pairs_from_named(names_to = "group", values_to = "student") |>
+  add_weights_unit()
+
+## collapse map
+group_links |>
+  verify_links_as_xmap(from = student, to = group, weights = weights)
+
+## opposite doesn't work
+group_links |>
+  verify_links_as_xmap(from = group, to = student, weights = weights)
+```
 
 Aggregation transformations can implemented as Collapse maps. Additionally, aggregation size requirements can be implemented as conditions on the number of incoming links for each target node. For instance, if you know that each target node should aggregate values from at least two source nodes, then the minimum number of non-zero incoming links should be 2 for every target node. Notice that this requirement precludes one-to-one links since it prevents any source node from being recoded into an "unshared" node in the target nomenclature.
 
 ### Split or Disaggregation maps
 
 Any crossmap with at least one set of fractional weight (one-to-many) links involve some redistribution of source value. However, a useful special case of maps with fractional weights are split maps, which encode the disaggregation of source values into a target nomenclature. Such maps which will have mostly one-to-many relations, and do not contain one-from-many relations. This can be ensured by restricting each target node to only have one incoming link. Furthermore, we can preclude one-to-one links with the condition that all links must have fractional weights.
+
+Notice that the same set of node pairs can generate either a split or collapse map depending on the weights added. For example, recall that in the student group example from above, swapping the `to` and `from` variables no longer formed a valid `xmap`. Now consider allocating some budget of prizes between students in each group. This requires adding fractional weights.
 
 ## Crossmap tables: `xmap_df`
 
@@ -118,7 +195,7 @@ To create a crossmap between `ISONumeric` and `ISO2`, we simply add a weights co
 
 ```{r}
 iso_xmap <- iso_codes |>
-  dplyr::mutate(link = 1) |>
+  add_weights_unit(weights_into = "link") |>
   as_xmap_df(from = ISONumeric, to = ISO2, weights = link)
 ```
 
@@ -132,7 +209,7 @@ We can also easily generate crossmaps for the other nomenclature in the table:
 
 ```{r}
 iso_codes |>
-  dplyr::mutate(link = 1) |>
+  add_weights_unit(weights_into = "link") |>
   as_xmap_df(from = ISO2, to = ISO3, weights = link)
 ```
 
