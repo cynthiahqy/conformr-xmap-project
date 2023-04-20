@@ -108,21 +108,29 @@ Construction:
 -   `validate_xmap_df()` -- internal, quick!
 -   `as_xmap_df()`
 
+#### Data
+
+-   `mock_` are input objects:
+    -   `mock_named`
+    -   `mock_pairs`
+    -   `mock_links`
+    -   `mock_xmaps`
+
 #### Non-`xmap_df` inputs
 
 Candidate Links:
 
 -   `as_pairs()` to generate crosswalks
 
-    -   `pairs_from_list()`
-    -   `pairs_from_named_vector()`
+    -   `as_pairs_from_list()`
+    -   `as_pairs_from_named_vector()`
 
 -   `add_weights_*` to attach weights and return links
 
 -   `as_links()`: could be a generic that calls different (internal?) methods and adds/extracts weights like:
 
-    -   `links_from_matrix()`
-    -   `links_from_igraph()`
+    -   `as_links_from_matrix()`
+    -   `as_links_from_igraph()`
 
 -   `verify_links_as_xmap()`, takes tidyselect?
 
