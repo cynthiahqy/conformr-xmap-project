@@ -292,13 +292,14 @@ xmap::pairs_from_named(list = link_list,
 #### Helper: Node pairs from Named List or Vector
 
 ```{r fnc-pairs-from-named}
-#' Make candidate links from named list or vector
+#' Make candidate node pairs from named list or vector
 #' 
 #' Convert a named list of one-to-one (named vector) or many-to-one (named list) relations 
-#' into a table of node pairs. It extracts the vector or list element names into one set of nodes,
-#' and the values into a second set of names, unnesting where necessary.
+#' into a two-column table of node pairs.
+#' It extracts the vector or list element names and the values, unnesting where necessary.
 #'
-#' @param x named list. Each item contains a vector of source nodes which map to #' the target node named.
+#' @param x named list or vector. Each item contains a vector or value of source node(s) which map to
+#' the target node named.
 #' @param names_to,values_to character vector specify the new columns to pass the information in `x` into.
 #'
 #' @return tibble containing .
@@ -312,7 +313,7 @@ xmap::pairs_from_named(list = link_list,
 #' 
 #' tar_vec <- c(eggplant = "aubergine", zucchini = "courgette")
 #' pairs_from_named(tar_vec, "au_eng", "uk_eng")
-pairs_from_named <- function(x, names_to = "name", values_to = "value"){
+as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
   stopifnot(is.vector(x))
   node_pairs <- x |>
     tibble::enframe(name = names_to, value = values_to) |>
