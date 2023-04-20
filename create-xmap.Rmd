@@ -562,7 +562,48 @@ abort_any_na <- function(df) {
 }
 ```
 
-### Validate: Links
+### Verify: Named
+
+```{r}
+#' Verify crossmap properties of named vectors
+#'
+#' @param x a named vector
+#'
+#' @return `x` or throw error
+#' @name verify_named
+NULL
+
+#' @describeIn verify_named Verify named vector or list has only one-to-one relations
+verify_named_as_recode_unique <- function(x){
+  stopifnot(is.vector(x))
+  set_name <- unique(names(x))
+  set_value <- unique(unlist(unname(x)))
+  stopifnot(length(set_name) == length(set_value))
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify named vector or list has only one-to-one relations
+verify_named_all_1to1 <- verify_named_as_recode_unique
+
+#' @describeIn verify_named Verify named vector or list has no duplicate names
+verify_named_no_dup_names <- function(x){
+  dup_idx <- anyDuplicated(names(x))
+  stopifnot(!as.logical(dup_idx))
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify named vector or list has no duplicate values (after unnesting)
+verify_named_no_dup_values <- function(x){
+  dup_idx <- anyDuplicated(unlist(unname(x)))
+  stopifnot(!as.logical(dup_idx))
+  #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
+  invisible(x)
+}
+```
+
+### Verify: Pairs
+
+### Verify: Links
 
 `abort_*(df,...)` all take an data.frame for first argument, and character values or vectors for the remaining arguments. They throw an error if the validation condition does not pass, and `NULL` otherwise.
 
