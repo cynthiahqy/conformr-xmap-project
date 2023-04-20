@@ -250,6 +250,39 @@ I'm not sure offering helpers for modifying crossmaps is necessary or even desir
     -   recode/collapse variants which drop the weights columns (since it is implied);
     -   igraph objects for spatial aggregation/transformation -- noting the similarity between spatial weighting matrices and crossmaps (see this Vignette from [SpatialReg](https://r-spatial.github.io/spatialreg/articles/nb_igraph.html).
 
+## Mock Data
+
+```{r export-mock-objects}
+mock <- list()
+
+mock$recode_vect <- c(AUS = "Australia",
+                 NZD = "New Zealand",
+                 JPN = "Japan")
+mock$collapse_list <- list(MAMM = c("elephant", "whale", "monkey"),
+                      REPT = c("lizard", "turtle"),
+                      CRUS = c("crab"))
+
+#mock$xmap_iso2_iso3 <-  
+#mock$xmap_mixed <-
+
+usethis::use_data(mock)
+```
+
+```{r document-mock-objects, send_to="R/data.R"}
+#' Mock objects for the `xmap` package
+#' 
+#' A list of mock objects for experimenting with functions
+#' in the `xmap` package.
+#' 
+#' @format ## `mock`
+#' A list with :
+#' \describe{
+#'  \item{recode_vect, collapse_list}{Named vector and list for conversion into node pairs}
+#'  \item{xmap}
+#'  }
+#' @source Package authors
+```
+
 ## Candidate Links
 
 ### Convert: List to Links Data Frame
