@@ -1,0 +1,10 @@
+---
+title: "Verifying Existing (non-xmap) Workflows"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Verifying Existing (non-xmap) Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
