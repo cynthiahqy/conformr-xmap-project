@@ -28,7 +28,7 @@ navbar:
       href: https://github.com/cynthiahqy/conformr-project/tree/main/xmap
 
 reference:
-- title: Coercion and Validation
+- title:
   desc: >
     Functions for working with candidate links
   contents:
@@ -36,6 +36,7 @@ reference:
     - starts_with("add_weights")
     - starts_with("links")
     - starts_with("verify")
+    - starts_with("as")
     - as_xmap_df
 
 - title: xmap Functions

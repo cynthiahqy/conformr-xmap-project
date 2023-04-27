@@ -347,13 +347,13 @@ xmap::pairs_from_named(list = link_list,
 #' @export
 #'
 #' @examples
-#' tar_list <- list(MAMM = c("elephant", "whale", "monkey"),
+#' veg_vec <- c(eggplant = "aubergine", zucchini = "courgette")
+#' as_pairs_from_named(veg_vec, "au_eng", "uk_eng")
+#' 
+#' animal_list <- list(MAMM = c("elephant", "whale", "monkey"),
 #'                  REPT = c("lizard", "turtle"),
 #'                  CRUS = c("crab"))
-#' pairs_from_named(tar_list, "class", "animal")
-#' 
-#' tar_vec <- c(eggplant = "aubergine", zucchini = "courgette")
-#' pairs_from_named(tar_vec, "au_eng", "uk_eng")
+#' as_pairs_from_named(animal_list, "class", "animal")
 as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
   stopifnot(is.vector(x))
   node_pairs <- x |>
@@ -385,7 +385,7 @@ as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
 #'
 #' @examples
 #' AUS_list <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT"))
-#' pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
+#'   as_pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
 #'   add_weights_unit(weights_into = "weights")
 add_weights_unit <- function(pairs, weights_into = "weights"){
   pairs[,weights_into] <- 1
@@ -466,7 +466,7 @@ vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0
 #' @describeIn vhas Returns TRUE if links have no duplicate pairs and complete weights
 vhas_xmap_props <- function(v_from, v_to, v_weights){
   ## check vectors are equal length
-  v_lengths <- .calc_vector_lengths(v_from, v_to, v_weights)
+  v_lengths <- .calc_vector_lens(v_from, v_to, v_weights)
   stopifnot(length(unique(v_lengths)) == 1)
   
   ## check properties
@@ -605,44 +605,183 @@ abort_any_na <- function(df) {
 
 ### Verify: Named
 
-```{r}
+```{r send_to="R/verify_named.R"}
 #' Verify crossmap properties of named vectors
 #'
 #' @param x a named vector
+#' @param ref_names,ref_values a vector of character strings 
 #'
 #' @return `x` or throw error
 #' @name verify_named
+#' @examples
+#' ## check each fruit has a unique color
+#' fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
+#' verify_named_all_1to1(fruit_color)
+#' 
+#' ## check no student is assigned to multiple groups
+#' student_groups <- list(GRP1 = c("kate", "jane", "peter"),
+#'                       GRP2 = c("terry", "ben", "grace"),
+#'                       GRP3 = c("cindy", "lucy", "alex" ))
+#' verify_named_no_dup_names(student_groups)
+#' 
+#' ## check 
 NULL
+```
 
+Verify pairwise properties:
+
+```{r send_to="R/verify_named.R"}
 #' @describeIn verify_named Verify named vector or list has only one-to-one relations
-verify_named_as_recode_unique <- function(x){
+#' @export
+#' @examples
+#' 
+verify_named_all_pairs_1to1 <- function(x){
   stopifnot(is.vector(x))
-  set_name <- unique(names(x))
-  set_value <- unique(unlist(unname(x)))
-  stopifnot(length(set_name) == length(set_value))
+  unique_names <- unique(names(x))
+  unique_values <- unique(unlist(unname(x)))
+  stopifnot(length(unique_names) == length(unique_values))
   invisible(x)
 }
 
-#' @describeIn verify_named Verify named vector or list has only one-to-one relations
-verify_named_all_1to1 <- verify_named_as_recode_unique
+#' @describeIn verify_named Verify name-value pairs of named vector or list are not duplicated
+#' @export
+verify_named_all_pairs_unique <- function(x){
+  stopifnot(is.vector(x))
+  pairs <- as_pairs_from_named(x)
+  stopifnot(!as.logical(anyDuplicated(pairs)))
+  invisible(x)
+}
+```
 
-#' @describeIn verify_named Verify named vector or list has no duplicate names
-verify_named_no_dup_names <- function(x){
+Verify name or value sets
+
+```{r send_to="R/verify_named.R"}
+#' @describeIn verify_named Verify names of named vector or list are not duplicated
+#' @export
+verify_named_all_names_unique <- function(x){
+  stopifnot(is.vector(x))
   dup_idx <- anyDuplicated(names(x))
   stopifnot(!as.logical(dup_idx))
   invisible(x)
 }
 
-#' @describeIn verify_named Verify named vector or list has no duplicate values (after unnesting)
-verify_named_no_dup_values <- function(x){
+#' @describeIn verify_named Verify values in named vector or list are not duplicated (after unnesting)
+#' @export
+verify_named_all_values_unique <- function(x){
+  stopifnot(is.vector(x))
   dup_idx <- anyDuplicated(unlist(unname(x)))
   stopifnot(!as.logical(dup_idx))
   #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)
 }
+
+#' @describeIn verify_named Verify names of named vector or list **exactly** match an expected set of name values
+#' @export
+verify_named_match_names_exact <- function(x, ref_names){
+  stopifnot(is.vector(x))
+  unique_names <- unique(names(x))
+  stopifnot(setequal(ref_names, unique_names))
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify names of named vector or list **contain** an expected set of name values
+#' @export
+verify_named_match_names_contain <- function(x, ref_names){
+  stopifnot(is.vector(x))
+  unique_names <- unique(names(x))
+  stopifnot(ref_names %in% unique_names)
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify names of named vector or list are **within** an expected set of name values
+#' @export
+verify_named_match_names_within <- function(x, ref_names){
+  stopifnot(is.vector(x))
+  unique_names <- unique(names(x))
+  stopifnot(unique_names %in% ref_names)
+  invisible(x)
+}
+```
+
+Tests:
+
+```{r}
+testthat::test_that("verify_named_match fncs work as expected", {
+  v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)
+  refn_exact_1to1 <- c("x1", "x2", "x3")
+  refn_subset_1to1 <- c("x1", "x2")
+  refn_superset_1to1 <- c("x1", "x2", "x3", "x4")
+  testthat::expect_equal(verify_named_match_names_exact(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_match_names_exact(v_1to1, c("not", "right")))
+  testthat::expect_equal(verify_named_match_names_contain(v_1to1, refn_subset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_match_names_contain(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_match_names_contain(v_1to1, refn_superset_1to1))
+  testthat::expect_equal(verify_named_match_names_within(v_1to1, refn_superset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_match_names_within(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_match_names_within(v_1to1, refn_subset_1to1))
+})
+```
+
+Aliases:
+
+```{r verify-named-aliases, send_to="R/verify_named.R"}
+#' @describeIn verify_named (alias) verify named vector or list has only one-to-one relations
+#' @export
+verify_named_as_recode_unique <- verify_named_all_pairs_1to1
+
+#' @describeIn verify_named (alias)
+#' @export
+verify_named_no_dup_values <- verify_named_all_values_unique
+
+#' @describeIn verify_named (alias)
+#' @export
+verify_named_no_dup_names <- verify_named_all_names_unique
+
+#' @describeIn verify_named (alias)
+#' @export
+verify_named_match_exact_names <- verify_named_match_names_exact
 ```
 
 ### Verify: Pairs
+
+```{r send_to="R/verify_pairs.R"}
+#' Verify crossmap properties of column pairs
+#'
+#' @param x a data frame-like object with at least two columns
+#' @param from
+#' @param to
+#'
+#' @return `x` or error
+#' @name verify_pairs
+NULL
+
+#' @describeIn verify_pairs Verify column pairs have only one-to-one relations
+#' @export
+verify_pairs_all_1to1 <- function(x, from, to){
+  stopifnot(is.dataframe(x))
+  set_from <- unique(x[[rlang::englue("{{from}}")]])
+  set_to <- unique(x[[rlang::englue("{{to}}")]])
+  stopifnot(length(set_from) == length(set_to))
+  invisible(x)
+}
+
+#' @describeIn verify_pairs Verify columnn pairs are all unique
+#' @export
+verify_pairs_all_unique <- function(x, from, to){
+  stopifnot
+}
+
+#' @describeIn verify_pairs (alias) Verify column pairs have only one-to-one relations
+#' @export
+verify_pairs_as_recode_unique <- verify_pairs_all_1to1
+
+#' @describeIn verify_pairs Verify column pairs outgoing link degree
+verify_pairs_out <- function(x, from, to, max_out, min_out){
+  # TODO: FINISH THIS!
+  dplyr::group_by(x, {{from}}) |>
+  dplyr::summarise()
+}
+```
 
 ### Verify: Links
 
@@ -1424,13 +1563,13 @@ testthat::test_that("xmap_to_list works as expected", {
 ```
 
 ```{r}
-testthat::test_that("xmap_to_list() reverses pairs_from_named()", {
+testthat::test_that("xmap_to_list() reverses as_pairs_from_named()", {
   link_list <- list(AA = c("x3", "x4", "x6"),
                     BB = c("x1", "x5"),
                     CC = c("x2")
                   )
   link_xmap <-
-   pairs_from_named(link_list,
+   as_pairs_from_named(link_list,
                   "capital", "xvars") |>
    add_weights_unit(weights_into = "w") |>
    new_xmap_df("xvars", "capital", "w")
@@ -1442,7 +1581,7 @@ with dplyr:
 
 ```{r}
 pairs_df <- 
-     pairs_from_named(link_list,
+     as_pairs_from_named(link_list,
                   "capital", "xvars") 
 
 pairs_df |> 
@@ -1804,8 +1943,9 @@ We finish by running commands that will document, build, and install the package
 ```{r}
 rm(list = ls())
 litr::document() # <-- use instead of devtools::document()
-pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
-litr::add_pkgdown(pkgdown_yml)
+litr::add_pkgdown()
+#pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
+#litr::add_pkgdown(pkgdown_yml)
 # devtools::run_examples()
 # devtools::build()
 # devtools::install()

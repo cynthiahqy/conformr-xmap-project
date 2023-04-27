@@ -9,6 +9,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r setup}
+library(xmap)
+```
+
 ## Nomenclature Crossmaps
 
 A (Nomenclature) Crossmap encodes a complete redistribution of values between a source and target classifications as a directed, bipartite, weighted graph. Numeric values transformed using a valid Crossmap will sum to the same total in both the source and target classifications. A valid Crossmap satisfies the following conditions:
@@ -28,10 +32,6 @@ Now, consider two links from the same source node $i$ to two different target no
 
 ## Special Cases of Crossmaps
 
-```{r setup}
-library(xmap)
-```
-
 The conditions for valid nomenclature crossmaps defined above are sufficient to ensure that the total sum of value is retained between the source and target nomenclature However, there are a number of other transformation properties which crossmaps can also encode and validate. Such special cases include "degenerate" crossmaps. We consider a crossmap "degenerate" if it has only binary weights on all possible source-target links. In such cases the weights are implied by the presence or absence of a link.
 
 ### Types of Mapping Relations
@@ -40,7 +40,7 @@ It is helpful when thinking about special cases to define some familiar types of
 
 -   **one-to-one**: a set of links where pairs of source and target nodes are uniquely linked to each other and no other nodes. Any links in this type of relation will have unit weights.
 -   **one-to-many**: a set of links where a single source node is linked to multiple target nodes. Links in this "splitting" relation will have fractional weights.
--   **one-from-many**: a set of links where a single target node is linked to multiple source nodes. This "collpase" relation is more commonly known as a **many-to-one**. Links can have either unit or fractional weights depending on whether the source nodes are part of one-to-one or one-to-many relations.
+-   **one-from-many**: a set of links where a single target node is linked to multiple source nodes. This "collapse" relation is more commonly known as a **many-to-one**. Links can have either unit or fractional weights depending on whether the source nodes are part of one-to-one or one-to-many relations.
 -   **many-to-many**: refers to a combination of the above relations and is often used to signal that a correspondence between sets has both **one-to-many** splitting relations and **one-from-many** collapsing relations.
 
 Note that links in a crossmap can be partitioned into subgraphs according to the number of outgoing links (i.e. one-to-one and one-to-many)
@@ -51,32 +51,32 @@ Crossmaps with only one-to-one relations recode source labels to target labels, 
 
 A common way of implementing recodings in R is named vectors or pairwise arguments such as in `forcats::fct_recode()`. Named vectors are a convenient way to store and use one-to-one and many-to-one mappings. In general it is not necessary to convert such mappings into crossmaps unless you want to combine them with fractional weight links. However, when necessary, named vectors can be converted into `xmap` by first transforming vector into two-column table of node pairs, and then attaching the implied unit weights.
 
-```{r}
+``` r
 # example using the named vector included in `mock` objects:
 mock$recode_vect
 
 recode_xmap <-
-  xmap::pairs_from_named(mock$recode_vect, names_to = "iso3", values = "ctr_name") |>
+  xmap::as_pairs_from_named(mock$recode_vect, names_to = "iso3", values = "ctr_name") |>
   xmap::add_weights_unit(weights_into = "w") |>
   xmap::as_xmap_df(from = iso3, to = ctr_name, weights = w)
 ```
 
-For a crossmap to be a recode map it must have binary weights, and the cardinality of the source and target node sets must be equal. In other words, weights can only be 0 (i.e. no link) or 1, and the number of unique source and target labels should be the same. We can use this principle to verify whether or not a named vector has only one-to-one relation:
+For a crossmap to be a recode map it must have binary weights, and the cardinality of the source and target node sets must be equal. In other words, weights can only be 0 (i.e. no link) or 1, and the number of unique source and target labels should be the same. The function `verify_named_all_1to1()` or its alias `verify_named_as_recode_unique()` uses the cardinality condition to verify whether or not a named vector has only one-to-one relation:
 
 ```{r}
 fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 fruit_color |>
-  verify_named_as_recode_unique() |>
+  verify_named_all_1to1() |>
   print()
 ```
 
-This approach can help identify mistakes such as accidentally assigning a value twice:
+We can also identify mistakes such as accidentally assigning a value twice:
 
-```{r}
-fruit_color_mistake <- c(fruit_colors, pear = "green")
+```{r error=TRUE}
+fruit_color_mistake <- c(fruit_color, pear = "green")
 
 fruit_color_mistake |>
-  verify_named_all_1to1()
+  verify_named_as_recode_unique()
 ```
 
 ### Collapse or Aggregation maps
@@ -99,20 +99,31 @@ student_groups <- list(GRP1 = c("kate", "jane", "peter"),
                        GRP3 = c("cindy", "lucy", "alex" ))
 
 student_groups |>
-  verify_named_no_dup_values()
+  verify_named_all_values_unique()
+```
 
+```{r error=TRUE}
 ## mistakenly assign kate to another group
 student_group_mistake <- list(GRP1 = c("kate", "jane", "peter"),
                            GRP2 = c("terry", "ben", "grace"),
                            GRP3 = c("cindy", "lucy", "kate" ))
 
 student_group_mistake |>
-  verify_named_no_dup_values()
+  verify_named_all_values_unique()
+```
+
+Or that the every student has been assigned a group:
+
+```{r error=TRUE}
+student_list <- c("kate", "jane", "peter", "terry", "ben", "grace", "cindy", "lucy", "alex")
+
+student_group_mistake |>
+  verify_named_match_values_exact(student_list)
 ```
 
 Verification as crossmaps requires adding weights and is directional:
 
-```{r}
+```{r error=TRUE}
 group_links <- student_groups |>
   as_pairs_from_named(names_to = "group", values_to = "student") |>
   add_weights_unit()
@@ -172,7 +183,7 @@ simple_xmap <- simple_x |>
 simple_xmap
 ```
 
-### Coercion from Crosswalks
+### Coercion from Crosswalk/Lookup Tables
 
 It is more common that you will want to convert an existing correspondence into a crossmap. Such conversions require attaching appropriate weights to the existing crosswalk table.
 
