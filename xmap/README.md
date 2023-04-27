@@ -14,3 +14,7 @@ To install the latest development version of `xmap`:
 ``` r
 remotes::install_github("cynthiahqy/conformr-project", subdir = "xmap")
 ```
+
+## Documentation
+
+See pkgdown site: http://xmap-r-pkg.netlify.app/
