@@ -55,6 +55,7 @@ usethis::use_package("dplyr")
 usethis::use_package("Matrix", type = "Suggests") ## for sparse matrices
 usethis::use_package("matlib", type = "Suggests")
 usethis::use_package("testthat", type = "Suggests")
+usethis::use_package("forcats", type = "Suggests")
 ```
 
 ### Utilities
@@ -2080,14 +2081,18 @@ add_vignettes(vignette_images)
 ```{r}
 litr::add_readme("../xmap-source-files/README.Rmd")
 litr::add_vignettes("../xmap-source-files/xmap.Rmd")
-litr::add_vignettes("../xmap-source-files/making-xmaps.Rmd")
+litr::add_vignettes(c("../xmap-source-files/making-xmaps.Rmd",
+                      "../xmap-source-files/plot-anzsco-isco-bigraph.png"))
+litr::add_vignettes(c("../xmap-source-files/vis-xmaps.Rmd",
+                      "../xmap-source-files/plot-weight-sum-matrix.png"))
+```
+
+``` r
 litr::add_vignettes(c("../xmap-source-files/using-xmaps.Rmd",
                       "../xmap-source-files/using-xmaps.bib",
                       "../xmap-source-files/plot-coverage-matrix.png",
                       "../xmap-source-files/plot-missing-val-bigraph.png"
                     ))
-litr::add_vignettes(c("../xmap-source-files/vis-xmaps.Rmd",
-                      "../xmap-source-files/plot-weight-sum-matrix.png"))
 ```
 
 ### Render package
@@ -2107,9 +2112,9 @@ We finish by running commands that will document, build, and install the package
 ```{r}
 rm(list = ls())
 litr::document() # <-- use instead of devtools::document()
-litr::add_pkgdown()
-#pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
-#litr::add_pkgdown(pkgdown_yml)
+#litr::add_pkgdown()
+pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
+litr::add_pkgdown(pkgdown_yml)
 # devtools::run_examples()
 # devtools::build()
 # devtools::install()

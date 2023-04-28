@@ -17,6 +17,7 @@ Imports:
     tibble,
     tidyr
 Suggests: 
+    forcats,
     ggbump,
     ggplot2,
     knitr,
