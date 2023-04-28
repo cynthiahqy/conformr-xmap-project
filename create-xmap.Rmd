@@ -390,6 +390,7 @@ as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
 #' @param weights_into character string naming new column to store link weights in
 #'
 #' @return `pairs` with additional column of ones
+#' @rdname add_weights
 #' @export
 #'
 #' @examples
@@ -407,7 +408,7 @@ add_weights_unit <- function(pairs, weights_into = "weights"){
 `vhas_*(v_)` functions take in vector arguments only, and are designed to be able to validate the graph features of non-data.frame xmaps (so long as the links can be decomposed into from,to,weight vectors).
 
 ```{r send_to="R/vhas.R"}
-#' Boolean flags for properties of candidate and validated xmap links
+#' Boolean flags for properties of candidate and validated xmap links (internal)
 #'
 #' @description
 #' `vhas_*()` functions check properties of xmap links and/or candidate links.
@@ -615,10 +616,9 @@ abort_any_na <- function(df) {
 ### Verify: Named
 
 ```{r send_to="R/verify_named.R"}
-#' Verify crossmap properties of named vectors
+#' Verify crossmap properties of named vectors or lists
 #'
 #' @param x a named vector
-#' @param ref_names,ref_values a vector of character strings 
 #'
 #' @return `x` or throw error
 #' @name verify_named
@@ -844,7 +844,7 @@ testthat::test_that("verify_pairs_* work as expected", {
 `abort_*(df,...)` all take an data.frame for first argument, and character values or vectors for the remaining arguments. They throw an error if the validation condition does not pass, and `NULL` otherwise.
 
 ```{r send_to="R/abort.R"}
-#' Validation messages for xmap or candidate links
+#' Validation messages for xmap or candidate links (Internal)
 #'
 #' @description
 #' Checks issues with data.frame like objects containing validated `xmap` or candidate links.
@@ -1498,6 +1498,7 @@ testthat::test_that(
 #' @param ... Unused
 #' 
 #' @return A matrix or sparse matrix object
+#' @family {xmap_to}
 #' 
 #' @export
 xmap_to_matrix <- function(x, sparse, ...) {
@@ -1566,29 +1567,40 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
   )
 ```
 
-### to List: `xmap_to_list()`
+### to List: `xmap_to_named()`
 
 ```{r send_to="R/xmap_to.R"}
-#' Coerce a unit weight `xmap_df` to a named list
+#' Coerce a unit weight `xmap_df` to a named vector or list
 #'
-#' @param x xmap with only unit weights (i.e. all weights should be 1)
+#' Checks that an `xmap` has unit weights, and converts the 
+#'   `from` values into:
+#'   * a named vector for `xmap_to_named_vector()`
+#'   * a nested named list for `xmap_to_named_list()`
+#'   
+#' Names are the unique target nodes in `to`,
+#'   and each element contains the source node(s) in `from`.
+#' 
+#' @param x xmap with only unit weights
 #'
-#' @return named vector. Names are given by the target nodes and values are the source nodes.
+#' @return Named vector or list.
 #' @export
+#' @rdname xmap_to_named
+#' @family {xmap_to}
 #'
 #' @examples
 #' iso_vector <- c(AF = "004", AL = "008", DZ = "012", AS = "016", AD = "020")
 #' iso_xmap <- iso_vector |> 
 #'   as_pairs_from_named(names_to = "iso2c", values_to = "iso3n") |>
 #'   add_weights_unit() |>
-#'   as_xmap_df()
+#'   as_xmap_df(from = iso3n, to = iso2c, weights)
 #' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
 xmap_to_named_vector <- function(x){
+  stopifnot(is_xmap(x))
   x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
   if (!all(w == 1)) {
-    cli::cli_abort("`x` must only have unit weights. Can't convert to list.",
+    cli::cli_abort("`x` contains weights not equal to 1. Can't convert to list.",
                    class = "abort_weights_not_unit")
   }
   
@@ -1602,11 +1614,7 @@ xmap_to_named_vector <- function(x){
 ```
 
 ```{r send_to="R/xmap_to.R"}
-#' Coerce a unit weights `xmap_df` to a named list
-#'
-#' @param x xmap with only unit weights (i.e. all weights should be 1)
-#'
-#' @return named list. Item names are the unique target nodes, and each item contains the source node(s) which map to the target node named.
+#' @rdname xmap_to_named
 #' @export
 #'
 #' @examples
@@ -1619,7 +1627,8 @@ xmap_to_named_vector <- function(x){
 #'  as_xmap_df(from = animals, to = class, weights = weights)
 #' identical(xmap_to_named_list(animal_xmap), animal_list)
 xmap_to_named_list <- function(x) {
-    x_attrs <- attributes(x)
+  stopifnot(is_xmap(x))
+  x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
   if (!all(w == 1)) {
@@ -1639,7 +1648,7 @@ xmap_to_named_list <- function(x) {
 ```
 
 ```{r test-xmap-to-list}
-testthat::test_that("xmap_to_list works as expected", {
+testthat::test_that("xmap_to_named works as expected", {
   links <- tibble::tribble(
     ~f, ~t, ~w,
     "A1", "B01", 1,
@@ -1662,7 +1671,7 @@ testthat::test_that("xmap_to_list works as expected", {
 ```
 
 ```{r}
-testthat::test_that("xmap_to_list() reverses as_pairs_from_named()", {
+testthat::test_that("xmap_to_named_list() reverses as_pairs_from_named()", {
   link_list <- list(AA = c("x3", "x4", "x6"),
                     BB = c("x1", "x5"),
                     CC = c("x2")
