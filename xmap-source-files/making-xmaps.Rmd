@@ -13,12 +13,16 @@ vignette: >
 library(xmap)
 ```
 
-## Nomenclature Crossmaps
+## Crossmaps
 
 A (Nomenclature) Crossmap encodes a complete redistribution of values between a source and target classifications as a directed, bipartite, weighted graph. Numeric values transformed using a valid Crossmap will sum to the same total in both the source and target classifications. A valid Crossmap satisfies the following conditions:
 
 1.  There is at most one link between each distinct source and target node
 2.  For each source node, the sum of weights attached to all outgoing links sums to one.
+
+For example, this mapping between occupation codes in ANZSCO22 and ISCO8 is a valid crossmap:
+
+![A crossmap for converting Australian occupation categories (ANZSCO22) to an international standard (ISCO8).](plot-anzsco-isco-bigraph.png)
 
 ### Unit and Fractional Weight Links
 
@@ -83,7 +87,7 @@ For a crossmap to be a recode map it must have binary weights, and the cardinali
 ```{r}
 fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 fruit_color |>
-  verify_named_all_pairs_1to1() |>
+  verify_named_all_1to1() |>
   print()
 ```
 
