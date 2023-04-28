@@ -8,7 +8,7 @@
 \alias{vhas_1to1}
 \alias{vhas_1toM}
 \alias{vhas_1fromM}
-\title{Boolean flags for properties of candidate and validated xmap links}
+\title{Boolean flags for properties of candidate and validated xmap links (internal)}
 \usage{
 vhas_no_dup_pairs(v_from, v_to)
 

@@ -1,23 +1,116 @@
 ---
-title: "Crossmaps for Data Transformation in R"
+title: "Getting Started with Crossmaps"
 output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Intro to Crossmaps for Data Transformation in R}
+  %\VignetteIndexEntry{Getting Started with Crossmaps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-xmap provides tools for creating, validating and modifying Nomenclature Crossmaps for use in Data Integration and Harmonisation workflows (i.e. in `{conformr}`).
+## Checking existing pipelines
+
+`xmap` offers verification functions for mappings encoded in named vectors or lists as well as data frames. Many of these checks will seem trivial in short mappings, but can be useful checks for longer or more complex mappings.
+
+For example, if you are using a named list to manually recode categorical variables (e.g. using `forcats::fct_recode`), then you might want to verify some properties of the level mappings -- e.g. each existing level is only mapped once:
+
+```{r}
+library(forcats)
+library(xmap)
+
+x <- factor(c("apple", "bear", "banana", "dear"))
+levels <- ## new = "old" levels
+  c(fruit = "apple", fruit = "banana") |>
+  verify_named_all_values_unique()
+forcats::fct_recode(x, !!!levels)
+```
+
+```{r error=TRUE}
+mistake_levels <- c(fruit = "apple", fruit = "banana", veg = "banana") |>
+  verify_named_all_values_unique()
+```
+
+Similarly, if you are using a named list to encode group members, you could check the members against a reference list.
+
+```{r error=TRUE}
+## mistakenly assign kate to another group
+student_group_mistake <- list(GRP1 = c("kate", "jane", "peter"),
+                           GRP2 = c("terry", "ben", "grace"),
+                           GRP2 = c("cindy", "lucy", "kate" ))
+
+student_list <- c("kate", "jane", "peter", "terry", "ben", 
+                  "grace", "cindy", "lucy", "alex")
+
+student_group_mistake |>
+  verify_named_matchset_values_exact(student_list)
+```
+
+If you are redistributing numeric values between categories, see `vignette("making-xmaps")` for details on how to check your transformation weights redistribute exactly 100% of your original data.
 
 ## Creating an `xmap` object
 
-If you already have a valid crossmap table, turn it into a `xmap` object by specifying the source (`from`) nodes, target (`to`) nodes, and weights (`weights`):
+If you already have a data frame of candidate links, turn them into a valid `xmap` object by specifying the source (`from`) nodes, target (`to`) nodes, and weights (`weights`):
 
 ``` r
 links |>
   as_xmap_df(from = ISIC2, to = ISIC3, weights = shares)
 ```
 
-See `vignette("making-xmaps.Rmd")` for more details on validation conditions and creating custom weights.
+## Using `xmap` objects
+
+All crossmaps transformations can be decomposed into multiple "standard" data manipulation steps.
+
+1.  **Rename original categories into target categories**
+2.  **Mutate source node values by link weight.**
+3.  **Summarise mutated values by target node.**
+
+To implement these steps, use `xmap_df` just like normal tibbles or data.frames in a `dplyr` pipeline.
+
+1.  `dplyr::left_join` the target categories (`to`) to the original data via the source labels (`from`).
+2.  `dplyr::mutate` the source values by multiplying them with the link weights (`weights`) to transform the original values into redistributed values.
+3.  `dplyr::group_by` and `dplyr::summarise` values by target groups (`to`) to complete any many-to-1 mappings.
+
+For example given some original data (`v19_data`) with source categories (`v19`), and a valid `xmap` with source categories (`from = version19`), target categories (`to = version18`) and link weights (`weights = w19to18`):
+
+```{r message=FALSE}
+library(xmap)
+library(tibble)
+library(dplyr)
+```
+
+```{r}
+# original data
+v19_data <- tibble::tribble(
+  ~v19, ~count,
+  "1120", 300,
+  "1121", 400,
+  "1130", 200,
+  "1200", 600
+)
+
+# valid crossmap
+xmap_19to18 <- tibble::tribble(
+  ~version19, ~version18, ~w19to18,
+  # many-to-1 collapsing
+  "1120", "A2", 1,
+  "1121", "A2", 1,
+  # 1-to-1 recoding
+  "1130", "A3", 1,
+  # 1-to-many redistribution
+  "1200", "A4", 0.6,
+  "1200", "A5", 0.4
+) |>
+  as_xmap_df(from = version19, to = version18, weights = w19to18)
+
+# transformed data
+(v18_data <- dplyr::left_join(x = v19_data,
+                      y = xmap_19to18,
+                      by = c(v19 = "version19")) |>
+  dplyr::mutate(new_count = count * w19to18) |>
+  dplyr::group_by(version18) |>
+  dplyr::summarise(v20_count = sum(new_count))
+)
+```
+
+Note that we expect multiple matches for 1-to-many relations so the `dplyr` warning can safely be ignored.

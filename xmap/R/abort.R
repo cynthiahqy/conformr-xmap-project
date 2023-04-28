@@ -25,7 +25,7 @@ abort_any_na <- function(df) {
   invisible(df)
 }
 
-#' Validation messages for xmap or candidate links
+#' Validation messages for xmap or candidate links (Internal)
 #'
 #' @description
 #' Checks issues with data.frame like objects containing validated `xmap` or candidate links.

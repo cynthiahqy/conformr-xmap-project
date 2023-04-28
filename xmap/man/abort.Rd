@@ -10,7 +10,7 @@
 \alias{abort_col_order}
 \alias{abort_from_set}
 \alias{abort_not_reversible}
-\title{Validation messages for xmap or candidate links}
+\title{Validation messages for xmap or candidate links (Internal)}
 \usage{
 abort_missing_cols(df, cols)
 

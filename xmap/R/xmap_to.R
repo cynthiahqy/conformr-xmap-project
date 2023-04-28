@@ -10,6 +10,7 @@
 #' @param ... Unused
 #' 
 #' @return A matrix or sparse matrix object
+#' @family {xmap_to}
 #' 
 #' @export
 xmap_to_matrix <- function(x, sparse, ...) {
@@ -49,19 +50,30 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
   return(x_mtx)
 }
 
-#' Coerce a unit weight `xmap_df` to a named list
+#' Coerce a unit weight `xmap_df` to a named vector or list
 #'
+#' Checks that an `xmap` has unit weights, and converts the 
+#'   `from` values into:
+#'   * a named vector for `xmap_to_named_vector()`
+#'   * a nested named list for `xmap_to_named_list()`
+#'   
+#' Names are the unique target nodes in `to`,
+#'   and each element contains the source node(s) in `from`.
+#' 
 #' @param x xmap with only unit weights (i.e. all weights should be 1)
 #'
-#' @return named vector. Names are given by the target nodes and values are the source nodes.
+#' @return Named vector or list.
+#' @return Named vector. Names are given by the target nodes and values are the source nodes.
 #' @export
+#' @rdname xmap_to_named
+#' @family {xmap_to}
 #'
 #' @examples
 #' iso_vector <- c(AF = "004", AL = "008", DZ = "012", AS = "016", AD = "020")
 #' iso_xmap <- iso_vector |> 
 #'   as_pairs_from_named(names_to = "iso2c", values_to = "iso3n") |>
 #'   add_weights_unit() |>
-#'   as_xmap_df()
+#'   as_xmap_df(from = iso3n, to = iso2c, weights)
 #' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
 xmap_to_named_vector <- function(x){
   x_attrs <- attributes(x)
@@ -80,11 +92,7 @@ xmap_to_named_vector <- function(x){
     sapply(as.vector)
 }
 
-#' Coerce a unit weights `xmap_df` to a named list
-#'
-#' @param x xmap with only unit weights (i.e. all weights should be 1)
-#'
-#' @return named list. Item names are the unique target nodes, and each item contains the source node(s) which map to the target node named.
+#' @rdname xmap_to_named
 #' @export
 #'
 #' @examples

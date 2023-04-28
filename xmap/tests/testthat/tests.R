@@ -298,7 +298,7 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
   }
   )
 
-testthat::test_that("xmap_to_list works as expected", {
+testthat::test_that("xmap_to_named works as expected", {
   links <- tibble::tribble(
     ~f, ~t, ~w,
     "A1", "B01", 1,
@@ -319,7 +319,7 @@ testthat::test_that("xmap_to_list works as expected", {
                          class = "abort_weights_not_unit")
 })
 
-testthat::test_that("xmap_to_list() reverses as_pairs_from_named()", {
+testthat::test_that("xmap_to_named_list() reverses as_pairs_from_named()", {
   link_list <- list(AA = c("x3", "x4", "x6"),
                     BB = c("x1", "x5"),
                     CC = c("x2")
