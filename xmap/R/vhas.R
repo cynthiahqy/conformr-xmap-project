@@ -1,6 +1,6 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' Boolean flags for properties of candidate and validated xmap links
+#' Boolean flags for properties of candidate and validated xmap links (internal)
 #'
 #' @description
 #' `vhas_*()` functions check properties of xmap links and/or candidate links.

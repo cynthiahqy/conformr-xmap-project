@@ -9,6 +9,7 @@
 #' @param weights_into character string naming new column to store link weights in
 #'
 #' @return `pairs` with additional column of ones
+#' @rdname add_weights
 #' @export
 #'
 #' @examples

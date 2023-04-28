@@ -1,16 +1,52 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# `xmap` crossmaps for data integration in R
+## Overview
 
-xmap provides tools for creating, validating and modifying Nomenclature
-Crossmaps for use in Data Integration and Harmonisation workflows
-(i.e. in `{conformr}`).
+There are lots of ways in R to modify categorical variables and to
+redistribution numeric values between categories. If you are performing
+a simple recoding of category labels, or collapsing multiple categories,
+you might use the [`forcats`](https://github.com/tidyverse/forcats)
+package. However, if you are doing more complex transformations you
+might find yourself writing custom functions or scripts including
+mutating joins, grouped summary operations, or case-wise transformation
+of numeric values. Verifying these data wrangling scripts and pipelines
+becomes more difficult as the number of categories and the complexity of
+the mappings increases. Current solutions to this issue mostly involve
+ad hoc data validation of the data before and after they are transformed
+([`assertr`](https://github.com/ropensci/assertr),
+[`validate`](https://data-cleaning.github.io/validate/),
+[`pointblank`](https://rich-iannone.github.io/pointblank/).
+
+The `xmap` package offers an alternative approach to ensuring your code
+performs the intended transformations. Instead of inspecting the data,
+the package provides tools for validating the mapping objects which are
+used to transform the data. Examples of mapping objects and available
+verification functions include:
+
+- **Named vectors or lists**: `verify_named_all_*` for checking
+  properties such as uniqueness or 1-to-1 relations, and
+  `verify_named_matchset_*` for checking the set of names or values
+  matches expectations.
+- **Lookup tables**: `verify_pairs_*` and `verify_links_*` for checking
+  aggregation or disaggregation weights and other desirable properties.
+
+See `vignette("xmap")` to get started using verification functions in
+your existing workflows. The functions are based on results obtained by
+representing and analysing recoding or redistribution transformations as
+directed, weighted bipartite graphs. For more information about this
+underlying graph structure see `vignette("making-xmaps")`.
 
 ## Installation
+
+To install the latest release of `xmap`:
+
+``` r
+remotes::install_github("cynthiahqy/xmap")
+```
 
 To install the latest development version of `xmap`:
 
 ``` r
-remotes::install_github("cynthiahqy/conformr-project", subdir = "xmap")
+remotes::install_github("cynthiahqy/conformr-xmap-project", subdir = "xmap")
 ```

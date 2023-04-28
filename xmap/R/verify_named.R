@@ -1,9 +1,8 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' Verify crossmap properties of named vectors
+#' Verify crossmap properties of named vectors or lists
 #'
 #' @param x a named vector
-#' @param ref_names,ref_values a vector of character strings 
 #'
 #' @return `x` or throw error
 #' @name verify_named
@@ -25,20 +24,27 @@ NULL
 #' @export
 #' @examples
 #' 
-verify_named_all_pairs_1to1 <- function(x){
+verify_named_all_1to1 <- function(x){
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
   unique_values <- unique(unlist(unname(x)))
-  stopifnot(length(unique_names) == length(unique_values))
+  stop <- !(length(unique_names) == length(unique_values))
+  if (stop){
+    cli::cli_abort("Not all relations in `x` are 1-to-1.")
+  }
   invisible(x)
 }
 
 #' @describeIn verify_named Verify name-value pairs of named vector or list are not duplicated
 #' @export
-verify_named_all_pairs_unique <- function(x){
+verify_named_all_unique <- function(x){
   stopifnot(is.vector(x))
   pairs <- as_pairs_from_named(x)
-  stopifnot(!as.logical(anyDuplicated(pairs)))
+  stop <- as.logical(dup_idx)
+  if (stop){
+    cli::cli_abort("Duplicated pairs found in `x`.
+                   Use `as_pairs_from_named(x)` with `base::duplicated()` to identify duplicates.")
+  }  
   invisible(x)
 }
 
@@ -47,7 +53,11 @@ verify_named_all_pairs_unique <- function(x){
 verify_named_all_names_unique <- function(x){
   stopifnot(is.vector(x))
   dup_idx <- anyDuplicated(names(x))
-  stopifnot(!as.logical(dup_idx))
+  stop <- as.logical(dup_idx)
+  if (stop){
+    cli::cli_abort("Duplicated names found in `x`.
+                   Use `base::duplicated(names(x))` to identify duplicates.")
+  }
   invisible(x)
 }
 
@@ -56,68 +66,115 @@ verify_named_all_names_unique <- function(x){
 verify_named_all_values_unique <- function(x){
   stopifnot(is.vector(x))
   dup_idx <- anyDuplicated(unlist(unname(x)))
-  stopifnot(!as.logical(dup_idx))
+  stop <- as.logical(dup_idx)
+  if (stop){
+    cli::cli_abort("Duplicated values found in `x`.
+                   Use `base::duplicated(unlist(unname(x)))` to identify duplicates.")
+  }
   #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)
 }
 
-#' @describeIn verify_named Verify unique names of named vector or list **exactly** match an expected set of name values
+#' Verify unique names or values of named vector or list match expected set
+#' 
+#' @inheritParams verify_named
+#' @param ref_set a vector of character strings 
+#' @rdname verify_named_matchset
+#' 
+#' @return `x` or throw an Error
+#' @examples
+#' fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
+#' fruit_set <- c("apple", "strawberry", "banana", "pear")
+#' fruit_color |> 
+#'   verify_named_matchset_names_within(ref_set = fruit_set)
+NULL
+
+#' @describleIn abort Abort message for verify_named_matchset_* functions
+abort_named_matchset <- function(set_type = c("names", "values"),
+                                match_type = c("exact", "within", "contain")){
+  match_text <- switch(match_type,
+         exact = "do not exactly match",
+         within = "are not all within",
+         contain = "do not contain all elements of")
+  
+  cli::cli_abort("The {set_type} of {.var x} {match_text} {.var ref_set}")
+}
+
+#' @describeIn verify_named_matchset Verify unique names of named vector or list **exactly** match an expected set of name values
 #' @export
 verify_named_matchset_names_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
-  stopifnot(setequal(ref_set, unique_names))
+  stop <- !setequal(ref_set, unique_names)
+  if (stop) {
+    abort_named_matchset("names", "exact")
+  }
   invisible(x)
 }
 
-#' @describeIn verify_named Verify unique values of named vector or list **exactly** match an expected set of name values
+#' @describeIn verify_named_matchset Verify unique values of named vector or list **exactly** match an expected set of name values
 #' @export
 verify_named_matchset_values_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_values <- unique(unlist(unname(x)))
-  stopifnot(setequal(ref_set, unique_values))
+  stop <- !setequal(ref_set, unique_values)
+  if (stop) {
+    abort_named_matchset("values", "exact")
+  }
   invisible(x)
 }
 
-#' @describeIn verify_named Verify unique names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named_matchset Verify unique names of named vector or list **contain** an expected set of name values
 #' @export
 verify_named_matchset_names_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
-  stopifnot(ref_set %in% unique_names)
+  stop <- !all(ref_set %in% unique_names)
+  if (stop){
+    abort_named_matchset("names", "contain")
+  }
   invisible(x)
 }
 
-#' @describeIn verify_named Verify unique names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named_matchset Verify unique names of named vector or list **contain** an expected set of name values
 #' @export
 verify_named_matchset_values_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_values <- unique(unlist(unname(x)))
-  stopifnot(ref_set %in% unique_values)
+  stop <- !all(ref_set %in% unique_values)
+  if (stop){
+    abort_named_matchset("values", "contain")
+  }
   invisible(x)
 }
 
-#' @describeIn verify_named Verify unique names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named_matchset Verify unique names of named vector or list are **within** an expected set of name values
 #' @export
 verify_named_matchset_names_within <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_x <- unique(names(x))
-  stopifnot(unique_x %in% ref_set)
+  stop <- !all(unique_x %in% ref_set)
+  if (stop){
+    abort_named_matchset("names", "within")
+  }
   invisible(x)
 }
 
-#' @describeIn verify_named Verify unique names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named_matchset Verify unique names of named vector or list are **within** an expected set of name values
 #' @export
 verify_named_matchset_values_within <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_x <- unique(unlist(unname(x)))
-  stopifnot(unique_x %in% ref_set)
+  stop <- !all(unique_x %in% ref_set)
+  if (stop){
+    abort_named_matchset("values", "within")
+  }
   invisible(x)
 }
 
 #' @describeIn verify_named (alias) verify named vector or list has only one-to-one relations
 #' @export
-verify_named_as_recode_unique <- verify_named_all_pairs_1to1
+verify_named_as_recode_unique <- verify_named_all_1to1
 
 #' @describeIn verify_named (alias)
 #' @export

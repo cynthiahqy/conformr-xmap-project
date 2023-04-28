@@ -40,3 +40,8 @@ abc_xmap <- data.frame(
 as_xmap_df(origin, dest, link)
 xmap_to_matrix(abc_xmap)
 }
+\seealso{
+Other {xmap_to}: 
+\code{\link{xmap_to_named_vector}()}
+}
+\concept{{xmap_to}}

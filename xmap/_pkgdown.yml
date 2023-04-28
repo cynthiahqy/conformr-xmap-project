@@ -1,4 +1,59 @@
+destination: ./docs/
+
 url: ~
 template:
   bootstrap: 5
 
+repo:
+  url:
+    home: https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap
+    source: https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap
+    issue: https://github.com/cynthiahqy/conformr-xmap-project/issues
+    user: https://github.com/cynthiahqy
+
+authors:
+  Cynthia Huang:
+    href: https://www.cynthiahqy.com
+  Laura Puzzello:
+    href: https://sites.google.com/site/laurapuzzello
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [github]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/cynthiahqy/xmap
+
+reference:
+- title: Verify existing mapping objects
+  contents:
+    - starts_with("verify_named")
+    - starts_with("verify_pairs")
+    - starts_with("verify_links")
+
+- title: Creating `xmap` objects
+  contents:
+    - starts_with("pairs")
+    - starts_with("links")
+    - starts_with("add_weights")
+    - starts_with("as")
+    - as_xmap_df
+
+- title: Using and Modifying `xmap` objects
+  contents:
+    - starts_with("xmap_to")
+    - starts_with("xmap")
+    - is_xmap
+    - print.xmap
+
+- title: Internal
+  contents:
+    - starts_with("vhas")
+    - starts_with("abort")
+    - starts_with("validate")
+    - starts_with(".get")
+    - starts_with(".calc")
+    - new_xmap_df
+    - validate_xmap_df

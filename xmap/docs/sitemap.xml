@@ -16,9 +16,6 @@
     <loc>/articles/making-xmaps.html</loc>
   </url>
   <url>
-    <loc>/articles/using-xmaps.html</loc>
-  </url>
-  <url>
     <loc>/articles/vis-xmaps.html</loc>
   </url>
   <url>
@@ -34,7 +31,7 @@
     <loc>/reference/abort.html</loc>
   </url>
   <url>
-    <loc>/reference/add_weights_unit.html</loc>
+    <loc>/reference/add_weights.html</loc>
   </url>
   <url>
     <loc>/reference/as_pairs_from_named.html</loc>
@@ -82,9 +79,6 @@
     <loc>/reference/xmap_to_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/xmap_to_named_list.html</loc>
-  </url>
-  <url>
-    <loc>/reference/xmap_to_named_vector.html</loc>
+    <loc>/reference/xmap_to_named.html</loc>
   </url>
 </urlset>
