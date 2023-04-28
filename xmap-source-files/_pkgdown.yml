@@ -3,13 +3,12 @@ destination: ./docs/
 url: ~
 template:
   bootstrap: 5
-  bootswatch: cosmo
 
 repo:
   url:
-    home: https://github.com/cynthiahqy/conformr-project/tree/main/xmap
-    source: https://github.com/cynthiahqy/conformr-project/tree/main/xmap
-    issue: https://github.com/cynthiahqy/conformr-project/issues
+    home: https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap
+    source: https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap
+    issue: https://github.com/cynthiahqy/conformr-xmap-project/issues
     user: https://github.com/cynthiahqy
 
 authors:
@@ -25,30 +24,31 @@ navbar:
   components:
     github:
       icon: fa-github
-      href: https://github.com/cynthiahqy/conformr-project/tree/main/xmap
+      href: https://github.com/cynthiahqy/xmap
 
 reference:
-- title:
-  desc: >
-    Functions for working with candidate links
+- title: Verify existing mapping objects
+  contents:
+    - starts_with("verify_named")
+    - starts_with("verify_pairs")
+    - starts_with("verify_links")
+
+- title: Creating `xmap` objects
   contents:
     - starts_with("pairs")
-    - starts_with("add_weights")
     - starts_with("links")
-    - starts_with("verify")
+    - starts_with("add_weights")
     - starts_with("as")
     - as_xmap_df
 
-- title: xmap Functions
-  desc: >
-    Using and modifying `xmap` objects
+- title: Using and Modifying `xmap` objects
   contents:
     - starts_with("xmap_to")
     - starts_with("xmap")
     - is_xmap
     - print.xmap
 
-- title: internal
+- title: Internal
   contents:
     - starts_with("vhas")
     - starts_with("abort")
