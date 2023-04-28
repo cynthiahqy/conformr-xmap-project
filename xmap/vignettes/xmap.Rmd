@@ -39,7 +39,7 @@ student_group_mistake <- list(GRP1 = c("kate", "jane", "peter"),
                            GRP2 = c("terry", "ben", "grace"),
                            GRP2 = c("cindy", "lucy", "kate" ))
 
-student_list <- c("kate", "jane", "peter", "terry", "ben", 
+student_list <- c("kate", "jane", "peter", "terry", "ben",
                   "grace", "cindy", "lucy", "alex")
 
 student_group_mistake |>

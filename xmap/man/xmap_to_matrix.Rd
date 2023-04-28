@@ -41,7 +41,7 @@ as_xmap_df(origin, dest, link)
 xmap_to_matrix(abc_xmap)
 }
 \seealso{
-Other {xmap_to}: 
+Other {xmap coercion}: 
 \code{\link{xmap_to_named_vector}()}
 }
-\concept{{xmap_to}}
+\concept{{xmap coercion}}

@@ -9,8 +9,9 @@
 \alias{abort_bad_weights}
 \alias{abort_col_order}
 \alias{abort_from_set}
+\alias{msg_abort_frac_weights}
 \alias{abort_not_reversible}
-\title{Validation messages for xmap or candidate links (Internal)}
+\title{Validation functions and messages for xmap or candidate links (Internal)}
 \usage{
 abort_missing_cols(df, cols)
 
@@ -26,12 +27,14 @@ abort_col_order(df, col_from, col_to, col_weights)
 
 abort_from_set(df, col_from, from_set)
 
+msg_abort_frac_weights(impact)
+
 abort_not_reversible(df, col_to)
 }
 \arguments{
 \item{df}{a data.frame-like object containing links}
 
-\item{col_from, }{col_to, col_weights character vector or values naming columns from \code{df}}
+\item{col_from, col_to, col_weights}{character vector or values naming columns from \code{df}}
 }
 \value{
 An error if the validation condition fails,
@@ -55,6 +58,8 @@ Checks issues with data.frame like objects containing validated \code{xmap} or c
 \item \code{abort_col_order()}: Abort if xmap_df columns are not in order
 
 \item \code{abort_from_set()}: Abort if from_set attribute doesn't match xmap_df values
+
+\item \code{msg_abort_frac_weights()}: Abort message for fractional weights
 
 \item \code{abort_not_reversible()}: Abort if xmap_df is not reversible without new weights
 

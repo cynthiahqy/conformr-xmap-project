@@ -67,7 +67,7 @@ The resultant weighted links can be verified or coerced into <code>xmap</code>.<
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>pairs</dt>
-<dd><p>data.frame or tibble containing node pairs</p></dd>
+<dd><p>data.frame or tibble containing unique node pairs</p></dd>
 
 
 <dt>weights_into</dt>
@@ -84,7 +84,7 @@ The resultant weighted links can be verified or coerced into <code>xmap</code>.<
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">AUS_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>AUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NSW"</span>, <span class="st">"QLD"</span>, <span class="st">"SA"</span>, <span class="st">"TAS"</span>, <span class="st">"VIC"</span>, <span class="st">"WA"</span>, <span class="st">"ACT"</span>, <span class="st">"NT"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="as_pairs_from_named.html">as_pairs_from_named</a></span><span class="op">(</span><span class="va">AUS_list</span>, names_to <span class="op">=</span> <span class="st">"ctr"</span>, values_to <span class="op">=</span> <span class="st">"state"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span><span class="va">AUS_list</span>, names_to <span class="op">=</span> <span class="st">"ctr"</span>, values_to <span class="op">=</span> <span class="st">"state"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">add_weights_unit</span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"weights"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ctr   state weights</span>

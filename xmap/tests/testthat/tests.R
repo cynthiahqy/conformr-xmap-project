@@ -61,24 +61,30 @@ testthat::test_that("verify_named_matchset fncs work as expected", {
   refn_subset_1to1 <- c("x1", "x2")
   refn_superset_1to1 <- c("x1", "x2", "x3", "x4")
   testthat::expect_equal(verify_named_matchset_names_exact(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")))
+  testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_subset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1))
+  testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_superset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1))
+  testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1),
+                         class = "abort_matchset")
   refv_exact_1to1 <- c(1, 2, 3)
   refv_subset_1to1 <- c(1, 2)
   refv_superset_1to1 <- c(1, 2, 3, 4)
   testthat::expect_equal(verify_named_matchset_values_exact(v_1to1, refv_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")))
+  testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_subset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1))
+  testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_superset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1))
+  testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1),
+                         class = "abort_matchset")
 })
 
 testthat::test_that("verify_pairs_* work as expected", {
@@ -316,7 +322,7 @@ testthat::test_that("xmap_to_named works as expected", {
   ## rejects split relations
   xmap_mixed <- new_xmap_df(links, "f", "t", "w")
   testthat::expect_error(xmap_to_named_list(xmap_mixed), 
-                         class = "abort_weights_not_unit")
+                         class = "abort_frac_weights")
 })
 
 testthat::test_that("xmap_to_named_list() reverses as_pairs_from_named()", {

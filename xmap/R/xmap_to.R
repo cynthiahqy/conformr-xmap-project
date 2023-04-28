@@ -10,7 +10,7 @@
 #' @param ... Unused
 #' 
 #' @return A matrix or sparse matrix object
-#' @family {xmap_to}
+#' @family {xmap coercion}
 #' 
 #' @export
 xmap_to_matrix <- function(x, sparse, ...) {
@@ -54,19 +54,18 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
 #'
 #' Checks that an `xmap` has unit weights, and converts the 
 #'   `from` values into:
-#'   * a named vector for `xmap_to_named_vector()`
-#'   * a nested named list for `xmap_to_named_list()`
+#'   * a vector for `xmap_to_named_vector()`
+#'   * a nested list for `xmap_to_named_list()`
 #'   
 #' Names are the unique target nodes in `to`,
 #'   and each element contains the source node(s) in `from`.
 #' 
-#' @param x xmap with only unit weights (i.e. all weights should be 1)
+#' @param x xmap with only unit weights
 #'
 #' @return Named vector or list.
-#' @return Named vector. Names are given by the target nodes and values are the source nodes.
 #' @export
 #' @rdname xmap_to_named
-#' @family {xmap_to}
+#' @family {xmap coercion}
 #'
 #' @examples
 #' iso_vector <- c(AF = "004", AL = "008", DZ = "012", AS = "016", AD = "020")
@@ -76,12 +75,14 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
 #'   as_xmap_df(from = iso3n, to = iso2c, weights)
 #' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
 xmap_to_named_vector <- function(x){
+  stopifnot(is_xmap(x))
   x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
-  if (!all(w == 1)) {
-    cli::cli_abort("`x` must only have unit weights. Can't convert to list.",
-                   class = "abort_weights_not_unit")
+  stop <- !all(w == 1)
+  if (stop) {
+    cli::cli_abort(msg_abort_frac_weights("Cannot convert to named vector"),
+                   class = "abort_frac_weights")
   }
   
   # convert
@@ -105,12 +106,14 @@ xmap_to_named_vector <- function(x){
 #'  as_xmap_df(from = animals, to = class, weights = weights)
 #' identical(xmap_to_named_list(animal_xmap), animal_list)
 xmap_to_named_list <- function(x) {
-    x_attrs <- attributes(x)
+  stopifnot(is_xmap(x))
+  x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
-  if (!all(w == 1)) {
-    cli::cli_abort("`x` must only have unit weights. Can't convert to list.",
-                   class = "abort_weights_not_unit")
+  stop <- !all(w == 1)
+  if (stop) {
+    cli::cli_abort(msg_abort_frac_weights("Cannot convert to named list"),
+                   class = "abort_frac_weights")
   }
   
   # convert

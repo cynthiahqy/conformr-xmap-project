@@ -75,6 +75,18 @@ verify_named_all_values_unique <- function(x){
   invisible(x)
 }
 
+#' @describleIn abort Abort message for verify_named_matchset_* functions
+#' @export
+msg_abort_named_matchset <- function(set_type = c("names", "values"),
+                                match_type = c("exact", "within", "contain")){
+  match_text <- switch(match_type,
+         exact = "do not exactly match",
+         within = "are not all within",
+         contain = "do not contain all elements of")
+  
+  cli::format_error("The {set_type} of {.var x} {match_text} {.var ref_set}")
+}
+
 #' Verify unique names or values of named vector or list match expected set
 #' 
 #' @inheritParams verify_named
@@ -89,17 +101,6 @@ verify_named_all_values_unique <- function(x){
 #'   verify_named_matchset_names_within(ref_set = fruit_set)
 NULL
 
-#' @describleIn abort Abort message for verify_named_matchset_* functions
-abort_named_matchset <- function(set_type = c("names", "values"),
-                                match_type = c("exact", "within", "contain")){
-  match_text <- switch(match_type,
-         exact = "do not exactly match",
-         within = "are not all within",
-         contain = "do not contain all elements of")
-  
-  cli::cli_abort("The {set_type} of {.var x} {match_text} {.var ref_set}")
-}
-
 #' @describeIn verify_named_matchset Verify unique names of named vector or list **exactly** match an expected set of name values
 #' @export
 verify_named_matchset_names_exact <- function(x, ref_set){
@@ -107,7 +108,8 @@ verify_named_matchset_names_exact <- function(x, ref_set){
   unique_names <- unique(names(x))
   stop <- !setequal(ref_set, unique_names)
   if (stop) {
-    abort_named_matchset("names", "exact")
+    cli::cli_abort(msg_abort_named_matchset("names", "exact"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -119,7 +121,8 @@ verify_named_matchset_values_exact <- function(x, ref_set){
   unique_values <- unique(unlist(unname(x)))
   stop <- !setequal(ref_set, unique_values)
   if (stop) {
-    abort_named_matchset("values", "exact")
+    cli::cli_abort(msg_abort_named_matchset("values", "exact"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -131,7 +134,8 @@ verify_named_matchset_names_contain <- function(x, ref_set){
   unique_names <- unique(names(x))
   stop <- !all(ref_set %in% unique_names)
   if (stop){
-    abort_named_matchset("names", "contain")
+    cli::cli_abort(msg_abort_named_matchset("names", "contain"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -143,7 +147,8 @@ verify_named_matchset_values_contain <- function(x, ref_set){
   unique_values <- unique(unlist(unname(x)))
   stop <- !all(ref_set %in% unique_values)
   if (stop){
-    abort_named_matchset("values", "contain")
+    cli::cli_abort(msg_abort_named_matchset("values", "contain"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -155,7 +160,8 @@ verify_named_matchset_names_within <- function(x, ref_set){
   unique_x <- unique(names(x))
   stop <- !all(unique_x %in% ref_set)
   if (stop){
-    abort_named_matchset("names", "within")
+    cli::cli_abort(msg_abort_named_matchset("names", "within"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -167,7 +173,8 @@ verify_named_matchset_values_within <- function(x, ref_set){
   unique_x <- unique(unlist(unname(x)))
   stop <- !all(unique_x %in% ref_set)
   if (stop){
-    abort_named_matchset("values", "within")
+    cli::cli_abort(msg_abort_named_matchset("values", "within"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
