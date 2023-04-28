@@ -46,9 +46,10 @@ usethis::use_package("R", min_version = "4.1")
 usethis::use_package("rlang", min_version = "1.0.0")
 usethis::use_package("cli")
 
-# Imports for Construction Helpers
+# Imports for Construction and verification helpers
 usethis::use_package("tibble")
 usethis::use_package("tidyr")
+usethis::use_package("dplyr")
 
 # Suggests for Vignettes and Tests
 usethis::use_package("Matrix", type = "Suggests") ## for sparse matrices
