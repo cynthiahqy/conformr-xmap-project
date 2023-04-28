@@ -115,10 +115,6 @@ student_groups <- list(GRP1 = c("kate", "jane", "peter"),
 We can check that students are not assigned to multiple groups:
 
 ```{r}
-student_groups <- list(GRP1 = c("kate", "jane", "peter"),
-                       GRP2 = c("terry", "ben", "grace"),
-                       GRP3 = c("cindy", "lucy", "alex" ))
-
 student_groups |>
   verify_named_all_values_unique()
 ```

@@ -33,7 +33,7 @@ verify_pairs_all_unique <- function(x, from, to){
 #' @export
 verify_pairs_as_recode_unique <- verify_pairs_all_1to1
 
-#' @describeIn verify_pairs Verify column pairs outgoing link degree
+# @describeIn verify_pairs Verify column pairs outgoing link degree
 verify_pairs_out <- function(x, from, to, max_out, min_out){
   # TODO: FINISH THIS!
   dplyr::group_by(x, {{from}}) |>

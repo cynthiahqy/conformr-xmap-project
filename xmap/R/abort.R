@@ -25,13 +25,13 @@ abort_any_na <- function(df) {
   invisible(df)
 }
 
-#' Validation messages for xmap or candidate links (Internal)
+#' Validation functions and messages for xmap or candidate links (Internal)
 #'
 #' @description
 #' Checks issues with data.frame like objects containing validated `xmap` or candidate links.
 #'
 #' @param df a data.frame-like object containing links
-#' @param col_from, col_to, col_weights character vector or values naming columns from `df`
+#' @param col_from,col_to,col_weights character vector or values naming columns from `df`
 #'
 #' @returns An error if the validation condition fails,
 #' and invisibly returns `df` otherwise.
@@ -96,6 +96,15 @@ abort_from_set <- function(df, col_from, from_set) {
   stopifnot(identical(col_from_set, from_set))
 
   invisible(df)
+}
+
+#' @describeIn abort Abort message for fractional weights
+#' @export
+msg_abort_frac_weights <- function(impact){
+  cli::format_error(c(
+            "`x` contains fractional weights. {impact}",
+      "x" = "You've supplied a xmap with weights not equal to 1")
+    )
 }
 
 #' @describeIn abort Abort if xmap_df is not reversible without new weights

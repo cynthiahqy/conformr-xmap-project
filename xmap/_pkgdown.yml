@@ -52,6 +52,7 @@ reference:
   contents:
     - starts_with("vhas")
     - starts_with("abort")
+    - starts_with("msg")
     - starts_with("validate")
     - starts_with(".get")
     - starts_with(".calc")

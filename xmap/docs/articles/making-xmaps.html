@@ -224,7 +224,7 @@ node pairs, and then attaching the implied unit weights.</p>
 <span><span class="va">mock</span><span class="op">$</span><span class="va">recode_vect</span></span>
 <span></span>
 <span><span class="va">recode_xmap</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/as_pairs_from_named.html">as_pairs_from_named</a></span><span class="op">(</span><span class="va">mock</span><span class="op">$</span><span class="va">recode_vect</span>, names_to <span class="op">=</span> <span class="st">"iso3"</span>, values <span class="op">=</span> <span class="st">"ctr_name"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span><span class="va">mock</span><span class="op">$</span><span class="va">recode_vect</span>, names_to <span class="op">=</span> <span class="st">"iso3"</span>, values <span class="op">=</span> <span class="st">"ctr_name"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"w"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">iso3</span>, to <span class="op">=</span> <span class="va">ctr_name</span>, weights <span class="op">=</span> <span class="va">w</span><span class="op">)</span></span></code></pre></div>
 <p>For a crossmap to be a recode map it must have binary weights, and
@@ -274,11 +274,7 @@ share the same name:</p>
 <span>                       GRP3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cindy"</span>, <span class="st">"lucy"</span>, <span class="st">"alex"</span> <span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can check that students are not assigned to multiple groups:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">student_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>GRP1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kate"</span>, <span class="st">"jane"</span>, <span class="st">"peter"</span><span class="op">)</span>,</span>
-<span>                       GRP2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"terry"</span>, <span class="st">"ben"</span>, <span class="st">"grace"</span><span class="op">)</span>,</span>
-<span>                       GRP3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cindy"</span>, <span class="st">"lucy"</span>, <span class="st">"alex"</span> <span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">student_groups</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">student_groups</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/verify_named.html">verify_named_all_values_unique</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Or that the every student has been assigned a group:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -291,7 +287,7 @@ share the same name:</p>
 <span></span>
 <span><span class="va">student_group_mistake</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">verify_named_matchset_values_exact</span><span class="op">(</span><span class="va">student_list</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `abort_named_matchset()`:</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `verify_named_matchset_values_exact()`:</span></span></span>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> The values of `x` do not exactly match `ref_set`</span></span></code></pre>
 <p>and each group has a unique name:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -306,7 +302,7 @@ object via <code>verify_links_*</code> functions, or coerce to an
 <code>xmap</code> for use with other functions in the package.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">group_links</span> <span class="op">&lt;-</span> <span class="va">student_groups</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_pairs_from_named.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"group"</span>, values_to <span class="op">=</span> <span class="st">"student"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"group"</span>, values_to <span class="op">=</span> <span class="st">"student"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## collapse xmap from students to groups</span></span>
@@ -363,7 +359,7 @@ in each group. This requires adding fractional weights to
 <code>xmap_df</code>.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">group_prize_links</span> <span class="op">&lt;-</span> <span class="va">student_groups</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_pairs_from_named.html">as_pairs_from_named</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"student"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span><span class="st">"group"</span>, <span class="st">"student"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>prize_share <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>

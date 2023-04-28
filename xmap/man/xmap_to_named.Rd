@@ -10,19 +10,17 @@ xmap_to_named_vector(x)
 xmap_to_named_list(x)
 }
 \arguments{
-\item{x}{xmap with only unit weights (i.e. all weights should be 1)}
+\item{x}{xmap with only unit weights}
 }
 \value{
 Named vector or list.
-
-Named vector. Names are given by the target nodes and values are the source nodes.
 }
 \description{
 Checks that an \code{xmap} has unit weights, and converts the
 \code{from} values into:
 \itemize{
-\item a named vector for \code{xmap_to_named_vector()}
-\item a nested named list for \code{xmap_to_named_list()}
+\item a vector for \code{xmap_to_named_vector()}
+\item a nested list for \code{xmap_to_named_list()}
 }
 
 Names are the unique target nodes in \code{to},
@@ -45,7 +43,7 @@ animal_xmap <- animal_list |>
 identical(xmap_to_named_list(animal_xmap), animal_list)
 }
 \seealso{
-Other {xmap_to}: 
+Other {xmap coercion}: 
 \code{\link{xmap_to_matrix}()}
 }
-\concept{{xmap_to}}
+\concept{{xmap coercion}}

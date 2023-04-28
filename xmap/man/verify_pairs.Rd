@@ -5,7 +5,6 @@
 \alias{verify_pairs_all_1to1}
 \alias{verify_pairs_all_unique}
 \alias{verify_pairs_as_recode_unique}
-\alias{verify_pairs_out}
 \title{Verify crossmap properties of column pairs}
 \usage{
 verify_pairs_all_1to1(x, from, to)
@@ -13,8 +12,6 @@ verify_pairs_all_1to1(x, from, to)
 verify_pairs_all_unique(x, from, to)
 
 verify_pairs_as_recode_unique(x, from, to)
-
-verify_pairs_out(x, from, to, max_out, min_out)
 }
 \arguments{
 \item{x}{a data frame-like object with at least two columns}
@@ -34,7 +31,5 @@ Verify crossmap properties of column pairs
 \item \code{verify_pairs_all_unique()}: Verify columnn pairs are all unique
 
 \item \code{verify_pairs_as_recode_unique()}: (alias) Verify column pairs have only one-to-one relations
-
-\item \code{verify_pairs_out()}: Verify column pairs outgoing link degree
 
 }}

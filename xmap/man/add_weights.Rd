@@ -7,7 +7,7 @@
 add_weights_unit(pairs, weights_into = "weights")
 }
 \arguments{
-\item{pairs}{data.frame or tibble containing node pairs}
+\item{pairs}{data.frame or tibble containing unique node pairs}
 
 \item{weights_into}{character string naming new column to store link weights in}
 }

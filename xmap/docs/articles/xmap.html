@@ -117,12 +117,12 @@ could check the members against a reference list.</p>
 <span>                           GRP2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"terry"</span>, <span class="st">"ben"</span>, <span class="st">"grace"</span><span class="op">)</span>,</span>
 <span>                           GRP2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cindy"</span>, <span class="st">"lucy"</span>, <span class="st">"kate"</span> <span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">student_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kate"</span>, <span class="st">"jane"</span>, <span class="st">"peter"</span>, <span class="st">"terry"</span>, <span class="st">"ben"</span>, </span>
+<span><span class="va">student_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kate"</span>, <span class="st">"jane"</span>, <span class="st">"peter"</span>, <span class="st">"terry"</span>, <span class="st">"ben"</span>,</span>
 <span>                  <span class="st">"grace"</span>, <span class="st">"cindy"</span>, <span class="st">"lucy"</span>, <span class="st">"alex"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">student_group_mistake</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">verify_named_matchset_values_exact</span><span class="op">(</span><span class="va">student_list</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `abort_named_matchset()`:</span></span></span>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `verify_named_matchset_values_exact()`:</span></span></span>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> The values of `x` do not exactly match `ref_set`</span></span></code></pre>
 <p>If you are redistributing numeric values between categories, see
 <code><a href="../articles/making-xmaps.html">vignette("making-xmaps")</a></code> for details on how to check your
