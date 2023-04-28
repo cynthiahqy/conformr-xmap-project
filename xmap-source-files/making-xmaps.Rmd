@@ -1,10 +1,10 @@
 ---
-title: "Making Valid Crossmaps"
+title: "Making and Verifying Crossmaps"
 output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Making Valid Crossmaps}
+  %\VignetteIndexEntry{Making and Verifying Crossmaps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -29,6 +29,23 @@ Unit weights indicate that source values will be unmodified when passed into the
 Fractional weights on the other hand indicate how a source value will be modified when passed to the target node. For example a link with a weight of $0.7$ indicates that 70% of the numeric value associated with a source node should be "passed over" to the target node.
 
 Now, consider two links from the same source node $i$ to two different target nodes $j$ and $k$, with weights $w_{ij}$ and $w_{ik}$. Assume that the source node $i$ has no other outgoing links into the target nomenclature. Then, it follows that the weights on the two given links should sum to one if we want to preserve the total value between the source and target nomenclature. For instance, if $w_{ij} = 0.7$, then $w_{ik}$ should be $0.3$, such that 70% of the value associated with source node $i$ goes to the target node $j$, and the remaining 30% is distributed to target node $k$.
+
+### Crossmap tables: `xmap_df`
+
+An `xmap_df` is a data.frame representation of a Crossmap, where each row represents a weighted link between the source and target classifications. You can create an `xmap_df` from a data.frame or tibble of weighted edges using `as_xmap_df()`.
+
+Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
+
+-   `from`: source classification labels.
+-   `to`: target classification labels
+-   `weights`: applied to values in the source classification
+
+Additional columns (e.g. for label descriptions etc.) can be retained by setting the `.drop_extra` argument to `FALSE`.
+
+`as_xmap_df()` will validate that:
+
+1.  There are no duplicates `from`-`to` pairs,
+2.  Every group of `weights` associated with a distinct `from` value sums to 1 (subject to a floating point tolerance).
 
 ## Special Cases of Crossmaps
 
@@ -102,37 +119,39 @@ student_groups |>
   verify_named_all_values_unique()
 ```
 
+Or that the every student has been assigned a group:
+
 ```{r error=TRUE}
 ## mistakenly assign kate to another group
 student_group_mistake <- list(GRP1 = c("kate", "jane", "peter"),
                            GRP2 = c("terry", "ben", "grace"),
-                           GRP3 = c("cindy", "lucy", "kate" ))
+                           GRP2 = c("cindy", "lucy", "kate" ))
 
-student_group_mistake |>
-  verify_named_all_values_unique()
-```
-
-Or that the every student has been assigned a group:
-
-```{r error=TRUE}
 student_list <- c("kate", "jane", "peter", "terry", "ben", "grace", "cindy", "lucy", "alex")
 
 student_group_mistake |>
-  verify_named_match_values_exact(student_list)
+  verify_named_matchset_values_exact(student_list)
 ```
 
-Verification as crossmaps requires adding weights and is directional:
+and each group has a unique name:
+
+```{r error=TRUE}
+student_group_mistake |>
+  verify_named_all_names_unique()
+```
+
+Coercion to `xmap` requires adding weights and is directional. We can choose to verify conditions and return the same object via `verify_links_*` functions, or coerce to an `xmap` for use with other functions in the package.
 
 ```{r error=TRUE}
 group_links <- student_groups |>
   as_pairs_from_named(names_to = "group", values_to = "student") |>
   add_weights_unit()
 
-## collapse map
+## collapse xmap from students to groups
 group_links |>
-  verify_links_as_xmap(from = student, to = group, weights = weights)
+  as_xmap_df(from = student, to = group, weights = weights)
 
-## opposite doesn't work
+## reverse doesn't work without adjusting the weights
 group_links |>
   verify_links_as_xmap(from = group, to = student, weights = weights)
 ```
@@ -143,31 +162,26 @@ Aggregation transformations can implemented as Collapse maps. Additionally, aggr
 
 Any crossmap with at least one set of fractional weight (one-to-many) links involve some redistribution of source value. However, a useful special case of maps with fractional weights are split maps, which encode the disaggregation of source values into a target nomenclature. Such maps which will have mostly one-to-many relations, and do not contain one-from-many relations. This can be ensured by restricting each target node to only have one incoming link. Furthermore, we can preclude one-to-one links with the condition that all links must have fractional weights.
 
-Notice that the same set of node pairs can generate either a split or collapse map depending on the weights added. For example, recall that in the student group example from above, swapping the `to` and `from` variables no longer formed a valid `xmap`. Now consider allocating some budget of prizes between students in each group. This requires adding fractional weights.
+Notice that the same set of node pairs can generate either a split or collapse map depending on the weights added. For example, recall that in the student group example from above, swapping the `to` and `from` variables no longer formed a valid `xmap`. Now consider allocating some budget of prizes equally between students in each group. This requires adding fractional weights to `group_links`, before coercion to an `xmap_df`.
 
-## Crossmap tables: `xmap_df`
+```{r}
+group_prize_links <- student_groups |>
+  as_pairs_from_named("group", "student") |>
+  dplyr::group_by(group) |>
+  dplyr::mutate(prize_share = 1 / dplyr::n())
 
-An `xmap_df` is a data.frame representation of a Crossmap, where each row represents a weighted link between the source and target classifications. You can create an `xmap_df` from a data.frame or tibble of weighted edges using `as_xmap_df()`.
+group_prize_links |>
+  as_xmap_df(from = group, to = student, weights = prize_share)
+```
 
-Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
+## Creation from Pairs and Links
 
--   `from`: source classification labels.
--   `to`: target classification labels
--   `weights`: applied to values in the source classification
-
-Additional columns (e.g. for label descriptions etc.) can be retained by setting the `.drop_extra` argument to `FALSE`.
-
-`as_xmap_df()` will validate that:
-
-1.  There are no duplicates `from`-`to` pairs,
-2.  Every group of `weights` associated with a distinct `from` value sums to 1 (subject to a floating point tolerance).
-
-### Row-wise creation
+### Row-wise Links
 
 The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
 
 ```{r}
-simple_x <- tibble::tribble(
+simple_links <- tibble::tribble(
   ~source, ~target, ~share,
   "equal", "EQUAL", 1,       # one-to-one
   "member_1", "GROUP", 1,    # one-FROM-many
@@ -177,17 +191,17 @@ simple_x <- tibble::tribble(
   "whole", "PART_3", 0.1
 )
 
-simple_xmap <- simple_x |>
+simple_xmap <- simple_links |>
   as_xmap_df(from = source, to = target, weights = share)
 
 simple_xmap
 ```
 
-### Coercion from Crosswalk/Lookup Tables
+### Crosswalk/Lookup Tables
 
 It is more common that you will want to convert an existing correspondence into a crossmap. Such conversions require attaching appropriate weights to the existing crosswalk table.
 
-#### Recode maps
+#### Recode Pairs
 
 Consider the first five country codes in the ISO 3166 international standard and the one-to-one correspondence between the 2-digit, 2-digit and numeric codes.
 
@@ -202,12 +216,20 @@ iso_codes <- tibble::tribble(
       )
 ```
 
+We can verify any pairwise combination of columns as one-to-one recode maps using the `verify_pairs_*` functions:
+
+```{r}
+iso_codes |>
+  verify_pairs_as_recode_unique(from = country, to = ISO2) |>
+  print()
+```
+
 To create a crossmap between `ISONumeric` and `ISO2`, we simply add a weights columns and coerce to `xmap_df`:
 
 ```{r}
 iso_xmap <- iso_codes |>
-  add_weights_unit(weights_into = "link") |>
-  as_xmap_df(from = ISONumeric, to = ISO2, weights = link)
+  add_weights_unit(weights_into = "weight") |>
+  as_xmap_df(from = ISONumeric, to = ISO2, weights = weight)
 ```
 
 Notice that `as_xmap_df()` always place the `from`, `to` and `weights` columns in order and drops any additional columns passed to it.
@@ -216,15 +238,22 @@ Notice that `as_xmap_df()` always place the `from`, `to` and `weights` columns i
 print(iso_xmap)
 ```
 
-We can also easily generate crossmaps for the other nomenclature in the table:
+To convert the validated xmap into a named vector:
+
+```{r}
+iso_xmap |>
+  xmap_to_named_vector()
+```
+
+We can also easily generate validated crossmaps for the other nomenclature in the table, and keep additional columns:
 
 ```{r}
 iso_codes |>
-  add_weights_unit(weights_into = "link") |>
-  as_xmap_df(from = ISO2, to = ISO3, weights = link)
+  add_weights_unit(weights_into = "weight") |>
+  as_xmap_df(from = ISO2, to = ISO3, weights = weight, .drop_extra = FALSE)
 ```
 
-#### Aggregation map
+#### Nested Lists
 
 Now consider aggregating data which were collected using the ISO 3166-2 Subdivisions of [Australia](https://en.wikipedia.org/w/index.php?title=ISO_3166-2:AU&oldid=1110907059) and [Canada](https://en.wikipedia.org/w/index.php?title=ISO_3166-2:CA&oldid=1110906706):
 
@@ -250,13 +279,13 @@ Since aggregation involves the one-to-one transfer of values between `adm1` and 
 
 ```{r}
 agg_xmap <- agg_x |>
-  dplyr::mutate(link = 1) |>
+  add_weights_unit() |>
   as_xmap_df(from = adm1, to = ctr, weights = link)
 
 agg_xmap
 ```
 
-#### Disaggregation map
+#### References for Weights
 
 Conversely, we might have aggregate level data which want to disaggregate. Continuing the above example, this could involve incorporating country level data into analysis at the 3166-2 Subdivisions level.
 
@@ -290,7 +319,7 @@ state_xmap <- state_data |>
 state_xmap
 ```
 
-### Mixed Maps
+### Piecewise Construction
 
 Now consider the following mixed transformation using selected correspondences between NAICS Canada 1997 and ISIC Revision 3. Imagine that we have some numeric data (e.g. gross output in CAD) collected in the NAICS Canada nomenclature that we want to harmonise into ISIC Revision 3. The correspondence between the two nomenclature contains a mixture of one-to-one, one-to-many, and one-from-many relations.
 
