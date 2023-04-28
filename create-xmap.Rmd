@@ -713,14 +713,14 @@ verify_named_all_values_unique <- function(x){
 NULL
 
 #' @describleIn abort Abort message for verify_named_matchset_* functions
-abort_named_matchset <- function(set_type = c("names", "values"),
+msg_abort_named_matchset <- function(set_type = c("names", "values"),
                                 match_type = c("exact", "within", "contain")){
   match_text <- switch(match_type,
          exact = "do not exactly match",
          within = "are not all within",
          contain = "do not contain all elements of")
   
-  cli::cli_abort("The {set_type} of {.var x} {match_text} {.var ref_set}")
+  cli::format_error("The {set_type} of {.var x} {match_text} {.var ref_set}")
 }
 
 #' @describeIn verify_named_matchset Verify unique names of named vector or list **exactly** match an expected set of name values
@@ -730,7 +730,8 @@ verify_named_matchset_names_exact <- function(x, ref_set){
   unique_names <- unique(names(x))
   stop <- !setequal(ref_set, unique_names)
   if (stop) {
-    abort_named_matchset("names", "exact")
+    cli::cli_abort(msg_abort_named_matchset("names", "exact"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -742,7 +743,8 @@ verify_named_matchset_values_exact <- function(x, ref_set){
   unique_values <- unique(unlist(unname(x)))
   stop <- !setequal(ref_set, unique_values)
   if (stop) {
-    abort_named_matchset("values", "exact")
+    cli::cli_abort(msg_abort_named_matchset("values", "exact"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -754,7 +756,8 @@ verify_named_matchset_names_contain <- function(x, ref_set){
   unique_names <- unique(names(x))
   stop <- !all(ref_set %in% unique_names)
   if (stop){
-    abort_named_matchset("names", "contain")
+    cli::cli_abort(msg_abort_named_matchset("names", "contain"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -766,7 +769,8 @@ verify_named_matchset_values_contain <- function(x, ref_set){
   unique_values <- unique(unlist(unname(x)))
   stop <- !all(ref_set %in% unique_values)
   if (stop){
-    abort_named_matchset("values", "contain")
+    cli::cli_abort(msg_abort_named_matchset("values", "contain"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -778,7 +782,8 @@ verify_named_matchset_names_within <- function(x, ref_set){
   unique_x <- unique(names(x))
   stop <- !all(unique_x %in% ref_set)
   if (stop){
-    abort_named_matchset("names", "within")
+    cli::cli_abort(msg_abort_named_matchset("names", "within"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -790,7 +795,8 @@ verify_named_matchset_values_within <- function(x, ref_set){
   unique_x <- unique(unlist(unname(x)))
   stop <- !all(unique_x %in% ref_set)
   if (stop){
-    abort_named_matchset("values", "within")
+    cli::cli_abort(msg_abort_named_matchset("values", "within"),
+                   class = "abort_matchset")
   }
   invisible(x)
 }
@@ -805,24 +811,30 @@ testthat::test_that("verify_named_matchset fncs work as expected", {
   refn_subset_1to1 <- c("x1", "x2")
   refn_superset_1to1 <- c("x1", "x2", "x3", "x4")
   testthat::expect_equal(verify_named_matchset_names_exact(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")))
+  testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_subset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1))
+  testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_superset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1))
+  testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1),
+                         class = "abort_matchset")
   refv_exact_1to1 <- c(1, 2, 3)
   refv_subset_1to1 <- c(1, 2)
   refv_superset_1to1 <- c(1, 2, 3, 4)
   testthat::expect_equal(verify_named_matchset_values_exact(v_1to1, refv_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")))
+  testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_subset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1))
+  testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1),
+                         class = "abort_matchset")
   testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_superset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1))
+  testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1),
+                         class = "abort_matchset")
 })
 ```
 
@@ -907,7 +919,7 @@ testthat::test_that("verify_pairs_* work as expected", {
 #' Checks issues with data.frame like objects containing validated `xmap` or candidate links.
 #'
 #' @param df a data.frame-like object containing links
-#' @param col_from, col_to, col_weights character vector or values naming columns from `df`
+#' @param col_from,col_to,col_weights character vector or values naming columns from `df`
 #'
 #' @returns An error if the validation condition fails,
 #' and invisibly returns `df` otherwise.
@@ -1656,9 +1668,10 @@ xmap_to_named_vector <- function(x){
   x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
-  if (!all(w == 1)) {
-    cli::cli_abort("`x` contains weights not equal to 1. Can't convert to list.",
-                   class = "abort_weights_not_unit")
+  stop <- !all(w == 1)
+  if (stop) {
+    cli::cli_abort(msg_abort_frac_weights("Cannot convert to named vector"),
+                   class = "abort_frac_weights")
   }
   
   # convert
@@ -1688,9 +1701,10 @@ xmap_to_named_list <- function(x) {
   x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
-  if (!all(w == 1)) {
-    cli::cli_abort("`x` must only have unit weights. Can't convert to list.",
-                   class = "abort_weights_not_unit")
+  stop <- !all(w == 1)
+  if (stop) {
+    cli::cli_abort(msg_abort_frac_weights("Cannot convert to named list"),
+                   class = "abort_frac_weights")
   }
   
   # convert
@@ -1723,7 +1737,7 @@ testthat::test_that("xmap_to_named works as expected", {
   ## rejects split relations
   xmap_mixed <- new_xmap_df(links, "f", "t", "w")
   testthat::expect_error(xmap_to_named_list(xmap_mixed), 
-                         class = "abort_weights_not_unit")
+                         class = "abort_frac_weights")
 })
 ```
 
