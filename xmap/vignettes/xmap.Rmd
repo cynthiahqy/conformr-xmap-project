@@ -1,0 +1,23 @@
+---
+title: "Crossmaps for Data Transformation in R"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Intro to Crossmaps for Data Transformation in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+xmap provides tools for creating, validating and modifying Nomenclature Crossmaps for use in Data Integration and Harmonisation workflows (i.e. in `{conformr}`).
+
+## Creating an `xmap` object
+
+If you already have a valid crossmap table, turn it into a `xmap` object by specifying the source (`from`) nodes, target (`to`) nodes, and weights (`weights`):
+
+``` r
+links |>
+  as_xmap_df(from = ISIC2, to = ISIC3, weights = shares)
+```
+
+See `vignette("making-xmaps.Rmd")` for more details on validation conditions and creating custom weights.
