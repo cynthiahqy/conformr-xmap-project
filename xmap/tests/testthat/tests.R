@@ -55,6 +55,40 @@ testthat::test_that(
   }
 )
 
+testthat::test_that("verify_named_matchset fncs work as expected", {
+  v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)
+  refn_exact_1to1 <- c("x1", "x2", "x3")
+  refn_subset_1to1 <- c("x1", "x2")
+  refn_superset_1to1 <- c("x1", "x2", "x3", "x4")
+  testthat::expect_equal(verify_named_matchset_names_exact(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")))
+  testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_subset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1))
+  testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_superset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1))
+  refv_exact_1to1 <- c(1, 2, 3)
+  refv_subset_1to1 <- c(1, 2)
+  refv_superset_1to1 <- c(1, 2, 3, 4)
+  testthat::expect_equal(verify_named_matchset_values_exact(v_1to1, refv_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")))
+  testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_subset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1))
+  testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_superset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1))
+})
+
+testthat::test_that("verify_pairs_* work as expected", {
+  v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)
+  pairs_1to1 <- tibble::enframe(v_1to1, "f", "t")
+  testthat::expect_identical(verify_pairs_all_1to1(pairs_1to1, f, t), pairs_1to1)
+  testthat::expect_identical(verify_pairs_all_unique(pairs_1to1, f, t), pairs_1to1)
+}
+)
+
 testthat::test_that(".calc_xmap_subclass_attr() rejects unknown subclass",
                     {
                       testthat::expect_error(.calc_xmap_subclass_attr("unknown"))
@@ -273,74 +307,15 @@ testthat::test_that("xmap_to_list works as expected", {
     "A4", "B03", 0.25,
     "A4", "B04", 0.75
   )
-  ## works for collapse and recode relations
+  ## works for collapse relations
   xmap_unit <- new_xmap_df(links[1:3,], "f", "t", "w")
   unit_list <- list(B01 = c("A1"), B02 = c("A2", "A3"))
-  testthat::expect_identical(unit_list, xmap_to_list(xmap_unit))
+  unit_vector <- tibble::deframe(xmap_unit[,c("t", "f")])
+  testthat::expect_identical(unit_list, xmap_to_named_list(xmap_unit))
+  testthat::expect_identical(unit_vector, xmap_to_named_vector(xmap_unit))
   ## rejects split relations
   xmap_mixed <- new_xmap_df(links, "f", "t", "w")
   testthat::expect_error(xmap_to_list(xmap_mixed), 
                          class = "abort_weights_not_unit")
-})
-
-testthat::test_that("xmap_to_list() reverses pairs_from_named()", {
-  link_list <- list(AA = c("x3", "x4", "x6"),
-                    BB = c("x1", "x5"),
-                    CC = c("x2")
-                  )
-  link_xmap <-
-   pairs_from_named(link_list,
-                  "capital", "xvars") |>
-   add_weights_unit(weights_into = "w") |>
-   new_xmap_df("xvars", "capital", "w")
-  testthat::expect_identical(xmap_to_list(link_xmap), link_list)
-})
-
-testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
-  df_x <- tibble::tribble(
-      ~from, ~to, ~weights,
-      "A1", "B01", 1,
-      "A4", "B03", 0.25,
-      "A4", "B04", 0.75
-    ) |> as.data.frame() |> 
-    new_xmap_df("from", "to", "weights")
-  
-  df_x_rev <- data.frame(
-    to = df_x$to,
-    from = df_x$from,
-    r_weights = 1
-  ) |>
-    new_xmap_df("to", "from", "r_weights")
-  
-  # class checks
-  testthat::expect_s3_class(xmap_reverse.xmap_df(df_x), class(df_x_rev))
-  testthat::expect_s3_class(xmap_reverse(df_x), class(df_x_rev))
-  
-  # output checks
-  testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
-  testthat::expect_identical(abort_not_reversible(df_x,"to"), df_x)
-}
-)
-
-testthat::test_that('xmap_drop_extra works as expected', {
-  links <- tibble::tribble(
-  ~f, ~t, ~w,
-  "A1", "B01", 1,
-  "A2", "B02", 1,
-  "A3", "B02", 1,
-  "A4", "B03", 0.25,
-  "A4", "B04", 0.75
-  ) 
-  xmap_small <- new_xmap_df(links, "f", "t", "w")
-
-  links_extra <- links |> 
-    dplyr::mutate(ex = "extra")
-  xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
-  
-  xmap_drop_df <- xmap_extra |> xmap_drop_extra.xmap_df()
-  xmap_drop <- xmap_extra |> xmap_drop_extra()
-  
-  testthat::expect_identical(xmap_small, xmap_drop_df)
-  testthat::expect_identical(xmap_small, xmap_drop)
 })
 

@@ -783,10 +783,6 @@ verify_named_no_dup_values <- verify_named_all_values_unique
 #' @describeIn verify_named (alias)
 #' @export
 verify_named_no_dup_names <- verify_named_all_names_unique
-
-#' @describeIn verify_named (alias)
-#' @export
-verify_named_match_exact_names <- verify_named_match_names_exact
 ```
 
 ### Verify: Pairs
@@ -1660,7 +1656,7 @@ testthat::test_that("xmap_to_list works as expected", {
   testthat::expect_identical(unit_vector, xmap_to_named_vector(xmap_unit))
   ## rejects split relations
   xmap_mixed <- new_xmap_df(links, "f", "t", "w")
-  testthat::expect_error(xmap_to_list(xmap_mixed), 
+  testthat::expect_error(xmap_to_named_list(xmap_mixed), 
                          class = "abort_weights_not_unit")
 })
 ```
