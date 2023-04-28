@@ -44,11 +44,16 @@ vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0
   all(isTRUE(all.equal(sum_w, ones, tolerance = tol)))
 }
 
+.calc_vector_lens <- function(...){
+  v_list <- list(...)
+  v_lens <- sapply(v_list, length)
+  return(v_lens)
+}
+
 #' @describeIn vhas Returns TRUE if links have no duplicate pairs and complete weights
 vhas_xmap_props <- function(v_from, v_to, v_weights){
   ## check vectors are equal length
-  v_list <- list(v_from, v_to, v_weights)
-  v_lengths <- sapply(v_list, length)
+  v_lengths <- .calc_vector_lens(v_from, v_to, v_weights)
   stopifnot(length(unique(v_lengths)) == 1)
   
   ## check properties

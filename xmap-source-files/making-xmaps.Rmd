@@ -83,7 +83,7 @@ For a crossmap to be a recode map it must have binary weights, and the cardinali
 ```{r}
 fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 fruit_color |>
-  verify_named_all_1to1() |>
+  verify_named_all_pairs_1to1() |>
   print()
 ```
 
@@ -279,7 +279,7 @@ Since aggregation involves the one-to-one transfer of values between `adm1` and 
 
 ```{r}
 agg_xmap <- agg_x |>
-  add_weights_unit() |>
+  add_weights_unit(weights_into = "link") |>
   as_xmap_df(from = adm1, to = ctr, weights = link)
 
 agg_xmap

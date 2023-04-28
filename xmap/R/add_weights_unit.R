@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' AUS_list <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT"))
-#' pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
+#'   as_pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
 #'   add_weights_unit(weights_into = "weights")
 add_weights_unit <- function(pairs, weights_into = "weights"){
   pairs[,weights_into] <- 1
