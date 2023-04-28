@@ -437,8 +437,18 @@ pairs_to_named_list <- function(x, names_from = name, values_from = value){
 #'   as_pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
 #'   add_weights_unit(weights_into = "weights")
 add_weights_unit <- function(pairs, weights_into = "weights"){
+  ## TODO: validate_pairs_unique()
   pairs[,weights_into] <- 1
   return(pairs)
+}
+```
+
+```{r}
+add_weights_equal <- function(pairs, from, to, weights_into = "weights"){
+  ## TODO: validate_pairs_unique()
+  pairs |>
+    dplyr::group_by({{from}}) |>
+    dplyr::mutate(weights_into := 1/dplyr::n_distinct({{to}}))
 }
 ```
 
