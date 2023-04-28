@@ -119,7 +119,7 @@ Construction:
 
 #### Non-`xmap_df` inputs
 
-Candidate Links:
+Candidate Pairs:
 
 -   `as_pairs()` to generate crosswalks
 
@@ -127,6 +127,14 @@ Candidate Links:
     -   `as_pairs_from_named_vector()`
 
 -   `add_weights_*` to attach weights and return links
+
+-   `verify_named` functions:
+
+    -   `verify_named_all_pairs` for pairwise checks
+    -   `verify_named_all_names/values` for node set checks
+    -   `verify_named_matchset_names/values_<filter>` for node set element checks
+
+Candidate Links:
 
 -   `as_links()`: could be a generic that calls different (internal?) methods and adds/extracts weights like:
 
@@ -676,30 +684,57 @@ verify_named_all_values_unique <- function(x){
   invisible(x)
 }
 
-#' @describeIn verify_named Verify names of named vector or list **exactly** match an expected set of name values
+#' @describeIn verify_named Verify unique names of named vector or list **exactly** match an expected set of name values
 #' @export
-verify_named_match_names_exact <- function(x, ref_names){
+verify_named_matchset_names_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
-  stopifnot(setequal(ref_names, unique_names))
+  stopifnot(setequal(ref_set, unique_names))
   invisible(x)
 }
 
-#' @describeIn verify_named Verify names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named Verify unique values of named vector or list **exactly** match an expected set of name values
 #' @export
-verify_named_match_names_contain <- function(x, ref_names){
+verify_named_matchset_values_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
-  unique_names <- unique(names(x))
-  stopifnot(ref_names %in% unique_names)
+  unique_values <- unique(unlist(unname(x)))
+  stopifnot(setequal(ref_set, unique_values))
   invisible(x)
 }
 
-#' @describeIn verify_named Verify names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named Verify unique names of named vector or list **contain** an expected set of name values
 #' @export
-verify_named_match_names_within <- function(x, ref_names){
+verify_named_matchset_names_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
-  stopifnot(unique_names %in% ref_names)
+  stopifnot(ref_set %in% unique_names)
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify unique names of named vector or list **contain** an expected set of name values
+#' @export
+verify_named_matchset_values_contain <- function(x, ref_set){
+  stopifnot(is.vector(x))
+  unique_values <- unique(unlist(unname(x)))
+  stopifnot(ref_set %in% unique_values)
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify unique names of named vector or list are **within** an expected set of name values
+#' @export
+verify_named_matchset_names_within <- function(x, ref_set){
+  stopifnot(is.vector(x))
+  unique_x <- unique(names(x))
+  stopifnot(unique_x %in% ref_set)
+  invisible(x)
+}
+
+#' @describeIn verify_named Verify unique names of named vector or list are **within** an expected set of name values
+#' @export
+verify_named_matchset_values_within <- function(x, ref_set){
+  stopifnot(is.vector(x))
+  unique_x <- unique(unlist(unname(x)))
+  stopifnot(unique_x %in% ref_set)
   invisible(x)
 }
 ```
@@ -707,19 +742,30 @@ verify_named_match_names_within <- function(x, ref_names){
 Tests:
 
 ```{r}
-testthat::test_that("verify_named_match fncs work as expected", {
+testthat::test_that("verify_named_matchset fncs work as expected", {
   v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)
   refn_exact_1to1 <- c("x1", "x2", "x3")
   refn_subset_1to1 <- c("x1", "x2")
   refn_superset_1to1 <- c("x1", "x2", "x3", "x4")
-  testthat::expect_equal(verify_named_match_names_exact(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_match_names_exact(v_1to1, c("not", "right")))
-  testthat::expect_equal(verify_named_match_names_contain(v_1to1, refn_subset_1to1), v_1to1)
-  testthat::expect_equal(verify_named_match_names_contain(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_match_names_contain(v_1to1, refn_superset_1to1))
-  testthat::expect_equal(verify_named_match_names_within(v_1to1, refn_superset_1to1), v_1to1)
-  testthat::expect_equal(verify_named_match_names_within(v_1to1, refn_exact_1to1), v_1to1)
-  testthat::expect_error(verify_named_match_names_within(v_1to1, refn_subset_1to1))
+  testthat::expect_equal(verify_named_matchset_names_exact(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")))
+  testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_subset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1))
+  testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_superset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1))
+  refv_exact_1to1 <- c(1, 2, 3)
+  refv_subset_1to1 <- c(1, 2)
+  refv_superset_1to1 <- c(1, 2, 3, 4)
+  testthat::expect_equal(verify_named_matchset_values_exact(v_1to1, refv_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")))
+  testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_subset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1))
+  testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_superset_1to1), v_1to1)
+  testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_exact_1to1), v_1to1)
+  testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1))
 })
 ```
 
@@ -759,7 +805,7 @@ NULL
 #' @describeIn verify_pairs Verify column pairs have only one-to-one relations
 #' @export
 verify_pairs_all_1to1 <- function(x, from, to){
-  stopifnot(is.dataframe(x))
+  stopifnot(is.data.frame(x))
   set_from <- unique(x[[rlang::englue("{{from}}")]])
   set_to <- unique(x[[rlang::englue("{{to}}")]])
   stopifnot(length(set_from) == length(set_to))
@@ -769,7 +815,10 @@ verify_pairs_all_1to1 <- function(x, from, to){
 #' @describeIn verify_pairs Verify columnn pairs are all unique
 #' @export
 verify_pairs_all_unique <- function(x, from, to){
-  stopifnot
+  stopifnot(is.data.frame(x))
+  pairs <- dplyr::select(x, {{ from }}, {{to}})
+  stopifnot(!as.logical(anyDuplicated(pairs)))
+  invisible(x)
 }
 
 #' @describeIn verify_pairs (alias) Verify column pairs have only one-to-one relations
@@ -782,6 +831,16 @@ verify_pairs_out <- function(x, from, to, max_out, min_out){
   dplyr::group_by(x, {{from}}) |>
   dplyr::summarise()
 }
+```
+
+```{r}
+testthat::test_that("verify_pairs_* work as expected", {
+  v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)
+  pairs_1to1 <- tibble::enframe(v_1to1, "f", "t")
+  testthat::expect_identical(verify_pairs_all_1to1(pairs_1to1, f, t), pairs_1to1)
+  testthat::expect_identical(verify_pairs_all_unique(pairs_1to1, f, t), pairs_1to1)
+}
+)
 ```
 
 ### Verify: Links
