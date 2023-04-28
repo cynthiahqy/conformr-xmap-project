@@ -1573,17 +1573,57 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
 ### to List: `xmap_to_list()`
 
 ```{r send_to="R/xmap_to.R"}
-#' Coerce a unit weights `xmap_df` to a List
+#' Coerce a unit weight `xmap_df` to a named list
 #'
 #' @param x xmap with only unit weights (i.e. all weights should be 1)
 #'
-#' @return named list. Each item contains a vector of source nodes which map to 
-#' the target node named.
+#' @return named vector. Names are given by the target nodes and values are the source nodes.
 #' @export
 #'
 #' @examples
-xmap_to_list <- function(x) {
+#' iso_vector <- c(AF = "004", AL = "008", DZ = "012", AS = "016", AD = "020")
+#' iso_xmap <- iso_vector |> 
+#'   as_pairs_from_named(names_to = "iso2c", values_to = "iso3n") |>
+#'   add_weights_unit() |>
+#'   as_xmap_df()
+#' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
+xmap_to_named_vector <- function(x){
   x_attrs <- attributes(x)
+  # check only unit weights
+  w <- x[[x_attrs$col_weights]]
+  if (!all(w == 1)) {
+    cli::cli_abort("`x` must only have unit weights. Can't convert to list.",
+                   class = "abort_weights_not_unit")
+  }
+  
+  # convert
+  x |>
+    subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
+    tibble::deframe() |>
+    sapply(as.matrix) |>
+    sapply(as.vector)
+}
+```
+
+```{r send_to="R/xmap_to.R"}
+#' Coerce a unit weights `xmap_df` to a named list
+#'
+#' @param x xmap with only unit weights (i.e. all weights should be 1)
+#'
+#' @return named list. Item names are the unique target nodes, and each item contains the source node(s) which map to the target node named.
+#' @export
+#'
+#' @examples
+#' animal_list <- list(MAMM = c("elephant", "whale", "monkey"),
+#'                  REPT = c("lizard", "turtle"),
+#'                  CRUS = c("crab"))
+#' animal_xmap <- animal_list |>
+#'  as_pairs_from_named(names_to = "class", values_to = "animals") |>
+#'  add_weights_unit() |>
+#'  as_xmap_df(from = animals, to = class, weights = weights)
+#' identical(xmap_to_named_list(animal_xmap), animal_list)
+xmap_to_named_list <- function(x) {
+    x_attrs <- attributes(x)
   # check only unit weights
   w <- x[[x_attrs$col_weights]]
   if (!all(w == 1)) {
@@ -1597,7 +1637,8 @@ xmap_to_list <- function(x) {
     tidyr::nest(source = c(x_attrs$col_from)) |>
     tibble::deframe() |>
     sapply(as.matrix) |>
-    sapply(as.vector)
+    sapply(as.vector) |>
+    as.list()
 }
 ```
 
@@ -1611,10 +1652,12 @@ testthat::test_that("xmap_to_list works as expected", {
     "A4", "B03", 0.25,
     "A4", "B04", 0.75
   )
-  ## works for collapse and recode relations
+  ## works for collapse relations
   xmap_unit <- new_xmap_df(links[1:3,], "f", "t", "w")
   unit_list <- list(B01 = c("A1"), B02 = c("A2", "A3"))
-  testthat::expect_identical(unit_list, xmap_to_list(xmap_unit))
+  unit_vector <- tibble::deframe(xmap_unit[,c("t", "f")])
+  testthat::expect_identical(unit_list, xmap_to_named_list(xmap_unit))
+  testthat::expect_identical(unit_vector, xmap_to_named_vector(xmap_unit))
   ## rejects split relations
   xmap_mixed <- new_xmap_df(links, "f", "t", "w")
   testthat::expect_error(xmap_to_list(xmap_mixed), 
@@ -1633,7 +1676,7 @@ testthat::test_that("xmap_to_list() reverses as_pairs_from_named()", {
                   "capital", "xvars") |>
    add_weights_unit(weights_into = "w") |>
    new_xmap_df("xvars", "capital", "w")
-  testthat::expect_identical(xmap_to_list(link_xmap), link_list)
+  testthat::expect_identical(xmap_to_named_list(link_xmap), link_list)
 })
 ```
 
