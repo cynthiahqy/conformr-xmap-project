@@ -359,7 +359,7 @@ xmap::pairs_from_named(list = link_list,
 #' @param names_from,values_from two columns in `x` to convert to names and values
 #'
 #' @return
-#'   * For `as_pairs_from_named()`: a two-coloumn tibble
+#'   * For `as_pairs_from_named()`: a two-column tibble
 #'   * For `pairs_to_named` fncs: named vector or list 
 #' 
 #' @name as_pairs
@@ -430,7 +430,7 @@ pairs_to_named_list <- function(x, names_from = name, values_from = value){
 #' @param weights_into character string naming new column to store link weights in
 #'
 #' @return `pairs` with additional column of ones
-#' @rdname add_weights
+#' @family {Helpers for adding weights to pairs}
 #' @export
 #'
 #' @examples
@@ -445,6 +445,19 @@ add_weights_unit <- function(pairs, weights_into = "weights"){
 ```
 
 ```{r}
+#' Add equal fractional weights to groups of source-target node pairs
+#' 
+#' Attaches equal weights to every source-target link from a given source node.
+#' The resultant weighted links can be verified or coerced into an `xmap`.
+#' 
+#' @inheritParams add_weights_unit
+#' @inheritParams verify_links_as_xmap
+#' 
+#' @return `pairs` with additional column of weights
+#' @family {Helpers for adding weights to pairs}
+#' @export
+#' 
+#' @examples
 add_weights_equal <- function(pairs, from, to, weights_into = "weights"){
   ## TODO: validate_pairs_unique()
   pairs |>
