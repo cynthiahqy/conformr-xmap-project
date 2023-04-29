@@ -48,16 +48,7 @@ student_group_mistake |>
 
 If you are redistributing numeric values between categories, see `vignette("making-xmaps")` for details on how to check your transformation weights redistribute exactly 100% of your original data.
 
-## Creating an `xmap` object
-
-If you already have a data frame of candidate links, turn them into a valid `xmap` object by specifying the source (`from`) nodes, target (`to`) nodes, and weights (`weights`):
-
-``` r
-links |>
-  as_xmap_df(from = ISIC2, to = ISIC3, weights = shares)
-```
-
-## Using `xmap` objects
+## Crossmap transformations
 
 All crossmaps transformations can be decomposed into multiple "standard" data manipulation steps.
 
@@ -65,7 +56,7 @@ All crossmaps transformations can be decomposed into multiple "standard" data ma
 2.  **Mutate source node values by link weight.**
 3.  **Summarise mutated values by target node.**
 
-To implement these steps, use `xmap_df` just like normal tibbles or data.frames in a `dplyr` pipeline.
+To implement these steps use the following `dplyr` pipeline with verified links:
 
 1.  `dplyr::left_join` the target categories (`to`) to the original data via the source labels (`from`).
 2.  `dplyr::mutate` the source values by multiplying them with the link weights (`weights`) to transform the original values into redistributed values.
@@ -101,7 +92,7 @@ xmap_19to18 <- tibble::tribble(
   "1200", "A4", 0.6,
   "1200", "A5", 0.4
 ) |>
-  as_xmap_df(from = version19, to = version18, weights = w19to18)
+  verify_links_as_xmap(from = version19, to = version18, weights = w19to18)
 
 # transformed data
 (v18_data <- dplyr::left_join(x = v19_data,
@@ -114,3 +105,31 @@ xmap_19to18 <- tibble::tribble(
 ```
 
 Note that we expect multiple matches for 1-to-many relations so the `dplyr` warning can safely be ignored.
+
+## Creating an `xmap_df` object (EXPERIMENTAL)
+
+The `xmap_df` class aims to facilitates additional functionality such as graph property calculation and printing (i.e. relation types and crossmap direction) via a custom `print()` method, coercion to other useful classes (e.g. `xmap_to_matrix()`), visualisation (see `vignette("vis-xmaps")` for prototypes), and multi-step transformations (i.e. from nomenclature A to B to C).
+
+Please note that the `xmap_df` class and related functions are still in active development and subject to breaking changes in future releases.
+
+If you already have a data frame of candidate links, turn them into a valid `xmap` object by specifying the source (`from`) nodes, target (`to`) nodes, and weights (`weights`):
+
+```{r}
+uk_shares <- tibble::tribble(
+  ~key1, ~key2, ~shares,
+  "UK, Channel Islands, Isle of Man", "Scotland", 0.1102047,
+  "UK, Channel Islands, Isle of Man", "Wales", 0.02720333,
+  "UK, Channel Islands, Isle of Man", "England", 0.862592
+  )
+
+uk_shares |>
+  as_xmap_df(from = key1, to = key2, weights = shares, tol = 3e-08) |>
+  print()
+```
+
+Note that both verification and coercion will fail without adjusting the tolerance `tol`, which specifies differences to ignore (i.e. what counts as close enough to 1).
+
+```{r error=TRUE}
+uk_shares |>
+  verify_links_as_xmap(key1, key2, shares)
+```

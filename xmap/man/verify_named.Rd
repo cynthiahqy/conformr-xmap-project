@@ -26,10 +26,10 @@ verify_named_no_dup_values(x)
 verify_named_no_dup_names(x)
 }
 \arguments{
-\item{x}{a named vector}
+\item{x}{a Named vector or list. Lists values are flattened via \code{unlist()}.}
 }
 \value{
-\code{x} or throw error
+\code{x} or throws an error
 }
 \description{
 Verify crossmap properties of named vectors or lists
@@ -44,11 +44,11 @@ Verify crossmap properties of named vectors or lists
 
 \item \code{verify_named_all_values_unique()}: Verify values in named vector or list are not duplicated (after unnesting)
 
-\item \code{verify_named_as_recode_unique()}: (alias) verify named vector or list has only one-to-one relations
+\item \code{verify_named_as_recode_unique()}: Alias of \code{verify_named_all_1to1()}
 
-\item \code{verify_named_no_dup_values()}: (alias)
+\item \code{verify_named_no_dup_values()}: Alias of \code{verify_named_all_values_unique()}
 
-\item \code{verify_named_no_dup_names()}: (alias)
+\item \code{verify_named_no_dup_names()}: Alias of \code{verify_named_all_names_unique()}
 
 }}
 \examples{

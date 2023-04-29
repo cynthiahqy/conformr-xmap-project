@@ -11,6 +11,7 @@
 \alias{abort_from_set}
 \alias{msg_abort_frac_weights}
 \alias{abort_not_reversible}
+\alias{msg_abort_named_matchset}
 \title{Validation functions and messages for xmap or candidate links (Internal)}
 \usage{
 abort_missing_cols(df, cols)
@@ -21,7 +22,7 @@ abort_weights_col_type(df, col_weights)
 
 abort_dup_pairs(df, col_from, col_to)
 
-abort_bad_weights(df, col_from, col_weights)
+abort_bad_weights(col_weights, call = rlang::caller_env())
 
 abort_col_order(df, col_from, col_to, col_weights)
 
@@ -30,6 +31,11 @@ abort_from_set(df, col_from, from_set)
 msg_abort_frac_weights(impact)
 
 abort_not_reversible(df, col_to)
+
+msg_abort_named_matchset(
+  set_type = c("names", "values"),
+  match_type = c("exact", "within", "contain")
+)
 }
 \arguments{
 \item{df}{a data.frame-like object containing links}
@@ -53,7 +59,7 @@ Checks issues with data.frame like objects containing validated \code{xmap} or c
 
 \item \code{abort_dup_pairs()}: Abort if duplicate source-target pairs are found
 
-\item \code{abort_bad_weights()}: Abort if invalid mapping weights are found
+\item \code{abort_bad_weights()}: Abort for invalid mapping weights
 
 \item \code{abort_col_order()}: Abort if xmap_df columns are not in order
 
@@ -62,5 +68,7 @@ Checks issues with data.frame like objects containing validated \code{xmap} or c
 \item \code{msg_abort_frac_weights()}: Abort message for fractional weights
 
 \item \code{abort_not_reversible()}: Abort if xmap_df is not reversible without new weights
+
+\item \code{msg_abort_named_matchset()}: Abort message for verify_named_matchset_* functions
 
 }}

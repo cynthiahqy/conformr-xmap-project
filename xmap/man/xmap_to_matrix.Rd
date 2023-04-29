@@ -5,16 +5,16 @@
 \alias{xmap_to_matrix.xmap_df}
 \title{Extract incidence matrix from xmap objects}
 \usage{
-xmap_to_matrix(x, sparse, ...)
+xmap_to_matrix(.xmap, sparse, ...)
 
-\method{xmap_to_matrix}{xmap_df}(x, sparse = TRUE)
+\method{xmap_to_matrix}{xmap_df}(.xmap, sparse = TRUE, ...)
 }
 \arguments{
-\item{x}{an xmap object}
+\item{.xmap}{an xmap object}
 
 \item{sparse}{logical specifying if the result should be a sparse matrix. Defaults to TRUE.}
 
-\item{...}{Unused}
+\item{...}{Reversed for passing arguments to \code{stats::xtabs}}
 }
 \value{
 A matrix or sparse matrix object

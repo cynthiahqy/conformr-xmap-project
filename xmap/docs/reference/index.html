@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,11 @@
         <dd>Verify crossmap properties of named vectors or lists</dd>
       </dl><dl><dt>
           
+          <code><a href="verify_named_matchset.html">verify_named_matchset_names_exact()</a></code> <code><a href="verify_named_matchset.html">verify_named_matchset_values_exact()</a></code> <code><a href="verify_named_matchset.html">verify_named_matchset_names_contain()</a></code> <code><a href="verify_named_matchset.html">verify_named_matchset_values_contain()</a></code> <code><a href="verify_named_matchset.html">verify_named_matchset_names_within()</a></code> <code><a href="verify_named_matchset.html">verify_named_matchset_values_within()</a></code> 
+        </dt>
+        <dd>Verify unique names or values of named vector or list match expected set</dd>
+      </dl><dl><dt>
+          
           <code><a href="verify_pairs.html">verify_pairs_all_1to1()</a></code> <code><a href="verify_pairs.html">verify_pairs_all_unique()</a></code> <code><a href="verify_pairs.html">verify_pairs_as_recode_unique()</a></code> 
         </dt>
         <dd>Verify crossmap properties of column pairs</dd>
@@ -94,14 +99,24 @@
         <dd>Convert between column pairs and named vector or lists</dd>
       </dl><dl><dt>
           
-          <code><a href="add_weights.html">add_weights_unit()</a></code> 
+          <code><a href="add_weights_equal.html">add_weights_equal()</a></code> 
+        </dt>
+        <dd>Add equal fractional weights to groups of source-target node pairs</dd>
+      </dl><dl><dt>
+          
+          <code><a href="add_weights_unit.html">add_weights_unit()</a></code> 
         </dt>
         <dd>Add unit weights to node pairs table</dd>
       </dl><dl><dt>
           
-          <code><a href="as_xmap_df.html">as_xmap_df()</a></code> 
+          <code><a href="as_xmap.html">as_xmap_df()</a></code> <code><a href="as_xmap.html">is_xmap()</a></code> <code><a href="as_xmap.html">is_xmap_df()</a></code> 
         </dt>
         <dd>Coerce objects to xmap_df</dd>
+      </dl><dl><dt>
+          
+          <code><a href="mock.html">mock</a></code> 
+        </dt>
+        <dd>Mock objects for the <code>xmap</code> package</dd>
       </dl></div><div class="section level2">
       <h2 id="using-and-modifying-xmap-objects">Using and Modifying <code>xmap</code> objects<a class="anchor" aria-label="anchor" href="#using-and-modifying-xmap-objects"></a></h2>
       
@@ -135,9 +150,9 @@
         <dd>Reverse xmap direction</dd>
       </dl><dl><dt>
           
-          <code><a href="as_xmap.html">is_xmap()</a></code> <code><a href="as_xmap.html">is_xmap_df()</a></code> 
+          <code><a href="as_xmap.html">as_xmap_df()</a></code> <code><a href="as_xmap.html">is_xmap()</a></code> <code><a href="as_xmap.html">is_xmap_df()</a></code> 
         </dt>
-        <dd>Test if object is a crossmap</dd>
+        <dd>Coerce objects to xmap_df</dd>
       </dl><dl><dt>
           
           <code><a href="print.xmap.html">print(<i>&lt;xmap_df&gt;</i>)</a></code> 
@@ -161,14 +176,14 @@
         <dd>Boolean flags for properties of candidate and validated xmap links (internal)</dd>
       </dl><dl><dt>
           
-          <code><a href="abort.html">abort_missing_cols()</a></code> <code><a href="abort.html">abort_any_na()</a></code> <code><a href="abort.html">abort_weights_col_type()</a></code> <code><a href="abort.html">abort_dup_pairs()</a></code> <code><a href="abort.html">abort_bad_weights()</a></code> <code><a href="abort.html">abort_col_order()</a></code> <code><a href="abort.html">abort_from_set()</a></code> <code><a href="abort.html">msg_abort_frac_weights()</a></code> <code><a href="abort.html">abort_not_reversible()</a></code> 
+          <code><a href="abort.html">abort_missing_cols()</a></code> <code><a href="abort.html">abort_any_na()</a></code> <code><a href="abort.html">abort_weights_col_type()</a></code> <code><a href="abort.html">abort_dup_pairs()</a></code> <code><a href="abort.html">abort_bad_weights()</a></code> <code><a href="abort.html">abort_col_order()</a></code> <code><a href="abort.html">abort_from_set()</a></code> <code><a href="abort.html">msg_abort_frac_weights()</a></code> <code><a href="abort.html">abort_not_reversible()</a></code> <code><a href="abort.html">msg_abort_named_matchset()</a></code> 
         </dt>
         <dd>Validation functions and messages for xmap or candidate links (Internal)</dd>
       </dl><dl><dt>
           
           <code><a href="validate_xmap_df.html">validate_xmap_df()</a></code> 
         </dt>
-        <dd>Validator for <code>xmap_df</code> objects</dd>
+        <dd>Validator for <code>xmap_df</code> class (INTERNAL)</dd>
       </dl><dl><dt>
           
           <code><a href="new_xmap.html">new_xmap_df()</a></code> 

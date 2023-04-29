@@ -2,9 +2,9 @@
 
 #' Verify crossmap properties of named vectors or lists
 #'
-#' @param x a named vector
+#' @param x a Named vector or list. Lists values are flattened via `unlist()`.
 #'
-#' @return `x` or throw error
+#' @return `x` or throws an error
 #' @name verify_named
 #' @examples
 #' ## check each fruit has a unique color
@@ -40,6 +40,7 @@ verify_named_all_1to1 <- function(x){
 verify_named_all_unique <- function(x){
   stopifnot(is.vector(x))
   pairs <- as_pairs_from_named(x)
+  dup_idx <- anyDuplicated(pairs)
   stop <- as.logical(dup_idx)
   if (stop){
     cli::cli_abort("Duplicated pairs found in `x`.
@@ -75,7 +76,7 @@ verify_named_all_values_unique <- function(x){
   invisible(x)
 }
 
-#' @describleIn abort Abort message for verify_named_matchset_* functions
+#' @describeIn abort Abort message for verify_named_matchset_* functions
 #' @export
 msg_abort_named_matchset <- function(set_type = c("names", "values"),
                                 match_type = c("exact", "within", "contain")){
@@ -89,11 +90,11 @@ msg_abort_named_matchset <- function(set_type = c("names", "values"),
 
 #' Verify unique names or values of named vector or list match expected set
 #' 
+#' @name verify_named_matchset
 #' @inheritParams verify_named
 #' @param ref_set a vector of character strings 
-#' @rdname verify_named_matchset
 #' 
-#' @return `x` or throw an Error
+#' @return `x` or throw an error
 #' @examples
 #' fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 #' fruit_set <- c("apple", "strawberry", "banana", "pear")
@@ -101,7 +102,7 @@ msg_abort_named_matchset <- function(set_type = c("names", "values"),
 #'   verify_named_matchset_names_within(ref_set = fruit_set)
 NULL
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list **exactly** match an expected set of name values
+#' @describeIn verify_named_matchset Names of `x` **exactly** match `ref_set`
 #' @export
 verify_named_matchset_names_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -114,7 +115,7 @@ verify_named_matchset_names_exact <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique values of named vector or list **exactly** match an expected set of name values
+#' @describeIn verify_named_matchset Values of `x` **exactly** match `ref_set`
 #' @export
 verify_named_matchset_values_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -127,7 +128,7 @@ verify_named_matchset_values_exact <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named_matchset Names of `x` **contain** all of `ref_set`
 #' @export
 verify_named_matchset_names_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -140,7 +141,7 @@ verify_named_matchset_names_contain <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named_matchset Values of `x` **contain** all of `ref_set`
 #' @export
 verify_named_matchset_values_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -153,7 +154,7 @@ verify_named_matchset_values_contain <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named_matchset Names of `x` are all **within** `ref_set`
 #' @export
 verify_named_matchset_names_within <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -166,7 +167,7 @@ verify_named_matchset_names_within <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named_matchset Values of `x` are all **within** `ref_set`
 #' @export
 verify_named_matchset_values_within <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -179,14 +180,14 @@ verify_named_matchset_values_within <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named (alias) verify named vector or list has only one-to-one relations
+#' @describeIn verify_named Alias of `verify_named_all_1to1()`
 #' @export
 verify_named_as_recode_unique <- verify_named_all_1to1
 
-#' @describeIn verify_named (alias)
+#' @describeIn verify_named Alias of `verify_named_all_values_unique()`
 #' @export
 verify_named_no_dup_values <- verify_named_all_values_unique
 
-#' @describeIn verify_named (alias)
+#' @describeIn verify_named Alias of `verify_named_all_names_unique()`
 #' @export
 verify_named_no_dup_names <- verify_named_all_names_unique

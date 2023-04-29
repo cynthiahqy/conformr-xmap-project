@@ -5,12 +5,12 @@
 \alias{xmap_reverse.xmap_df}
 \title{Reverse xmap direction}
 \usage{
-xmap_reverse(x, weights_into)
+xmap_reverse(.xmap, weights_into)
 
-\method{xmap_reverse}{xmap_df}(x, weights_into = "r_weights")
+\method{xmap_reverse}{xmap_df}(.xmap, weights_into = "r_weights")
 }
 \arguments{
-\item{x}{xmap object to be reversed}
+\item{.xmap}{xmap object to be reversed}
 
 \item{weights_into}{A string specifying the name of a new or existing column to store reverse weights in.}
 }

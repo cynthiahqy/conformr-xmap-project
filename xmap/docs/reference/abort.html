@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
 <span></span>
 <span><span class="fu">abort_dup_pairs</span><span class="op">(</span><span class="va">df</span>, <span class="va">col_from</span>, <span class="va">col_to</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">abort_bad_weights</span><span class="op">(</span><span class="va">df</span>, <span class="va">col_from</span>, <span class="va">col_weights</span><span class="op">)</span></span>
+<span><span class="fu">abort_bad_weights</span><span class="op">(</span><span class="va">col_weights</span>, call <span class="op">=</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/stack.html" class="external-link">caller_env</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">abort_col_order</span><span class="op">(</span><span class="va">df</span>, <span class="va">col_from</span>, <span class="va">col_to</span>, <span class="va">col_weights</span><span class="op">)</span></span>
 <span></span>
@@ -74,7 +74,12 @@
 <span></span>
 <span><span class="fu">msg_abort_frac_weights</span><span class="op">(</span><span class="va">impact</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">abort_not_reversible</span><span class="op">(</span><span class="va">df</span>, <span class="va">col_to</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">abort_not_reversible</span><span class="op">(</span><span class="va">df</span>, <span class="va">col_to</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">msg_abort_named_matchset</span><span class="op">(</span></span>
+<span>  set_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"names"</span>, <span class="st">"values"</span><span class="op">)</span>,</span>
+<span>  match_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exact"</span>, <span class="st">"within"</span>, <span class="st">"contain"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -101,11 +106,12 @@ and invisibly returns <code>df</code> otherwise.</p>
 <li><p><code>abort_any_na()</code>: Abort if xmap_df has missing values</p></li>
 <li><p><code>abort_weights_col_type()</code>: Abort if xmap_df has wrong column types</p></li>
 <li><p><code>abort_dup_pairs()</code>: Abort if duplicate source-target pairs are found</p></li>
-<li><p><code>abort_bad_weights()</code>: Abort if invalid mapping weights are found</p></li>
+<li><p><code>abort_bad_weights()</code>: Abort for invalid mapping weights</p></li>
 <li><p><code>abort_col_order()</code>: Abort if xmap_df columns are not in order</p></li>
 <li><p><code>abort_from_set()</code>: Abort if from_set attribute doesn't match xmap_df values</p></li>
 <li><p><code>msg_abort_frac_weights()</code>: Abort message for fractional weights</p></li>
 <li><p><code>abort_not_reversible()</code>: Abort if xmap_df is not reversible without new weights</p></li>
+<li><p><code>msg_abort_named_matchset()</code>: Abort message for verify_named_matchset_* functions</p></li>
 </ul></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -5,23 +5,21 @@
 #' Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
 #' and the columns are indexed by `to` values. Drops any additional variables.
 #' 
-#' @param x an xmap object
+#' @param .xmap an xmap object
 #' @param sparse logical specifying if the result should be a sparse matrix. Defaults to TRUE.
-#' @param ... Unused
+#' @param ... Reversed for passing arguments to `stats::xtabs`
 #' 
 #' @return A matrix or sparse matrix object
 #' @family {xmap coercion}
 #' 
 #' @export
-xmap_to_matrix <- function(x, sparse, ...) {
+xmap_to_matrix <- function(.xmap, sparse, ...) {
   UseMethod("xmap_to_matrix")
 }
 
 #' @describeIn xmap_to_matrix Coerce a `xmap_df` to a Matrix
 #'
-#' @return
 #' @export
-#'
 #' @examples
 #' abc_xmap <- data.frame(
 #'  stringsAsFactors = FALSE,
@@ -33,17 +31,16 @@ xmap_to_matrix <- function(x, sparse, ...) {
 #'  ) |>
 #' as_xmap_df(origin, dest, link)
 #' xmap_to_matrix(abc_xmap)
-xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
-  x_attrs <- attributes(x)
+xmap_to_matrix.xmap_df <- function(.xmap, sparse = TRUE, ...){
+  x_attrs <- attributes(.xmap)
+  df <- .xmap |> as.data.frame(stringsAsFactors = TRUE)
   fm <- paste(x_attrs$col_weights, "~", x_attrs$col_from, "+", x_attrs$col_to,
               collapse = "")
-  x_df <- x |>
-    as.data.frame(stringsAsFactors = TRUE)
   
   if(sparse){
-    x_mtx <- stats::xtabs(as.formula(fm), x_df, sparse = TRUE)
+    x_mtx <- stats::xtabs(stats::as.formula(fm), df, sparse = TRUE)
   } else {
-    x_mtx <- stats::xtabs(as.formula(fm), x_df, sparse = FALSE)
+    x_mtx <- stats::xtabs(stats::as.formula(fm), df, sparse = FALSE)
     attr(x_mtx, "call") <- NULL
     unclass(x_mtx)
   }
@@ -60,7 +57,7 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
 #' Names are the unique target nodes in `to`,
 #'   and each element contains the source node(s) in `from`.
 #' 
-#' @param x xmap with only unit weights
+#' @param .xmap xmap with only unit weights
 #'
 #' @return Named vector or list.
 #' @export
@@ -74,11 +71,12 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
 #'   add_weights_unit() |>
 #'   as_xmap_df(from = iso3n, to = iso2c, weights)
 #' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
-xmap_to_named_vector <- function(x){
-  stopifnot(is_xmap(x))
-  x_attrs <- attributes(x)
+xmap_to_named_vector <- function(.xmap){
+  stopifnot(is_xmap(.xmap))
+  x_attrs <- attributes(.xmap)
+  df <- as.data.frame(.xmap)
   # check only unit weights
-  w <- x[[x_attrs$col_weights]]
+  w <- df[[x_attrs$col_weights]]
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named vector"),
@@ -86,7 +84,7 @@ xmap_to_named_vector <- function(x){
   }
   
   # convert
-  x |>
+  df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
     tibble::deframe() |>
     sapply(as.matrix) |>
@@ -105,11 +103,13 @@ xmap_to_named_vector <- function(x){
 #'  add_weights_unit() |>
 #'  as_xmap_df(from = animals, to = class, weights = weights)
 #' identical(xmap_to_named_list(animal_xmap), animal_list)
-xmap_to_named_list <- function(x) {
-  stopifnot(is_xmap(x))
-  x_attrs <- attributes(x)
+xmap_to_named_list <- function(.xmap) {
+  stopifnot(is_xmap(.xmap))
+  x_attrs <- attributes(.xmap)
+  df <- as.data.frame(.xmap)
   # check only unit weights
-  w <- x[[x_attrs$col_weights]]
+  w <- df[[x_attrs$col_weights]]
+  
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named list"),
@@ -117,7 +117,7 @@ xmap_to_named_list <- function(x) {
   }
   
   # convert
-  x |>
+  df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
     tidyr::nest(source = c(x_attrs$col_from)) |>
     tibble::deframe() |>

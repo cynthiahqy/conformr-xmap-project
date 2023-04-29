@@ -2,10 +2,12 @@
 % Please edit documentation in create-xmap.Rmd.
 \name{validate_xmap_df}
 \alias{validate_xmap_df}
-\title{Validator for \code{xmap_df} objects}
+\title{Validator for \code{xmap_df} class (INTERNAL)}
 \usage{
 validate_xmap_df(x)
 }
 \description{
-Validator for \code{xmap_df} objects
+Only checks class attributes, not crossmap graph properties.
+Use \code{verify_links_as_xmap()} or \code{as_xmap()} to verify graph
+properties
 }

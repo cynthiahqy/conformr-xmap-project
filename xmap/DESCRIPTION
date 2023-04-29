@@ -1,10 +1,13 @@
 Package: xmap
-Title: xmap: A data-structure for extending crosswalks
-Version: 0.0.0.9019
-Authors@R: 
-    person("Cynthia", "Huang", , "cynthiahqy@gmail.com", role = c("aut", "cre"))
-Description: Provides 'xmap' S3 classes (the 'Crossmap') for use in
-    {conformr} package.
+Title: xmap: A principled approach to recoding and redistributing data
+    between nomenclature
+Version: 0.0.0.9020
+Authors@R: c(
+    person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre")),
+    person("Laura", "Puzzello", role = c("aut", "fnd"))
+  )
+Description: Provides tools for creating and verifying classification,
+    category and/or nomenclature mapping objects.
 License: MIT + file LICENSE
 Config/testthat/edition: 3
 Encoding: UTF-8
@@ -13,6 +16,7 @@ RoxygenNote: 7.2.2
 Imports: 
     cli,
     dplyr,
+    glue,
     rlang (>= 1.0.0),
     tibble,
     tidyr
@@ -23,11 +27,14 @@ Suggests:
     knitr,
     matlib,
     Matrix,
+    patchwork,
     rmarkdown,
+    stats,
+    stringr,
     testthat (>= 3.0.0)
 Depends: 
     R (>= 2.10)
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: ee2fe23d828ce393e79b3c14b2a1e5d3
+LitrId: 60af9f0828c1760881e22f8e376ef95c
