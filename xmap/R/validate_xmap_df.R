@@ -1,7 +1,10 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' Validator for `xmap_df` objects
+#' Validator for `xmap_df` class (INTERNAL)
 #'
+#' Only checks class attributes, not crossmap graph properties.
+#' Use `verify_links_as_xmap()` or `as_xmap()` to verify graph
+#' properties
 validate_xmap_df <- function(x) {
   stopifnot(is_xmap_df(x))
 
@@ -16,11 +19,6 @@ validate_xmap_df <- function(x) {
   ## ---- xmap_df attributes ---
   abort_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
   abort_from_set(df, x_attrs$col_from, x_attrs$from_set)
-
-  ## ---- xmap graph properties ----
-  abort_weights_col_type(df, x_attrs$col_weights)
-  abort_dup_pairs(df, x_attrs$col_from, x_attrs$col_to)
-  abort_bad_weights(df, x_attrs$col_from, x_attrs$col_weights)
 
   ## return original object
   invisible(x)

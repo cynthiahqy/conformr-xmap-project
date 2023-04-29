@@ -18,6 +18,8 @@ This article provides a few ggplot2 code examples for visualising crossmaps. Mos
 ```{r message=FALSE}
 library(ggplot2)
 library(dplyr)
+library(stringr)
+library(patchwork)
 library(ggbump)
 library(xmap)
 ```

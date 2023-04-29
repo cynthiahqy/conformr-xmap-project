@@ -4,10 +4,10 @@
 \alias{add_weights_unit}
 \title{Add unit weights to node pairs table}
 \usage{
-add_weights_unit(pairs, weights_into = "weights")
+add_weights_unit(df, weights_into = "weights")
 }
 \arguments{
-\item{pairs}{data.frame or tibble containing unique node pairs}
+\item{df}{a data frame-like object with at least two columns}
 
 \item{weights_into}{character string naming new column to store link weights in}
 }
@@ -19,7 +19,13 @@ Attaches column of unit weights to pairs of source-target nodes.
 The resultant weighted links can be verified or coerced into \code{xmap}.
 }
 \examples{
-AUS_list <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT"))
-  as_pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
+AUS_pairs <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT")) |>
+  as_pairs_from_named(names_to = "ctr", values_to = "state") |>
+AUS_pairs |>
   add_weights_unit(weights_into = "weights")
 }
+\seealso{
+Other {Helpers for adding weights to pairs}: 
+\code{\link{add_weights_equal}()}
+}
+\concept{{Helpers for adding weights to pairs}}

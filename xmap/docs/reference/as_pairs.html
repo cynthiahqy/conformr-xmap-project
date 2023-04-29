@@ -16,7 +16,7 @@ whilst pairs_to_named_list() nests the values first."><!-- mathjax --><script sr
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,21 +69,23 @@ whilst <code>pairs_to_named_list()</code> nests the values first.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">x</span>, names_to <span class="op">=</span> <span class="st">"name"</span>, values_to <span class="op">=</span> <span class="st">"value"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pairs_to_named_vector</span><span class="op">(</span><span class="va">x</span>, names_from <span class="op">=</span> <span class="va">name</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span><span class="fu">pairs_to_named_vector</span><span class="op">(</span><span class="va">df</span>, names_from <span class="op">=</span> <span class="va">name</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pairs_to_named_list</span><span class="op">(</span><span class="va">x</span>, names_from <span class="op">=</span> <span class="va">name</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pairs_to_named_list</span><span class="op">(</span><span class="va">df</span>, names_from <span class="op">=</span> <span class="va">name</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><ul><li><p>For <code>as_pairs_from_named()</code>: a named vector or nested list.</p><ul><li><p>For <code>pairs_to_named</code> fncs: a data frame</p></li>
-</ul></li>
-</ul></dd>
+<dd><p>a Named vector or list. Lists values are flattened via <code><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist()</a></code>.</p></dd>
 
 
 <dt>names_to, values_to</dt>
 <dd><p>character vector specify the new columns to pass the information in <code>x</code> into.</p></dd>
+
+
+<dt>df</dt>
+<dd><p>a data frame-like object with at least two columns</p></dd>
 
 
 <dt>names_from, values_from</dt>
@@ -94,7 +96,7 @@ whilst <code>pairs_to_named_list()</code> nests the values first.</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<ul><li><p>For <code>as_pairs_from_named()</code>: a two-coloumn tibble</p></li>
+<ul><li><p>For <code>as_pairs_from_named()</code>: a two-column tibble</p></li>
 <li><p>For <code>pairs_to_named</code> fncs: named vector or list</p></li>
 </ul></div>
     <div class="section level2">
@@ -133,16 +135,14 @@ whilst <code>pairs_to_named_list()</code> nests the values first.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Convert pairs back to named vector and lists</span></span></span>
 <span class="r-in"><span><span class="va">veg_from_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">veg_vec</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
-<span class="r-in"><span>  <span class="fu">pairs_to_named_vector</span><span class="op">(</span><span class="va">veg_pairs</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::select(x, {    {        names_from    }}, {    {        values_from    }}):</span> Can't subset columns that don't exist.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Column `veg_pairs` doesn't exist.</span>
+<span class="r-in"><span>  <span class="fu">pairs_to_named_vector</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">name</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">veg_vec</span>, <span class="va">veg_from_pairs</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in identical(veg_vec, veg_from_pairs):</span> object 'veg_from_pairs' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">animal_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">animal_list</span>, <span class="st">"class"</span>, <span class="st">"animal"</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span><span class="va">animal_from_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">animal_list</span>, <span class="st">"class"</span>, <span class="st">"animal"</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu">pairs_to_named_list</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">class</span>, values_from <span class="op">=</span> <span class="va">animal</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">animal_list</span>, <span class="va">animal_from_pairs</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in identical(animal_list, animal_from_pairs):</span> object 'animal_from_pairs' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

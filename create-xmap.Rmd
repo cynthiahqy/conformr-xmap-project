@@ -26,11 +26,9 @@ usethis::create_package(
     Version = "0.0.0.9020",
     Title = "xmap: A principled approach to recoding and redistributing data between nomenclature",
     Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.",
-    `Authors@R` = person(
-      given = "Cynthia",
-      family = "Huang",
-      email = "cynthiahqy@gmail.com",
-      role = c("aut", "cre")
+    `Authors@R` = c(
+      person(given = "Cynthia", family = "Huang", email = "cynthia@gmail.com", role = c("aut", "cre")),
+      person(given = "Laura", family = "Puzzello", role = c("aut", "fnd"))
     ),
     `Config/testthat/edition` = 3
   )
@@ -801,6 +799,13 @@ verify_named_all_values_unique <- function(x){
   #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)
 }
+```
+
+```{r}
+testthat::test_that("verify_named_all_*() work as expected",
+                    {
+                      
+                    })
 ```
 
 ```{r send_to="R/verify_named.R"}

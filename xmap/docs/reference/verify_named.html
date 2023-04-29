@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,14 +76,14 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>a named vector</p></dd>
+<dd><p>a Named vector or list. Lists values are flattened via <code><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p><code>x</code> or throw error</p>
+<p><code>x</code> or throws an error</p>
     </div>
     <div class="section level2">
     <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
@@ -92,9 +92,9 @@
 <li><p><code>verify_named_all_unique()</code>: Verify name-value pairs of named vector or list are not duplicated</p></li>
 <li><p><code>verify_named_all_names_unique()</code>: Verify names of named vector or list are not duplicated</p></li>
 <li><p><code>verify_named_all_values_unique()</code>: Verify values in named vector or list are not duplicated (after unnesting)</p></li>
-<li><p><code>verify_named_as_recode_unique()</code>: (alias) verify named vector or list has only one-to-one relations</p></li>
-<li><p><code>verify_named_no_dup_values()</code>: (alias)</p></li>
-<li><p><code>verify_named_no_dup_names()</code>: (alias)</p></li>
+<li><p><code>verify_named_as_recode_unique()</code>: Alias of <code>verify_named_all_1to1()</code></p></li>
+<li><p><code>verify_named_no_dup_values()</code>: Alias of <code>verify_named_all_values_unique()</code></p></li>
+<li><p><code>verify_named_no_dup_names()</code>: Alias of <code>verify_named_all_names_unique()</code></p></li>
 </ul></div>
 
     <div class="section level2">

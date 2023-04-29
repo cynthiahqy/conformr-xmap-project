@@ -12,7 +12,7 @@ and the columns are indexed by to values. Drops any additional variables."><!-- 
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,15 +61,15 @@ and the columns are indexed by <code>to</code> values. Drops any additional vari
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">xmap_to_matrix</span><span class="op">(</span><span class="va">x</span>, <span class="va">sparse</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">xmap_to_matrix</span><span class="op">(</span><span class="va">.xmap</span>, <span class="va">sparse</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for xmap_df</span></span>
-<span><span class="fu">xmap_to_matrix</span><span class="op">(</span><span class="va">x</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">xmap_to_matrix</span><span class="op">(</span><span class="va">.xmap</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>x</dt>
+    <dl><dt>.xmap</dt>
 <dd><p>an xmap object</p></dd>
 
 
@@ -78,7 +78,7 @@ and the columns are indexed by <code>to</code> values. Drops any additional vari
 
 
 <dt>...</dt>
-<dd><p>Unused</p></dd>
+<dd><p>Reversed for passing arguments to <code><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">stats::xtabs</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -108,7 +108,7 @@ and the columns are indexed by <code>to</code> values. Drops any additional vari
 <span class="r-in"><span>                          <span class="st">"BB"</span>,<span class="st">"BB"</span>,<span class="st">"CC"</span>,<span class="st">"DD"</span>,<span class="st">"EE"</span>,<span class="st">"FF"</span>,<span class="st">"GG"</span>,<span class="st">"HH"</span>,<span class="st">"II"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>           link <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span><span class="op">)</span></span></span>
 <span class="r-in"><span> <span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="as_xmap_df.html">as_xmap_df</a></span><span class="op">(</span><span class="va">origin</span>, <span class="va">dest</span>, <span class="va">link</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="as_xmap.html">as_xmap_df</a></span><span class="op">(</span><span class="va">origin</span>, <span class="va">dest</span>, <span class="va">link</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">xmap_to_matrix</span><span class="op">(</span><span class="va">abc_xmap</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 x 9 sparse Matrix of class "dgCMatrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       dest</span>

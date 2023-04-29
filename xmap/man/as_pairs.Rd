@@ -9,25 +9,22 @@
 \usage{
 as_pairs_from_named(x, names_to = "name", values_to = "value")
 
-pairs_to_named_vector(x, names_from = name, values_from = value)
+pairs_to_named_vector(df, names_from = name, values_from = value)
 
-pairs_to_named_list(x, names_from = name, values_from = value)
+pairs_to_named_list(df, names_from = name, values_from = value)
 }
 \arguments{
-\item{x}{\itemize{
-\item For \code{as_pairs_from_named()}: a named vector or nested list.
-\itemize{
-\item For \code{pairs_to_named} fncs: a data frame
-}
-}}
+\item{x}{a Named vector or list. Lists values are flattened via \code{unlist()}.}
 
 \item{names_to, values_to}{character vector specify the new columns to pass the information in \code{x} into.}
+
+\item{df}{a data frame-like object with at least two columns}
 
 \item{names_from, values_from}{two columns in \code{x} to convert to names and values}
 }
 \value{
 \itemize{
-\item For \code{as_pairs_from_named()}: a two-coloumn tibble
+\item For \code{as_pairs_from_named()}: a two-column tibble
 \item For \code{pairs_to_named} fncs: named vector or list
 }
 }
@@ -59,10 +56,10 @@ as_pairs_from_named(animal_list, "class", "animal")
 
 # Convert pairs back to named vector and lists
 veg_from_pairs <- as_pairs_from_named(veg_vec) |> 
-  pairs_to_named_vector(veg_pairs)
+  pairs_to_named_vector(names_from = name, values_from = value)
 identical(veg_vec, veg_from_pairs)
 
-animal_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
+animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
   pairs_to_named_list(names_from = class, values_from = animal)
 identical(animal_list, animal_from_pairs)
 }

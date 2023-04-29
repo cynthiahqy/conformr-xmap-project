@@ -7,19 +7,19 @@
 \alias{verify_pairs_as_recode_unique}
 \title{Verify crossmap properties of column pairs}
 \usage{
-verify_pairs_all_1to1(x, from, to)
+verify_pairs_all_1to1(df, from, to)
 
-verify_pairs_all_unique(x, from, to)
+verify_pairs_all_unique(df, from, to)
 
-verify_pairs_as_recode_unique(x, from, to)
+verify_pairs_as_recode_unique(df, from, to)
 }
 \arguments{
-\item{x}{a data frame-like object with at least two columns}
+\item{df}{a data frame-like object with at least two columns}
 
-\item{to}{}
+\item{from, to}{Columns in \code{x} specifying the source and target nodes}
 }
 \value{
-\code{x} or error
+\code{df} or error
 }
 \description{
 Verify crossmap properties of column pairs
@@ -28,8 +28,8 @@ Verify crossmap properties of column pairs
 \itemize{
 \item \code{verify_pairs_all_1to1()}: Verify column pairs have only one-to-one relations
 
-\item \code{verify_pairs_all_unique()}: Verify columnn pairs are all unique
+\item \code{verify_pairs_all_unique()}: Verify column pairs are all unique
 
-\item \code{verify_pairs_as_recode_unique()}: (alias) Verify column pairs have only one-to-one relations
+\item \code{verify_pairs_as_recode_unique()}: Alias of \code{verify_pairs_all_1to1}
 
 }}

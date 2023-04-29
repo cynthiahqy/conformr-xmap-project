@@ -1,4 +1,24 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
+testthat::test_that("add_weights_*() work as expected",{
+  abc_pairs <- data.frame(lower = letters[1:5], upper = LETTERS[1:5])
+  abc_links <- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
+  testthat::expect_equal(add_weights_unit(abc_pairs), abc_links)
+  
+  animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
+                      REPT = c("lizard", "turtle"),
+                      CRUS = c("crab")) |>
+    as_pairs_from_named("class", "animal")
+  animal_links <- animal_pairs |>
+    dplyr::group_by(class) |>
+    dplyr::mutate(weights = 1/dplyr::n_distinct(animal)) |>
+    dplyr::ungroup()
+  add_links <- animal_pairs |>
+    add_weights_equal(from = class, to = animal, weights_into = "weights")
+  
+  testthat::expect_equal(animal_links, add_links)
+  }
+  )
+
 testthat::test_that(
   "vhas_* xmap validation helpers work as expected on valid df",
   {
@@ -54,6 +74,11 @@ testthat::test_that(
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )
+
+testthat::test_that("verify_named_all_*() work as expected",
+                    {
+                      
+                    })
 
 testthat::test_that("verify_named_matchset fncs work as expected", {
   v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)
@@ -198,9 +223,6 @@ testthat::test_that(
       class = "abort_col_type"
     )
     x <- new_xmap_df(df, "f", "t", "w")
-    testthat::expect_error(validate_xmap_df(x),
-      class = "abort_col_type"
-    )
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
                            class = "abort_col_type")
   }
@@ -234,7 +256,6 @@ testthat::test_that(
     )
     testthat::expect_error(abort_dup_pairs(df, "f", "t"), class = "abort_dup_pairs")
     x <- new_xmap_df(df, "f", "t", "w")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
                            class = "abort_dup_pairs")
   }
@@ -249,11 +270,7 @@ testthat::test_that(
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(abort_bad_weights(df, "f", "w"),
-      class = "abort_bad_weights"
-    )
     x <- new_xmap_df(df, "f", "t", "w")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_bad_weights")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
                            class = "abort_bad_weights")
   }
@@ -379,10 +396,8 @@ testthat::test_that('xmap_drop_extra works as expected', {
     dplyr::mutate(ex = "extra")
   xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
   
-  xmap_drop_df <- xmap_extra |> xmap_drop_extra.xmap_df()
   xmap_drop <- xmap_extra |> xmap_drop_extra()
   
-  testthat::expect_identical(xmap_small, xmap_drop_df)
   testthat::expect_identical(xmap_small, xmap_drop)
 })
 

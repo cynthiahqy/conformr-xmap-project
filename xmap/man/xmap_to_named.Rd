@@ -5,12 +5,12 @@
 \alias{xmap_to_named_list}
 \title{Coerce a unit weight \code{xmap_df} to a named vector or list}
 \usage{
-xmap_to_named_vector(x)
+xmap_to_named_vector(.xmap)
 
-xmap_to_named_list(x)
+xmap_to_named_list(.xmap)
 }
 \arguments{
-\item{x}{xmap with only unit weights}
+\item{.xmap}{xmap with only unit weights}
 }
 \value{
 Named vector or list.

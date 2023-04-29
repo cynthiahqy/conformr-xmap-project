@@ -27,8 +27,8 @@ vhas_no_dup_pairs <- function(v_from, v_to) {
 
 #' @describeIn vhas Returns TRUE if all weights for a given `from` label
 #' sum to one (approximately)
-#' @param tol Tolerance of comparison. Passed through to the `tolerance` arg of
-#' `base::all.equal()`.
+#' @param tol numeric \eqn{\ge 0}. Ignore differences smaller than `tol`.
+#' Passed through to the `tolerance` arg of `base::all.equal()`.
 vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0.5) {
   stopifnot(is.vector(v_from))
   stopifnot(is.vector(v_weights))

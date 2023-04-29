@@ -149,7 +149,7 @@ group_links <- student_groups |>
 
 ## collapse xmap from students to groups
 group_links |>
-  as_xmap_df(from = student, to = group, weights = weights)
+  verify_links_as_xmap(from = student, to = group, weights = weights)
 
 ## reverse doesn't work without adjusting the weights
 group_links |>
@@ -158,23 +158,31 @@ group_links |>
 
 Aggregation transformations can implemented as Collapse maps. Additionally, aggregation size requirements can be implemented as conditions on the number of incoming links for each target node. For instance, if you know that each target node should aggregate values from at least two source nodes, then the minimum number of non-zero incoming links should be 2 for every target node. Notice that this requirement precludes one-to-one links since it prevents any source node from being recoded into an "unshared" node in the target nomenclature.
 
-### Split or Disaggregation maps
+### Split or Redistribution maps (with Equal Weights)
 
 Any crossmap with at least one set of fractional weight (one-to-many) links involve some redistribution of source value. However, a useful special case of maps with fractional weights are split maps, which encode the disaggregation of source values into a target nomenclature. Such maps which will have mostly one-to-many relations, and do not contain one-from-many relations. This can be ensured by restricting each target node to only have one incoming link. Furthermore, we can preclude one-to-one links with the condition that all links must have fractional weights.
 
-Notice that the same set of node pairs can generate either a split or collapse map depending on the weights added. For example, recall that in the student group example from above, swapping the `to` and `from` variables no longer formed a valid `xmap`. Now consider allocating some budget of prizes equally between students in each group. This requires adding fractional weights to `group_links`, before coercion to an `xmap_df`.
+Notice that the same set of node pairs can generate either a split or collapse map depending on the weights added. For example, recall that in the student group example from above, swapping the `to` and `from` variables no longer formed a valid crossmap. Now consider allocating some budget of prizes equally between students in each group. This requires adding fractional weights to `group_links`, which can then be verified as a crossmap.
 
 ```{r}
 group_prize_links <- student_groups |>
   as_pairs_from_named("group", "student") |>
   dplyr::group_by(group) |>
-  dplyr::mutate(prize_share = 1 / dplyr::n())
+  dplyr::mutate(prize_share = 1 / dplyr::n_distinct(student))
 
 group_prize_links |>
-  as_xmap_df(from = group, to = student, weights = prize_share)
+  verify_links_as_xmap(from = group, to = student, weights = prize_share)
 ```
 
-## Creation from Pairs and Links
+Note that if the first crossmap condition is met, i.e. there is only one link between each unique source-node pair, then `dplyr::n()` and `dplyr::n_distinct()` are interchangeable when generating equal share weights.
+
+## Creating `xmap_df` from Pairs and Links
+
+The following examples demonstrate how to coerce various inputs into the experimental `xmap_df` class.
+
+The `xmap_df` class aims to facilitates additional functionality such as graph property calculation and printing (i.e. relation types and crossmap direction) via a custom `print()` method, coercion to other useful classes (e.g. `xmap_to_matrix()`), visualisation (see `vignette("vis-xmaps")` for prototypes), and multi-step transformations (i.e. from nomenclature A to B to C).
+
+Please note that the `xmap_df` class and related functions are still in active development and subject to breaking changes in future releases.
 
 ### Row-wise Links
 
@@ -285,7 +293,7 @@ agg_xmap <- agg_x |>
 agg_xmap
 ```
 
-#### References for Weights
+#### References for Custom Weights
 
 Conversely, we might have aggregate level data which want to disaggregate. Continuing the above example, this could involve incorporating country level data into analysis at the 3166-2 Subdivisions level.
 

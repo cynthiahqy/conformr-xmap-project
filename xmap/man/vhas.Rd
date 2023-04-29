@@ -25,8 +25,8 @@ vhas_1fromM(v_to)
 \arguments{
 \item{v_from, v_to, v_weights}{equal length vectors containing the source-target node pairs}
 
-\item{tol}{Tolerance of comparison. Passed through to the \code{tolerance} arg of
-\code{base::all.equal()}.}
+\item{tol}{numeric \eqn{\ge 0}. Ignore differences smaller than \code{tol}.
+Passed through to the \code{tolerance} arg of \code{base::all.equal()}.}
 }
 \value{
 TRUE or FALSE

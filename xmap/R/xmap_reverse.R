@@ -2,24 +2,22 @@
 
 #' Reverse xmap direction
 #'
-#' @param x xmap object to be reversed
+#' @param .xmap xmap object to be reversed
 #' @param weights_into A string specifying the name of a new or existing column to store reverse weights in. 
 #'
 #' @return xmap object of same class as `x`, or throws an error if `x` is not reversible
 #' @export
-#'
-#' @examples
-xmap_reverse <- function(x, weights_into){
+xmap_reverse <- function(.xmap, weights_into){
   UseMethod("xmap_reverse")
 }
 
 #' @describeIn xmap_reverse Reverse a `xmap_df`
 #' 
 #' @export
-xmap_reverse.xmap_df <- function(x, weights_into = "r_weights"){
-  stopifnot(inherits(x, "xmap_df"))
-  x_attrs <- attributes(x)
-  df <- as.data.frame(x)
+xmap_reverse.xmap_df <- function(.xmap, weights_into = "r_weights"){
+  stopifnot(inherits(.xmap, "xmap_df"))
+  x_attrs <- attributes(.xmap)
+  df <- as.data.frame(.xmap)
   
   ## check xmap can be reversed
   abort_not_reversible(df, x_attrs$col_to)

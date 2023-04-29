@@ -9,6 +9,6 @@
 #' A list with :
 #' \describe{
 #'  \item{recode_vect, collapse_list}{Named vector and list for conversion into node pairs}
-#'  \item{xmap}
 #'  }
 #' @source Package authors
+"mock"

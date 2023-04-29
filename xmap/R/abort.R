@@ -64,16 +64,17 @@ abort_dup_pairs <- function(df, col_from, col_to) {
   invisible(df)
 }
 
-#' @describeIn abort Abort if invalid mapping weights are found
+#' @describeIn abort Abort for invalid mapping weights
 #'
-abort_bad_weights <- function(df, col_from, col_weights) {
-  if (!vhas_complete_weights(df[[col_from]], df[[col_weights]])) {
+abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
     cli::cli_abort(
-      message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
-      class = "abort_bad_weights"
+      message =  c(
+            "Incomplete mapping weights found",
+      "x" = "{.var {col_weights}} does not sum to 1",
+      "i" = "Modify weights or adjust `tol` and try again."),
+      class = "abort_bad_weights",
+      call = call
     )
-  }
-  invisible(df)
 }
 
 #' @describeIn abort Abort if xmap_df columns are not in order

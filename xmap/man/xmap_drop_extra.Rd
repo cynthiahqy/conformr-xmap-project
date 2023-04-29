@@ -4,7 +4,7 @@
 \alias{xmap_drop_extra}
 \title{Drop extra columns from \code{xmap} objects}
 \usage{
-xmap_drop_extra(x)
+xmap_drop_extra(.xmap)
 }
 \description{
 Drop extra columns from \code{xmap} objects
