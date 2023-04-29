@@ -1016,15 +1016,17 @@ abort_dup_pairs <- function(df, col_from, col_to) {
 #### Complete Mapping Weights
 
 ```{r fnc-check-weights, send_to="R/abort.R"}
-#' @describeIn abort Abort if invalid mapping weights are found
+#' @describeIn abort Abort for invalid mapping weights
 #'
-abort_bad_weights <- function(df, col_from, col_weights) {
-  if (!vhas_complete_weights(df[[col_from]], df[[col_weights]])) {
+abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
     cli::cli_abort(
-      message = "Incomplete mapping weights found. Check sum of weights for each `from` group sums to 1",
-      class = "abort_bad_weights"
+      message =  c(
+            "Incomplete mapping weights found",
+      "x" = "{.var {col_weights}} does not sum to 1",
+      "i" = "Modify weights or adjust `tol` and try again."),
+      class = "abort_bad_weights",
+      call = call
     )
-  }
   invisible(df)
 }
 ```
@@ -1034,7 +1036,8 @@ abort_bad_weights <- function(df, col_from, col_weights) {
 ```{r fnc-verify-links-as-xmap}
 #' Check if candidate links meet crossmap properties
 #' 
-#' @param df data.frame like object containing candidate links 
+#' @param df data.frame like object containing candidate links
+#' @param tol numeric $\ge$ 0. Ignore differences smaller than `tol`.
 #' @inheritParams as_xmap_df
 #' 
 #' @export
@@ -1046,7 +1049,7 @@ abort_bad_weights <- function(df, col_from, col_weights) {
 #'   w = c(0.1, 0.15, 0.25, 0.5)
 #' )
 #' verify_links_as_xmap(links, from = a, to = b, weights = w)
-verify_links_as_xmap <- function(df, from, to, weights){
+verify_links_as_xmap <- function(df, from, to, weights, tol = .Machine$double.eps^0.5){
   col_from <- deparse(substitute(from))
   col_to <- deparse(substitute(to))
   col_weights <- deparse(substitute(weights))
@@ -1055,7 +1058,8 @@ verify_links_as_xmap <- function(df, from, to, weights){
   abort_any_na(df)
   abort_weights_col_type(df, col_weights)
   abort_dup_pairs(df, col_from, col_to)
-  abort_bad_weights(df, col_from, col_weights)
+  stop_bad_weights <- !vhas_complete_weights(df[[col_from]], df[[col_weights]], tol)
+  if (stop_bad_weights) { abort_bad_weights(col_weights) }
   
   invisible(df)
 }
@@ -1307,7 +1311,7 @@ abort_from_set <- function(df, col_from, from_set) {
     -   has no missing values in ANY column
     -   from_set attributes matches unique values in `from` column
     -   weights column is `numeric`
--   checks graph properties:
+-   does not check graph properties:
     -   A: duplicate source-target rows (weights should be collapsed into a single row)
     -   B: no missing weights (checked above with missing values)
     -   C: `sum()` of values in weights column by source-code is `1` (or subject to floating point tolerance)
@@ -1324,8 +1328,11 @@ abort_from_set <- function(df, col_from, from_set) {
 ```
 
 ```{r xmap-validator}
-#' Validator for `xmap_df` objects
+#' Validator for `xmap_df` class (INTERNAL)
 #'
+#' Only checks class attributes, not crossmap graph properties.
+#' Use `verify_links_as_xmap()` or `as_xmap()` to verify graph
+#' properties
 validate_xmap_df <- function(x) {
   stopifnot(is_xmap_df(x))
 
@@ -1340,11 +1347,6 @@ validate_xmap_df <- function(x) {
   ## ---- xmap_df attributes ---
   abort_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
   abort_from_set(df, x_attrs$col_from, x_attrs$from_set)
-
-  ## ---- xmap graph properties ----
-  abort_weights_col_type(df, x_attrs$col_weights)
-  abort_dup_pairs(df, x_attrs$col_from, x_attrs$col_to)
-  abort_bad_weights(df, x_attrs$col_from, x_attrs$col_weights)
 
   ## return original object
   invisible(x)
@@ -1427,9 +1429,6 @@ testthat::test_that(
       class = "abort_col_type"
     )
     x <- new_xmap_df(df, "f", "t", "w")
-    testthat::expect_error(validate_xmap_df(x),
-      class = "abort_col_type"
-    )
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
                            class = "abort_col_type")
   }
@@ -1463,7 +1462,6 @@ testthat::test_that(
     )
     testthat::expect_error(abort_dup_pairs(df, "f", "t"), class = "abort_dup_pairs")
     x <- new_xmap_df(df, "f", "t", "w")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_dup_pairs")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
                            class = "abort_dup_pairs")
   }
@@ -1478,11 +1476,7 @@ testthat::test_that(
       "A1", "B01", 0.4,
       "A1", "B02", 0.59
     )
-    testthat::expect_error(abort_bad_weights(df, "f", "w"),
-      class = "abort_bad_weights"
-    )
     x <- new_xmap_df(df, "f", "t", "w")
-    testthat::expect_error(validate_xmap_df(x), class = "abort_bad_weights")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
                            class = "abort_bad_weights")
   }
@@ -1503,13 +1497,14 @@ testthat::test_that(
 #'  * For `is_xmap_df()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
+#' @param tol numeric $\ge$ 0.
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
 #' @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
 #' 
 #' @return A validated `xmap` object.
 #' 
 #' @export
-as_xmap_df <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
+as_xmap_df <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = c("xmap_df"), ...) {
   UseMethod("as_xmap_df")
 }
 ```
@@ -1539,7 +1534,7 @@ as_xmap_df <- function(x, from, to, weights, subclass = c("xmap_df"), ...) {
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap_df(links, from = a, to = b, weights = w)
-as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .drop_extra = TRUE) {
+as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = "xmap_df", .drop_extra = TRUE) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -1571,6 +1566,13 @@ as_xmap_df.data.frame <- function(x, from, to, weights, subclass = "xmap_df", .d
                  stop("Unknown xmap subclass"))
 
   ## validation
+  ## ---- xmap graph properties ----
+  abort_weights_col_type(df, col_weights)
+  abort_dup_pairs(df, col_from, col_to)
+  stop_bad_weights <- !vhas_complete_weights(df[[col_from]], df[[col_weights]], tol)
+  if (stop_bad_weights) { abort_bad_weights(col_weights) }
+
+  ## ---- xmap_df attributes ----
   validate_xmap_df(xmap)
 
   return(xmap)
