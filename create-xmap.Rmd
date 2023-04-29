@@ -25,7 +25,7 @@ usethis::create_package(
     Package = params$package_name,
     Version = "0.0.0.9020",
     Title = "xmap: A principled approach to recoding and redistributing data between nomenclature",
-    Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects",
+    Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.",
     `Authors@R` = person(
       given = "Cynthia",
       family = "Huang",
@@ -50,12 +50,20 @@ usethis::use_package("cli")
 usethis::use_package("tibble")
 usethis::use_package("tidyr")
 usethis::use_package("dplyr")
+usethis::use_package("glue", "Imports")
+
+# Suggests for xmap coercion to other classes
+usethis::use_package("stats", type = "Suggests")
+usethis::use_package("Matrix", type = "Suggests") ## for sparse matrices
 
 # Suggests for Vignettes and Tests
-usethis::use_package("Matrix", type = "Suggests") ## for sparse matrices
 usethis::use_package("matlib", type = "Suggests")
 usethis::use_package("testthat", type = "Suggests")
 usethis::use_package("forcats", type = "Suggests")
+usethis::use_package("ggplot2", type = "Suggests")
+usethis::use_package("stringr", type = "Suggests")
+usethis::use_package("patchwork", type = "Suggests")
+usethis::use_package("ggbump", type = "Suggests")
 ```
 
 ### Utilities
@@ -292,6 +300,7 @@ usethis::use_data(mock)
 #'  \item{xmap}
 #'  }
 #' @source Package authors
+"mock"
 ```
 
 ## Candidate Links
@@ -376,10 +385,10 @@ xmap::pairs_from_named(list = link_list,
 #' 
 #' # Convert pairs back to named vector and lists
 #' veg_from_pairs <- as_pairs_from_named(veg_vec) |> 
-#'   pairs_to_named_vector(veg_pairs)
+#'   pairs_to_named_vector()
 #' identical(veg_vec, veg_from_pairs)
 #' 
-#' animal_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
+#' animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
 #'   pairs_to_named_list(names_from = class, values_from = animal)
 #' identical(animal_list, animal_from_pairs)
 NULL
@@ -509,8 +518,8 @@ vhas_no_dup_pairs <- function(v_from, v_to) {
 ```{r send_to="R/vhas.R"}
 #' @describeIn vhas Returns TRUE if all weights for a given `from` label
 #' sum to one (approximately)
-#' @param tol Tolerance of comparison. Passed through to the `tolerance` arg of
-#' `base::all.equal()`.
+#' @param tol numeric \eqn{\ge 0}. Ignore differences smaller than `tol`.
+#' Passed through to the `tolerance` arg of `base::all.equal()`.
 vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0.5) {
   stopifnot(is.vector(v_from))
   stopifnot(is.vector(v_weights))
@@ -723,6 +732,7 @@ verify_named_all_1to1 <- function(x){
 verify_named_all_unique <- function(x){
   stopifnot(is.vector(x))
   pairs <- as_pairs_from_named(x)
+  dup_idx <- anyDuplicated(pairs)
   stop <- as.logical(dup_idx)
   if (stop){
     cli::cli_abort("Duplicated pairs found in `x`.
@@ -776,7 +786,7 @@ msg_abort_named_matchset <- function(set_type = c("names", "values"),
 #' 
 #' @inheritParams verify_named
 #' @param ref_set a vector of character strings 
-#' @rdname verify_named_matchset
+#' @name verify_named_matchset
 #' 
 #' @return `x` or throw an Error
 #' @examples
@@ -923,8 +933,7 @@ verify_named_no_dup_names <- verify_named_all_names_unique
 #' Verify crossmap properties of column pairs
 #'
 #' @param x a data frame-like object with at least two columns
-#' @param from
-#' @param to
+#' @inheritParams verify_links_as_xmap
 #'
 #' @return `x` or error
 #' @name verify_pairs
@@ -1040,7 +1049,6 @@ abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
       class = "abort_bad_weights",
       call = call
     )
-  invisible(df)
 }
 ```
 
@@ -1050,7 +1058,7 @@ abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
 #' Check if candidate links meet crossmap properties
 #' 
 #' @param df data.frame like object containing candidate links
-#' @param tol numeric $\ge$ 0. Ignore differences smaller than `tol`.
+#' @inheritParams vhas_complete_weights
 #' @inheritParams as_xmap_df
 #' 
 #' @export
@@ -1296,7 +1304,7 @@ testthat::test_that("abort_col_order() works as expected",
   uniq_sets <- list()
   uniq_sets$from_set <- as.character(unique(df[[x_attrs$col_from]]))
   uniq_sets$to_set <- as.character(unique(df[[x_attrs$col_to]]))
-  return(unique_sets)
+  return(uniq_sets)
 }
 ```
 
@@ -1510,7 +1518,7 @@ testthat::test_that(
 #'  * For `is_xmap_df()`: An object to test.
 #' @param from,to Columns in `x` specifying the source and target nodes
 #' @param weights Column in `x` specifying the weight applied to data passed along the directed link between source and target node
-#' @param tol numeric $\ge$ 0.
+#' @inheritParams vhas_complete_weights
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
 #' @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
 #' 
@@ -1669,9 +1677,9 @@ xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
     as.data.frame(stringsAsFactors = TRUE)
   
   if(sparse){
-    x_mtx <- stats::xtabs(as.formula(fm), x_df, sparse = TRUE)
+    x_mtx <- stats::xtabs(stats::as.formula(fm), x_df, sparse = TRUE)
   } else {
-    x_mtx <- stats::xtabs(as.formula(fm), x_df, sparse = FALSE)
+    x_mtx <- stats::xtabs(stats::as.formula(fm), x_df, sparse = FALSE)
     attr(x_mtx, "call") <- NULL
     unclass(x_mtx)
   }
