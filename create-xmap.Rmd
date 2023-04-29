@@ -435,7 +435,7 @@ pairs_to_named_list <- function(x, names_from = name, values_from = value){
 #' Attaches column of unit weights to pairs of source-target nodes.
 #' The resultant weighted links can be verified or coerced into `xmap`.
 #'
-#' @param pairs data.frame or tibble containing unique node pairs
+#' @inheritParams verify_pairs
 #' @param weights_into character string naming new column to store link weights in
 #'
 #' @return `pairs` with additional column of ones
@@ -443,13 +443,14 @@ pairs_to_named_list <- function(x, names_from = name, values_from = value){
 #' @export
 #'
 #' @examples
-#' AUS_list <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT"))
-#'   as_pairs_from_named(AUS_list, names_to = "ctr", values_to = "state") |>
+#' AUS_pairs <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT")) |>
+#'   as_pairs_from_named(names_to = "ctr", values_to = "state") |>
+#' AUS_pairs |>
 #'   add_weights_unit(weights_into = "weights")
-add_weights_unit <- function(pairs, weights_into = "weights"){
+add_weights_unit <- function(df, weights_into = "weights"){
   ## TODO: validate_pairs_unique()
-  pairs[,weights_into] <- 1
-  return(pairs)
+  df[,weights_into] <- 1
+  return(df)
 }
 ```
 
@@ -460,19 +461,47 @@ add_weights_unit <- function(pairs, weights_into = "weights"){
 #' The resultant weighted links can be verified or coerced into an `xmap`.
 #' 
 #' @inheritParams add_weights_unit
-#' @inheritParams verify_links_as_xmap
 #' 
 #' @return `pairs` with additional column of weights
 #' @family {Helpers for adding weights to pairs}
 #' @export
 #' 
 #' @examples
-add_weights_equal <- function(pairs, from, to, weights_into = "weights"){
+#' animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
+#'                  REPT = c("lizard", "turtle"),
+#'                  CRUS = c("crab")) |>
+#'   as_pairs_from_named("class", "animal")
+#' animal_pairs |>
+#'   add_weights_equal(from = class, to = animal)
+add_weights_equal <- function(df, from, to, weights_into = "weights"){
   ## TODO: validate_pairs_unique()
-  pairs |>
+  df |>
     dplyr::group_by({{from}}) |>
-    dplyr::mutate(weights_into := 1/dplyr::n_distinct({{to}}))
+    dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
+    dplyr::ungroup()
 }
+```
+
+```{r}
+testthat::test_that("add_weights_*() work as expected",{
+  abc_pairs <- data.frame(lower = letters[1:5], upper = LETTERS[1:5])
+  abc_links <- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
+  testthat::expect_equal(add_weights_unit(abc_pairs), abc_links)
+  
+  animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
+                      REPT = c("lizard", "turtle"),
+                      CRUS = c("crab")) |>
+    as_pairs_from_named("class", "animal")
+  animal_links <- animal_pairs |>
+    dplyr::group_by(class) |>
+    dplyr::mutate(weights = 1/dplyr::n_distinct(animal)) |>
+    dplyr::ungroup()
+  add_links <- animal_pairs |>
+    add_weights_equal(from = class, to = animal, weights_into = "weights")
+  
+  testthat::expect_equal(animal_links, add_links)
+  }
+  )
 ```
 
 ### Link Properties: `vhas_*(x_)`
