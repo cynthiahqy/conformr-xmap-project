@@ -100,6 +100,12 @@ library(rlang)
 
 This should correspond to `@keywords` and `send_to=` arguments.
 
+#### Data Argument Names
+
+-   `x` for ambiguous inputs (e.g. named vector OR named list), or generic methods
+-   `df` for data frames (e.g. pairs and links)
+-   `.xmap` for xmap objects
+
 #### Internal Helpers
 
 Errors and Messages:
@@ -361,9 +367,8 @@ xmap::pairs_from_named(list = link_list,
 #' `pairs_to_named_vector` extracts name-value pairs from column pairs as is,
 #' whilst `pairs_to_named_list()` nests the values first.
 #'
-#' @param x
-#'   * For `as_pairs_from_named()`: a named vector or nested list.
-#'   * For `pairs_to_named` fncs: a data frame
+#' @inheritParams verify_named
+#' @inheritParams verify_pairs
 #' @param names_to,values_to character vector specify the new columns to pass the information in `x` into.
 #' @param names_from,values_from two columns in `x` to convert to names and values
 #'
@@ -385,7 +390,7 @@ xmap::pairs_from_named(list = link_list,
 #' 
 #' # Convert pairs back to named vector and lists
 #' veg_from_pairs <- as_pairs_from_named(veg_vec) |> 
-#'   pairs_to_named_vector()
+#'   pairs_to_named_vector(names_from = name, values_from = value)
 #' identical(veg_vec, veg_from_pairs)
 #' 
 #' animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
@@ -409,15 +414,15 @@ as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
 ```{r send_to="R/pairs_named.R"}
 #' @describeIn as_pairs Convert column pairs to named vector
 #' @export
-pairs_to_named_vector <- function(x, names_from = name, values_from = value){
-  ordered_cols <- dplyr::select(x, {{names_from}}, {{values_from}})
+pairs_to_named_vector <- function(df, names_from = name, values_from = value){
+  ordered_cols <- dplyr::select(df, {{names_from}}, {{values_from}})
   tibble::deframe(ordered_cols)
 }
 
 #' @describeIn as_pairs Convert column pairs to nested named list
 #' @export
-pairs_to_named_list <- function(x, names_from = name, values_from = value){
-  nested_cols <- dplyr::select(x, {{names_from}}, {{values_from}}) |>
+pairs_to_named_list <- function(df, names_from = name, values_from = value){
+  nested_cols <- dplyr::select(df, {{names_from}}, {{values_from}}) |>
     tidyr::nest(values = {{values_from}})
   ordered_cols <- dplyr::select(nested_cols, {{names_from}}, values)
   tibble::deframe(ordered_cols) |>
@@ -719,9 +724,9 @@ abort_any_na <- function(df) {
 ```{r send_to="R/verify_named.R"}
 #' Verify crossmap properties of named vectors or lists
 #'
-#' @param x a named vector
+#' @param x a Named vector or list. Lists values are flattened via `unlist()`.
 #'
-#' @return `x` or throw error
+#' @return `x` or throws an error
 #' @name verify_named
 #' @examples
 #' ## check each fruit has a unique color
@@ -813,11 +818,11 @@ msg_abort_named_matchset <- function(set_type = c("names", "values"),
 
 #' Verify unique names or values of named vector or list match expected set
 #' 
+#' @name verify_named_matchset
 #' @inheritParams verify_named
 #' @param ref_set a vector of character strings 
-#' @name verify_named_matchset
 #' 
-#' @return `x` or throw an Error
+#' @return `x` or throw an error
 #' @examples
 #' fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 #' fruit_set <- c("apple", "strawberry", "banana", "pear")
@@ -825,7 +830,7 @@ msg_abort_named_matchset <- function(set_type = c("names", "values"),
 #'   verify_named_matchset_names_within(ref_set = fruit_set)
 NULL
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list **exactly** match an expected set of name values
+#' @describeIn verify_named_matchset Names of `x` **exactly** match `ref_set`
 #' @export
 verify_named_matchset_names_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -838,7 +843,7 @@ verify_named_matchset_names_exact <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique values of named vector or list **exactly** match an expected set of name values
+#' @describeIn verify_named_matchset Values of `x` **exactly** match `ref_set`
 #' @export
 verify_named_matchset_values_exact <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -851,7 +856,7 @@ verify_named_matchset_values_exact <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named_matchset Names of `x` **contain** all of `ref_set`
 #' @export
 verify_named_matchset_names_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -864,7 +869,7 @@ verify_named_matchset_names_contain <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list **contain** an expected set of name values
+#' @describeIn verify_named_matchset Values of `x` **contain** all of `ref_set`
 #' @export
 verify_named_matchset_values_contain <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -877,7 +882,7 @@ verify_named_matchset_values_contain <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named_matchset Names of `x` are all **within** `ref_set`
 #' @export
 verify_named_matchset_names_within <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -890,7 +895,7 @@ verify_named_matchset_names_within <- function(x, ref_set){
   invisible(x)
 }
 
-#' @describeIn verify_named_matchset Verify unique names of named vector or list are **within** an expected set of name values
+#' @describeIn verify_named_matchset Values of `x` are all **within** `ref_set`
 #' @export
 verify_named_matchset_values_within <- function(x, ref_set){
   stopifnot(is.vector(x))
@@ -943,15 +948,15 @@ testthat::test_that("verify_named_matchset fncs work as expected", {
 Aliases:
 
 ```{r verify-named-aliases, send_to="R/verify_named.R"}
-#' @describeIn verify_named (alias) verify named vector or list has only one-to-one relations
+#' @describeIn verify_named Alias of `verify_named_all_1to1()`
 #' @export
 verify_named_as_recode_unique <- verify_named_all_1to1
 
-#' @describeIn verify_named (alias)
+#' @describeIn verify_named Alias of `verify_named_all_values_unique()`
 #' @export
 verify_named_no_dup_values <- verify_named_all_values_unique
 
-#' @describeIn verify_named (alias)
+#' @describeIn verify_named Alias of `verify_named_all_names_unique()`
 #' @export
 verify_named_no_dup_names <- verify_named_all_names_unique
 ```
@@ -961,33 +966,33 @@ verify_named_no_dup_names <- verify_named_all_names_unique
 ```{r send_to="R/verify_pairs.R"}
 #' Verify crossmap properties of column pairs
 #'
-#' @param x a data frame-like object with at least two columns
+#' @param df a data frame-like object with at least two columns
 #' @inheritParams verify_links_as_xmap
 #'
-#' @return `x` or error
+#' @return `df` or error
 #' @name verify_pairs
 NULL
 
 #' @describeIn verify_pairs Verify column pairs have only one-to-one relations
 #' @export
-verify_pairs_all_1to1 <- function(x, from, to){
-  stopifnot(is.data.frame(x))
-  set_from <- unique(x[[rlang::englue("{{from}}")]])
-  set_to <- unique(x[[rlang::englue("{{to}}")]])
+verify_pairs_all_1to1 <- function(df, from, to){
+  stopifnot(is.data.frame(df))
+  set_from <- unique(df[[rlang::englue("{{from}}")]])
+  set_to <- unique(df[[rlang::englue("{{to}}")]])
   stopifnot(length(set_from) == length(set_to))
-  invisible(x)
+  invisible(df)
 }
 
-#' @describeIn verify_pairs Verify columnn pairs are all unique
+#' @describeIn verify_pairs Verify column pairs are all unique
 #' @export
-verify_pairs_all_unique <- function(x, from, to){
-  stopifnot(is.data.frame(x))
-  pairs <- dplyr::select(x, {{ from }}, {{to}})
+verify_pairs_all_unique <- function(df, from, to){
+  stopifnot(is.data.frame(df))
+  pairs <- dplyr::select(df, {{ from }}, {{to}})
   stopifnot(!as.logical(anyDuplicated(pairs)))
-  invisible(x)
+  invisible(df)
 }
 
-#' @describeIn verify_pairs (alias) Verify column pairs have only one-to-one relations
+#' @describeIn verify_pairs Alias of `verify_pairs_all_1to1`
 #' @export
 verify_pairs_as_recode_unique <- verify_pairs_all_1to1
 ```
@@ -1088,7 +1093,7 @@ abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
 #' 
 #' @param df data.frame like object containing candidate links
 #' @inheritParams vhas_complete_weights
-#' @inheritParams as_xmap_df
+#' @inheritParams as_xmap
 #' 
 #' @export
 #' @examples
@@ -1552,7 +1557,7 @@ testthat::test_that(
 #' @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
 #' 
 #' @return A validated `xmap` object.
-#' 
+#' @name as_xmap
 #' @export
 as_xmap_df <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = c("xmap_df"), ...) {
   UseMethod("as_xmap_df")
@@ -1569,7 +1574,7 @@ as_xmap_df <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subc
     -   [x] any validation failures via `validate_xmap_df()`
 
 ```{r send_to="R/as_xmap.R"}
-#' @describeIn as_xmap_df Coerce a `data.frame` to `xmap`
+#' @describeIn as_xmap Coerce a `data.frame` to `xmap`
 #'
 #' @export
 #' @examples
@@ -1666,15 +1671,15 @@ testthat::test_that(
 #' Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
 #' and the columns are indexed by `to` values. Drops any additional variables.
 #' 
-#' @param x an xmap object
+#' @param .xmap an xmap object
 #' @param sparse logical specifying if the result should be a sparse matrix. Defaults to TRUE.
-#' @param ... Unused
+#' @param ... Reversed for passing arguments to `stats::xtabs`
 #' 
 #' @return A matrix or sparse matrix object
 #' @family {xmap coercion}
 #' 
 #' @export
-xmap_to_matrix <- function(x, sparse, ...) {
+xmap_to_matrix <- function(.xmap, sparse, ...) {
   UseMethod("xmap_to_matrix")
 }
 ```
@@ -1684,9 +1689,7 @@ xmap_to_matrix <- function(x, sparse, ...) {
 ```{r xmap-matrix, send_to="R/xmap_to.R"}
 #' @describeIn xmap_to_matrix Coerce a `xmap_df` to a Matrix
 #'
-#' @return (sparse) Matrix
 #' @export
-#'
 #' @examples
 #' abc_xmap <- data.frame(
 #'  stringsAsFactors = FALSE,
@@ -1698,17 +1701,16 @@ xmap_to_matrix <- function(x, sparse, ...) {
 #'  ) |>
 #' as_xmap_df(origin, dest, link)
 #' xmap_to_matrix(abc_xmap)
-xmap_to_matrix.xmap_df <- function(x, sparse = TRUE){
-  x_attrs <- attributes(x)
+xmap_to_matrix.xmap_df <- function(.xmap, sparse = TRUE, ...){
+  x_attrs <- attributes(.xmap)
+  df <- .xmap |> as.data.frame(stringsAsFactors = TRUE)
   fm <- paste(x_attrs$col_weights, "~", x_attrs$col_from, "+", x_attrs$col_to,
               collapse = "")
-  x_df <- x |>
-    as.data.frame(stringsAsFactors = TRUE)
   
   if(sparse){
-    x_mtx <- stats::xtabs(stats::as.formula(fm), x_df, sparse = TRUE)
+    x_mtx <- stats::xtabs(stats::as.formula(fm), df, sparse = TRUE)
   } else {
-    x_mtx <- stats::xtabs(stats::as.formula(fm), x_df, sparse = FALSE)
+    x_mtx <- stats::xtabs(stats::as.formula(fm), df, sparse = FALSE)
     attr(x_mtx, "call") <- NULL
     unclass(x_mtx)
   }
@@ -1766,7 +1768,7 @@ msg_abort_frac_weights <- function(impact){
 #' Names are the unique target nodes in `to`,
 #'   and each element contains the source node(s) in `from`.
 #' 
-#' @param x xmap with only unit weights
+#' @param .xmap xmap with only unit weights
 #'
 #' @return Named vector or list.
 #' @export
@@ -1780,11 +1782,12 @@ msg_abort_frac_weights <- function(impact){
 #'   add_weights_unit() |>
 #'   as_xmap_df(from = iso3n, to = iso2c, weights)
 #' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
-xmap_to_named_vector <- function(x){
-  stopifnot(is_xmap(x))
-  x_attrs <- attributes(x)
+xmap_to_named_vector <- function(.xmap){
+  stopifnot(is_xmap(.xmap))
+  x_attrs <- attributes(.xmap)
+  df <- as.data.frame(.xmap)
   # check only unit weights
-  w <- x[[x_attrs$col_weights]]
+  w <- df[[x_attrs$col_weights]]
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named vector"),
@@ -1792,7 +1795,7 @@ xmap_to_named_vector <- function(x){
   }
   
   # convert
-  x |>
+  df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
     tibble::deframe() |>
     sapply(as.matrix) |>
@@ -1811,11 +1814,13 @@ xmap_to_named_vector <- function(x){
 #'  add_weights_unit() |>
 #'  as_xmap_df(from = animals, to = class, weights = weights)
 #' identical(xmap_to_named_list(animal_xmap), animal_list)
-xmap_to_named_list <- function(x) {
-  stopifnot(is_xmap(x))
-  x_attrs <- attributes(x)
+xmap_to_named_list <- function(.xmap) {
+  stopifnot(is_xmap(.xmap))
+  x_attrs <- attributes(.xmap)
+  df <- as.data.frame(.xmap)
   # check only unit weights
-  w <- x[[x_attrs$col_weights]]
+  w <- df[[x_attrs$col_weights]]
+  
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named list"),
@@ -1823,7 +1828,7 @@ xmap_to_named_list <- function(x) {
   }
   
   # convert
-  x |>
+  df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
     tidyr::nest(source = c(x_attrs$col_from)) |>
     tibble::deframe() |>
@@ -1923,22 +1928,22 @@ See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues
 ```{r xmap-reverse, send_to="R/xmap_reverse.R"}
 #' Reverse xmap direction
 #'
-#' @param x xmap object to be reversed
+#' @param .xmap xmap object to be reversed
 #' @param weights_into A string specifying the name of a new or existing column to store reverse weights in. 
 #'
 #' @return xmap object of same class as `x`, or throws an error if `x` is not reversible
 #' @export
-xmap_reverse <- function(x, weights_into){
+xmap_reverse <- function(.xmap, weights_into){
   UseMethod("xmap_reverse")
 }
 
 #' @describeIn xmap_reverse Reverse a `xmap_df`
 #' 
 #' @export
-xmap_reverse.xmap_df <- function(x, weights_into = "r_weights"){
-  stopifnot(inherits(x, "xmap_df"))
-  x_attrs <- attributes(x)
-  df <- as.data.frame(x)
+xmap_reverse.xmap_df <- function(.xmap, weights_into = "r_weights"){
+  stopifnot(inherits(.xmap, "xmap_df"))
+  x_attrs <- attributes(.xmap)
+  df <- as.data.frame(.xmap)
   
   ## check xmap can be reversed
   abort_not_reversible(df, x_attrs$col_to)
@@ -1997,20 +2002,14 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
 #' Drop extra columns from `xmap` objects
 #'
 #' @export
-xmap_drop_extra <- function(x){
-  UseMethod("xmap_drop_extra")
-}
-
-#' @export
-xmap_drop_extra.xmap_df <- function(x){
-  stopifnot(is_xmap_df(x))
-  
-  col_strings <- simplify2array(.get_col_attrs.xmap_df(x))
-  
-  z_attrs <- attributes(x)
+xmap_drop_extra <- function(.xmap){
+  stopifnot(is_xmap_df(.xmap))
+  # get col names
+  col_strings <- simplify2array(.get_col_attrs.xmap_df(.xmap))
+  # construct new xmap with only necessary columns
+  z_attrs <- attributes(.xmap)
   z_attrs$names <- unname(col_strings)
-  
-  z <- as.data.frame(x)
+  z <- as.data.frame(.xmap)
   z <- z[,col_strings]
   attributes(z) <- z_attrs
   
@@ -2034,10 +2033,8 @@ testthat::test_that('xmap_drop_extra works as expected', {
     dplyr::mutate(ex = "extra")
   xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
   
-  xmap_drop_df <- xmap_extra |> xmap_drop_extra.xmap_df()
   xmap_drop <- xmap_extra |> xmap_drop_extra()
   
-  testthat::expect_identical(xmap_small, xmap_drop_df)
   testthat::expect_identical(xmap_small, xmap_drop)
 })
 ```
