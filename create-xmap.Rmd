@@ -281,6 +281,7 @@ mock$collapse_list <- list(MAMM = c("elephant", "whale", "monkey"),
                       REPT = c("lizard", "turtle"),
                       CRUS = c("crab"))
 
+#  \item{xmap}{sample xmap objects}
 #mock$xmap_iso2_iso3 <-  
 #mock$xmap_mixed <-
 
@@ -297,7 +298,6 @@ usethis::use_data(mock)
 #' A list with :
 #' \describe{
 #'  \item{recode_vect, collapse_list}{Named vector and list for conversion into node pairs}
-#'  \item{xmap}
 #'  }
 #' @source Package authors
 "mock"
@@ -1655,7 +1655,7 @@ xmap_to_matrix <- function(x, sparse, ...) {
 ```{r xmap-matrix, send_to="R/xmap_to.R"}
 #' @describeIn xmap_to_matrix Coerce a `xmap_df` to a Matrix
 #'
-#' @return
+#' @return (sparse) Matrix
 #' @export
 #'
 #' @examples
@@ -1899,8 +1899,6 @@ See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues
 #'
 #' @return xmap object of same class as `x`, or throws an error if `x` is not reversible
 #' @export
-#'
-#' @examples
 xmap_reverse <- function(x, weights_into){
   UseMethod("xmap_reverse")
 }
