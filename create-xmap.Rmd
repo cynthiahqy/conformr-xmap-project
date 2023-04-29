@@ -24,8 +24,8 @@ usethis::create_package(
   fields = list(
     Package = params$package_name,
     Version = "0.0.0.9020",
-    Title = "xmap: A data-structure for extending crosswalks",
-    Description = "Provides 'xmap' S3 classes (the 'Crossmap') for use in {conformr} package.",
+    Title = "xmap: A principled approach to recoding and redistributing data between nomenclature",
+    Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects",
     `Authors@R` = person(
       given = "Cynthia",
       family = "Huang",
