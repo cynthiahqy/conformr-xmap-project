@@ -75,10 +75,11 @@ library(rlang)
 ### Package Level Documentation
 
 ``` {package-doc}
-#' xmap: A data-structure for extending crosswalks
+#' xmap: A principled approach to recoding and redistributing data between nomenclature
 #'
 #' @description
-#' Provides 'xmap' S3 class (the 'Crossmap') for use in {conformr} package.
+#' Provides tools for verifying classification, category and/or nomenclature
+#' mapping objects such as named vectors or lists, and lookup tables.
 #'
 #' @keywords internal
 #' @import rlang
