@@ -295,7 +295,7 @@ mock$named_ctr_iso3c <- countrycode::codelist |>
 
 ```{r mock-pairs-objects, send_to="data-raw/mock.R"}
 mock$df_anzsco21 <- strayr::anzsco2021 |>
-  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |> 
+  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |>
   distinct() |>
   select(ends_with("_code"), everything())
 

@@ -37,4 +37,4 @@ Depends:
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: 60af9f0828c1760881e22f8e376ef95c
+LitrId: f0b7b69ceec6e9c1656a1c9eb884784b
