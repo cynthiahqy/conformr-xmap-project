@@ -54,9 +54,9 @@ usethis::use_package("glue", "Imports")
 usethis::use_package("stats", type = "Suggests")
 usethis::use_package("Matrix", type = "Suggests") ## for sparse matrices
 
-# Suggests for Vignettes and Tests
-usethis::use_package("matlib", type = "Suggests")
+# Suggests for Tests and Vignettes
 usethis::use_package("testthat", type = "Suggests")
+usethis::use_package("matlib", type = "Suggests")
 usethis::use_package("forcats", type = "Suggests")
 usethis::use_package("ggplot2", type = "Suggests")
 usethis::use_package("stringr", type = "Suggests")
@@ -275,19 +275,29 @@ I'm not sure offering helpers for modifying crossmaps is necessary or even desir
 
 ## Mock Data
 
-```{r export-mock-objects}
+```{r}
+usethis::use_data_raw("mock", open = FALSE)
+```
+
+```{r mock-named-objects, send_to="data-raw/mock.R"}
+library(dplyr)
 mock <- list()
 
-mock$recode_vect <- c(AUS = "Australia",
-                 NZD = "New Zealand",
-                 JPN = "Japan")
-mock$collapse_list <- list(MAMM = c("elephant", "whale", "monkey"),
-                      REPT = c("lizard", "turtle"),
-                      CRUS = c("crab"))
+mock$named_ctr_iso3c <- countrycode::codelist |>
+  dplyr::select(iso3c, iso.name.en) |>
+  tidyr::drop_na() |>
+  tibble::deframe()
 
-#  \item{xmap}{sample xmap objects}
-#mock$xmap_iso2_iso3 <-  
-#mock$xmap_mixed <-
+# mock_named$collapse_list <- list(MAMM = c("elephant", "whale", "monkey"),
+#                       REPT = c("lizard", "turtle"),
+#                       CRUS = c("crab"))
+```
+
+```{r mock-pairs-objects, send_to="data-raw/mock.R"}
+mock$df_anzsco21 <- strayr::anzsco2021 |>
+  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |> 
+  distinct() |>
+  select(ends_with("_code"), everything())
 
 usethis::use_data(mock)
 ```
@@ -295,15 +305,21 @@ usethis::use_data(mock)
 ```{r document-mock-objects, send_to="R/data.R"}
 #' Mock objects for the `xmap` package
 #' 
-#' A list of mock objects for experimenting with functions
+#' A collection of mock inputs for experimenting with functions
 #' in the `xmap` package.
+#' `named_` objects are either named vectors or nested lists.
+#' `df_` objects may contain source-target *pairs* (no weights),
+#' or weighted source-target *links*.
 #' 
 #' @format ## `mock`
-#' A list with :
+#' A list with:
 #' \describe{
-#'  \item{recode_vect, collapse_list}{Named vector and list for conversion into node pairs}
+#'  \item{named_ctr_iso3c}{named vector. Names are ISO-3 country codes, values are ISO English country names. Retrieved from `countrycode` package:
+#'    \url{https://github.com/vincentarelbundock/countrycode}}
+#'  \item{df_anzsco21}{4-column tibble. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from `strayr` package:
+#'    \url{https://github.com/runapp-aus/strayr}}
+#'  \item{df_mixed}{3-column data.frame. }
 #'  }
-#' @source Package authors
 "mock"
 ```
 
