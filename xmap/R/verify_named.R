@@ -30,7 +30,8 @@ verify_named_all_1to1 <- function(x){
   unique_values <- unique(unlist(unname(x)))
   stop <- !(length(unique_names) == length(unique_values))
   if (stop){
-    cli::cli_abort("Not all relations in `x` are 1-to-1.")
+    cli::cli_abort("Not all relations in `x` are 1-to-1.",
+                   class = "abort_not_1to1")
   }
   invisible(x)
 }
@@ -43,8 +44,11 @@ verify_named_all_unique <- function(x){
   dup_idx <- anyDuplicated(pairs)
   stop <- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort("Duplicated pairs found in `x`.
-                   Use `as_pairs_from_named(x)` with `base::duplicated()` to identify duplicates.")
+    cli::cli_abort(c(
+          "Duplicated pairs found in `x`.",
+    "i" = "Use `as_pairs_from_named(x) |> base::duplicated()` to identify duplicates."),
+    class = "abort_not_unique"
+    )
   }  
   invisible(x)
 }
@@ -56,8 +60,11 @@ verify_named_all_names_unique <- function(x){
   dup_idx <- anyDuplicated(names(x))
   stop <- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort("Duplicated names found in `x`.
-                   Use `base::duplicated(names(x))` to identify duplicates.")
+    cli::cli_abort(c(
+    "Duplicated names found in `x`.",
+    "i" = "Use `base::duplicated(names(x))` to identify duplicates."),
+    class = "abort_not_unique"
+    )
   }
   invisible(x)
 }
@@ -69,8 +76,11 @@ verify_named_all_values_unique <- function(x){
   dup_idx <- anyDuplicated(unlist(unname(x)))
   stop <- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort("Duplicated values found in `x`.
-                   Use `base::duplicated(unlist(unname(x)))` to identify duplicates.")
+    cli::cli_abort(c(
+    "Duplicated values found in `x`.",
+    "i" = "Use `base::duplicated(unlist(unname(x)))` to identify duplicates."),
+    class = "abort_not_unique"
+    )
   }
   #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)

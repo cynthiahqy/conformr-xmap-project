@@ -75,10 +75,29 @@ testthat::test_that(
   }
 )
 
-testthat::test_that("verify_named_all_*() work as expected",
-                    {
-                      
-                    })
+testthat::test_that("verify_named_all_1to1() works as expected", {
+  v1toM <- c(fruit = "apple", fruit = "banana")
+  v1to1 <- c(A = 1, B = 2, C = 3)
+  l1toM <- list(fruit = c("apple", "banana"))
+  testthat::expect_error(verify_named_all_1to1(v1toM), class = "abort_not_1to1")
+  testthat::expect_error(verify_named_all_1to1(l1toM), class = "abort_not_1to1")
+  testthat::expect_equal(verify_named_all_1to1(v1to1), v1to1)
+  })
+
+testthat::test_that("verify_named_*_unique() work as expected", {
+  vdup_pairs <- c(fruit = "apple", fruit = "apple")
+  ldup_pairs <- list(fruit = c("apple", "apple"))
+  testthat::expect_error(verify_named_all_unique(vdup_pairs), class = "abort_not_unique")
+  testthat::expect_error(verify_named_all_unique(ldup_pairs), class = "abort_not_unique")
+  vdup_names <- c(fruit = "apple", fruit = "banana")
+  ldup_names <- list(fruit = c("apple", "banana"), fruit = "pear")
+  testthat::expect_error(verify_named_all_names_unique(vdup_names), class = "abort_not_unique")
+  testthat::expect_error(verify_named_all_names_unique(ldup_names), class = "abort_not_unique")
+  vdup_values <- c(fruit = "apple", veg = "apple")
+  ldup_values <- list(fruit = c("apple", "banana"), veg = "apple")
+  testthat::expect_error(verify_named_all_values_unique(vdup_values), class = "abort_not_unique")
+  testthat::expect_error(verify_named_all_values_unique(ldup_values), class = "abort_not_unique")
+})
 
 testthat::test_that("verify_named_matchset fncs work as expected", {
   v_1to1 <- c(x1 = 1, x2 = 2, x3 = 3)

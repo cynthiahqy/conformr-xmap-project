@@ -3,7 +3,7 @@
 \docType{data}
 \name{mock}
 \alias{mock}
-\title{Mock objects for the \code{xmap} package}
+\title{Mock input objects for the \code{xmap} package}
 \format{
 \subsection{\code{mock}}{
 

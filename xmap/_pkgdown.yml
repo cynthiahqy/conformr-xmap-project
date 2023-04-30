@@ -6,8 +6,8 @@ template:
 
 repo:
   url:
-    home: https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap/
-    source: https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap/
+    home: https://github.com/cynthiahqy/xmap/
+    source: https://github.com/cynthiahqy/xmap/
     issue: https://github.com/cynthiahqy/conformr-xmap-project/issues
     user: https://github.com/cynthiahqy
 
@@ -49,7 +49,7 @@ reference:
     - is_xmap
     - print.xmap
 
-- title: Internal
+- title: internal
   contents:
     - starts_with("vhas")
     - starts_with("abort")

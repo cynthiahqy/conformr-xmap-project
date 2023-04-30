@@ -1,7 +1,7 @@
 Package: xmap
-Title: xmap: A principled approach to recoding and redistributing data
-    between nomenclature
-Version: 0.0.0.9020
+Title: A principled approach to recoding and redistributing data between
+    nomenclature
+Version: 0.0.1
 Authors@R: c(
     person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre")),
     person("Laura", "Puzzello", role = c("aut", "fnd"))
@@ -9,10 +9,13 @@ Authors@R: c(
 Description: Provides tools for creating and verifying classification,
     category and/or nomenclature mapping objects.
 License: MIT + file LICENSE
+URL: https://github.com/cynthiahqy/xmap
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
+Depends: 
+    R (>= 4.1)
 Imports: 
     cli,
     dplyr,
@@ -32,9 +35,7 @@ Suggests:
     stats,
     stringr,
     testthat (>= 3.0.0)
-Depends: 
-    R (>= 2.10)
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: f0b7b69ceec6e9c1656a1c9eb884784b
+LitrId: 140f725e6ffa58123fad8da08ac6a83b

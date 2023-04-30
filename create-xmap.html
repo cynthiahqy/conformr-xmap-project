@@ -473,14 +473,15 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.0.9020&quot;,
-    Title = &quot;xmap: A principled approach to recoding and redistributing data between nomenclature&quot;,
+    Version = &quot;0.0.1&quot;,
+    Title = &quot;A principled approach to recoding and redistributing data between nomenclature&quot;,
     Description = &quot;Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.&quot;,
     `Authors@R` = c(
       person(given = &quot;Cynthia&quot;, family = &quot;Huang&quot;, email = &quot;cynthia@gmail.com&quot;, role = c(&quot;aut&quot;, &quot;cre&quot;)),
       person(given = &quot;Laura&quot;, family = &quot;Puzzello&quot;, role = c(&quot;aut&quot;, &quot;fnd&quot;))
     ),
-    `Config/testthat/edition` = 3
+    `Config/testthat/edition` = 3,
+    URL = &quot;https://github.com/cynthiahqy/xmap&quot;
   )
 )
 usethis::use_mit_license(copyright_holder = &quot;C. Huang&quot;)</code></pre>
@@ -488,7 +489,7 @@ usethis::use_mit_license(copyright_holder = &quot;C. Huang&quot;)</code></pre>
 <div id="dependencies" class="section level3">
 <h3>Dependencies</h3>
 <pre class="r"><code># Imports for Validation
-usethis::use_package(&quot;R&quot;, min_version = &quot;4.1&quot;)
+usethis::use_package(&quot;R&quot;, type = &quot;Depends&quot;, min_version = &quot;4.1&quot;)
 usethis::use_package(&quot;rlang&quot;, min_version = &quot;1.0.0&quot;)
 usethis::use_package(&quot;cli&quot;)
 
@@ -510,27 +511,20 @@ usethis::use_package(&quot;ggplot2&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;stringr&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;patchwork&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;ggbump&quot;, type = &quot;Suggests&quot;)</code></pre>
-<pre><code>## ✔ Adding &#39;R&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `R::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;rlang&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `rlang::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;cli&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `cli::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;tibble&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `tibble::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;tidyr&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `tidyr::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;dplyr&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `dplyr::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;glue&#39; to Imports field in DESCRIPTION</code></pre>
-<pre><code>## Warning: &#39;Imports&#39; must contain valid package names</code></pre>
-<pre><code>## • Refer to functions with `glue::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;R&#39; to Depends field in DESCRIPTION
+## • Are you sure you want Depends? Imports is almost always the better choice.</code></pre>
+<pre><code>## ✔ Adding &#39;rlang&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `rlang::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;cli&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `cli::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;tibble&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `tibble::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;tidyr&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `tidyr::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;dplyr&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `dplyr::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;glue&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `glue::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;stats&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;stats&quot;)` or `rlang::check_installed(&quot;stats&quot;)` to test if stats is installed
 ## • Then directly refer to functions with `stats::fun()`</code></pre>
@@ -585,7 +579,9 @@ library(rlang)</code></pre>
 <li><code>x</code> for ambiguous inputs (e.g. named vector OR named
 list), or generic methods</li>
 <li><code>df</code> for data frames (e.g. pairs and links)</li>
-<li><code>.xmap</code> for xmap objects</li>
+<li><code>.xmap</code> for xmap objects, following the <a href="https://design.tidyverse.org/dots-prefix.html">Dot prefix
+tidyverse design pattern</a> since <code>xmap_to</code> and other fncs
+will eventually have passthrough <code>...</code></li>
 </ul>
 </div>
 <div id="internal-helpers" class="section level4">
@@ -593,7 +589,9 @@ list), or generic methods</li>
 <p>Errors and Messages:</p>
 <ul>
 <li><code>abort_*</code>: should raise a <code>cli::cli_abort()</code>
-message</li>
+message, and pass through calls.</li>
+<li>See <a href="https://github.com/cynthiahqy/conformr-xmap-project/issues/59">#59</a>
+for references on how to construct and format errors.</li>
 </ul>
 <p>Properties:</p>
 <ul>
@@ -616,11 +614,12 @@ object and/or its attributes (usually of <code>xmap_df</code>)</li>
 <ul>
 <li><code>mock_</code> are input objects:
 <ul>
-<li><code>mock_named</code></li>
-<li><code>mock_pairs</code></li>
-<li><code>mock_links</code></li>
-<li><code>mock_xmaps</code></li>
+<li><code>mock$named_</code></li>
+<li><code>mock$df_</code></li>
+<li><code>mock$xmap_</code></li>
 </ul></li>
+<li>See <a href="https://github.com/cynthiahqy/conformr-xmap-project/issues/117">#177</a>
+for references on documenting datasets</li>
 </ul>
 </div>
 <div id="non-xmap_df-inputs" class="section level4">
@@ -746,8 +745,7 @@ int_dat &lt;- list(&quot;input_df&quot; = input_df)
 
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
 </code></pre>
-<pre><code>## ✔ Moving &#39;R&#39; from Imports to Depends field in DESCRIPTION
-## ✔ Saving &#39;int_dat&#39; to &#39;R/sysdata.rda&#39;</code></pre>
+<pre><code>## ✔ Saving &#39;int_dat&#39; to &#39;R/sysdata.rda&#39;</code></pre>
 <pre class="r"><code>simple_xmap &lt;- tibble::tribble(~f, ~t, ~w,
                                 &quot;x1111&quot;, &quot;A1&quot;, 1,
                                 &quot;x2222&quot;, &quot;B2&quot;, 0.5,
@@ -833,7 +831,7 @@ mock$named_ctr_iso3c &lt;- countrycode::codelist |&gt;
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>mock$df_anzsco21 &lt;- strayr::anzsco2021 |&gt;
-  select(starts_with(c(&quot;anzsco_major&quot;, &quot;anzsco_submajor&quot;))) |&gt; 
+  select(starts_with(c(&quot;anzsco_major&quot;, &quot;anzsco_submajor&quot;))) |&gt;
   distinct() |&gt;
   select(ends_with(&quot;_code&quot;), everything())
 
@@ -842,7 +840,7 @@ usethis::use_data(mock)</code></pre>
 ## ✔ Setting LazyData to &#39;true&#39; in &#39;DESCRIPTION&#39;
 ## ✔ Saving &#39;mock&#39; to &#39;data/mock.rda&#39;
 ## • Document your data (see &#39;https://r-pkgs.org/data.html&#39;)</code></pre>
-<pre class="r"><code>#&#39; Mock objects for the `xmap` package
+<pre class="r"><code>#&#39; Mock input objects for the `xmap` package
 #&#39; 
 #&#39; A collection of mock inputs for experimenting with functions
 #&#39; in the `xmap` package.
@@ -859,7 +857,6 @@ usethis::use_data(mock)</code></pre>
 #&#39;    \url{https://github.com/runapp-aus/strayr}}
 #&#39;  \item{df_mixed}{3-column data.frame. }
 #&#39;  }
-#&#39; @source 
 &quot;mock&quot;</code></pre>
 <pre><code>## [1] &quot;mock&quot;</code></pre>
 </div>
@@ -1057,7 +1054,7 @@ NULL
   testthat::expect_equal(animal_links, add_links)
   }
   )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="link-properties-vhas_x_" class="section level3">
@@ -1176,9 +1173,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -1221,7 +1218,7 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
@@ -1258,6 +1255,15 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
 </div>
 <div id="verify-named" class="section level3">
 <h3>Verify: Named</h3>
+<ul>
+<li>note that <code>list(fruit = c(&quot;apple&quot;, &quot;banana&quot;))</code> and
+<code>c(fruit = c(&quot;apple&quot;, &quot;banana&quot;))</code> return different
+<code>names()</code>. <code>c()</code> generates unique names:
+<code>fruit1</code> and <code>fruit2</code>:</li>
+</ul>
+<pre class="r"><code># &gt; c(fruit = c(&quot;apple&quot;, &quot;banana&quot;))
+#   fruit1   fruit2
+#  &quot;apple&quot; &quot;banana&quot;</code></pre>
 <pre class="r"><code>#&#39; Verify crossmap properties of named vectors or lists
 #&#39;
 #&#39; @param x a Named vector or list. Lists values are flattened via `unlist()`.
@@ -1289,7 +1295,8 @@ NULL</code></pre>
   unique_values &lt;- unique(unlist(unname(x)))
   stop &lt;- !(length(unique_names) == length(unique_values))
   if (stop){
-    cli::cli_abort(&quot;Not all relations in `x` are 1-to-1.&quot;)
+    cli::cli_abort(&quot;Not all relations in `x` are 1-to-1.&quot;,
+                   class = &quot;abort_not_1to1&quot;)
   }
   invisible(x)
 }
@@ -1302,8 +1309,11 @@ NULL</code></pre>
   dup_idx &lt;- anyDuplicated(pairs)
   stop &lt;- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort(&quot;Duplicated pairs found in `x`.
-                   Use `<a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(x)` with `base::duplicated()` to identify duplicates.&quot;)
+    cli::cli_abort(c(
+          &quot;Duplicated pairs found in `x`.&quot;,
+    &quot;i&quot; = &quot;Use `<a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(x) |&gt; base::duplicated()` to identify duplicates.&quot;),
+    class = &quot;abort_not_unique&quot;
+    )
   }  
   invisible(x)
 }
@@ -1315,8 +1325,11 @@ NULL</code></pre>
   dup_idx &lt;- anyDuplicated(names(x))
   stop &lt;- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort(&quot;Duplicated names found in `x`.
-                   Use `base::duplicated(names(x))` to identify duplicates.&quot;)
+    cli::cli_abort(c(
+    &quot;Duplicated names found in `x`.&quot;,
+    &quot;i&quot; = &quot;Use `base::duplicated(names(x))` to identify duplicates.&quot;),
+    class = &quot;abort_not_unique&quot;
+    )
   }
   invisible(x)
 }
@@ -1328,18 +1341,40 @@ NULL</code></pre>
   dup_idx &lt;- anyDuplicated(unlist(unname(x)))
   stop &lt;- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort(&quot;Duplicated values found in `x`.
-                   Use `base::duplicated(unlist(unname(x)))` to identify duplicates.&quot;)
+    cli::cli_abort(c(
+    &quot;Duplicated values found in `x`.&quot;,
+    &quot;i&quot; = &quot;Use `base::duplicated(unlist(unname(x)))` to identify duplicates.&quot;),
+    class = &quot;abort_not_unique&quot;
+    )
   }
   #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)
 }</code></pre>
-<pre class="r"><code>testthat::test_that(&quot;verify_named_all_*() work as expected&quot;,
-                    {
-                      
-                    })</code></pre>
-<pre><code>## ── Skip (???): verify_named_all_*() work as expected ───────────────────────────
-## Reason: empty test</code></pre>
+<pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>() works as expected&quot;, {
+  v1toM &lt;- c(fruit = &quot;apple&quot;, fruit = &quot;banana&quot;)
+  v1to1 &lt;- c(A = 1, B = 2, C = 3)
+  l1toM &lt;- list(fruit = c(&quot;apple&quot;, &quot;banana&quot;))
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>(v1toM), class = &quot;abort_not_1to1&quot;)
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>(l1toM), class = &quot;abort_not_1to1&quot;)
+  testthat::expect_equal(<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>(v1to1), v1to1)
+  })
+
+testthat::test_that(&quot;verify_named_*_unique() work as expected&quot;, {
+  vdup_pairs &lt;- c(fruit = &quot;apple&quot;, fruit = &quot;apple&quot;)
+  ldup_pairs &lt;- list(fruit = c(&quot;apple&quot;, &quot;apple&quot;))
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_unique'>verify_named_all_unique</a>(vdup_pairs), class = &quot;abort_not_unique&quot;)
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_unique'>verify_named_all_unique</a>(ldup_pairs), class = &quot;abort_not_unique&quot;)
+  vdup_names &lt;- c(fruit = &quot;apple&quot;, fruit = &quot;banana&quot;)
+  ldup_names &lt;- list(fruit = c(&quot;apple&quot;, &quot;banana&quot;), fruit = &quot;pear&quot;)
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_names_unique'>verify_named_all_names_unique</a>(vdup_names), class = &quot;abort_not_unique&quot;)
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_names_unique'>verify_named_all_names_unique</a>(ldup_names), class = &quot;abort_not_unique&quot;)
+  vdup_values &lt;- c(fruit = &quot;apple&quot;, veg = &quot;apple&quot;)
+  ldup_values &lt;- list(fruit = c(&quot;apple&quot;, &quot;banana&quot;), veg = &quot;apple&quot;)
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(vdup_values), class = &quot;abort_not_unique&quot;)
+  testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(ldup_values), class = &quot;abort_not_unique&quot;)
+})</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <pre class="r"><code>#&#39; @describeIn abort Abort message for verify_named_matchset_* functions
 #&#39; @export
 <span id='msg_abort_named_matchset'>msg_abort_named_matchset</span> &lt;- function(set_type = c(&quot;names&quot;, &quot;values&quot;),
@@ -1476,7 +1511,7 @@ NULL
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_subset_1to1),
                          class = &quot;abort_matchset&quot;)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <p>Aliases:</p>
 <pre class="r"><code>#&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
 #&#39; @export
@@ -1537,7 +1572,7 @@ verify_pairs_as_recode_unique &lt;- verify_pairs_all_1to1</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_unique'>verify_pairs_all_unique</a>(pairs_1to1, f, t), pairs_1to1)
 }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="verify-links" class="section level3">
 <h3>Verify: Links</h3>
@@ -1702,7 +1737,7 @@ a numeric vector - <code>X</code> inherits from the class
                     {
                       testthat::expect_error(<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -1960,7 +1995,7 @@ single row)</li>
     testthat::expect_identical(df, <a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, node_A, node_B, w_AB))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;validate &amp; verify fncs reject missing columns&quot;,
@@ -2066,12 +2101,12 @@ testthat::test_that(
                            class = &quot;abort_bad_weights&quot;)
   }
 )</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 </div>
@@ -2199,7 +2234,7 @@ controlled by <code>.drop</code> argument</li>
                                <a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="conversion" class="section level2">
@@ -2390,7 +2425,7 @@ controlled by <code>.drop</code> argument</li>
   testthat::expect_error(<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>(xmap_mixed), 
                          class = &quot;abort_frac_weights&quot;)
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>() reverses <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>()&quot;, {
   link_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
                     BB = c(&quot;x1&quot;, &quot;x5&quot;),
@@ -2528,7 +2563,7 @@ pairs_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -2567,7 +2602,7 @@ pairs_df |&gt;
   
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level2">
@@ -2752,8 +2787,6 @@ print(valid_xmap_df)</code></pre>
 ## ✔ Writing &#39;.git/hooks/pre-commit&#39;</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap</code></pre>
-<pre><code>## Warning: [
-## conformr-xmap-project/xmap/R/data.Rdata.R:20] @source requires a value</code></pre>
 <pre><code>## Warning: [
 ## conformr-xmap-project/xmap/R/verify_named.Rverify_named.R:25] @examples
 ## requires a value</code></pre>
