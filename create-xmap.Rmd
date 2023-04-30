@@ -305,7 +305,7 @@ usethis::use_data(mock)
 ```
 
 ```{r document-mock-objects, send_to="R/data.R"}
-#' Mock objects for the `xmap` package
+#' Mock input objects for the `xmap` package
 #' 
 #' A collection of mock inputs for experimenting with functions
 #' in the `xmap` package.
@@ -737,6 +737,14 @@ abort_any_na <- function(df) {
 
 ### Verify: Named
 
+-   note that `list(fruit = c("apple", "banana"))` and `c(fruit = c("apple", "banana"))` return different `names()`. `c()` generates unique names: `fruit1` and `fruit2`:
+
+``` r
+# > c(fruit = c("apple", "banana"))
+#   fruit1   fruit2
+#  "apple" "banana"
+```
+
 ```{r send_to="R/verify_named.R"}
 #' Verify crossmap properties of named vectors or lists
 #'
@@ -772,7 +780,8 @@ verify_named_all_1to1 <- function(x){
   unique_values <- unique(unlist(unname(x)))
   stop <- !(length(unique_names) == length(unique_values))
   if (stop){
-    cli::cli_abort("Not all relations in `x` are 1-to-1.")
+    cli::cli_abort("Not all relations in `x` are 1-to-1.",
+                   class = "abort_not_1to1")
   }
   invisible(x)
 }
@@ -785,8 +794,11 @@ verify_named_all_unique <- function(x){
   dup_idx <- anyDuplicated(pairs)
   stop <- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort("Duplicated pairs found in `x`.
-                   Use `as_pairs_from_named(x)` with `base::duplicated()` to identify duplicates.")
+    cli::cli_abort(c(
+          "Duplicated pairs found in `x`.",
+    "i" = "Use `as_pairs_from_named(x) |> base::duplicated()` to identify duplicates."),
+    class = "abort_not_unique"
+    )
   }  
   invisible(x)
 }
@@ -798,8 +810,11 @@ verify_named_all_names_unique <- function(x){
   dup_idx <- anyDuplicated(names(x))
   stop <- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort("Duplicated names found in `x`.
-                   Use `base::duplicated(names(x))` to identify duplicates.")
+    cli::cli_abort(c(
+    "Duplicated names found in `x`.",
+    "i" = "Use `base::duplicated(names(x))` to identify duplicates."),
+    class = "abort_not_unique"
+    )
   }
   invisible(x)
 }
@@ -811,8 +826,11 @@ verify_named_all_values_unique <- function(x){
   dup_idx <- anyDuplicated(unlist(unname(x)))
   stop <- as.logical(dup_idx)
   if (stop){
-    cli::cli_abort("Duplicated values found in `x`.
-                   Use `base::duplicated(unlist(unname(x)))` to identify duplicates.")
+    cli::cli_abort(c(
+    "Duplicated values found in `x`.",
+    "i" = "Use `base::duplicated(unlist(unname(x)))` to identify duplicates."),
+    class = "abort_not_unique"
+    )
   }
   #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)
@@ -820,10 +838,29 @@ verify_named_all_values_unique <- function(x){
 ```
 
 ```{r}
-testthat::test_that("verify_named_all_*() work as expected",
-                    {
-                      
-                    })
+testthat::test_that("verify_named_all_1to1() works as expected", {
+  v1toM <- c(fruit = "apple", fruit = "banana")
+  v1to1 <- c(A = 1, B = 2, C = 3)
+  l1toM <- list(fruit = c("apple", "banana"))
+  testthat::expect_error(verify_named_all_1to1(v1toM), class = "abort_not_1to1")
+  testthat::expect_error(verify_named_all_1to1(l1toM), class = "abort_not_1to1")
+  testthat::expect_equal(verify_named_all_1to1(v1to1), v1to1)
+  })
+
+testthat::test_that("verify_named_*_unique() work as expected", {
+  vdup_pairs <- c(fruit = "apple", fruit = "apple")
+  ldup_pairs <- list(fruit = c("apple", "apple"))
+  testthat::expect_error(verify_named_all_unique(vdup_pairs), class = "abort_not_unique")
+  testthat::expect_error(verify_named_all_unique(ldup_pairs), class = "abort_not_unique")
+  vdup_names <- c(fruit = "apple", fruit = "banana")
+  ldup_names <- list(fruit = c("apple", "banana"), fruit = "pear")
+  testthat::expect_error(verify_named_all_names_unique(vdup_names), class = "abort_not_unique")
+  testthat::expect_error(verify_named_all_names_unique(ldup_names), class = "abort_not_unique")
+  vdup_values <- c(fruit = "apple", veg = "apple")
+  ldup_values <- list(fruit = c("apple", "banana"), veg = "apple")
+  testthat::expect_error(verify_named_all_values_unique(vdup_values), class = "abort_not_unique")
+  testthat::expect_error(verify_named_all_values_unique(ldup_values), class = "abort_not_unique")
+})
 ```
 
 ```{r send_to="R/verify_named.R"}
