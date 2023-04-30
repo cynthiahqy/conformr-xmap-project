@@ -1,6 +1,8 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
 #' Drop extra columns from `xmap` objects
+#' 
+#' @param .xmap an xmap object
 #'
 #' @export
 xmap_drop_extra <- function(.xmap){
