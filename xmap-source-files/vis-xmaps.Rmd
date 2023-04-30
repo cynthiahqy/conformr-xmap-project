@@ -13,7 +13,7 @@ vignette: >
 
 Crossmaps aim to encode dataset integration and harmonisation choices separately to the code used to apply those such designs to data. It follows that visualisations and plots of the candidate crossmaps could be useful during the design process. For instance, Sankey diagrams are sometimes used to visualise schema crosswalks.
 
-This article provides a few ggplot2 code examples for visualising crossmaps. Most of the code below will eventually live in a ggplot2 extension package.
+This article provides a few ggplot2 code examples for visualising crossmaps. The package will offer functions for generating these visualisations from `xmap` objects in future releases.
 
 ```{r message=FALSE}
 library(ggplot2)
