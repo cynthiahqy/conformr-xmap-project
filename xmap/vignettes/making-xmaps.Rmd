@@ -34,9 +34,9 @@ Fractional weights on the other hand indicate how a source value will be modifie
 
 Now, consider two links from the same source node $i$ to two different target nodes $j$ and $k$, with weights $w_{ij}$ and $w_{ik}$. Assume that the source node $i$ has no other outgoing links into the target nomenclature. Then, it follows that the weights on the two given links should sum to one if we want to preserve the total value between the source and target nomenclature. For instance, if $w_{ij} = 0.7$, then $w_{ik}$ should be $0.3$, such that 70% of the value associated with source node $i$ goes to the target node $j$, and the remaining 30% is distributed to target node $k$.
 
-### Crossmap tables: `xmap_df`
+### Crossmap tables
 
-An `xmap_df` is a data.frame representation of a Crossmap, where each row represents a weighted link between the source and target classifications. You can create an `xmap_df` from a data.frame or tibble of weighted edges using `as_xmap_df()`.
+Crossmap tables are extensions of crosswalk or lookup tables, where each row represents a weighted link between the source and target classifications. You can pass a data.frame or tibble of weighted edges to `verify_links_as_xmap()` to check if the input satisfies crossmap properties.
 
 Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
 
@@ -46,10 +46,14 @@ Your input table `x` needs to have at least 3 complete (i.e. no `NA`) columns:
 
 Additional columns (e.g. for label descriptions etc.) can be retained by setting the `.drop_extra` argument to `FALSE`.
 
-`as_xmap_df()` will validate that:
+`verify_links_as_xmap` and `as_xmap_df()` will validate that:
 
 1.  There are no duplicates `from`-`to` pairs,
 2.  Every group of `weights` associated with a distinct `from` value sums to 1 (subject to a floating point tolerance).
+
+The package also offers a experimental `xmap_df` class facilitate additional functionality such as graph property calculation and printing (i.e. relation types and crossmap direction) via a custom `print()` method, coercion to other useful classes (e.g. `xmap_to_matrix()`), visualisation (see `vignette("vis-xmaps")` for prototypes), and multi-step transformations (i.e. from nomenclature A to B to C).
+
+Please note that the `xmap_df` class and related functions are still in active development and subject to breaking changes in future releases.
 
 ## Special Cases of Crossmaps
 
@@ -179,10 +183,6 @@ Note that if the first crossmap condition is met, i.e. there is only one link be
 ## Creating `xmap_df` from Pairs and Links
 
 The following examples demonstrate how to coerce various inputs into the experimental `xmap_df` class.
-
-The `xmap_df` class aims to facilitates additional functionality such as graph property calculation and printing (i.e. relation types and crossmap direction) via a custom `print()` method, coercion to other useful classes (e.g. `xmap_to_matrix()`), visualisation (see `vignette("vis-xmaps")` for prototypes), and multi-step transformations (i.e. from nomenclature A to B to C).
-
-Please note that the `xmap_df` class and related functions are still in active development and subject to breaking changes in future releases.
 
 ### Row-wise Links
 

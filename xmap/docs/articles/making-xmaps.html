@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,14 +75,14 @@
       <img src="" class="logo" alt=""><h1>Making and Verifying Crossmaps</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap/vignettes/making-xmaps.Rmd" class="external-link"><code>vignettes/making-xmaps.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/cynthiahqy/xmap/vignettes/making-xmaps.Rmd" class="external-link"><code>vignettes/making-xmaps.Rmd</code></a></small>
       <div class="d-none name"><code>making-xmaps.Rmd</code></div>
     </div>
 
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cynthiahqy/xmap" class="external-link">xmap</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="crossmaps">Crossmaps<a class="anchor" aria-label="anchor" href="#crossmaps"></a>
 </h2>
@@ -132,13 +132,13 @@ to the target node <span class="math inline">\(j\)</span>, and the
 remaining 30% is distributed to target node <span class="math inline">\(k\)</span>.</p>
 </div>
 <div class="section level3">
-<h3 id="crossmap-tables-xmap_df">Crossmap tables: <code>xmap_df</code><a class="anchor" aria-label="anchor" href="#crossmap-tables-xmap_df"></a>
+<h3 id="crossmap-tables">Crossmap tables<a class="anchor" aria-label="anchor" href="#crossmap-tables"></a>
 </h3>
-<p>An <code>xmap_df</code> is a data.frame representation of a Crossmap,
-where each row represents a weighted link between the source and target
-classifications. You can create an <code>xmap_df</code> from a
-data.frame or tibble of weighted edges using
-<code><a href="../reference/as_xmap.html">as_xmap_df()</a></code>.</p>
+<p>Crossmap tables are extensions of crosswalk or lookup tables, where
+each row represents a weighted link between the source and target
+classifications. You can pass a data.frame or tibble of weighted edges
+to <code><a href="../reference/verify_links_as_xmap.html">verify_links_as_xmap()</a></code> to check if the input satisfies
+crossmap properties.</p>
 <p>Your input table <code>x</code> needs to have at least 3 complete
 (i.e. no <code>NA</code>) columns:</p>
 <ul>
@@ -153,7 +153,8 @@ classification</li>
 <p>Additional columns (e.g. for label descriptions etc.) can be retained
 by setting the <code>.drop_extra</code> argument to
 <code>FALSE</code>.</p>
-<p><code><a href="../reference/as_xmap.html">as_xmap_df()</a></code> will validate that:</p>
+<p><code>verify_links_as_xmap</code> and <code><a href="../reference/as_xmap.html">as_xmap_df()</a></code> will
+validate that:</p>
 <ol style="list-style-type: decimal">
 <li>There are no duplicates <code>from</code>-<code>to</code>
 pairs,</li>
@@ -161,6 +162,16 @@ pairs,</li>
 <code>from</code> value sums to 1 (subject to a floating point
 tolerance).</li>
 </ol>
+<p>The package also offers a experimental <code>xmap_df</code> class
+facilitate additional functionality such as graph property calculation
+and printing (i.e. relation types and crossmap direction) via a custom
+<code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method, coercion to other useful classes
+(e.g. <code><a href="../reference/xmap_to_matrix.html">xmap_to_matrix()</a></code>), visualisation (see
+<code><a href="../articles/vis-xmaps.html">vignette("vis-xmaps")</a></code> for prototypes), and multi-step
+transformations (i.e. from nomenclature A to B to C).</p>
+<p>Please note that the <code>xmap_df</code> class and related functions
+are still in active development and subject to breaking changes in
+future releases.</p>
 </div>
 </div>
 <div class="section level2">
@@ -294,8 +305,8 @@ share the same name:</p>
 <code class="sourceCode R"><span><span class="va">student_group_mistake</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/verify_named.html">verify_named_all_names_unique</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `verify_named_all_names_unique()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Duplicated names found in `x`. Use `base::duplicated(names(x))` to</span></span>
-<span><span class="co">##   identify duplicates.</span></span></code></pre>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Duplicated names found in `x`.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Use `base::duplicated(names(x))` to identify duplicates.</span></span></code></pre>
 <p>Coercion to <code>xmap</code> requires adding weights and is
 directional. We can choose to verify conditions and return the same
 object via <code>verify_links_*</code> functions, or coerce to an
@@ -363,16 +374,6 @@ interchangeable when generating equal share weights.</p>
 </h2>
 <p>The following examples demonstrate how to coerce various inputs into
 the experimental <code>xmap_df</code> class.</p>
-<p>The <code>xmap_df</code> class aims to facilitates additional
-functionality such as graph property calculation and printing
-(i.e. relation types and crossmap direction) via a custom
-<code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method, coercion to other useful classes
-(e.g. <code><a href="../reference/xmap_to_matrix.html">xmap_to_matrix()</a></code>), visualisation (see
-<code><a href="../articles/vis-xmaps.html">vignette("vis-xmaps")</a></code> for prototypes), and multi-step
-transformations (i.e. from nomenclature A to B to C).</p>
-<p>Please note that the <code>xmap_df</code> class and related functions
-are still in active development and subject to breaking changes in
-future releases.</p>
 <div class="section level3">
 <h3 id="row-wise-links">Row-wise Links<a class="anchor" aria-label="anchor" href="#row-wise-links"></a>
 </h3>

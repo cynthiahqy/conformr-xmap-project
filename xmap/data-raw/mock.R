@@ -15,7 +15,7 @@ mock$named_ctr_iso3c <- countrycode::codelist |>
 #                       CRUS = c("crab"))
 
 mock$df_anzsco21 <- strayr::anzsco2021 |>
-  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |> 
+  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |>
   distinct() |>
   select(ends_with("_code"), everything())
 

@@ -1,6 +1,6 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
-#' Mock objects for the `xmap` package
+#' Mock input objects for the `xmap` package
 #' 
 #' A collection of mock inputs for experimenting with functions
 #' in the `xmap` package.
@@ -17,5 +17,4 @@
 #'    \url{https://github.com/runapp-aus/strayr}}
 #'  \item{df_mixed}{3-column data.frame. }
 #'  }
-#' @source 
 "mock"

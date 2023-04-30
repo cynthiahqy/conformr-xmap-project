@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9020</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,7 @@
       <img src="" class="logo" alt=""><h1>Getting Started with Crossmaps</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/cynthiahqy/conformr-xmap-project/tree/main/xmap/vignettes/xmap.Rmd" class="external-link"><code>vignettes/xmap.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/cynthiahqy/xmap/vignettes/xmap.Rmd" class="external-link"><code>vignettes/xmap.Rmd</code></a></small>
       <div class="d-none name"><code>xmap.Rmd</code></div>
     </div>
 
@@ -94,7 +94,7 @@ then you might want to verify some properties of the level mappings –
 e.g. each existing level is only mapped once:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://forcats.tidyverse.org" class="external-link">forcats</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cynthiahqy/xmap" class="external-link">xmap</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"apple"</span>, <span class="st">"bear"</span>, <span class="st">"banana"</span>, <span class="st">"dear"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">levels</span> <span class="op">&lt;-</span> <span class="co">## new = "old" levels</span></span>
@@ -107,8 +107,8 @@ e.g. each existing level is only mapped once:</p>
 <code class="sourceCode R"><span><span class="va">mistake_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fruit <span class="op">=</span> <span class="st">"apple"</span>, fruit <span class="op">=</span> <span class="st">"banana"</span>, veg <span class="op">=</span> <span class="st">"banana"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/verify_named.html">verify_named_all_values_unique</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `verify_named_all_values_unique()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Duplicated values found in `x`. Use</span></span>
-<span><span class="co">##   `base::duplicated(unlist(unname(x)))` to identify duplicates.</span></span></code></pre>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Duplicated values found in `x`.</span></span>
+<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Use `base::duplicated(unlist(unname(x)))` to identify duplicates.</span></span></code></pre>
 <p>Similarly, if you are using a named list to encode group members, you
 could check the members against a reference list.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -162,7 +162,7 @@ source categories (<code>from = version19</code>), target categories
 (<code>to = version18</code>) and link weights
 (<code>weights = w19to18</code>):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">xmap</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cynthiahqy/xmap" class="external-link">xmap</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
