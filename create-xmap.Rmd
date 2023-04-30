@@ -23,14 +23,15 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.0.9020",
-    Title = "xmap: A principled approach to recoding and redistributing data between nomenclature",
+    Version = "0.0.1",
+    Title = "A principled approach to recoding and redistributing data between nomenclature",
     Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.",
     `Authors@R` = c(
       person(given = "Cynthia", family = "Huang", email = "cynthia@gmail.com", role = c("aut", "cre")),
       person(given = "Laura", family = "Puzzello", role = c("aut", "fnd"))
     ),
-    `Config/testthat/edition` = 3
+    `Config/testthat/edition` = 3,
+    URL = "https://github.com/cynthiahqy/xmap"
   )
 )
 usethis::use_mit_license(copyright_holder = "C. Huang")
@@ -40,7 +41,7 @@ usethis::use_mit_license(copyright_holder = "C. Huang")
 
 ```{r}
 # Imports for Validation
-usethis::use_package("R", min_version = "4.1")
+usethis::use_package("R", type = "Depends", min_version = "4.1")
 usethis::use_package("rlang", min_version = "1.0.0")
 usethis::use_package("cli")
 
@@ -102,13 +103,14 @@ This should correspond to `@keywords` and `send_to=` arguments.
 
 -   `x` for ambiguous inputs (e.g. named vector OR named list), or generic methods
 -   `df` for data frames (e.g. pairs and links)
--   `.xmap` for xmap objects
+-   `.xmap` for xmap objects, following the [Dot prefix tidyverse design pattern](https://design.tidyverse.org/dots-prefix.html) since `xmap_to` and other fncs will eventually have passthrough `...`
 
 #### Internal Helpers
 
 Errors and Messages:
 
--   `abort_*`: should raise a `cli::cli_abort()` message
+-   `abort_*`: should raise a `cli::cli_abort()` message, and pass through calls.
+-   See [#59](https://github.com/cynthiahqy/conformr-xmap-project/issues/59) for references on how to construct and format errors.
 
 Properties:
 
@@ -126,10 +128,10 @@ Construction:
 #### Data
 
 -   `mock_` are input objects:
-    -   `mock_named`
-    -   `mock_pairs`
-    -   `mock_links`
-    -   `mock_xmaps`
+    -   `mock$named_`
+    -   `mock$df_`
+    -   `mock$xmap_`
+-   See [#177](https://github.com/cynthiahqy/conformr-xmap-project/issues/117) for references on documenting datasets
 
 #### Non-`xmap_df` inputs
 
