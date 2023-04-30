@@ -476,11 +476,9 @@ package</a></li>
     Version = &quot;0.0.0.9020&quot;,
     Title = &quot;xmap: A principled approach to recoding and redistributing data between nomenclature&quot;,
     Description = &quot;Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.&quot;,
-    `Authors@R` = person(
-      given = &quot;Cynthia&quot;,
-      family = &quot;Huang&quot;,
-      email = &quot;cynthiahqy@gmail.com&quot;,
-      role = c(&quot;aut&quot;, &quot;cre&quot;)
+    `Authors@R` = c(
+      person(given = &quot;Cynthia&quot;, family = &quot;Huang&quot;, email = &quot;cynthia@gmail.com&quot;, role = c(&quot;aut&quot;, &quot;cre&quot;)),
+      person(given = &quot;Laura&quot;, family = &quot;Puzzello&quot;, role = c(&quot;aut&quot;, &quot;fnd&quot;))
     ),
     `Config/testthat/edition` = 3
   )
@@ -504,9 +502,9 @@ usethis::use_package(&quot;glue&quot;, &quot;Imports&quot;)
 usethis::use_package(&quot;stats&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;Matrix&quot;, type = &quot;Suggests&quot;) ## for sparse matrices
 
-# Suggests for Vignettes and Tests
-usethis::use_package(&quot;matlib&quot;, type = &quot;Suggests&quot;)
+# Suggests for Tests and Vignettes
 usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(&quot;matlib&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;forcats&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;ggplot2&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;stringr&quot;, type = &quot;Suggests&quot;)
@@ -539,12 +537,12 @@ usethis::use_package(&quot;ggbump&quot;, type = &quot;Suggests&quot;)</code></pr
 <pre><code>## ✔ Adding &#39;Matrix&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;Matrix&quot;)` or `rlang::check_installed(&quot;Matrix&quot;)` to test if Matrix is installed
 ## • Then directly refer to functions with `Matrix::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;matlib&#39; to Suggests field in DESCRIPTION
-## • In your package code, use `rlang::is_installed(&quot;matlib&quot;)` or `rlang::check_installed(&quot;matlib&quot;)` to test if matlib is installed
-## • Then directly refer to functions with `matlib::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;testthat&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;testthat&quot;)` or `rlang::check_installed(&quot;testthat&quot;)` to test if testthat is installed
 ## • Then directly refer to functions with `testthat::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;matlib&#39; to Suggests field in DESCRIPTION
+## • In your package code, use `rlang::is_installed(&quot;matlib&quot;)` or `rlang::check_installed(&quot;matlib&quot;)` to test if matlib is installed
+## • Then directly refer to functions with `matlib::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;forcats&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;forcats&quot;)` or `rlang::check_installed(&quot;forcats&quot;)` to test if forcats is installed
 ## • Then directly refer to functions with `forcats::fun()`</code></pre>
@@ -809,18 +807,35 @@ Vignette from <a href="https://r-spatial.github.io/spatialreg/articles/nb_igraph
 </div>
 <div id="mock-data" class="section level2">
 <h2>Mock Data</h2>
-<pre class="r"><code>mock &lt;- list()
+<pre class="r"><code>usethis::use_data_raw(&quot;mock&quot;, open = FALSE)</code></pre>
+<pre><code>## ✔ Creating &#39;data-raw/&#39;
+## ✔ Adding &#39;^data-raw$&#39; to &#39;.Rbuildignore&#39;
+## ✔ Writing &#39;data-raw/mock.R&#39;
+## • Finish the data preparation script in &#39;data-raw/mock.R&#39;
+## • Use `usethis::use_data()` to add prepared data to package</code></pre>
+<pre class="r"><code>library(dplyr)
+mock &lt;- list()
 
-mock$recode_vect &lt;- c(AUS = &quot;Australia&quot;,
-                 NZD = &quot;New Zealand&quot;,
-                 JPN = &quot;Japan&quot;)
-mock$collapse_list &lt;- list(MAMM = c(&quot;elephant&quot;, &quot;whale&quot;, &quot;monkey&quot;),
-                      REPT = c(&quot;lizard&quot;, &quot;turtle&quot;),
-                      CRUS = c(&quot;crab&quot;))
+mock$named_ctr_iso3c &lt;- countrycode::codelist |&gt;
+  dplyr::select(iso3c, iso.name.en) |&gt;
+  tidyr::drop_na() |&gt;
+  tibble::deframe()
 
-#  \item{xmap}{sample xmap objects}
-#mock$xmap_iso2_iso3 &lt;-  
-#mock$xmap_mixed &lt;-
+# mock_named$collapse_list &lt;- list(MAMM = c(&quot;elephant&quot;, &quot;whale&quot;, &quot;monkey&quot;),
+#                       REPT = c(&quot;lizard&quot;, &quot;turtle&quot;),
+#                       CRUS = c(&quot;crab&quot;))</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>mock$df_anzsco21 &lt;- strayr::anzsco2021 |&gt;
+  select(starts_with(c(&quot;anzsco_major&quot;, &quot;anzsco_submajor&quot;))) |&gt; 
+  distinct() |&gt;
+  select(ends_with(&quot;_code&quot;), everything())
 
 usethis::use_data(mock)</code></pre>
 <pre><code>## ✔ Creating &#39;data/&#39;
@@ -829,15 +844,22 @@ usethis::use_data(mock)</code></pre>
 ## • Document your data (see &#39;https://r-pkgs.org/data.html&#39;)</code></pre>
 <pre class="r"><code>#&#39; Mock objects for the `xmap` package
 #&#39; 
-#&#39; A list of mock objects for experimenting with functions
+#&#39; A collection of mock inputs for experimenting with functions
 #&#39; in the `xmap` package.
+#&#39; `named_` objects are either named vectors or nested lists.
+#&#39; `df_` objects may contain source-target *pairs* (no weights),
+#&#39; or weighted source-target *links*.
 #&#39; 
 #&#39; @format ## `mock`
-#&#39; A list with :
+#&#39; A list with:
 #&#39; \describe{
-#&#39;  \item{recode_vect, collapse_list}{Named vector and list for conversion into node pairs}
+#&#39;  \item{named_ctr_iso3c}{named vector. Names are ISO-3 country codes, values are ISO English country names. Retrieved from `countrycode` package:
+#&#39;    \url{https://github.com/vincentarelbundock/countrycode}}
+#&#39;  \item{df_anzsco21}{4-column tibble. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from `strayr` package:
+#&#39;    \url{https://github.com/runapp-aus/strayr}}
+#&#39;  \item{df_mixed}{3-column data.frame. }
 #&#39;  }
-#&#39; @source Package authors
+#&#39; @source 
 &quot;mock&quot;</code></pre>
 <pre><code>## [1] &quot;mock&quot;</code></pre>
 </div>
@@ -1035,7 +1057,7 @@ NULL
   testthat::expect_equal(animal_links, add_links)
   }
   )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 </div>
 <div id="link-properties-vhas_x_" class="section level3">
@@ -1154,9 +1176,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -1199,7 +1221,7 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
@@ -1454,7 +1476,7 @@ NULL
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_subset_1to1),
                          class = &quot;abort_matchset&quot;)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <p>Aliases:</p>
 <pre class="r"><code>#&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
 #&#39; @export
@@ -1515,7 +1537,7 @@ verify_pairs_as_recode_unique &lt;- verify_pairs_all_1to1</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_unique'>verify_pairs_all_unique</a>(pairs_1to1, f, t), pairs_1to1)
 }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 <div id="verify-links" class="section level3">
 <h3>Verify: Links</h3>
@@ -1680,7 +1702,7 @@ a numeric vector - <code>X</code> inherits from the class
                     {
                       testthat::expect_error(<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;unknown&quot;))
                     })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -1772,7 +1794,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -1831,7 +1853,7 @@ NULL
                       testthat::expect_error(<a href='create-xmap.html#abort_col_order'>abort_col_order</a>(df, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;),
                                              class = &quot;abort_col_order&quot;)
                     })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="from-set-check" class="section level4">
 <h4>From Set Check</h4>
@@ -1938,7 +1960,7 @@ single row)</li>
     testthat::expect_identical(df, <a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, node_A, node_B, w_AB))
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;validate &amp; verify fncs reject missing columns&quot;,
@@ -2045,10 +2067,10 @@ testthat::test_that(
   }
 )</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 😀</code></pre>
 <pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
@@ -2177,7 +2199,7 @@ controlled by <code>.drop</code> argument</li>
                                <a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;xmap_df&quot;))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="conversion" class="section level2">
@@ -2255,7 +2277,7 @@ controlled by <code>.drop</code> argument</li>
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
   }
   )</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="to-list" class="section level3">
@@ -2368,7 +2390,7 @@ controlled by <code>.drop</code> argument</li>
   testthat::expect_error(<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>(xmap_mixed), 
                          class = &quot;abort_frac_weights&quot;)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>() reverses <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>()&quot;, {
   link_list &lt;- list(AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
                     BB = c(&quot;x1&quot;, &quot;x5&quot;),
@@ -2381,7 +2403,7 @@ controlled by <code>.drop</code> argument</li>
    <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;xvars&quot;, &quot;capital&quot;, &quot;w&quot;)
   testthat::expect_identical(<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>(link_xmap), link_list)
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <p>with dplyr:</p>
 <pre class="r"><code>pairs_df &lt;- 
      <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(link_list,
@@ -2506,7 +2528,7 @@ pairs_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x,&quot;to&quot;), df_x)
 }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -2545,7 +2567,7 @@ pairs_df |&gt;
   
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level2">
@@ -2730,6 +2752,8 @@ print(valid_xmap_df)</code></pre>
 ## ✔ Writing &#39;.git/hooks/pre-commit&#39;</code></pre>
 <pre><code>## ℹ Updating xmap documentation
 ## ℹ Loading xmap</code></pre>
+<pre><code>## Warning: [
+## conformr-xmap-project/xmap/R/data.Rdata.R:20] @source requires a value</code></pre>
 <pre><code>## Warning: [
 ## conformr-xmap-project/xmap/R/verify_named.Rverify_named.R:25] @examples
 ## requires a value</code></pre>

@@ -49,7 +49,7 @@ reference:
     - is_xmap
     - print.xmap
 
-- title: Internal
+- title: internal
   contents:
     - starts_with("vhas")
     - starts_with("abort")
