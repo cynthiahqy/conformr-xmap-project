@@ -281,8 +281,7 @@ I'm not sure offering helpers for modifying crossmaps is necessary or even desir
 usethis::use_data_raw("mock", open = FALSE)
 ```
 
-```{r mock-named-objects, send_to="data-raw/mock.R"}
-library(dplyr)
+```{r mock-objects, send_to="data-raw/mock.R"}
 mock <- list()
 
 mock$named_ctr_iso3c <- countrycode::codelist |>
@@ -293,13 +292,11 @@ mock$named_ctr_iso3c <- countrycode::codelist |>
 # mock_named$collapse_list <- list(MAMM = c("elephant", "whale", "monkey"),
 #                       REPT = c("lizard", "turtle"),
 #                       CRUS = c("crab"))
-```
 
-```{r mock-pairs-objects, send_to="data-raw/mock.R"}
 mock$df_anzsco21 <- strayr::anzsco2021 |>
-  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |>
-  distinct() |>
-  select(ends_with("_code"), everything())
+  dplyr::select(tidyselect::starts_with(c("anzsco_major", "anzsco_submajor"))) |>
+  dplyr::distinct() |>
+  dplyr::select(tidyselect::ends_with("_code"), tidyselect::everything())
 
 usethis::use_data(mock)
 ```
@@ -465,7 +462,7 @@ pairs_to_named_list <- function(df, names_from = name, values_from = value){
 #'
 #' @examples
 #' AUS_pairs <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT")) |>
-#'   as_pairs_from_named(names_to = "ctr", values_to = "state") |>
+#'   as_pairs_from_named(names_to = "ctr", values_to = "state")
 #' AUS_pairs |>
 #'   add_weights_unit(weights_into = "weights")
 add_weights_unit <- function(df, weights_into = "weights"){
@@ -481,6 +478,7 @@ add_weights_unit <- function(df, weights_into = "weights"){
 #' Attaches equal weights to every source-target link from a given source node.
 #' The resultant weighted links can be verified or coerced into an `xmap`.
 #' 
+#' @inheritParams verify_pairs
 #' @inheritParams add_weights_unit
 #' 
 #' @return `pairs` with additional column of weights
@@ -772,7 +770,6 @@ Verify pairwise properties:
 ```{r send_to="R/verify_named.R"}
 #' @describeIn verify_named Verify named vector or list has only one-to-one relations
 #' @export
-#' @examples
 #' 
 verify_named_all_1to1 <- function(x){
   stopifnot(is.vector(x))
@@ -2060,6 +2057,8 @@ testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
 
 ```{r}
 #' Drop extra columns from `xmap` objects
+#' 
+#' @param .xmap an xmap object
 #'
 #' @export
 xmap_drop_extra <- function(.xmap){

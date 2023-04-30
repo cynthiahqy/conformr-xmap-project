@@ -5,6 +5,7 @@
 #' Attaches equal weights to every source-target link from a given source node.
 #' The resultant weighted links can be verified or coerced into an `xmap`.
 #' 
+#' @inheritParams verify_pairs
 #' @inheritParams add_weights_unit
 #' 
 #' @return `pairs` with additional column of weights

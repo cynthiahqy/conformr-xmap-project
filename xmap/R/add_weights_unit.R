@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' AUS_pairs <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT")) |>
-#'   as_pairs_from_named(names_to = "ctr", values_to = "state") |>
+#'   as_pairs_from_named(names_to = "ctr", values_to = "state")
 #' AUS_pairs |>
 #'   add_weights_unit(weights_into = "weights")
 add_weights_unit <- function(df, weights_into = "weights"){

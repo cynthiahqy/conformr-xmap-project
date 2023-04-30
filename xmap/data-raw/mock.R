@@ -2,7 +2,6 @@
 
 usethis::use_data(mock, overwrite = TRUE)
 
-library(dplyr)
 mock <- list()
 
 mock$named_ctr_iso3c <- countrycode::codelist |>
@@ -15,8 +14,8 @@ mock$named_ctr_iso3c <- countrycode::codelist |>
 #                       CRUS = c("crab"))
 
 mock$df_anzsco21 <- strayr::anzsco2021 |>
-  select(starts_with(c("anzsco_major", "anzsco_submajor"))) |>
-  distinct() |>
-  select(ends_with("_code"), everything())
+  dplyr::select(tidyselect::starts_with(c("anzsco_major", "anzsco_submajor"))) |>
+  dplyr::distinct() |>
+  dplyr::select(tidyselect::ends_with("_code"), tidyselect::everything())
 
 usethis::use_data(mock)

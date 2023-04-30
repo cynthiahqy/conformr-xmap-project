@@ -22,7 +22,6 @@ NULL
 
 #' @describeIn verify_named Verify named vector or list has only one-to-one relations
 #' @export
-#' @examples
 #' 
 verify_named_all_1to1 <- function(x){
   stopifnot(is.vector(x))
