@@ -275,7 +275,7 @@ I'm not sure offering helpers for modifying crossmaps is necessary or even desir
     -   recode/collapse variants which drop the weights columns (since it is implied);
     -   igraph objects for spatial aggregation/transformation -- noting the similarity between spatial weighting matrices and crossmaps (see this Vignette from [SpatialReg](https://r-spatial.github.io/spatialreg/articles/nb_igraph.html).
 
-## Mock Data
+## Mock Objects
 
 ```{r}
 usethis::use_data_raw("mock", open = FALSE)
@@ -298,6 +298,17 @@ mock$df_anzsco21 <- strayr::anzsco2021 |>
   dplyr::distinct() |>
   dplyr::select(tidyselect::ends_with("_code"), tidyselect::everything())
 
+mock$xmap_abc <- tibble::tribble(
+  ~lower, ~upper, ~share,
+  "a", "AA", 1,       # one-to-one
+  "b", "BB", 1,    # one-FROM-many
+  "c", "BB", 1,
+  "d", "CC", 0.3,    # one-to-many
+  "d", "DD", 0.6,
+  "d", "EE", 0.1
+) |>
+  xmap::as_xmap_df(from = lower, to = upper, weights = share)
+
 usethis::use_data(mock)
 ```
 
@@ -313,11 +324,11 @@ usethis::use_data(mock)
 #' @format ## `mock`
 #' A list with:
 #' \describe{
-#'  \item{named_ctr_iso3c}{named vector. Names are ISO-3 country codes, values are ISO English country names. Retrieved from `countrycode` package:
+#'  \item{named_ctr_iso3c}{named vector with 249 elements. Names are ISO-3 country codes, values are ISO English country names. Retrieved from `countrycode` package:
 #'    \url{https://github.com/vincentarelbundock/countrycode}}
-#'  \item{df_anzsco21}{4-column tibble. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from `strayr` package:
+#'  \item{df_anzsco21}{tibble with 51 rows and 4 columns. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from `strayr` package:
 #'    \url{https://github.com/runapp-aus/strayr}}
-#'  \item{df_mixed}{3-column data.frame. }
+#'  \item{xmap_abc}{xmap_df: lower -> upper BY share. Mock crossmap with 6 links including one-to-one, one-to-many and many-to-one relations.}
 #'  }
 "mock"
 ```
