@@ -186,23 +186,23 @@ The following examples demonstrate how to coerce various inputs into the experim
 
 ### Row-wise Links
 
-The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
+The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps. The exmaple belows shows the code for the sample crossmap: `mock$xmap_abc`
 
 ```{r}
-simple_links <- tibble::tribble(
-  ~source, ~target, ~share,
-  "equal", "EQUAL", 1,       # one-to-one
-  "member_1", "GROUP", 1,    # one-FROM-many
-  "member_2", "GROUP", 1,
-  "whole", "PART_1", 0.3,    # one-to-many
-  "whole", "PART_2", 0.6,
-  "whole", "PART_3", 0.1
+abc_links <- tibble::tribble(
+  ~lower, ~upper, ~share,
+  "a", "AA", 1,       # one-to-one
+  "b", "BB", 1,    # one-FROM-many
+  "c", "BB", 1,
+  "d", "CC", 0.3,    # one-to-many
+  "d", "DD", 0.6,
+  "d", "EE", 0.1
 )
 
-simple_xmap <- simple_links |>
-  as_xmap_df(from = source, to = target, weights = share)
+xmap_abc <- abc_links |>
+  as_xmap_df(from = lower, to = upper, weights = share)
 
-simple_xmap
+xmap_abc
 ```
 
 ### Crosswalk/Lookup Tables
