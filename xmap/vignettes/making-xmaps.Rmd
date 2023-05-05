@@ -1,10 +1,10 @@
 ---
-title: "Making and Verifying Crossmaps"
+title: "Intro to Crossmaps"
 output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Making and Verifying Crossmaps}
+  %\VignetteIndexEntry{Intro to Crossmaps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,7 +13,7 @@ vignette: >
 library(xmap)
 ```
 
-## Crossmaps
+## Introduction to Crossmaps
 
 A (Nomenclature) Crossmap encodes a complete redistribution of values between a source and target classifications as a directed, bipartite, weighted graph. Numeric values transformed using a valid Crossmap will sum to the same total in both the source and target classifications. A valid Crossmap satisfies the following conditions:
 
@@ -180,29 +180,80 @@ group_prize_links |>
 
 Note that if the first crossmap condition is met, i.e. there is only one link between each unique source-node pair, then `dplyr::n()` and `dplyr::n_distinct()` are interchangeable when generating equal share weights.
 
+## Cheatsheet for Verifying Mapping Objects
+
+Let $G = (U,V, E)$ be a crossmap where $U$ and $V$ are the source and target nomenclature sets, and $E$ denotes the graph edges (i.e. links between the two sets), with weights on a link between node $i \in U$ and $j \in V$ denoted $w_{ij}$. Recall also that sets by definition don't contain duplicates.
+
+Let us also define some corresponding R objects:
+
+-   `from,to,weights` : the vectors or columns defining non-zero links for a crossmap (i.e an edge list). Each - triplet or row represents a edge ${i,j}$ with weight $w_{ij}$. These vectors can contain duplicates.
+-   `unique(from)` : the set $U$ of unique categories in the source nomenclature
+-   `unique(to)`: the set $V$ of unique categories in the target nomenclature
+-   `df`: a data.frame containing `from,to,weights`
+-   `sum_w` : a vector the same length as `unique(from)` containing sum of `weights` grouped by `from`
+-   `ones`: a vector of ones the same length as `sum_w` and `unique(from)`
+
+Then to check if table of links is a valid crossmap, we just check that:
+
+-   there are no missing values -- i.e. any explicit link has to have a source, target and weight
+-   we only have one link between each unique source and target node -- i.e. we can't have two links between $i,j$ with different weights.
+-   the weights on links coming out of each source node sum to 1
+
+The `xmap` function to do this is `verify_links_as_xmap()`. But you can also check the following base R or dplyr conditions:
+
+-   `anyNA(df)`
+-   `anyDuplicated(data.frame(from, to)) == FALSE` or `nrow(distinct(df, from, to)) = nrow(df)`
+-   `all(isTRUE(all.equal(sum_w, ones)))` or `dplyr::near(sum_w, ones)`
+
+Note that using `==` for the third condition is not recommended since it doesn't have any built-in tolerance for floating point errors.
+
+Strict versions of the above special cases can also be characterised with the following additional conditions:
+
++------------------+-------------------------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| x                | **Recoding** (1-to-1)                                       | **Collapsing** (M-to-1)                                          | **Splitting** (1-to-M)                                                              |
++==================+=============================================================+==================================================================+=====================================================================================+
+| Assertions       | -   every link weight is either 1 or 0 (implied by absence) | -   link weights are binary                                      | -   link weights are fractional or absent                                           |
+|                  | -   cardinality of the source and target sets is the same   | -   there are more source categories than target categories      | -   there are more target categories than source categories                         |
+|                  |                                                             | -   each source category is assigned to only one target category | -   each source category has at least two outgoing links to the target nomenclature |
++------------------+-------------------------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| xmap functions   | `verify_named_all_1to1()`                                   | `verify_named_all_values_unique()`                               | `verify_named_all_names_unique()`                                                   |
+|                  |                                                             |                                                                  |                                                                                     |
+|                  | `verify_pairs_all_1to1()`                                   | `verify_named_matchset`                                          | `verify_named_matchset`                                                             |
+|                  |                                                             |                                                                  |                                                                                     |
+|                  | ...                                                         | ...                                                              | ...                                                                                 |
++------------------+-------------------------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| base R           | -   `all(weights == 1)`                                     | -   `all(weights == 1)`                                          | -   `all(weights < 1)`                                                              |
+|                  | -   `length(unique(from) == length(unique(to))`             | -   `length(unique(from) > length(unique(to))`                   | -   `length(unique(from)) < length(unique(to))`                                     |
+| conditions       |                                                             | -   `length(unique(from)) == length(from)`                       | -   `length(from) > length(unique(from))`                                           |
++------------------+-------------------------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+| Graph Conditions | -   $w_{ij} \in \{0,1\} \ \forall i,j$                      | -   $w_{ij} \in \{0,1\} \forall i,j$                             | -   $w_{ij} \in [0, 1) \forall i,j$                                                 |
+|                  | -   $|U| = |V|$                                             | -   $|U| > |V|$                                                  | -    $|U| < |V|$                                                                    |
+|                  | -   $Out_i = In_j = 1 \ \forall i,j$                        | -   $Out_i = 1 \ \forall i \in U$                                | -   $Out_i > 1 \ \forall i \in U$                                                   |
++------------------+-------------------------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------------------------------------+
+
 ## Creating `xmap_df` from Pairs and Links
 
 The following examples demonstrate how to coerce various inputs into the experimental `xmap_df` class.
 
 ### Row-wise Links
 
-The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps.
+The following example shows how to create a mixed crossmap which encodes one-to-one, many-to-one and one-to-many relations and coerce them into a `xmap_df`. This method is most suitable for simple crossmaps. The exmaple belows shows the code for the sample crossmap: `mock$xmap_abc`
 
 ```{r}
-simple_links <- tibble::tribble(
-  ~source, ~target, ~share,
-  "equal", "EQUAL", 1,       # one-to-one
-  "member_1", "GROUP", 1,    # one-FROM-many
-  "member_2", "GROUP", 1,
-  "whole", "PART_1", 0.3,    # one-to-many
-  "whole", "PART_2", 0.6,
-  "whole", "PART_3", 0.1
+abc_links <- tibble::tribble(
+  ~lower, ~upper, ~share,
+  "a", "AA", 1,       # one-to-one
+  "b", "BB", 1,    # one-FROM-many
+  "c", "BB", 1,
+  "d", "CC", 0.3,    # one-to-many
+  "d", "DD", 0.6,
+  "d", "EE", 0.1
 )
 
-simple_xmap <- simple_links |>
-  as_xmap_df(from = source, to = target, weights = share)
+xmap_abc <- abc_links |>
+  as_xmap_df(from = lower, to = upper, weights = share)
 
-simple_xmap
+xmap_abc
 ```
 
 ### Crosswalk/Lookup Tables

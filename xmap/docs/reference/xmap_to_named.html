@@ -24,7 +24,7 @@ and each element contains the source node(s) in from."><!-- mathjax --><script s
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ and each element contains the source node(s) in from."><!-- mathjax --><script s
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/making-xmaps.html">Making and Verifying Crossmaps</a>
+    <a class="dropdown-item" href="../articles/making-xmaps.html">Intro to Crossmaps</a>
     <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
   </div>
 </li>
@@ -104,7 +104,7 @@ and each element contains the source node(s) in <code>from</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">iso_vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>AF <span class="op">=</span> <span class="st">"004"</span>, AL <span class="op">=</span> <span class="st">"008"</span>, DZ <span class="op">=</span> <span class="st">"012"</span>, AS <span class="op">=</span> <span class="st">"016"</span>, AD <span class="op">=</span> <span class="st">"020"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">iso_xmap</span> <span class="op">&lt;-</span> <span class="va">iso_vector</span> <span class="op">|&gt;</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"iso2c"</span>, values_to <span class="op">=</span> <span class="st">"iso3n"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">iso3n</span>, to <span class="op">=</span> <span class="va">iso2c</span>, <span class="va">weights</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">iso_vector</span>, <span class="fu">xmap_to_named_vector</span><span class="op">(</span><span class="va">iso_xmap</span><span class="op">)</span><span class="op">)</span> </span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
@@ -113,7 +113,7 @@ and each element contains the source node(s) in <code>from</code>.</p>
 <span class="r-in"><span>                 CRUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"crab"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">animal_xmap</span> <span class="op">&lt;-</span> <span class="va">animal_list</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span> <span class="fu"><a href="as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"class"</span>, values_to <span class="op">=</span> <span class="st">"animals"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span> <span class="fu"><a href="add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span> <span class="fu"><a href="as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">animals</span>, to <span class="op">=</span> <span class="va">class</span>, weights <span class="op">=</span> <span class="va">weights</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">xmap_to_named_list</span><span class="op">(</span><span class="va">animal_xmap</span><span class="op">)</span>, <span class="va">animal_list</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>

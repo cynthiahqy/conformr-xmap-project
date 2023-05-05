@@ -2191,6 +2191,39 @@ usethis::use_package("ggplot2", type = "suggests")
 usethis::use_package("ggbump", type = "suggests")
 ```
 
+### Integration with ggraph & igraph layouts via tidygraphs
+
+See <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> for initial details
+
+#### COERCE: xmap_df to tbl_graph
+
+```{r}
+pull_from <- function(.xmap){
+  x_attrs <- attributes(.xmap)
+  .xmap |> pull(x_attrs$col_from)
+}
+```
+
+```{r}
+as_tbl_graph.xmap_df <- function(x, ...){
+ x <- xmap_drop_extra(x)
+ x_attrs <- attributes(x)
+ x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
+ x_edges <- data.frame(x)
+ names(x_edges)[names(x_edges) == x_attrs$col_from] <- 'weights'
+ tidygraph::tbl_graph(x_nodes, x_edges)
+}
+```
+
+``` r
+testthat::test_that("as_tbl_graph.xmap_df works as expected",{
+  x <- mock$xmap_abc
+  x_attrs <- attrs(x)
+  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(mock$xmap_abc)))
+  x_edges <- data.frame(x)
+})
+```
+
 ### Planned Generic: `xmap_viz_*()`
 
 This section is left in for future reference, when I get around to properly developing visualisation functions for crossmaps.
@@ -2360,6 +2393,17 @@ litr::add_vignettes(c("../xmap-source-files/using-xmaps.Rmd",
                       "../xmap-source-files/plot-coverage-matrix.png",
                       "../xmap-source-files/plot-missing-val-bigraph.png"
                     ))
+```
+
+### Add News
+
+``` {send_to="NEWS.md"}
+
+## xmap 0.0.1
+
+- This was the initial release of the package.
+- `verfiy_*` functions were relatively stable
+- `xmap_df` class and functions were experimental
 ```
 
 ### Render package

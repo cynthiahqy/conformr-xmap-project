@@ -1,7 +1,7 @@
 Package: xmap
 Title: A principled approach to recoding and redistributing data between
     nomenclature
-Version: 0.0.1
+Version: 0.0.1.9001
 Authors@R: c(
     person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre")),
     person("Laura", "Puzzello", role = c("aut", "fnd"))
@@ -38,4 +38,4 @@ Suggests:
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: 63fe8913732cbd8d745656e34cc88010
+LitrId: 2b73a37bdb0ed366e9405d98cb737113
