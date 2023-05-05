@@ -1,10 +1,10 @@
 ---
-title: "Making and Verifying Crossmaps"
+title: "Intro to Crossmaps"
 output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Making and Verifying Crossmaps}
+  %\VignetteIndexEntry{Intro to Crossmaps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,7 +13,7 @@ vignette: >
 library(xmap)
 ```
 
-## Crossmaps
+## Introduction to Crossmaps
 
 A (Nomenclature) Crossmap encodes a complete redistribution of values between a source and target classifications as a directed, bipartite, weighted graph. Numeric values transformed using a valid Crossmap will sum to the same total in both the source and target classifications. A valid Crossmap satisfies the following conditions:
 
