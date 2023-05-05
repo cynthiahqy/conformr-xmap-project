@@ -322,21 +322,6 @@ mock$df_aus_pop <- tibble::tribble(
       "Australian Capital Territory", "AU-ACT",  456700
 ) |>
   dplyr::mutate(ctr = "AUS")
-
-mock$links_aus_agg <- mock$named_aus |>
-  as_pairs_from_named(names_to = "ctr", values_to = "state") |>
-  add_weights_unit() |>
-  dplyr::select(ctr, state, weights) |>
-  verify_links_as_xmap(from = state, to = ctr, weights)
-
-mock$links_aus_split_equal <- mock$links_aus_agg |>
-  add_weights_equal(from = ctr, to = state) |>
-  dplyr::select(ctr, state, weights) |>
-  verify_links_as_xmap(from = ctr, to = state, weights)
-
-mock$links_aus_split_pop <- mock$df_aus_pop |>
-  add_weights_prop(from = ctr, to = state, prop = pop)
-
 usethis::use_data(mock)
 ```
 
@@ -357,7 +342,27 @@ usethis::use_data(mock)
 #'  \item{df_anzsco21}{tibble with 51 rows and 4 columns. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from `strayr` package:
 #'    \url{https://github.com/runapp-aus/strayr}}
 #'  \item{xmap_abc}{xmap_df: lower -> upper BY share. Mock crossmap with 6 links including one-to-one, one-to-many and many-to-one relations.}
+#'  \item{named_aus}{named list with 1 element named "AUS" containing codes for the Australian states}
+#'  \item{df_aus_pop}{tibble containing 2022 population figures for Australia by state. Retrieved from:
+#'    \url{https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022}}
 #'  }
+#'@examples
+#' links_aus_agg <- mock$named_aus |>
+#'   as_pairs_from_named(names_to = "ctr", values_to = "state") |>
+#'   add_weights_unit() |>
+#'   dplyr::select(ctr, state, weights) |>
+#'   verify_links_as_xmap(from = state, to = ctr, weights)
+#' links_aus_agg
+#'
+#' links_aus_split_equal <- links_aus_agg |>
+#'   add_weights_equal(from = ctr, to = state) |>
+#'   dplyr::select(ctr, state, weights) |>
+#'   verify_links_as_xmap(from = ctr, to = state, weights)
+#' links_aus_split_equal
+#'
+#' links_aus_split_pop <- mock$df_aus_pop |>
+#'   add_weights_prop(from = ctr, to = state, prop = pop)
+#' links_aus_split_pop
 "mock"
 ```
 
@@ -486,7 +491,7 @@ pairs_to_named_list <- function(df, names_from = name, values_from = value){
 
 #### Helper: Add weights to pairs
 
-```{r fnc-add-weights-unit}
+```{r fnc-add-weights, send_to="R/add_weights.R"}
 #' Add weights to unweighted links
 #'
 #' Attach column of weights to a table of unweighted source-target links.
@@ -517,9 +522,6 @@ add_weights_unit <- function(df, weights_into = "weights"){
   return(df)
 }
 
-```
-
-```{r}
 #' @describeIn add_weights Attach equal fractional weights by `from` group
 #' @export
 #' @examples
@@ -538,9 +540,7 @@ add_weights_equal <- function(df, from, to, weights_into = "weights"){
     dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
     dplyr::ungroup()
 }
-```
 
-```{r}
 #' @describeIn add_weights Attach weights by `from` group using proportion reference `prop`
 #' @export
 #' @examples
@@ -1219,6 +1219,11 @@ abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
 ```{r fnc-verify-links-as-xmap}
 #' Check if candidate links meet crossmap properties
 #' 
+#' The links must satisfy:
+#'  - no missing values
+#'  - at most one link between each unique source and target node
+#'  - the weights on links coming out of each source node sum to 1
+#' 
 #' @param df data.frame like object containing candidate links
 #' @inheritParams vhas_complete_weights
 #' @inheritParams as_xmap
@@ -1467,6 +1472,12 @@ testthat::test_that("abort_col_order() works as expected",
   uniq_sets$from_set <- as.character(unique(df[[x_attrs$col_from]]))
   uniq_sets$to_set <- as.character(unique(df[[x_attrs$col_to]]))
   return(uniq_sets)
+}
+
+#'
+.calc_all_nodes.xmap_df <- function(x){
+  uniq_sets <- .calc_unique_sets.xmap_df(x)
+  nodes <- unname(unlist(uniq_sets)) 
 }
 ```
 
