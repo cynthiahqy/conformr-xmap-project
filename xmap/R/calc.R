@@ -10,3 +10,9 @@
   uniq_sets$to_set <- as.character(unique(df[[x_attrs$col_to]]))
   return(uniq_sets)
 }
+
+#'
+.calc_all_nodes.xmap_df <- function(x){
+  uniq_sets <- .calc_unique_sets.xmap_df(x)
+  nodes <- unname(unlist(uniq_sets)) 
+}

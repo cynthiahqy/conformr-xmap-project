@@ -18,7 +18,7 @@ or weighted source-target links."><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@ or weighted source-target links."><!-- mathjax --><script src="https://cdnjs.clo
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/making-xmaps.html">Making and Verifying Crossmaps</a>
+    <a class="dropdown-item" href="../articles/making-xmaps.html">Intro to Crossmaps</a>
     <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
   </div>
 </li>
@@ -81,21 +81,54 @@ or weighted source-target <em>links</em>.</p>
 
 
 <p>A list with:</p><dl><dt>named_ctr_iso3c</dt>
-<dd><p>named vector. Names are ISO-3 country codes, values are ISO English country names. Retrieved from <code>countrycode</code> package:
+<dd><p>named vector with 249 elements. Names are ISO-3 country codes, values are ISO English country names. Retrieved from <code>countrycode</code> package:
 <a href="https://github.com/vincentarelbundock/countrycode" class="external-link">https://github.com/vincentarelbundock/countrycode</a></p></dd>
 
 <dt>df_anzsco21</dt>
-<dd><p>4-column tibble. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from <code>strayr</code> package:
+<dd><p>tibble with 51 rows and 4 columns. Contains major and submajor occupation codes and descriptions for ANZSCO21. Retrieved from <code>strayr</code> package:
 <a href="https://github.com/runapp-aus/strayr" class="external-link">https://github.com/runapp-aus/strayr</a></p></dd>
 
-<dt>df_mixed</dt>
-<dd><p>3-column data.frame.</p></dd>
+<dt>xmap_abc</dt>
+<dd><p>xmap_df: lower -&gt; upper BY share. Mock crossmap with 6 links including one-to-one, one-to-many and many-to-one relations.</p></dd>
+
+<dt>named_aus</dt>
+<dd><p>named list with 1 element named "AUS" containing codes for the Australian states</p></dd>
+
+<dt>df_aus_pop</dt>
+<dd><p>tibble containing 2022 population figures for Australia by state. Retrieved from:
+<a href="https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022" class="external-link">https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022</a></p></dd>
 
 
 </dl></div>
 
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">links_aus_agg</span> <span class="op">&lt;-</span> <span class="va">mock</span><span class="op">$</span><span class="va">named_aus</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"ctr"</span>, values_to <span class="op">=</span> <span class="st">"state"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ctr</span>, <span class="va">state</span>, <span class="va">weights</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="verify_links_as_xmap.html">verify_links_as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">state</span>, to <span class="op">=</span> <span class="va">ctr</span>, <span class="va">weights</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in as_pairs_from_named(mock$named_aus, names_to = "ctr", values_to = "state"):</span> is.vector(x) is not TRUE</span>
+<span class="r-in"><span><span class="va">links_aus_agg</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'links_aus_agg' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">links_aus_split_equal</span> <span class="op">&lt;-</span> <span class="va">links_aus_agg</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_equal</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">state</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ctr</span>, <span class="va">state</span>, <span class="va">weights</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="verify_links_as_xmap.html">verify_links_as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">state</span>, <span class="va">weights</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::group_by(df, {    {        from    }}):</span> object 'links_aus_agg' not found</span>
+<span class="r-in"><span><span class="va">links_aus_split_equal</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'links_aus_split_equal' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">links_aus_split_pop</span> <span class="op">&lt;-</span> <span class="va">mock</span><span class="op">$</span><span class="va">df_aus_pop</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_prop</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">state</span>, prop <span class="op">=</span> <span class="va">pop</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in add_weights_prop(mock$df_aus_pop, from = ctr, to = state, prop = pop):</span> could not find function "add_weights_prop"</span>
+<span class="r-in"><span><span class="va">links_aus_split_pop</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'links_aus_split_pop' not found</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

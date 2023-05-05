@@ -2,6 +2,11 @@
 
 #' Check if candidate links meet crossmap properties
 #' 
+#' The links must satisfy:
+#'  - no missing values
+#'  - at most one link between each unique source and target node
+#'  - the weights on links coming out of each source node sum to 1
+#' 
 #' @param df data.frame like object containing candidate links
 #' @inheritParams vhas_complete_weights
 #' @inheritParams as_xmap

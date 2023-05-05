@@ -1,9 +1,10 @@
 # Generated from create-xmap.Rmd: do not edit by hand  
 testthat::test_that("add_weights_*() work as expected",{
+  # unit
   abc_pairs <- data.frame(lower = letters[1:5], upper = LETTERS[1:5])
   abc_links <- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
   testthat::expect_equal(add_weights_unit(abc_pairs), abc_links)
-  
+  # equal
   animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
                       REPT = c("lizard", "turtle"),
                       CRUS = c("crab")) |>
@@ -12,10 +13,21 @@ testthat::test_that("add_weights_*() work as expected",{
     dplyr::group_by(class) |>
     dplyr::mutate(weights = 1/dplyr::n_distinct(animal)) |>
     dplyr::ungroup()
-  add_links <- animal_pairs |>
+  animal_add <- animal_pairs |>
     add_weights_equal(from = class, to = animal, weights_into = "weights")
-  
-  testthat::expect_equal(animal_links, add_links)
+  testthat::expect_equal(animal_links, animal_add)
+  # prop
+  recipe_df <- data.frame(recipe = c(rep("cake", 4), rep("pasta", 2)),
+                          ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
+                          grams = c(c(500, 250, 200, 250),c(250, 150))
+  )
+  recipe_links <- recipe_df |>
+    dplyr::group_by(recipe) |>
+    dplyr::mutate(weights = grams/sum(grams)) |>
+    dplyr::ungroup()
+  recipe_add <- recipe_df |>
+    add_weights_prop(recipe, ingredients, grams)
+  testthat::expect_equal(recipe_links, recipe_add)
   }
   )
 

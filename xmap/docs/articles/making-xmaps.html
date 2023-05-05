@@ -6,12 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="xmap">
-<title>Making and Verifying Crossmaps • xmap</title>
+<title>Intro to Crossmaps • xmap</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Making and Verifying Crossmaps">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Intro to Crossmaps">
 <meta property="og:description" content="xmap">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/making-xmaps.html">Making and Verifying Crossmaps</a>
+    <a class="dropdown-item" href="../articles/making-xmaps.html">Intro to Crossmaps</a>
     <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
   </div>
 </li>
@@ -72,7 +72,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Making and Verifying Crossmaps</h1>
+      <img src="" class="logo" alt=""><h1>Intro to Crossmaps</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/cynthiahqy/xmap/vignettes/making-xmaps.Rmd" class="external-link"><code>vignettes/making-xmaps.Rmd</code></a></small>
@@ -84,7 +84,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cynthiahqy/xmap" class="external-link">xmap</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="crossmaps">Crossmaps<a class="anchor" aria-label="anchor" href="#crossmaps"></a>
+<h2 id="introduction-to-crossmaps">Introduction to Crossmaps<a class="anchor" aria-label="anchor" href="#introduction-to-crossmaps"></a>
 </h2>
 <p>A (Nomenclature) Crossmap encodes a complete redistribution of values
 between a source and target classifications as a directed, bipartite,
@@ -236,7 +236,7 @@ node pairs, and then attaching the implied unit weights.</p>
 <span></span>
 <span><span class="va">recode_xmap</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span><span class="va">mock</span><span class="op">$</span><span class="va">recode_vect</span>, names_to <span class="op">=</span> <span class="st">"iso3"</span>, values <span class="op">=</span> <span class="st">"ctr_name"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"w"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"w"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">xmap</span><span class="fu">::</span><span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">iso3</span>, to <span class="op">=</span> <span class="va">ctr_name</span>, weights <span class="op">=</span> <span class="va">w</span><span class="op">)</span></span></code></pre></div>
 <p>For a crossmap to be a recode map it must have binary weights, and
 the cardinality of the source and target node sets must be equal. In
@@ -314,7 +314,7 @@ object via <code>verify_links_*</code> functions, or coerce to an
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">group_links</span> <span class="op">&lt;-</span> <span class="va">student_groups</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"group"</span>, values_to <span class="op">=</span> <span class="st">"student"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## collapse xmap from students to groups</span></span>
 <span><span class="va">group_links</span> <span class="op">|&gt;</span></span>
@@ -370,6 +370,171 @@ interchangeable when generating equal share weights.</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="cheatsheet-for-verifying-mapping-objects">Cheatsheet for Verifying Mapping Objects<a class="anchor" aria-label="anchor" href="#cheatsheet-for-verifying-mapping-objects"></a>
+</h2>
+<p>Let <span class="math inline">\(G = (U,V, E)\)</span> be a crossmap
+where <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span> are the source and target nomenclature
+sets, and <span class="math inline">\(E\)</span> denotes the graph edges
+(i.e. links between the two sets), with weights on a link between node
+<span class="math inline">\(i \in U\)</span> and <span class="math inline">\(j \in V\)</span> denoted <span class="math inline">\(w_{ij}\)</span>. Recall also that sets by
+definition don’t contain duplicates.</p>
+<p>Let us also define some corresponding R objects:</p>
+<ul>
+<li>
+<code>from,to,weights</code> : the vectors or columns defining
+non-zero links for a crossmap (i.e an edge list). Each - triplet or row
+represents a edge <span class="math inline">\({i,j}\)</span> with weight
+<span class="math inline">\(w_{ij}\)</span>. These vectors can contain
+duplicates.</li>
+<li>
+<code>unique(from)</code> : the set <span class="math inline">\(U\)</span> of unique categories in the source
+nomenclature</li>
+<li>
+<code>unique(to)</code>: the set <span class="math inline">\(V\)</span> of unique categories in the target
+nomenclature</li>
+<li>
+<code>df</code>: a data.frame containing
+<code>from,to,weights</code>
+</li>
+<li>
+<code>sum_w</code> : a vector the same length as
+<code>unique(from)</code> containing sum of <code>weights</code> grouped
+by <code>from</code>
+</li>
+<li>
+<code>ones</code>: a vector of ones the same length as
+<code>sum_w</code> and <code>unique(from)</code>
+</li>
+</ul>
+<p>Then to check if table of links is a valid crossmap, we just check
+that:</p>
+<ul>
+<li>there are no missing values – i.e. any explicit link has to have a
+source, target and weight</li>
+<li>we only have one link between each unique source and target node –
+i.e. we can’t have two links between <span class="math inline">\(i,j\)</span> with different weights.</li>
+<li>the weights on links coming out of each source node sum to 1</li>
+</ul>
+<p>The <code>xmap</code> function to do this is
+<code><a href="../reference/verify_links_as_xmap.html">verify_links_as_xmap()</a></code>. But you can also check the
+following base R or dplyr conditions:</p>
+<ul>
+<li><code>anyNA(df)</code></li>
+<li>
+<code>anyDuplicated(data.frame(from, to)) == FALSE</code> or
+<code>nrow(distinct(df, from, to)) = nrow(df)</code>
+</li>
+<li>
+<code>all(isTRUE(all.equal(sum_w, ones)))</code> or
+<code>dplyr::near(sum_w, ones)</code>
+</li>
+</ul>
+<p>Note that using <code>==</code> for the third condition is not
+recommended since it doesn’t have any built-in tolerance for floating
+point errors.</p>
+<p>Strict versions of the above special cases can also be characterised
+with the following additional conditions:</p>
+<table style="width:99%;" class="table">
+<colgroup>
+<col width="8%">
+<col width="26%">
+<col width="28%">
+<col width="36%">
+</colgroup>
+<thead><tr class="header">
+<th>x</th>
+<th>
+<strong>Recoding</strong> (1-to-1)</th>
+<th>
+<strong>Collapsing</strong> (M-to-1)</th>
+<th>
+<strong>Splitting</strong> (1-to-M)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Assertions</td>
+<td><ul>
+<li>every link weight is either 1 or 0 (implied by absence)</li>
+<li>cardinality of the source and target sets is the same</li>
+</ul></td>
+<td><ul>
+<li>link weights are binary</li>
+<li>there are more source categories than target categories</li>
+<li>each source category is assigned to only one target category</li>
+</ul></td>
+<td><ul>
+<li>link weights are fractional or absent</li>
+<li>there are more target categories than source categories</li>
+<li>each source category has at least two outgoing links to the target
+nomenclature</li>
+</ul></td>
+</tr>
+<tr class="even">
+<td>xmap functions</td>
+<td>
+<p><code><a href="../reference/verify_named.html">verify_named_all_1to1()</a></code></p>
+<p><code><a href="../reference/verify_pairs.html">verify_pairs_all_1to1()</a></code></p>
+<p>…</p>
+</td>
+<td>
+<p><code><a href="../reference/verify_named.html">verify_named_all_values_unique()</a></code></p>
+<p><code>verify_named_matchset</code></p>
+<p>…</p>
+</td>
+<td>
+<p><code><a href="../reference/verify_named.html">verify_named_all_names_unique()</a></code></p>
+<p><code>verify_named_matchset</code></p>
+<p>…</p>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<p>base R</p>
+<p>conditions</p>
+</td>
+<td><ul>
+<li><code>all(weights == 1)</code></li>
+<li><code>length(unique(from) == length(unique(to))</code></li>
+</ul></td>
+<td><ul>
+<li><code>all(weights == 1)</code></li>
+<li><code>length(unique(from) &gt; length(unique(to))</code></li>
+<li><code>length(unique(from)) == length(from)</code></li>
+</ul></td>
+<td><ul>
+<li><code>all(weights &lt; 1)</code></li>
+<li><code>length(unique(from)) &lt; length(unique(to))</code></li>
+<li><code>length(from) &gt; length(unique(from))</code></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td>Graph Conditions</td>
+<td><ul>
+<li><span class="math inline">\(w_{ij} \in \{0,1\} \ \forall
+i,j\)</span></li>
+<li><span class="math inline">\(|U| = |V|\)</span></li>
+<li><span class="math inline">\(Out_i = In_j = 1 \ \forall
+i,j\)</span></li>
+</ul></td>
+<td><ul>
+<li><span class="math inline">\(w_{ij} \in \{0,1\} \forall
+i,j\)</span></li>
+<li><span class="math inline">\(|U| &gt; |V|\)</span></li>
+<li><span class="math inline">\(Out_i = 1 \ \forall i \in
+U\)</span></li>
+</ul></td>
+<td><ul>
+<li><span class="math inline">\(w_{ij} \in [0, 1) \forall
+i,j\)</span></li>
+<li><span class="math inline">\(|U| &lt; |V|\)</span></li>
+<li><span class="math inline">\(Out_i &gt; 1 \ \forall i \in
+U\)</span></li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
 <h2 id="creating-xmap_df-from-pairs-and-links">Creating <code>xmap_df</code> from Pairs and Links<a class="anchor" aria-label="anchor" href="#creating-xmap_df-from-pairs-and-links"></a>
 </h2>
 <p>The following examples demonstrate how to coerce various inputs into
@@ -380,32 +545,33 @@ the experimental <code>xmap_df</code> class.</p>
 <p>The following example shows how to create a mixed crossmap which
 encodes one-to-one, many-to-one and one-to-many relations and coerce
 them into a <code>xmap_df</code>. This method is most suitable for
-simple crossmaps.</p>
+simple crossmaps. The exmaple belows shows the code for the sample
+crossmap: <code>mock$xmap_abc</code></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">simple_links</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">source</span>, <span class="op">~</span><span class="va">target</span>, <span class="op">~</span><span class="va">share</span>,</span>
-<span>  <span class="st">"equal"</span>, <span class="st">"EQUAL"</span>, <span class="fl">1</span>,       <span class="co"># one-to-one</span></span>
-<span>  <span class="st">"member_1"</span>, <span class="st">"GROUP"</span>, <span class="fl">1</span>,    <span class="co"># one-FROM-many</span></span>
-<span>  <span class="st">"member_2"</span>, <span class="st">"GROUP"</span>, <span class="fl">1</span>,</span>
-<span>  <span class="st">"whole"</span>, <span class="st">"PART_1"</span>, <span class="fl">0.3</span>,    <span class="co"># one-to-many</span></span>
-<span>  <span class="st">"whole"</span>, <span class="st">"PART_2"</span>, <span class="fl">0.6</span>,</span>
-<span>  <span class="st">"whole"</span>, <span class="st">"PART_3"</span>, <span class="fl">0.1</span></span>
+<code class="sourceCode R"><span><span class="va">abc_links</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>  <span class="op">~</span><span class="va">lower</span>, <span class="op">~</span><span class="va">upper</span>, <span class="op">~</span><span class="va">share</span>,</span>
+<span>  <span class="st">"a"</span>, <span class="st">"AA"</span>, <span class="fl">1</span>,       <span class="co"># one-to-one</span></span>
+<span>  <span class="st">"b"</span>, <span class="st">"BB"</span>, <span class="fl">1</span>,    <span class="co"># one-FROM-many</span></span>
+<span>  <span class="st">"c"</span>, <span class="st">"BB"</span>, <span class="fl">1</span>,</span>
+<span>  <span class="st">"d"</span>, <span class="st">"CC"</span>, <span class="fl">0.3</span>,    <span class="co"># one-to-many</span></span>
+<span>  <span class="st">"d"</span>, <span class="st">"DD"</span>, <span class="fl">0.6</span>,</span>
+<span>  <span class="st">"d"</span>, <span class="st">"EE"</span>, <span class="fl">0.1</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">simple_xmap</span> <span class="op">&lt;-</span> <span class="va">simple_links</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">source</span>, to <span class="op">=</span> <span class="va">target</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
+<span><span class="va">xmap_abc</span> <span class="op">&lt;-</span> <span class="va">abc_links</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">lower</span>, to <span class="op">=</span> <span class="va">upper</span>, weights <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">simple_xmap</span></span></code></pre></div>
+<span><span class="va">xmap_abc</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode, split, and collapse  </span></span>
-<span><span class="co">## (source -&gt; target) BY share</span></span>
-<span><span class="co">##     source target share</span></span>
-<span><span class="co">## 1    equal  EQUAL   1.0</span></span>
-<span><span class="co">## 2 member_1  GROUP   1.0</span></span>
-<span><span class="co">## 3 member_2  GROUP   1.0</span></span>
-<span><span class="co">## 4    whole PART_1   0.3</span></span>
-<span><span class="co">## 5    whole PART_2   0.6</span></span>
-<span><span class="co">## 6    whole PART_3   0.1</span></span></code></pre>
+<span><span class="co">## (lower -&gt; upper) BY share</span></span>
+<span><span class="co">##   lower upper share</span></span>
+<span><span class="co">## 1     a    AA   1.0</span></span>
+<span><span class="co">## 2     b    BB   1.0</span></span>
+<span><span class="co">## 3     c    BB   1.0</span></span>
+<span><span class="co">## 4     d    CC   0.3</span></span>
+<span><span class="co">## 5     d    DD   0.6</span></span>
+<span><span class="co">## 6     d    EE   0.1</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="crosswalklookup-tables">Crosswalk/Lookup Tables<a class="anchor" aria-label="anchor" href="#crosswalklookup-tables"></a>
@@ -447,7 +613,7 @@ recode maps using the <code>verify_pairs_*</code> functions:</p>
 <code>xmap_df</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_xmap</span> <span class="op">&lt;-</span> <span class="va">iso_codes</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"weight"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"weight"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISONumeric</span>, to <span class="op">=</span> <span class="va">ISO2</span>, weights <span class="op">=</span> <span class="va">weight</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Dropped additional columns in `add_weights_unit(iso_codes, weights_into =</span></span>
 <span><span class="co">## "weight")`</span></span></code></pre>
@@ -475,7 +641,7 @@ order and drops any additional columns passed to it.</p>
 nomenclature in the table, and keep additional columns:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iso_codes</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"weight"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"weight"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ISO2</span>, to <span class="op">=</span> <span class="va">ISO3</span>, weights <span class="op">=</span> <span class="va">weight</span>, .drop_extra <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode </span></span>
@@ -529,7 +695,7 @@ country.</p>
 crossmap:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg_xmap</span> <span class="op">&lt;-</span> <span class="va">agg_x</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_weights_unit.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"link"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/add_weights.html">add_weights_unit</a></span><span class="op">(</span>weights_into <span class="op">=</span> <span class="st">"link"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">adm1</span>, to <span class="op">=</span> <span class="va">ctr</span>, weights <span class="op">=</span> <span class="va">link</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">agg_xmap</span></span></code></pre></div>
