@@ -2469,7 +2469,7 @@ summarise_target.data.frame <- function(
   col_weights <- rlang::englue("{{weights}}")
   frac_formula <- englue_xmap(frac_formula, col_from, col_to, col_weights)
   unit_formula <- englue_xmap(unit_formula, col_from, col_to, col_weights)
-  comp_col <- englue_xmap(frac_formula, col_from, col_to, col_weights)
+  comp_col <- englue_xmap(composition_to, col_from, col_to, col_weights)
   ## summarise
   links |>
     dplyr::mutate(part = dplyr::case_when(
