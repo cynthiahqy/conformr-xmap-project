@@ -41,7 +41,7 @@ add_weights_unit <- function(df, weights_into = "weights"){
 #'   add_weights_equal(from = class, to = animal)
 #'   
 add_weights_equal <- function(df, from, to, weights_into = "weights"){
-  xmap:::abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
+  abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   df |>
     dplyr::group_by({{from}}) |>
     dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
@@ -58,8 +58,8 @@ add_weights_equal <- function(df, from, to, weights_into = "weights"){
 #'           ) |>
 #'  add_weights_prop(recipe, ingredients, grams)
 add_weights_prop <- function(df, from, to, prop, weights_into = "weights"){
-  xmap:::abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
-  xmap:::abort_any_na(df)
+  abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
+  abort_any_na(df)
   df |>
     dplyr::group_by({{from}}) |>
     dplyr::mutate("{weights_into}" := {{prop}}/sum({{prop}})) |>
