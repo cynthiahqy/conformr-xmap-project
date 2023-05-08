@@ -110,23 +110,50 @@ or weighted source-target <em>links</em>.</p>
 <span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ctr</span>, <span class="va">state</span>, <span class="va">weights</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="verify_links_as_xmap.html">verify_links_as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">state</span>, to <span class="op">=</span> <span class="va">ctr</span>, <span class="va">weights</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in as_pairs_from_named(mock$named_aus, names_to = "ctr", values_to = "state"):</span> is.vector(x) is not TRUE</span>
 <span class="r-in"><span><span class="va">links_aus_agg</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'links_aus_agg' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ctr   state  weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> AUS   AU-NSW       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> AUS   AU-QLD       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> AUS   AU-SA        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> AUS   AU-TAS       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> AUS   AU-VIC       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> AUS   AU-WA        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> AUS   AU-ACT       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> AUS   AU-NT        1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">links_aus_split_equal</span> <span class="op">&lt;-</span> <span class="va">links_aus_agg</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_equal</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">state</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ctr</span>, <span class="va">state</span>, <span class="va">weights</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="verify_links_as_xmap.html">verify_links_as_xmap</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">state</span>, <span class="va">weights</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::group_by(df, {    {        from    }}):</span> object 'links_aus_agg' not found</span>
 <span class="r-in"><span><span class="va">links_aus_split_equal</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'links_aus_split_equal' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ctr   state  weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> AUS   AU-NSW   0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> AUS   AU-QLD   0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> AUS   AU-SA    0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> AUS   AU-TAS   0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> AUS   AU-VIC   0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> AUS   AU-WA    0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> AUS   AU-ACT   0.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> AUS   AU-NT    0.125</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">links_aus_split_pop</span> <span class="op">&lt;-</span> <span class="va">mock</span><span class="op">$</span><span class="va">df_aus_pop</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_prop</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">ctr</span>, to <span class="op">=</span> <span class="va">state</span>, prop <span class="op">=</span> <span class="va">pop</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in add_weights_prop(mock$df_aus_pop, from = ctr, to = state, prop = pop):</span> could not find function "add_weights_prop"</span>
 <span class="r-in"><span><span class="va">links_aus_split_pop</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(expr, envir, enclos):</span> object 'links_aus_split_pop' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   state_name                   state      pop ctr   weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> New South Wales              AU-NSW 8<span style="text-decoration: underline;">153</span>600 AUS   0.314  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Victoria                     AU-VIC 6<span style="text-decoration: underline;">613</span>700 AUS   0.255  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Queensland                   AU-QLD 5<span style="text-decoration: underline;">322</span>100 AUS   0.205  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> South Australia              AU-SA  1<span style="text-decoration: underline;">820</span>500 AUS   0.070<span style="text-decoration: underline;">1</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Western Australia            AU-WA  2<span style="text-decoration: underline;">785</span>300 AUS   0.107  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Tasmania                     AU-TAS  <span style="text-decoration: underline;">571</span>500 AUS   0.022<span style="text-decoration: underline;">0</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Northern Territory           AU-NT   <span style="text-decoration: underline;">250</span>600 AUS   0.009<span style="text-decoration: underline;">65</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> Australian Capital Territory AU-ACT  <span style="text-decoration: underline;">456</span>700 AUS   0.017<span style="text-decoration: underline;">6</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
