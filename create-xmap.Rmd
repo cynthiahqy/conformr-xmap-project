@@ -2483,7 +2483,22 @@ usethis::use_package("ggbump", type = "suggests")
 
 ### Integration with ggraph & igraph layouts via tidygraphs
 
-See <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> for initial details
+#### Bipartite Layout
+
+See <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> for details on bipartite layout
+
+#### Icicle plot
+
+-   doesn't work for non-tree! (i.e. where you have collapse nodes)
+
+```{r}
+library(ggraph)
+mock$xmap_abc |>
+  as_tbl_graph() |>
+  ggraph(layout = "partition") +
+  geom_node_tile(aes(fill = centrality_degree())) +
+  geom_node_label(aes(label = name))
+```
 
 #### COERCE: xmap_df to tbl_graph
 
