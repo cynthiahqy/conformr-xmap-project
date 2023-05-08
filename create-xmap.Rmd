@@ -2239,6 +2239,76 @@ add_weights_placeholder <- function(df, from, to, weights_into = "weights_p", fr
   }
 }
 ```
+
+```{r}
+summarise_target0.data.frame <- function(
+    df, from, to, weights,
+    frac_formula = "{from}*{weights}",
+    collapse = "+",
+    mask_ones = TRUE){
+  ## rename
+  r_df <- df |>
+    dplyr::rename(from = {{from}},
+                  to = {{to}},
+                  weights = {{weights}})
+  
+  r_df |>
+      mutate(part = dplyr::case_when(
+        weights == 1 ~ paste0(from, ifelse(mask_ones, "", "1")),
+        weights < 1 ~ glue::glue(frac_formula))
+      ) |> 
+    group_by(to) |>
+    summarise(composition = glue::glue_collapse(part, collapse))
+}
+```
+
+```{r}
+mock$xmap_abc |>  as_tibble() |>
+  summarise_target0.data.frame(from = lower, to = upper, weights = share)
+```
+
+Switch `mask_ones` to `unit_formula`
+
+```{r}
+summarise_target.data.frame <- function(
+    df, from, to, weights,
+    frac_formula = "{from}*{weights}",
+    unit_formula = "{from}",
+    collapse = "+"){
+  ## rename
+  r_df <- df |>
+    dplyr::rename(from = {{from}},
+                  to = {{to}},
+                  weights = {{weights}})
+  
+  r_df |>
+      mutate(part = dplyr::case_when(
+        weights == 1 ~ glue::glue(unit_formula),
+        weights < 1 ~ glue::glue(frac_formula))
+      ) |> 
+    group_by(to) |>
+    summarise(composition = glue::glue_collapse(part, collapse))
+}
+
+```
+
+```{r}
+mock$xmap_abc |>
+  as_tibble() |>
+  summarise_target0.data.frame(from = lower, to = upper, weights = share,
+                               frac_formula = "{from} [{weights}]",
+                               collapse = ",")
+```
+
+```{r}
+mock$xmap_abc |>
+  as_tibble() |>
+  select(lower, upper) |>
+  add_weights_placeholder(from = lower, to = upper, frac_symbol = "?", unit_symbol = "1") |>
+  summarise_target0.data.frame(from = lower, to = upper, weights = weights_p)
+```
+
+
 ## Visualisation
 
 Adding in more dependencies
