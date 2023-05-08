@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9002</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -197,10 +197,6 @@ source categories (<code>from = version19</code>), target categories
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">version18</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>v20_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">new_count</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in dplyr::left_join(x = v19_data, y = xmap_19to18, by = c(v19 = "version19")): Each row in `x` is expected to match at most 1 row in `y`.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Row 4 of `x` matches multiple rows.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> If multiple matches are expected, set `multiple = "all"` to silence this</span></span>
-<span><span class="co">##   warning.</span></span></code></pre>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 4 × 2</span></span></span>
 <span><span class="co">##   version18 v20_count</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -228,7 +224,7 @@ future releases.</p>
 valid <code>xmap</code> object by specifying the source
 (<code>from</code>) nodes, target (<code>to</code>) nodes, and weights
 (<code>weights</code>):</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">uk_shares</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">key1</span>, <span class="op">~</span><span class="va">key2</span>, <span class="op">~</span><span class="va">shares</span>,</span>
 <span>  <span class="st">"UK, Channel Islands, Isle of Man"</span>, <span class="st">"Scotland"</span>, <span class="fl">0.1102047</span>,</span>
@@ -249,7 +245,7 @@ valid <code>xmap</code> object by specifying the source
 <p>Note that both verification and coercion will fail without adjusting
 the tolerance <code>tol</code>, which specifies differences to ignore
 (i.e. what counts as close enough to 1).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">uk_shares</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/verify_links_as_xmap.html">verify_links_as_xmap</a></span><span class="op">(</span><span class="va">key1</span>, <span class="va">key2</span>, <span class="va">shares</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `verify_links_as_xmap()`:</span></span></span>

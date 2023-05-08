@@ -34,6 +34,9 @@
     <loc>/reference/add_weights.html</loc>
   </url>
   <url>
+    <loc>/reference/add_weights_placeholder.html</loc>
+  </url>
+  <url>
     <loc>/reference/as_pairs.html</loc>
   </url>
   <url>
@@ -53,6 +56,9 @@
   </url>
   <url>
     <loc>/reference/print.xmap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/summarise_target.html</loc>
   </url>
   <url>
     <loc>/reference/validate_xmap_df.html</loc>
