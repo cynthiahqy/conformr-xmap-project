@@ -2195,6 +2195,79 @@ testthat::test_that('xmap_drop_extra works as expected', {
 ## Summarise
 
 ```{r}
+library(dplyr)
+from_degree <- mock$xmap_abc |>
+  group_by(lower) |>
+  mutate(from_degree = n()) |>
+  ungroup() |>
+  # group_by(upper) |>
+  # mutate(to_degree = n()) |>
+  # ungroup() |>
+  arrange(desc(from_degree))
+
+from_degree |>
+  select(lower, upper, share) |>
+  reactable::reactable(groupBy = "lower")
+
+```
+
+Attempt using tidygraph -- key issue is how do you convert back?
+
+```{r}
+library(tidygraph)
+library(dplyr)
+
+disjoint_abc <- mock$xmap_abc |> .calc_unique_sets.xmap_df()
+
+mock$xmap_abc |>
+  as_tbl_graph() |>
+  activate(nodes) |>
+  mutate(layer = case_when(name %in% disjoint_abc$from_set ~ 1,
+                           name %in% disjoint_abc$to_set ~ 2),
+         out_degree = centrality_degree(mode = "out"),
+         out_split = ifelse(out_degree > 1, TRUE, FALSE)) |>
+  activate(edges) |>
+  mutate(frac_weight = ifelse(share < 1, TRUE, FALSE)) |>
+  convert(to_subgraph, !frac_weight)
+
+```
+
+table ---
+
+```{r}
+out_split <- mock$xmap_abc |>
+  as_tibble() |>
+  mutate(frac_weight = ifelse(share < 1, TRUE, FALSE)) |>
+  group_by(frac_weight) |>
+  tidyr::nest()
+
+out_split |>
+  filter(frac_weight == TRUE) |>
+  pull(data)
+```
+
+concatenation hack?
+
+```{r}
+library(dplyr)
+mock$xmap_abc |>
+  as_tibble() |>
+  mutate(to_share = glue::glue("{upper} [{share}]")) |>
+  arrange(lower, desc(share)) |>
+  summarise(collapse_to = glue::glue_collapse(to_share, "+"), .by = lower)
+```
+
+```{r}
+mock$xmap_abc |>
+  as_tibble() |>
+  group_by(upper) |>
+  mutate(share_char = case_when(share == 1 ~ "",
+                           TRUE ~ paste0("*", as.character(share)))) |>
+  mutate(from_share = glue::glue("{lower}{share_char}")) |>
+  summarise(composition = glue::glue_collapse(from_share, "+"))
+```
+
+```{r}
 
 #' Add weights placeholder column to a data frame
 #'
