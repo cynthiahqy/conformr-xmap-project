@@ -2194,6 +2194,10 @@ testthat::test_that('xmap_drop_extra works as expected', {
 
 ## Summarise
 
+### Experiments
+
+#### Reactable
+
 ```{r}
 library(dplyr)
 from_degree <- mock$xmap_abc |>
@@ -2210,6 +2214,8 @@ from_degree |>
   reactable::reactable(groupBy = "lower")
 
 ```
+
+#### Tidygraph
 
 Attempt using tidygraph -- key issue is how do you convert back?
 
@@ -2232,7 +2238,7 @@ mock$xmap_abc |>
 
 ```
 
-table ---
+#### Glue Collapse
 
 ```{r}
 out_split <- mock$xmap_abc |>
@@ -2267,8 +2273,9 @@ mock$xmap_abc |>
   summarise(composition = glue::glue_collapse(from_share, "+"))
 ```
 
-```{r}
+### Helper: `add_weights_placeholder()`
 
+```{r}
 #' Add weights placeholder column to a data frame
 #'
 #' This function adds a column of character placeholders to a data frame based on
@@ -2312,6 +2319,8 @@ add_weights_placeholder <- function(df, from, to, weights_into = "weights_p", fr
   }
 }
 ```
+
+### Mock-Up: Summarise
 
 ```{r}
 summarise_target0.data.frame <- function(
@@ -2381,7 +2390,7 @@ mock$xmap_abc |>
   summarise_target0.data.frame(from = lower, to = upper, weights = weights_p)
 ```
 
-ChatGPT documentation
+### S3: `summarise_target()`
 
 ```{r send_to="R/rename-helpers.R"}
 #'
