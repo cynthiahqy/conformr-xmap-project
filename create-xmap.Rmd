@@ -419,6 +419,15 @@ xmap::pairs_from_named(list = link_list,
 
 #### Helper: Node pairs from Named List or Vector
 
+`tibble::enframe` is:
+
+``` r
+tibble(
+    name = names(islands),
+    size = islands
+  )
+```
+
 ```{r fnc-pairs-from-named, send_to="R/pairs_named.R"}
 #' Convert between column pairs and named vector or lists
 #' 
@@ -508,7 +517,6 @@ pairs_to_named_list <- function(df, names_from = name, values_from = value){
 #' @param weights_into character string naming new column to store link weights in
 #'
 #' @return `df` with additional column of weights
-#' @export
 #' @name add_weights
 NULL
 
