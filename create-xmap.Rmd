@@ -220,6 +220,10 @@ reference:
   - starts_with("has", internal = TRUE)
 ```
 
+### Graph & Matrix concepts
+
+-   graph notation reference: <http://www-student.cse.buffalo.edu/~atri/cse331/support/notation/graphs.html>; <https://www3.nd.edu/~dgalvin1/60610/60610_S09/60610graphnotation.pdf>
+
 ### Toy Examples
 
 ```{r ideal-xmap}
