@@ -2425,6 +2425,7 @@ summarise_target <- function(links, from, to, weights, composition_to, collapse,
 #'                  parent = c("A", "A", "A", "B", "B", "B"),
 #'                  weights = c(0.5, 0.3, 0.2, 0.7, 0.1, 0.2))
 #' summarise_target(df, group, parent, weights)
+#' mock$xmap_abc |> summarise_target()
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
 summarise_target.data.frame <- function(
@@ -2476,8 +2477,6 @@ summarise_target.xmap_df <- function(links,
 Adding in more dependencies
 
 ```{r vis-depend}
-usethis::use_package("dplyr", type = "suggests")
-usethis::use_package("tibble", type = "suggests")
 usethis::use_package("ggplot2", type = "suggests")
 usethis::use_package("ggbump", type = "suggests")
 ```
