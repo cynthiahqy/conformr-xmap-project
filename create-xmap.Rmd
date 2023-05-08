@@ -23,7 +23,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.1.9001",
+    Version = "0.0.1.9002",
     Title = "A principled approach to recoding and redistributing data between nomenclature",
     Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.",
     `Authors@R` = c(
