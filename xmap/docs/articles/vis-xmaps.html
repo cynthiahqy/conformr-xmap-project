@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9002</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,13 +124,9 @@ crosswalk published by the Australian Bureau of Statistics:</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n_dest <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/n_distinct.html" class="external-link">n_distinct</a></span><span class="op">(</span><span class="va">isco8</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">anzsco22</span>, weight <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="va">n_dest</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">anzsco_cw</span>, by <span class="op">=</span> <span class="st">"anzsco22"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in dplyr::left_join(dplyr::transmute(dplyr::ungroup(dplyr::summarise(dplyr::group_by(anzsco_cw, : Each row in `x` is expected to match at most 1 row in `y`.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Row 1 of `x` matches multiple rows.</span></span>
-<span><span class="co">## <span style="color: #00BBBB;">ℹ</span> If multiple matches are expected, set `multiple = "all"` to silence this</span></span>
-<span><span class="co">##   warning.</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## get code tables</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">anzsco_cw</span>, by <span class="op">=</span> <span class="st">"anzsco22"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## get code tables</span></span>
 <span><span class="va">table_anzsco</span> <span class="op">&lt;-</span> <span class="va">anzsco_cw</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">anzsco22</span>, <span class="va">anzsco22_descr</span><span class="op">)</span></span>
 <span><span class="va">table_isco8</span> <span class="op">&lt;-</span> <span class="va">anzsco_cw</span> <span class="op">|&gt;</span></span>
@@ -142,7 +138,7 @@ crosswalk published by the Australian Bureau of Statistics:</p>
 <pre><code><span><span class="co">## Dropped additional columns in `links`</span></span></code></pre>
 <p>The included <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method for <code>xmap_df</code>
 objects:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">anzsco_xmap</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmap_df:</span></span>
 <span><span class="co">## recode, split, and collapse  </span></span>
@@ -164,7 +160,7 @@ objects:</p>
 </h3>
 <p>Visualisation as a bigraph is particularly useful for seeing the
 relations between the two nomenclature.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">.bigraph_add_link_style</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">edges</span>, <span class="va">x_attrs</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co">## generate out link type</span></span>
 <span>  <span class="va">style_out_case</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
@@ -313,7 +309,7 @@ between nodes. However, variable link widths can actually clutter the
 visualisation of crosswalks. Consider this simple crossmap that might be
 used to harmonise national accounts data (e.g. GDP) across two time
 periods.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">edges</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span><span class="op">~</span><span class="va">ctr</span>, <span class="op">~</span><span class="va">ctr2</span>, <span class="op">~</span><span class="va">split</span>,</span>
 <span>                 <span class="st">"BLX"</span>, <span class="st">"BEL"</span>, <span class="fl">0.5</span>,</span>
 <span>                 <span class="st">"BLX"</span>, <span class="st">"LUX"</span>, <span class="fl">0.5</span>,</span>
@@ -334,7 +330,7 @@ curve indicated the transformation weights.</p>
 <p>Another useful visualisation or representation of a crossmap is as an
 incidence matrix with the source nomenclature indexed along the rows and
 the target nomenclature indexed on the columns:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt_xmap_ggmatrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="../reference/as_xmap.html">is_xmap_df</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">x_attrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
@@ -364,7 +360,7 @@ the target nomenclature indexed on the columns:</p>
 <span>        panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plt_xmap_ggmatrix</span><span class="op">(</span><span class="va">anzsco_xmap</span><span class="op">)</span></span></code></pre></div>
 <p><img src="vis-xmaps_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Notice that the requirement that a valid crossmap has outgoing
@@ -376,7 +372,7 @@ requirement that the total of weights across each row sums to 1.</p>
 <div class="section level2">
 <h2 id="visualising-types-of-mapping-relations">Visualising Types of Mapping Relations<a class="anchor" aria-label="anchor" href="#visualising-types-of-mapping-relations"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">gg_recode</span> <span class="op">+</span> <span class="va">gg_agg</span> <span class="op">+</span> <span class="va">gg_disagg</span></span></code></pre></div>

@@ -12,7 +12,6 @@
 #' @param weights_into character string naming new column to store link weights in
 #'
 #' @return `df` with additional column of weights
-#' @export
 #' @name add_weights
 NULL
 

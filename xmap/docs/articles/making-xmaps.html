@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">xmap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9002</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -672,7 +672,7 @@ country.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg_x</span> <span class="op">&lt;-</span> <span class="va">adm1_list</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>adm1 <span class="op">=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html" class="external-link">str_split</a></span><span class="op">(</span><span class="va">adm1</span>, <span class="st">", "</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">adm1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html" class="external-link">unnest</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">adm1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">agg_x</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 21 × 2</span></span></span>
@@ -688,7 +688,7 @@ country.</p>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> AU    AU-NT </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> CA    CA-AB </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> CA    CA-BC </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 11 more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># ℹ 11 more rows</span></span></span></code></pre>
 <p>Since aggregation involves the one-to-one transfer of values between
 <code>adm1</code> and <code>ctr</code> prior to the collapsing the
 <code>ctr</code> groups, we simple add unit weights to form a valid

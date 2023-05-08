@@ -33,6 +33,12 @@ reference:
     - starts_with("verify_pairs")
     - starts_with("verify_links")
 
+- title: Summarising and visualising mappings
+  contents:
+    - starts_with("summarise_")
+    - summarise_target
+    - add_weights_placeholder
+
 - title: Creating `xmap` objects
   contents:
     - starts_with("pairs")
@@ -57,5 +63,6 @@ reference:
     - starts_with("validate")
     - starts_with(".get")
     - starts_with(".calc")
+    - starts_with(".rename")
     - new_xmap_df
     - validate_xmap_df
