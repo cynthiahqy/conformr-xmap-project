@@ -8,7 +8,7 @@ add_weights_placeholder(
   df,
   from,
   to,
-  weights_into = "weights_p",
+  weights_into = "weights_{{from}}",
   frac_symbol = "?",
   unit_symbol = ""
 )
@@ -21,7 +21,7 @@ add_weights_placeholder(
 \item{to}{The name of the column containing target category values.}
 
 \item{weights_into}{The name to use for the column containing the weights
-placeholders. Default is "weights_p".}
+placeholders. Default is "weights_{{from}}".}
 
 \item{frac_symbol}{The placeholder symbol to use for fractional weights. Default is "?".}
 
@@ -36,8 +36,6 @@ the values of \code{from} and \code{to} columns. 1-to-1 links are given unit wei
 and 1-to-many links are given fractional weight placeholders.
 }
 \examples{
-# placeholder weights
-df <- data.frame(from = c("A", "A", "B", "B", "B"),
-                 to = c("X", "Y", "X", "Y", "Z"))
-add_weights_placeholder(df, from, to)
+mock$xmap_abc |> as.data.frame() |>
+add_weights_placeholder(from = upper, to = lower, unit_symbol = "1")
 }

@@ -2297,7 +2297,7 @@ mock$xmap_abc |>
 #' @param from The name of the column containing source category values.
 #' @param to The name of the column containing target category values.
 #' @param weights_into The name to use for the column containing the weights
-#'   placeholders. Default is "weights_p".
+#'   placeholders. Default is "weights_{{from}}".
 #' @param frac_symbol The placeholder symbol to use for fractional weights. Default is "?".
 #' @param unit_symbol The placeholder symbol to use for unit weights. Default is "".
 #'
@@ -2309,12 +2309,11 @@ mock$xmap_abc |>
 #'
 #' @export
 #' @examples
-#' # placeholder weights
-#' df <- data.frame(from = c("A", "A", "B", "B", "B"),
-#'                  to = c("X", "Y", "X", "Y", "Z"))
-#' add_weights_placeholder(df, from, to)
-add_weights_placeholder <- function(df, from, to, weights_into = "weights_p", frac_symbol = "?", unit_symbol = ""){
+#' mock$xmap_abc |> as.data.frame() |>
+#' add_weights_placeholder(from = upper, to = lower, unit_symbol = "1")
+add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = "?", unit_symbol = ""){
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
+  weights_into <- rlang::englue(weights_into)
   df |>
     dplyr::group_by({{from}}) |>
     dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
@@ -2396,8 +2395,7 @@ mock$xmap_abc |>
 mock$xmap_abc |>
   as_tibble() |>
   select(lower, upper) |>
-  add_weights_placeholder(from = lower, to = upper, frac_symbol = "?", unit_symbol = "1") |>
-  summarise_target0.data.frame(from = lower, to = upper, weights = weights_p)
+  add_weights_placeholder(from = lower, to = upper, frac_symbol = "?", unit_symbol = "1")
 ```
 
 ### S3: `summarise_target()`
@@ -2421,10 +2419,10 @@ mock$xmap_abc |>
 #'
 #' @param links A data frame or `xmap_df`
 #' @inheritParams as_xmap
-#' @param composition_to A string specifying the new column to pass the summarised composition into. Default is "composition".
-#' @param frac_formula A formula specifying how to calculate the fraction of each
+#' @param composition_to A glue string specifying the new column to pass the summarised composition into. Default is "parts_{from}".
+#' @param frac_formula A glue formula specifying how to calculate the fraction of each
 #'   target value using the weighting variable. Default is "{from}*{weights}".
-#' @param unit_formula A formula specifying how to calculate the unit of each
+#' @param unit_formula A glue formula specifying how to calculate the unit of each
 #'   target value using the weighting variable. Default is "{from}".
 #' @param collapse A string specifying the separator to use when collapsing the
 #'   unit values. Default is "+".
@@ -2449,30 +2447,43 @@ summarise_target <- function(links, from, to, weights, composition_to, collapse,
 #' @importFrom glue glue_collapse
 summarise_target.data.frame <- function(
   links, from, to, weights,
-  composition_to = "composition",
+  composition_to = "parts_{from}",
   collapse = "+",
   frac_formula = "{from}*{weights}",
   unit_formula = "{from}"
 ) {
   ## rename
-  r_df <- links |>
-    dplyr::rename(from = {{from}},
-                  to = {{to}},
-                  weights = {{weights}})
+  # r_df <- links |>
+  #   dplyr::rename(from = {{from}},
+  #                 to = {{to}},
+  #                 weights = {{weights}})
+  
+  englue_xmap <- function(string_f, col_from, col_to, col_weights){
+    string_f |>   
+      gsub("from", col_from, x = _) |>
+      gsub("to", col_to, x = _) |>
+      gsub("weights", col_weights, x = _)
+  }
+  col_from <- rlang::englue("{{from}}")
+  col_to <- rlang::englue("{{to}}")
+  col_weights <- rlang::englue("{{weights}}")
+  frac_formula <- englue_xmap(frac_formula, col_from, col_to, col_weights)
+  unit_formula <- englue_xmap(unit_formula, col_from, col_to, col_weights)
+  comp_col <- englue_xmap(frac_formula, col_from, col_to, col_weights)
   ## summarise
-  r_df |>
+  links |>
     dplyr::mutate(part = dplyr::case_when(
-      weights == 1 ~ glue::glue(unit_formula),
-      weights < 1 ~ glue::glue(frac_formula))
+      {{weights}} == 1 ~ glue::glue(unit_formula),
+      {{weights}} < 1 ~ glue::glue(frac_formula))
     ) |>
-    dplyr::group_by(to) |>
-    dplyr::summarise(composition = glue::glue_collapse(part, collapse))
+    dplyr::group_by({{to}}) |>
+    dplyr::summarise("{comp_col}" := glue::glue_collapse(part, collapse))
 }
 
 #' @export
 #' @rdname summarise_target
 summarise_target.xmap_df <- function(links,
-                                     composition_to = "composition",
+                                     composition_to = "parts_{{from}}",
                                      collapse = "+",
                                      frac_formula = "{from}*{weights}",
                                      unit_formula = "{from}"
@@ -2489,6 +2500,12 @@ summarise_target.xmap_df <- function(links,
   names(sum_df)[names(sum_df) == "to"] <- .get_col_attrs.xmap_df(links)$col_to
   return(sum_df)
 }
+```
+
+```{r}
+mock$xmap_abc |> as.data.frame() |>
+  summarise_target.data.frame(from = lower, to = upper, weights = share)
+  
 ```
 
 ## Visualisation
