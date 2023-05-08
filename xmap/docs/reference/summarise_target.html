@@ -78,7 +78,7 @@ weighting variable to calculate the composition of each target category.</p>
 <span>  <span class="va">from</span>,</span>
 <span>  <span class="va">to</span>,</span>
 <span>  <span class="va">weights</span>,</span>
-<span>  composition_to <span class="op">=</span> <span class="st">"composition"</span>,</span>
+<span>  composition_to <span class="op">=</span> <span class="st">"parts_{from}"</span>,</span>
 <span>  collapse <span class="op">=</span> <span class="st">"+"</span>,</span>
 <span>  frac_formula <span class="op">=</span> <span class="st">"{from}*{weights}"</span>,</span>
 <span>  unit_formula <span class="op">=</span> <span class="st">"{from}"</span></span>
@@ -87,7 +87,7 @@ weighting variable to calculate the composition of each target category.</p>
 <span><span class="co"># S3 method for xmap_df</span></span>
 <span><span class="fu">summarise_target</span><span class="op">(</span></span>
 <span>  <span class="va">links</span>,</span>
-<span>  composition_to <span class="op">=</span> <span class="st">"composition"</span>,</span>
+<span>  composition_to <span class="op">=</span> <span class="st">"parts_{{from}}"</span>,</span>
 <span>  collapse <span class="op">=</span> <span class="st">"+"</span>,</span>
 <span>  frac_formula <span class="op">=</span> <span class="st">"{from}*{weights}"</span>,</span>
 <span>  unit_formula <span class="op">=</span> <span class="st">"{from}"</span></span>
@@ -109,7 +109,7 @@ weighting variable to calculate the composition of each target category.</p>
 
 
 <dt>composition_to</dt>
-<dd><p>A string specifying the new column to pass the summarised composition into. Default is "composition".</p></dd>
+<dd><p>A glue string specifying the new column to pass the summarised composition into. Default is "parts_from".</p></dd>
 
 
 <dt>collapse</dt>
@@ -118,12 +118,12 @@ unit values. Default is "+".</p></dd>
 
 
 <dt>frac_formula</dt>
-<dd><p>A formula specifying how to calculate the fraction of each
+<dd><p>A glue formula specifying how to calculate the fraction of each
 target value using the weighting variable. Default is "from*weights".</p></dd>
 
 
 <dt>unit_formula</dt>
-<dd><p>A formula specifying how to calculate the unit of each
+<dd><p>A glue formula specifying how to calculate the unit of each
 target value using the weighting variable. Default is "from".</p></dd>
 
 </dl></div>
@@ -142,19 +142,19 @@ the weighting variable.</p>
 <span class="r-in"><span>                 weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">summarise_target</span><span class="op">(</span><span class="va">df</span>, <span class="va">group</span>, <span class="va">parent</span>, <span class="va">weights</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   to    composition      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A     x*0.5+y*0.3+z*0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B     x*0.7+y*0.1+z*0.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   parent `{group}*{weights}`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> A      x*0.5+y*0.3+z*0.2  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> B      x*0.7+y*0.1+z*0.2  </span>
 <span class="r-in"><span><span class="va">mock</span><span class="op">$</span><span class="va">xmap_abc</span> <span class="op">|&gt;</span> <span class="fu">summarise_target</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   upper composition</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> AA    a          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> BB    b+c        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> CC    d*0.3      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> DD    d*0.6      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> EE    d*0.1      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   upper `{from}*{weights}`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> AA    a                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> BB    b+c               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> CC    d*0.3             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> DD    d*0.6             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> EE    d*0.1             </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

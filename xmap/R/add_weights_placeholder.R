@@ -10,7 +10,7 @@
 #' @param from The name of the column containing source category values.
 #' @param to The name of the column containing target category values.
 #' @param weights_into The name to use for the column containing the weights
-#'   placeholders. Default is "weights_p".
+#'   placeholders. Default is "weights_{{from}}".
 #' @param frac_symbol The placeholder symbol to use for fractional weights. Default is "?".
 #' @param unit_symbol The placeholder symbol to use for unit weights. Default is "".
 #'
@@ -22,12 +22,11 @@
 #'
 #' @export
 #' @examples
-#' # placeholder weights
-#' df <- data.frame(from = c("A", "A", "B", "B", "B"),
-#'                  to = c("X", "Y", "X", "Y", "Z"))
-#' add_weights_placeholder(df, from, to)
-add_weights_placeholder <- function(df, from, to, weights_into = "weights_p", frac_symbol = "?", unit_symbol = ""){
+#' mock$xmap_abc |> as.data.frame() |>
+#' add_weights_placeholder(from = upper, to = lower, unit_symbol = "1")
+add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = "?", unit_symbol = ""){
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
+  weights_into <- rlang::englue(weights_into)
   df |>
     dplyr::group_by({{from}}) |>
     dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>

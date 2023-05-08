@@ -22,7 +22,7 @@ summarise_target(
   from,
   to,
   weights,
-  composition_to = "composition",
+  composition_to = "parts_{from}",
   collapse = "+",
   frac_formula = "{from}*{weights}",
   unit_formula = "{from}"
@@ -30,7 +30,7 @@ summarise_target(
 
 \method{summarise_target}{xmap_df}(
   links,
-  composition_to = "composition",
+  composition_to = "parts_{{from}}",
   collapse = "+",
   frac_formula = "{from}*{weights}",
   unit_formula = "{from}"
@@ -43,15 +43,15 @@ summarise_target(
 
 \item{weights}{Column in \code{x} specifying the weight applied to data passed along the directed link between source and target node}
 
-\item{composition_to}{A string specifying the new column to pass the summarised composition into. Default is "composition".}
+\item{composition_to}{A glue string specifying the new column to pass the summarised composition into. Default is "parts_{from}".}
 
 \item{collapse}{A string specifying the separator to use when collapsing the
 unit values. Default is "+".}
 
-\item{frac_formula}{A formula specifying how to calculate the fraction of each
+\item{frac_formula}{A glue formula specifying how to calculate the fraction of each
 target value using the weighting variable. Default is "{from}*{weights}".}
 
-\item{unit_formula}{A formula specifying how to calculate the unit of each
+\item{unit_formula}{A glue formula specifying how to calculate the unit of each
 target value using the weighting variable. Default is "{from}".}
 }
 \value{
