@@ -7,7 +7,7 @@ template:
 repo:
   url:
     home: https://github.com/cynthiahqy/xmap/
-    source: https://github.com/cynthiahqy/xmap/
+    source: https://github.com/cynthiahqy/xmap/blob/main/
     issue: https://github.com/cynthiahqy/conformr-xmap-project/issues
     user: https://github.com/cynthiahqy
 
