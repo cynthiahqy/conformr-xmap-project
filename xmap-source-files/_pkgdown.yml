@@ -35,8 +35,7 @@ reference:
 
 - title: Summarising and visualising mappings
   contents:
-    - starts_with("summarise_")
-    - summarise_target
+    - print_target_summary
     - add_weights_placeholder
 
 - title: Creating `xmap` objects
