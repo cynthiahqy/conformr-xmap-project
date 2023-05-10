@@ -2432,7 +2432,7 @@ mock$xmap_abc |>
 #'   the weighting variable.
 #'
 #' @export
-summarise_target <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula){
+print_target_summary <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula){
   UseMethod("summarise_target")
 }
 
@@ -2446,7 +2446,7 @@ summarise_target <- function(links, from, to, weights, composition_to, collapse,
 #' mock$xmap_abc |> summarise_target()
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
-summarise_target.data.frame <- function(
+print_target_summary.data.frame <- function(
   links, from, to, weights,
   composition_to = "parts_{from}",
   collapse = "+",
@@ -2483,7 +2483,7 @@ summarise_target.data.frame <- function(
 
 #' @export
 #' @rdname summarise_target
-summarise_target.xmap_df <- function(links,
+print_target_summary.xmap_df <- function(links,
                                      composition_to = "parts_{{from}}",
                                      collapse = "+",
                                      frac_formula = "{from}*{weights}",
@@ -2505,7 +2505,7 @@ summarise_target.xmap_df <- function(links,
 
 ```{r}
 mock$xmap_abc |> as.data.frame() |>
-  summarise_target.data.frame(from = lower, to = upper, weights = share)
+  print_target_summary.data.frame(from = lower, to = upper, weights = share)
   
 ```
 
