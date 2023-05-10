@@ -2298,8 +2298,8 @@ mock$xmap_abc |>
 #' @param to The name of the column containing target category values.
 #' @param weights_into The name to use for the column containing the weights
 #'   placeholders. Default is "weights_{{from}}".
-#' @param frac_symbol The placeholder symbol to use for fractional weights. Default is "?".
-#' @param unit_symbol The placeholder symbol to use for unit weights. Default is "".
+#' @param frac_symbol The placeholder symbol to use for fractional weights. Default is NA.
+#' @param unit_symbol The placeholder symbol to use for unit weights. Default is 1.
 #'
 #' @return A data frame with a new column containing the weights placeholders.
 #'
@@ -2309,9 +2309,10 @@ mock$xmap_abc |>
 #'
 #' @export
 #' @examples
-#' mock$xmap_abc |> as.data.frame() |>
-#' add_weights_placeholder(from = upper, to = lower, unit_symbol = "1")
-add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = "?", unit_symbol = ""){
+#' mock$xmap_abc |> 
+#'   as.data.frame() |>
+#'   add_weights_placeholder(from = upper, to = lower)
+add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1){
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   weights_into <- rlang::englue(weights_into)
   df |>
@@ -2327,6 +2328,13 @@ add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from
                                                   TRUE ~ unit_symbol))
   }
 }
+```
+
+```{r}
+mock$xmap_abc |>
+  as_tibble() |>
+  select(lower, upper) |>
+  add_weights_placeholder(from = lower, to = upper, frac_symbol = NA, unit_symbol = "1")
 ```
 
 ### Mock-Up: Summarise
@@ -2389,13 +2397,6 @@ mock$xmap_abc |>
   summarise_target0.data.frame(from = lower, to = upper, weights = share,
                                frac_formula = "{from} [{weights}]",
                                collapse = ",")
-```
-
-```{r}
-mock$xmap_abc |>
-  as_tibble() |>
-  select(lower, upper) |>
-  add_weights_placeholder(from = lower, to = upper, frac_symbol = "?", unit_symbol = "1")
 ```
 
 ### S3: `summarise_target()`
