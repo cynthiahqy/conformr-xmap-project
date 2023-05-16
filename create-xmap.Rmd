@@ -2207,23 +2207,35 @@ testthat::test_that('xmap_drop_extra works as expected', {
 
 ### Experiments
 
-#### Reactable
+#### Reactable (WIP)
 
 ```{r}
 library(dplyr)
+library(xmap)
 from_degree <- mock$xmap_abc |>
   group_by(lower) |>
-  mutate(from_degree = n()) |>
+  mutate(out_degree = n()) |>
   ungroup() |>
   # group_by(upper) |>
   # mutate(to_degree = n()) |>
   # ungroup() |>
-  arrange(desc(from_degree))
+  arrange(desc(out_degree))
 
 from_degree |>
-  select(lower, upper, share) |>
-  reactable::reactable(groupBy = "lower")
+  dplyr::select(lower, upper, share) |>
+  reactable::reactable(groupBy = "upper")
 
+```
+
+```{r}
+summary_reactable <- function(.xmap){
+  col_attrs <- .get_col_attrs.xmap_df(.xmap)
+  .xmap |>
+    dplyr::group_by(col_attrs$col_from) |>
+    dplyr::mutate(out_degree = n()) |>
+    ungroup() |>
+    arrange(desc(out_degree))
+}
 ```
 
 #### Tidygraph
