@@ -2578,18 +2578,187 @@ mock$xmap_abc |>
 
 ## Visualisation
 
+### bigraph `autoplot()` and `plot()`
+
 Adding in more dependencies
 
 ```{r vis-depend}
 usethis::use_package("ggplot2", type = "suggests")
-usethis::use_package("ggbump", type = "suggests")
+usethis::use_package("ggraph", type = "suggests")
+usethis::use_package("tidygraph", type = "suggests")
 ```
 
-### Integration with ggraph & igraph layouts via tidygraphs
+Now make an `autoplot()` and `plot()` methods for `xmap_df` using:
 
-#### Bipartite Layout
+-   [ggplot2 docs: Using ggplot2 to visualize an object](https://ggplot2.tidyverse.org/articles/ggplot2-in-packages.html#best-practices-for-common-tasks)
+-   [`ggplot::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
+-   <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> mockup
 
-See <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> for details on bipartite layout
+```{r}
+#' @importFrom graphics plot
+#' @export
+plot.xmap_df <- function(x, ...) {
+  print(autoplot(x, ...))
+}
+```
+
+```{r}
+#' Autoplot function for xmap_df objects
+#'
+#' This function generates a plot of an xmap_df object using the ggraph and ggplot2
+#' packages. It visualizes the relationships between nodes and edges in the xmap_df
+#' object, with different styles for unit weight and fractional weight links, and
+#' prints fractional weights on edges.
+#'
+#' @param object An xmap_df object.
+#' @param ... Additional arguments (currently unused).
+#'
+#' @importFrom tidygraph as_tbl_graph activate mutate centrality_degree
+#' @importFrom ggraph ggraph geom_edge_diagonal geom_node_label
+#' @importFrom ggplot2 scale_fill_brewer coord_flip scale_y_reverse theme_minimal autoplot
+#' @importFrom rlang sym
+#' @importFrom methods require
+#'
+#' @export
+#' @examples
+#' df <- data.frame(from = c("A", "A", "B", "B", "B"),
+#'                  to = c("X", "Y", "X", "Y", "Z"),
+#'                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
+#' xmap <- xmap::as_xmap_df(df, from, to, weights)
+#' autoplot(xmap)
+#'
+autoplot.xmap_df <- function(object, ...){
+  require(tidygraph)
+  require(ggraph)
+  require(ggplot2)
+  
+  x_attrs <- attributes(object)
+  
+  tidygraph_data <-
+    as_tbl_graph(object) |>
+  ## calculating edge properties
+    tidygraph::activate(edges) |>
+    tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) < 1, TRUE, FALSE)) |>
+    tidygraph::mutate(edge_linetype = ifelse(frac_weight, "dashed", "solid")) |>
+    tidygraph::mutate(edge_label_pos = ifelse(frac_weight, 0.8, 0.2)) |>
+  ## calculating node properties
+    tidygraph::activate(nodes) |>
+    tidygraph::mutate(n_from = tidygraph::centrality_degree(mode = "in"),
+         in_from = n_from == 0,
+         collapse = n_from > 1)
+  
+  tidygraph_data |>
+    ## now we plot...
+    ggraph::ggraph(layout = "sugiyama") +
+    ## unit weight links,
+    ggraph::geom_edge_diagonal(
+      aes(edge_linetype = I(edge_linetype),
+          edge_alpha = !!sym(x_attrs$col_weights),
+          filter = !frac_weight),
+      end_cap = circle(6, 'mm'),
+      show.legend = FALSE
+      ) +
+    ## frac weight links,
+    ggraph::geom_edge_diagonal(
+      aes(edge_linetype = I(edge_linetype),
+          edge_alpha = !!sym(x_attrs$col_weights),
+          filter = frac_weight,
+          label = share,
+          label_pos = edge_label_pos,
+          ),
+      end_cap = circle(6, 'mm'),
+      show.legend = FALSE,
+      angle_calc = "along",
+      label_dodge = grid::unit(2, "mm")
+      ) +
+    ## from nodes,
+    ggraph::geom_node_label(aes(label = name,
+                                filter=in_from),
+                            ) +
+    ## to nodes,
+    ggraph::geom_node_label(aes(label = name,
+                                fill = collapse,
+                                filter=!in_from
+                                ),
+                            show.legend = FALSE,
+                            ) +
+    ggplot2::scale_fill_brewer() +
+    ## and finally modify coordinates, scale and theme
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_reverse() +
+    ggplot2::theme_minimal() +
+    ggraph::th_no_axes()
+}
+```
+
+```{r error=TRUE}
+library(dplyr)
+library(ggplot2)
+library(xmap)
+
+testthat::test_that("autoplot() has known output",{
+  man_plot <- mock$xmap_abc |>
+    as_tbl_graph() |>
+  ## calculating edge properties
+    activate(edges) |>
+    mutate(frac_weight = ifelse(share < 1, TRUE, FALSE)) |>
+    mutate(edge_linetype = ifelse(frac_weight, "dashed", "solid")) |>
+    mutate(edge_label_pos = ifelse(frac_weight, 0.8, 0.2)) |>
+  ## calculating node properties
+    activate(nodes) |>
+    mutate(n_from = centrality_degree(mode = "in"),
+         in_from = n_from == 0,
+         collapse = n_from > 1) |>
+  ## now we plot...
+  ggraph::ggraph(layout = "sugiyama") +
+  ## unit weight links,
+  ggraph::geom_edge_diagonal(
+    aes(edge_linetype = I(edge_linetype),
+        edge_alpha = share,
+        filter = !frac_weight),
+    end_cap = circle(6, 'mm'),
+    show.legend = FALSE
+    ) +
+  ## frac weight links,
+  ggraph::geom_edge_diagonal(
+    aes(edge_linetype = I(edge_linetype),
+        edge_alpha = share,
+        filter = frac_weight,
+        label = share,
+        label_pos = edge_label_pos,
+        ),
+    end_cap = circle(6, 'mm'),
+    show.legend = FALSE,
+    angle_calc = "along",
+    label_dodge = grid::unit(2, "mm")
+    ) +
+  ## from nodes,
+  ggraph::geom_node_label(aes(label = name,
+                              filter=in_from),
+                          ) +
+  ## to nodes,
+  ggraph::geom_node_label(aes(label = name,
+                              fill = collapse,
+                              filter=!in_from
+                              ),
+                          show.legend = FALSE,
+                          ) +
+  scale_fill_brewer() +
+  ## and finally modify coordinates, scale and theme
+  coord_flip() +
+  scale_y_reverse() +
+  theme_minimal() +
+  ggraph::th_no_axes()
+
+  vdiffr::expect_doppelganger("xmap_bigraph_manual", man_plot)
+
+  aut_plot <- autoplot(mock$xmap_abc)
+  vdiffr::expect_doppelganger("xmap_bigraph_auto", aut_plot)
+}
+)
+```
+
+### Experiments with ggraph & igraph layouts via tidygraphs
 
 #### Icicle plot
 
@@ -2836,9 +3005,9 @@ devtools::check('xmap', document = FALSE)
 We finish by running commands that will document, build, and install the package. It may also be a good idea to check the package from within this file.
 
 ```{r}
-#litr::add_pkgdown()
-pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
-litr::add_pkgdown(pkgdown_yml)
+litr::add_pkgdown()
+# pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
+# litr::add_pkgdown(pkgdown_yml)
 # devtools::run_examples()
 # devtools::build()
 # devtools::install()
