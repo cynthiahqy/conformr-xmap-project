@@ -2107,6 +2107,39 @@ pairs_df |>
   sapply(as.vector)
 ```
 
+### to Tidygraph
+
+#### COERCE: xmap_df to tbl_graph
+
+Should I standardise the names?
+
+```{r}
+pull_from <- function(.xmap) {
+  x_attrs <- attributes(.xmap)
+  .xmap |> pull(x_attrs$col_from)
+}
+```
+
+```{r}
+as_tbl_graph.xmap_df <- function(x, ...) {
+  x <- xmap_drop_extra(x)
+  x_attrs <- attributes(x)
+  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
+  x_edges <- data.frame(x)
+  names(x_edges)[names(x_edges) == x_attrs$col_from] <- "weights"
+  tidygraph::tbl_graph(x_nodes, x_edges)
+}
+```
+
+``` r
+testthat::test_that("as_tbl_graph.xmap_df works as expected",{
+  x <- mock$xmap_abc
+  x_attrs <- attrs(x)
+  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(mock$xmap_abc)))
+  x_edges <- data.frame(x)
+})
+```
+
 ## Description Tools
 
 See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues/63)
@@ -2771,35 +2804,6 @@ mock$xmap_abc |>
   ggraph(layout = "partition") +
   geom_node_tile(aes(fill = centrality_degree())) +
   geom_node_label(aes(label = name))
-```
-
-#### COERCE: xmap_df to tbl_graph
-
-```{r}
-pull_from <- function(.xmap) {
-  x_attrs <- attributes(.xmap)
-  .xmap |> pull(x_attrs$col_from)
-}
-```
-
-```{r}
-as_tbl_graph.xmap_df <- function(x, ...) {
-  x <- xmap_drop_extra(x)
-  x_attrs <- attributes(x)
-  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
-  x_edges <- data.frame(x)
-  names(x_edges)[names(x_edges) == x_attrs$col_from] <- "weights"
-  tidygraph::tbl_graph(x_nodes, x_edges)
-}
-```
-
-``` r
-testthat::test_that("as_tbl_graph.xmap_df works as expected",{
-  x <- mock$xmap_abc
-  x_attrs <- attrs(x)
-  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(mock$xmap_abc)))
-  x_edges <- data.frame(x)
-})
 ```
 
 ### Planned Generic: `xmap_viz_*()`
