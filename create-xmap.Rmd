@@ -2465,7 +2465,7 @@ mock$xmap_abc |>
   )
 ```
 
-### S3: `summarise_target()`
+### S3: `summary_by_target()`
 
 ```{r send_to="R/rename-helpers.R"}
 #'
@@ -2498,8 +2498,8 @@ mock$xmap_abc |>
 #'   the weighting variable.
 #'
 #' @export
-print_target_summary <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula) {
-  UseMethod("summarise_target")
+summary_by_target <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula) {
+  UseMethod("summary_by_target")
 }
 
 #' @export
@@ -2514,11 +2514,11 @@ print_target_summary <- function(links, from, to, weights, composition_to, colla
 #' mock$xmap_abc |> summarise_target()
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
-print_target_summary.data.frame <- function(links, from, to, weights,
-                                            composition_to = "parts_{from}",
-                                            collapse = "+",
-                                            frac_formula = "{from}*{weights}",
-                                            unit_formula = "{from}") {
+summary_by_target.data.frame <- function(links, from, to, weights,
+                                         composition_to = "parts_{from}",
+                                         collapse = "+",
+                                         frac_formula = "{from}*{weights}",
+                                         unit_formula = "{from}") {
   ## rename
   # r_df <- links |>
   #   dplyr::rename(from = {{from}},
@@ -2549,11 +2549,11 @@ print_target_summary.data.frame <- function(links, from, to, weights,
 
 #' @export
 #' @rdname summarise_target
-print_target_summary.xmap_df <- function(links,
-                                         composition_to = "parts_{{from}}",
-                                         collapse = "+",
-                                         frac_formula = "{from}*{weights}",
-                                         unit_formula = "{from}") {
+summary_by_target.xmap_df <- function(links,
+                                      composition_to = "parts_{{from}}",
+                                      collapse = "+",
+                                      frac_formula = "{from}*{weights}",
+                                      unit_formula = "{from}") {
   df <- links |>
     xmap_drop_extra() |>
     .rename_xmap("from", "to", "weights") |>
@@ -2573,7 +2573,7 @@ print_target_summary.xmap_df <- function(links,
 ```{r}
 mock$xmap_abc |>
   as.data.frame() |>
-  print_target_summary.data.frame(from = lower, to = upper, weights = share)
+  summary_by_target.data.frame(from = lower, to = upper, weights = share)
 ```
 
 ## Visualisation
