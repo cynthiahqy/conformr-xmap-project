@@ -241,21 +241,21 @@ input_df <- tibble::tribble(
 int_dat <- list("input_df" = input_df)
 
 usethis::use_data(int_dat, internal = TRUE, overwrite = TRUE)
-
 ```
 
 ```{r simple-xmap}
-simple_xmap <- tibble::tribble(~f, ~t, ~w,
-                                "x1111", "A1", 1,
-                                "x2222", "B2", 0.5,
-                                "x2222", "B3", 0.5,
-                                "x3333", "C5", 1,
-                                "x4444", "C5", 1,
-                                "x5555", "D6", 0.4,
-                                "x5555", "D7", 0.6,
-                                "x6666", "D6", 0.3,
-                                "x6666", "D7", 0.7,
-                                "x7777", "D6", 1
+simple_xmap <- tibble::tribble(
+  ~f, ~t, ~w,
+  "x1111", "A1", 1,
+  "x2222", "B2", 0.5,
+  "x2222", "B3", 0.5,
+  "x3333", "C5", 1,
+  "x4444", "C5", 1,
+  "x5555", "D6", 0.4,
+  "x5555", "D7", 0.6,
+  "x6666", "D6", 0.3,
+  "x6666", "D7", 0.7,
+  "x7777", "D6", 1
 )
 ```
 
@@ -304,10 +304,10 @@ mock$df_anzsco21 <- strayr::anzsco2021 |>
 
 mock$xmap_abc <- tibble::tribble(
   ~lower, ~upper, ~share,
-  "a", "AA", 1,       # one-to-one
-  "b", "BB", 1,    # one-FROM-many
+  "a", "AA", 1, # one-to-one
+  "b", "BB", 1, # one-FROM-many
   "c", "BB", 1,
-  "d", "CC", 0.3,    # one-to-many
+  "d", "CC", 0.3, # one-to-many
   "d", "DD", 0.6,
   "d", "EE", 0.1
 ) |>
@@ -331,13 +331,13 @@ usethis::use_data(mock)
 
 ```{r document-mock-objects, send_to="R/data.R"}
 #' Mock input objects for the `xmap` package
-#' 
+#'
 #' A collection of mock inputs for experimenting with functions
 #' in the `xmap` package.
 #' `named_` objects are either named vectors or nested lists.
 #' `df_` objects may contain source-target *pairs* (no weights),
 #' or weighted source-target *links*.
-#' 
+#'
 #' @format ## `mock`
 #' A list with:
 #' \describe{
@@ -350,7 +350,7 @@ usethis::use_data(mock)
 #'  \item{df_aus_pop}{tibble containing 2022 population figures for Australia by state. Retrieved from:
 #'    \url{https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022}}
 #'  }
-#'@examples
+#' @examples
 #' links_aus_agg <- mock$named_aus |>
 #'   as_pairs_from_named(names_to = "ctr", values_to = "state") |>
 #'   add_weights_unit() |>
@@ -377,22 +377,23 @@ usethis::use_data(mock)
 One-to-one and many-to-one mappings could easily be encoded as list objects, where each element of the list is a member of the target set, and contains a vector of all the source nodes that link to it. For instance:
 
 ```{r}
-link_list <- list(AA = c("x3", "x4", "x6"),
-                  BB = c("x1", "x5"),
-                  CC = c("x2")
-                  )
+link_list <- list(
+  AA = c("x3", "x4", "x6"),
+  BB = c("x1", "x5"),
+  CC = c("x2")
+)
 ```
 
 Convert to tibble:
 
 ```{r}
-col_from = "source"
-col_to = "target"
-col_weights = "weights"
+col_from <- "source"
+col_to <- "target"
+col_weights <- "weights"
 
-link_list |> 
+link_list |>
   tibble::enframe(name = col_to, value = col_from) |>
-  tidyr::unnest_longer(col=c(col_from)) |>
+  tidyr::unnest_longer(col = c(col_from)) |>
   dplyr::mutate("{col_weights}" := 1)
 ```
 
@@ -406,8 +407,8 @@ links <- as.matrix(link_list) |>
 # convert row names to column
 from_name <- "source"
 to_name <- "target"
-links[[to_name]] = row.names(links)
-names(links)[1] = from_name
+links[[to_name]] <- row.names(links)
+names(links)[1] <- from_name
 ```
 
 ``` r
@@ -430,7 +431,7 @@ tibble(
 
 ```{r fnc-pairs-from-named, send_to="R/pairs_named.R"}
 #' Convert between column pairs and named vector or lists
-#' 
+#'
 #' @description
 #' Convert named vectors or nested lists into a two-column table of node pairs and vice versa.
 #' `as_pairs_from_named` extracts the vector or list element names and the values, unnesting where necessary.
@@ -444,37 +445,39 @@ tibble(
 #'
 #' @return
 #'   * For `as_pairs_from_named()`: a two-column tibble
-#'   * For `pairs_to_named` fncs: named vector or list 
-#' 
+#'   * For `pairs_to_named` fncs: named vector or list
+#'
 #' @name as_pairs
 #' @examples
 #' # Coerce named vectors and list to column pairs
-#' 
+#'
 #' veg_vec <- c(eggplant = "aubergine", zucchini = "courgette")
 #' as_pairs_from_named(veg_vec, "au_eng", "uk_eng")
-#' 
-#' animal_list <- list(MAMM = c("elephant", "whale", "monkey"),
-#'                  REPT = c("lizard", "turtle"),
-#'                  CRUS = c("crab"))
+#'
+#' animal_list <- list(
+#'   MAMM = c("elephant", "whale", "monkey"),
+#'   REPT = c("lizard", "turtle"),
+#'   CRUS = c("crab")
+#' )
 #' as_pairs_from_named(animal_list, "class", "animal")
-#' 
+#'
 #' # Convert pairs back to named vector and lists
-#' veg_from_pairs <- as_pairs_from_named(veg_vec) |> 
+#' veg_from_pairs <- as_pairs_from_named(veg_vec) |>
 #'   pairs_to_named_vector(names_from = name, values_from = value)
 #' identical(veg_vec, veg_from_pairs)
-#' 
-#' animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
+#'
+#' animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |>
 #'   pairs_to_named_list(names_from = class, values_from = animal)
 #' identical(animal_list, animal_from_pairs)
 NULL
 
 #' @describeIn as_pairs Convert named vector or nested list into column pairs
 #' @export
-as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
+as_pairs_from_named <- function(x, names_to = "name", values_to = "value") {
   stopifnot(is.vector(x))
   node_pairs <- x |>
     tibble::enframe(name = names_to, value = values_to) |>
-    tidyr::unnest_longer(col=tidyr::all_of(values_to))
+    tidyr::unnest_longer(col = tidyr::all_of(values_to))
   return(node_pairs)
 }
 ```
@@ -484,17 +487,17 @@ as_pairs_from_named <- function(x, names_to = "name", values_to = "value"){
 ```{r send_to="R/pairs_named.R"}
 #' @describeIn as_pairs Convert column pairs to named vector
 #' @export
-pairs_to_named_vector <- function(df, names_from = name, values_from = value){
-  ordered_cols <- dplyr::select(df, {{names_from}}, {{values_from}})
+pairs_to_named_vector <- function(df, names_from = name, values_from = value) {
+  ordered_cols <- dplyr::select(df, {{ names_from }}, {{ values_from }})
   tibble::deframe(ordered_cols)
 }
 
 #' @describeIn as_pairs Convert column pairs to nested named list
 #' @export
-pairs_to_named_list <- function(df, names_from = name, values_from = value){
-  nested_cols <- dplyr::select(df, {{names_from}}, {{values_from}}) |>
-    tidyr::nest(values = {{values_from}})
-  ordered_cols <- dplyr::select(nested_cols, {{names_from}}, values)
+pairs_to_named_list <- function(df, names_from = name, values_from = value) {
+  nested_cols <- dplyr::select(df, {{ names_from }}, {{ values_from }}) |>
+    tidyr::nest(values = {{ values_from }})
+  ordered_cols <- dplyr::select(nested_cols, {{ names_from }}, values)
   tibble::deframe(ordered_cols) |>
     sapply(as.matrix) |>
     sapply(as.vector) |>
@@ -528,9 +531,9 @@ NULL
 #'   as_pairs_from_named(names_to = "ctr", values_to = "state")
 #' AUS_pairs |>
 #'   add_weights_unit(weights_into = "weights")
-#'   
-add_weights_unit <- function(df, weights_into = "weights"){
-  df[,weights_into] <- 1
+#'
+add_weights_unit <- function(df, weights_into = "weights") {
+  df[, weights_into] <- 1
   return(df)
 }
 ```
@@ -542,7 +545,6 @@ testthat::test_that("add_weights_unit() works as expected", {
   abc_links <- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
   testthat::expect_equal(add_weights_unit(abc_pairs), abc_links)
 })
-  
 ```
 
 ### Link Properties: `vhas_*(x_)`
@@ -557,9 +559,9 @@ testthat::test_that("add_weights_unit() works as expected", {
 #' The functions only accepts equal length vector inputs to support multiple link formats,
 #' but does not check if the inputs are from the same xmap.
 #' @param v_from,v_to,v_weights equal length vectors containing the source-target node pairs
-#' 
+#'
 #' @return TRUE or FALSE
-#' 
+#'
 #' @name vhas
 NULL
 ```
@@ -572,7 +574,7 @@ A valid Crossmap satisfies the following conditions:
 2.  For each source node, the sum of weights attached to all outgoing links sums to one. (`has_complete_weights()`)
 
 ```{r send_to="R/vhas.R"}
-#' @describeIn vhas Returns TRUE if xmap does not have 
+#' @describeIn vhas Returns TRUE if xmap does not have
 #' duplicate pairs of source-target nodes (irrespective of weights)
 #'
 vhas_no_dup_pairs <- function(v_from, v_to) {
@@ -607,7 +609,7 @@ vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0
 ```
 
 ```{r send_to="R/vhas.R"}
-.calc_vector_lens <- function(...){
+.calc_vector_lens <- function(...) {
   v_list <- list(...)
   v_lens <- sapply(v_list, length)
   return(v_lens)
@@ -616,16 +618,16 @@ vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0
 
 ```{r send_to="R/vhas.R"}
 #' @describeIn vhas Returns TRUE if links have no duplicate pairs and complete weights
-vhas_xmap_props <- function(v_from, v_to, v_weights){
+vhas_xmap_props <- function(v_from, v_to, v_weights) {
   ## check vectors are equal length
   v_lengths <- .calc_vector_lens(v_from, v_to, v_weights)
   stopifnot(length(unique(v_lengths)) == 1)
-  
+
   ## check properties
   v_props <- c(
     pairs = vhas_no_dup_pairs(v_from, v_to),
     weights = vhas_complete_weights(v_from, v_weights)
-  ) 
+  )
   all(v_props)
 }
 ```
@@ -665,9 +667,11 @@ testthat::test_that(
 testthat::test_that(
   "vhas_complete_weights() works on recurring fractional weights",
   {
-    df <- data.frame(key1 = rep("A1", 3),
-                     key2 = c("B01", "B02", "B03"),
-                     share = rep(1/3, 3))
+    df <- data.frame(
+      key1 = rep("A1", 3),
+      key2 = c("B01", "B02", "B03"),
+      share = rep(1 / 3, 3)
+    )
 
     testthat::expect_true(vhas_complete_weights(df$key1, df$share))
   }
@@ -696,7 +700,7 @@ vhas_1toM <- function(v_weights) {
 vhas_split <- vhas_1toM
 
 #' @describeIn vhas Return TRUE if xmap has collapsing links between `from` and `to`
-vhas_1fromM <- function(v_to){
+vhas_1fromM <- function(v_to) {
   stopifnot(is.vector(v_to))
   as.logical(anyDuplicated(v_to))
 }
@@ -709,7 +713,7 @@ testthat::test_that(
   "vhas_* relation type flag functions work as expected",
   {
     w_1to1 <- rep(1, 10)
-    w_1toM <- rep(1/6, 6)
+    w_1toM <- rep(1 / 6, 6)
     to_1fromM <- rep("country", 4)
     testthat::expect_true(vhas_recode(w_1to1))
     testthat::expect_false(vhas_recode(w_1toM))
@@ -776,14 +780,16 @@ abort_any_na <- function(df) {
 #' ## check each fruit has a unique color
 #' fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 #' verify_named_all_1to1(fruit_color)
-#' 
+#'
 #' ## check no student is assigned to multiple groups
-#' student_groups <- list(GRP1 = c("kate", "jane", "peter"),
-#'                       GRP2 = c("terry", "ben", "grace"),
-#'                       GRP3 = c("cindy", "lucy", "alex" ))
+#' student_groups <- list(
+#'   GRP1 = c("kate", "jane", "peter"),
+#'   GRP2 = c("terry", "ben", "grace"),
+#'   GRP3 = c("cindy", "lucy", "alex")
+#' )
 #' verify_named_no_dup_names(student_groups)
-#' 
-#' ## check 
+#'
+#' ## check
 NULL
 ```
 
@@ -792,46 +798,49 @@ Verify pairwise properties:
 ```{r send_to="R/verify_named.R"}
 #' @describeIn verify_named Verify named vector or list has only one-to-one relations
 #' @export
-#' 
-verify_named_all_1to1 <- function(x){
+#'
+verify_named_all_1to1 <- function(x) {
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
   unique_values <- unique(unlist(unname(x)))
   stop <- !(length(unique_names) == length(unique_values))
-  if (stop){
+  if (stop) {
     cli::cli_abort("Not all relations in `x` are 1-to-1.",
-                   class = "abort_not_1to1")
+      class = "abort_not_1to1"
+    )
   }
   invisible(x)
 }
 
 #' @describeIn verify_named Verify name-value pairs of named vector or list are not duplicated
 #' @export
-verify_named_all_unique <- function(x){
+verify_named_all_unique <- function(x) {
   stopifnot(is.vector(x))
   pairs <- as_pairs_from_named(x)
   dup_idx <- anyDuplicated(pairs)
   stop <- as.logical(dup_idx)
-  if (stop){
+  if (stop) {
     cli::cli_abort(c(
-          "Duplicated pairs found in `x`.",
-    "i" = "Use `as_pairs_from_named(x) |> base::duplicated()` to identify duplicates."),
+      "Duplicated pairs found in `x`.",
+      "i" = "Use `as_pairs_from_named(x) |> base::duplicated()` to identify duplicates."
+    ),
     class = "abort_not_unique"
     )
-  }  
+  }
   invisible(x)
 }
 
 #' @describeIn verify_named Verify names of named vector or list are not duplicated
 #' @export
-verify_named_all_names_unique <- function(x){
+verify_named_all_names_unique <- function(x) {
   stopifnot(is.vector(x))
   dup_idx <- anyDuplicated(names(x))
   stop <- as.logical(dup_idx)
-  if (stop){
+  if (stop) {
     cli::cli_abort(c(
-    "Duplicated names found in `x`.",
-    "i" = "Use `base::duplicated(names(x))` to identify duplicates."),
+      "Duplicated names found in `x`.",
+      "i" = "Use `base::duplicated(names(x))` to identify duplicates."
+    ),
     class = "abort_not_unique"
     )
   }
@@ -840,18 +849,19 @@ verify_named_all_names_unique <- function(x){
 
 #' @describeIn verify_named Verify values in named vector or list are not duplicated (after unnesting)
 #' @export
-verify_named_all_values_unique <- function(x){
+verify_named_all_values_unique <- function(x) {
   stopifnot(is.vector(x))
   dup_idx <- anyDuplicated(unlist(unname(x)))
   stop <- as.logical(dup_idx)
-  if (stop){
+  if (stop) {
     cli::cli_abort(c(
-    "Duplicated values found in `x`.",
-    "i" = "Use `base::duplicated(unlist(unname(x)))` to identify duplicates."),
+      "Duplicated values found in `x`.",
+      "i" = "Use `base::duplicated(unlist(unname(x)))` to identify duplicates."
+    ),
     class = "abort_not_unique"
     )
   }
-  #stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
+  # stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
   invisible(x)
 }
 ```
@@ -864,7 +874,7 @@ testthat::test_that("verify_named_all_1to1() works as expected", {
   testthat::expect_error(verify_named_all_1to1(v1toM), class = "abort_not_1to1")
   testthat::expect_error(verify_named_all_1to1(l1toM), class = "abort_not_1to1")
   testthat::expect_equal(verify_named_all_1to1(v1to1), v1to1)
-  })
+})
 
 testthat::test_that("verify_named_*_unique() work as expected", {
   vdup_pairs <- c(fruit = "apple", fruit = "apple")
@@ -886,103 +896,110 @@ testthat::test_that("verify_named_*_unique() work as expected", {
 #' @describeIn abort Abort message for verify_named_matchset_* functions
 #' @export
 msg_abort_named_matchset <- function(set_type = c("names", "values"),
-                                match_type = c("exact", "within", "contain")){
+                                     match_type = c("exact", "within", "contain")) {
   match_text <- switch(match_type,
-         exact = "do not exactly match",
-         within = "are not all within",
-         contain = "do not contain all elements of")
-  
+    exact = "do not exactly match",
+    within = "are not all within",
+    contain = "do not contain all elements of"
+  )
+
   cli::format_error("The {set_type} of {.var x} {match_text} {.var ref_set}")
 }
 
 #' Verify unique names or values of named vector or list match expected set
-#' 
+#'
 #' @name verify_named_matchset
 #' @inheritParams verify_named
-#' @param ref_set a vector of character strings 
-#' 
+#' @param ref_set a vector of character strings
+#'
 #' @return `x` or throw an error
 #' @examples
 #' fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 #' fruit_set <- c("apple", "strawberry", "banana", "pear")
-#' fruit_color |> 
+#' fruit_color |>
 #'   verify_named_matchset_names_within(ref_set = fruit_set)
 NULL
 
 #' @describeIn verify_named_matchset Names of `x` **exactly** match `ref_set`
 #' @export
-verify_named_matchset_names_exact <- function(x, ref_set){
+verify_named_matchset_names_exact <- function(x, ref_set) {
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
   stop <- !setequal(ref_set, unique_names)
   if (stop) {
     cli::cli_abort(msg_abort_named_matchset("names", "exact"),
-                   class = "abort_matchset")
+      class = "abort_matchset"
+    )
   }
   invisible(x)
 }
 
 #' @describeIn verify_named_matchset Values of `x` **exactly** match `ref_set`
 #' @export
-verify_named_matchset_values_exact <- function(x, ref_set){
+verify_named_matchset_values_exact <- function(x, ref_set) {
   stopifnot(is.vector(x))
   unique_values <- unique(unlist(unname(x)))
   stop <- !setequal(ref_set, unique_values)
   if (stop) {
     cli::cli_abort(msg_abort_named_matchset("values", "exact"),
-                   class = "abort_matchset")
+      class = "abort_matchset"
+    )
   }
   invisible(x)
 }
 
 #' @describeIn verify_named_matchset Names of `x` **contain** all of `ref_set`
 #' @export
-verify_named_matchset_names_contain <- function(x, ref_set){
+verify_named_matchset_names_contain <- function(x, ref_set) {
   stopifnot(is.vector(x))
   unique_names <- unique(names(x))
   stop <- !all(ref_set %in% unique_names)
-  if (stop){
+  if (stop) {
     cli::cli_abort(msg_abort_named_matchset("names", "contain"),
-                   class = "abort_matchset")
+      class = "abort_matchset"
+    )
   }
   invisible(x)
 }
 
 #' @describeIn verify_named_matchset Values of `x` **contain** all of `ref_set`
 #' @export
-verify_named_matchset_values_contain <- function(x, ref_set){
+verify_named_matchset_values_contain <- function(x, ref_set) {
   stopifnot(is.vector(x))
   unique_values <- unique(unlist(unname(x)))
   stop <- !all(ref_set %in% unique_values)
-  if (stop){
+  if (stop) {
     cli::cli_abort(msg_abort_named_matchset("values", "contain"),
-                   class = "abort_matchset")
+      class = "abort_matchset"
+    )
   }
   invisible(x)
 }
 
 #' @describeIn verify_named_matchset Names of `x` are all **within** `ref_set`
 #' @export
-verify_named_matchset_names_within <- function(x, ref_set){
+verify_named_matchset_names_within <- function(x, ref_set) {
   stopifnot(is.vector(x))
   unique_x <- unique(names(x))
   stop <- !all(unique_x %in% ref_set)
-  if (stop){
+  if (stop) {
     cli::cli_abort(msg_abort_named_matchset("names", "within"),
-                   class = "abort_matchset")
+      class = "abort_matchset"
+    )
   }
   invisible(x)
 }
 
 #' @describeIn verify_named_matchset Values of `x` are all **within** `ref_set`
 #' @export
-verify_named_matchset_values_within <- function(x, ref_set){
+verify_named_matchset_values_within <- function(x, ref_set) {
   stopifnot(is.vector(x))
   unique_x <- unique(unlist(unname(x)))
   stop <- !all(unique_x %in% ref_set)
-  if (stop){
+  if (stop) {
     cli::cli_abort(msg_abort_named_matchset("values", "within"),
-                   class = "abort_matchset")
+      class = "abort_matchset"
+    )
   }
   invisible(x)
 }
@@ -1054,7 +1071,7 @@ NULL
 
 #' @describeIn verify_pairs Verify column pairs have only one-to-one relations
 #' @export
-verify_pairs_all_1to1 <- function(df, from, to){
+verify_pairs_all_1to1 <- function(df, from, to) {
   stopifnot(is.data.frame(df))
   set_from <- unique(df[[rlang::englue("{{from}}")]])
   set_to <- unique(df[[rlang::englue("{{to}}")]])
@@ -1064,9 +1081,9 @@ verify_pairs_all_1to1 <- function(df, from, to){
 
 #' @describeIn verify_pairs Verify column pairs are all unique
 #' @export
-verify_pairs_all_unique <- function(df, from, to){
+verify_pairs_all_unique <- function(df, from, to) {
   stopifnot(is.data.frame(df))
-  pairs <- dplyr::select(df, {{ from }}, {{to}})
+  pairs <- dplyr::select(df, {{ from }}, {{ to }})
   stopifnot(!as.logical(anyDuplicated(pairs)))
   invisible(df)
 }
@@ -1078,10 +1095,10 @@ verify_pairs_as_recode_unique <- verify_pairs_all_1to1
 
 ```{r send_to="R/verify_pairs.R"}
 # @describeIn verify_pairs Verify column pairs outgoing link degree
-verify_pairs_out <- function(x, from, to, max_out, min_out){
+verify_pairs_out <- function(x, from, to, max_out, min_out) {
   # TODO: FINISH THIS!
-  dplyr::group_by(x, {{from}}) |>
-  dplyr::summarise()
+  dplyr::group_by(x, {{ from }}) |>
+    dplyr::summarise()
 }
 ```
 
@@ -1091,8 +1108,7 @@ testthat::test_that("verify_pairs_* work as expected", {
   pairs_1to1 <- tibble::enframe(v_1to1, "f", "t")
   testthat::expect_identical(verify_pairs_all_1to1(pairs_1to1, f, t), pairs_1to1)
   testthat::expect_identical(verify_pairs_all_unique(pairs_1to1, f, t), pairs_1to1)
-}
-)
+})
 ```
 
 ### Verify: Links
@@ -1154,14 +1170,15 @@ abort_dup_pairs <- function(df, col_from, col_to) {
 #' @describeIn abort Abort for invalid mapping weights
 #'
 abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
-    cli::cli_abort(
-      message =  c(
-            "Incomplete mapping weights found",
+  cli::cli_abort(
+    message = c(
+      "Incomplete mapping weights found",
       "x" = "{.var {col_weights}} does not sum to 1",
-      "i" = "Modify weights or adjust `tol` and try again."),
-      class = "abort_bad_weights",
-      call = call
-    )
+      "i" = "Modify weights or adjust `tol` and try again."
+    ),
+    class = "abort_bad_weights",
+    call = call
+  )
 }
 ```
 
@@ -1172,18 +1189,20 @@ abort_bad_weights <- function(col_weights, call = rlang::caller_env()) {
 #' @export
 #' @examples
 #' # fractional weights
-#' animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
-#'                  REPT = c("lizard", "turtle"),
-#'                  CRUS = c("crab")) |>
+#' animal_pairs <- list(
+#'   MAMM = c("elephant", "whale", "monkey"),
+#'   REPT = c("lizard", "turtle"),
+#'   CRUS = c("crab")
+#' ) |>
 #'   as_pairs_from_named("class", "animal")
 #' animal_pairs |>
 #'   add_weights_equal(from = class, to = animal)
-#'   
-add_weights_equal <- function(df, from, to, weights_into = "weights"){
+#'
+add_weights_equal <- function(df, from, to, weights_into = "weights") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   df |>
-    dplyr::group_by({{from}}) |>
-    dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
+    dplyr::group_by({{ from }}) |>
+    dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup()
 }
 
@@ -1191,66 +1210,69 @@ add_weights_equal <- function(df, from, to, weights_into = "weights"){
 #' @export
 #' @examples
 #' # proportional weights
-#' data.frame(recipe = c(rep("cake", 4), rep("pasta", 2)),
-#'           ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
-#'           grams = c(c(500, 250, 200, 250),c(250, 150))
-#'           ) |>
-#'  add_weights_prop(recipe, ingredients, grams)
-add_weights_prop <- function(df, from, to, prop, weights_into = "weights"){
+#' data.frame(
+#'   recipe = c(rep("cake", 4), rep("pasta", 2)),
+#'   ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
+#'   grams = c(c(500, 250, 200, 250), c(250, 150))
+#' ) |>
+#'   add_weights_prop(recipe, ingredients, grams)
+add_weights_prop <- function(df, from, to, prop, weights_into = "weights") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   abort_any_na(df)
   df |>
-    dplyr::group_by({{from}}) |>
-    dplyr::mutate("{weights_into}" := {{prop}}/sum({{prop}})) |>
+    dplyr::group_by({{ from }}) |>
+    dplyr::mutate("{weights_into}" := {{ prop }} / sum({{ prop }})) |>
     dplyr::ungroup()
 }
 ```
 
 ```{r}
-testthat::test_that("add_weights_*() work as expected",{
+testthat::test_that("add_weights_*() work as expected", {
 
   # equal
-  animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
-                      REPT = c("lizard", "turtle"),
-                      CRUS = c("crab")) |>
+  animal_pairs <- list(
+    MAMM = c("elephant", "whale", "monkey"),
+    REPT = c("lizard", "turtle"),
+    CRUS = c("crab")
+  ) |>
     as_pairs_from_named("class", "animal")
   animal_links <- animal_pairs |>
     dplyr::group_by(class) |>
-    dplyr::mutate(weights = 1/dplyr::n_distinct(animal)) |>
+    dplyr::mutate(weights = 1 / dplyr::n_distinct(animal)) |>
     dplyr::ungroup()
   animal_add <- animal_pairs |>
     add_weights_equal(from = class, to = animal, weights_into = "weights")
   testthat::expect_equal(animal_links, animal_add)
   # prop
-  recipe_df <- data.frame(recipe = c(rep("cake", 4), rep("pasta", 2)),
-                          ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
-                          grams = c(c(500, 250, 200, 250),c(250, 150))
+  recipe_df <- data.frame(
+    recipe = c(rep("cake", 4), rep("pasta", 2)),
+    ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
+    grams = c(c(500, 250, 200, 250), c(250, 150))
   )
   recipe_links <- recipe_df |>
     dplyr::group_by(recipe) |>
-    dplyr::mutate(weights = grams/sum(grams)) |>
+    dplyr::mutate(weights = grams / sum(grams)) |>
     dplyr::ungroup()
   recipe_add <- recipe_df |>
     add_weights_prop(recipe, ingredients, grams)
   testthat::expect_equal(recipe_links, recipe_add)
-  }
-  )
+})
 ```
 
 ### `verify_links_as_xmap()`
 
 ```{r fnc-verify-links-as-xmap}
 #' Check if candidate links meet crossmap properties
-#' 
+#'
 #' The links must satisfy:
 #'  - no missing values
 #'  - at most one link between each unique source and target node
 #'  - the weights on links coming out of each source node sum to 1
-#' 
+#'
 #' @param df data.frame like object containing candidate links
 #' @inheritParams vhas_complete_weights
 #' @inheritParams as_xmap
-#' 
+#'
 #' @export
 #' @examples
 #' # For a well formed crossmap:
@@ -1260,7 +1282,7 @@ testthat::test_that("add_weights_*() work as expected",{
 #'   w = c(0.1, 0.15, 0.25, 0.5)
 #' )
 #' verify_links_as_xmap(links, from = a, to = b, weights = w)
-verify_links_as_xmap <- function(df, from, to, weights, tol = .Machine$double.eps^0.5){
+verify_links_as_xmap <- function(df, from, to, weights, tol = .Machine$double.eps^0.5) {
   col_from <- deparse(substitute(from))
   col_to <- deparse(substitute(to))
   col_weights <- deparse(substitute(weights))
@@ -1270,8 +1292,10 @@ verify_links_as_xmap <- function(df, from, to, weights, tol = .Machine$double.ep
   abort_weights_col_type(df, col_weights)
   abort_dup_pairs(df, col_from, col_to)
   stop_bad_weights <- !vhas_complete_weights(df[[col_from]], df[[col_weights]], tol)
-  if (stop_bad_weights) { abort_bad_weights(col_weights) }
-  
+  if (stop_bad_weights) {
+    abort_bad_weights(col_weights)
+  }
+
   invisible(df)
 }
 ```
@@ -1312,22 +1336,22 @@ Eventually support matrix, graph, and data.frame?
 
 ```{r send_to="R/new_xmap.R"}
 #'
-.calc_xmap_subclass_attr <- function(subclass = c("xmap_df")){
+.calc_xmap_subclass_attr <- function(subclass = c("xmap_df")) {
   subclass <- rlang::arg_match(subclass)
 
   class_attr <- switch(subclass,
-         xmap_df = c("xmap_df", "xmap", "data.frame"),
-         stop("Unknown xmap subclass"))
-  
+    xmap_df = c("xmap_df", "xmap", "data.frame"),
+    stop("Unknown xmap subclass")
+  )
+
   return(class_attr)
 }
 ```
 
 ```{r}
-testthat::test_that(".calc_xmap_subclass_attr() rejects unknown subclass",
-                    {
-                      testthat::expect_error(.calc_xmap_subclass_attr("unknown"))
-                    })
+testthat::test_that(".calc_xmap_subclass_attr() rejects unknown subclass", {
+  testthat::expect_error(.calc_xmap_subclass_attr("unknown"))
+})
 ```
 
 ### Construct From Links Data Frame
@@ -1459,10 +1483,10 @@ The conventions for validation helpers:
 
 ```{r send_to="R/abort.R"}
 #' @describeIn abort Abort if xmap_df columns are not in order
-abort_col_order <- function(df, col_from, col_to, col_weights){
+abort_col_order <- function(df, col_from, col_to, col_weights) {
   correct_order <- c(col_from, col_to, col_weights)
   first_three <- names(df[1:3])
-  if(!identical(first_three, correct_order)){
+  if (!identical(first_three, correct_order)) {
     rlang::abort(
       message = "columns are not sorted in order `from`, `to`, `weights`",
       class = "abort_col_order"
@@ -1473,21 +1497,21 @@ abort_col_order <- function(df, col_from, col_to, col_weights){
 ```
 
 ```{r}
-testthat::test_that("abort_col_order() works as expected",
-                    {
-                      df <- data.frame(a = 1, b = 2, c = 3)
-                      testthat::expect_invisible(abort_col_order(df, "a", "b", "c"))
-                      testthat::expect_identical(abort_col_order(df, "a", "b", "c"), df)
-                      testthat::expect_error(abort_col_order(df, "b", "a", "c"),
-                                             class = "abort_col_order")
-                    })
+testthat::test_that("abort_col_order() works as expected", {
+  df <- data.frame(a = 1, b = 2, c = 3)
+  testthat::expect_invisible(abort_col_order(df, "a", "b", "c"))
+  testthat::expect_identical(abort_col_order(df, "a", "b", "c"), df)
+  testthat::expect_error(abort_col_order(df, "b", "a", "c"),
+    class = "abort_col_order"
+  )
+})
 ```
 
 #### From Set Check
 
 ```{r send_to="R/calc.R"}
 #'
-.calc_unique_sets.xmap_df <- function(x){
+.calc_unique_sets.xmap_df <- function(x) {
   stopifnot(is_xmap_df(x))
   df <- data.frame(x)
   x_attrs <- attributes(x)
@@ -1498,9 +1522,9 @@ testthat::test_that("abort_col_order() works as expected",
 }
 
 #'
-.calc_all_nodes.xmap_df <- function(x){
+.calc_all_nodes.xmap_df <- function(x) {
   uniq_sets <- .calc_unique_sets.xmap_df(x)
-  nodes <- unname(unlist(uniq_sets)) 
+  nodes <- unname(unlist(uniq_sets))
 }
 ```
 
@@ -1536,7 +1560,7 @@ abort_from_set <- function(df, col_from, from_set) {
 
 ```{r send_to="R/get-helpers.R"}
 #'
-.get_col_attrs.xmap_df <- function(x){
+.get_col_attrs.xmap_df <- function(x) {
   stopifnot(is_xmap_df(x))
   x_attrs <- attributes(x)
   col_attrs <- x_attrs[startsWith(names(x_attrs), "col")]
@@ -1555,12 +1579,12 @@ validate_xmap_df <- function(x) {
 
   df <- data.frame(x) # unclass(x)
   x_attrs <- attributes(x)
-  col_attrs <- c(x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights) 
+  col_attrs <- c(x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
 
   ## ---- df attributes ----
   abort_missing_cols(df, col_attrs)
   abort_any_na(df)
-  
+
   ## ---- xmap_df attributes ---
   abort_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
   abort_from_set(df, x_attrs$col_from, x_attrs$from_set)
@@ -1609,7 +1633,8 @@ testthat::test_that(
       class = "abort_missing_cols"
     )
     testthat::expect_error(verify_links_as_xmap(df, node_A, node_B, w_AB),
-                           class = "abort_missing_cols")
+      class = "abort_missing_cols"
+    )
   }
 )
 
@@ -1626,7 +1651,8 @@ testthat::test_that(
     x <- new_xmap_df(df, "from", "to", "weights")
     testthat::expect_error(validate_xmap_df(x), class = "abort_na")
     testthat::expect_error(verify_links_as_xmap(df, from, to, weights),
-                           class = "abort_na")
+      class = "abort_na"
+    )
   }
 )
 
@@ -1706,9 +1732,9 @@ testthat::test_that(
 
 ```{r send_to="R/as_xmap.R"}
 #' Coerce objects to xmap_df
-#' 
+#'
 #' Validates and creates a valid crossmap `xmap_df` object.
-#' 
+#'
 #' @param x
 #'  * For `as_xmap_df()`: An object to coerce
 #'  * For `is_xmap_df()`: An object to test.
@@ -1717,7 +1743,7 @@ testthat::test_that(
 #' @inheritParams vhas_complete_weights
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
 #' @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
-#' 
+#'
 #' @return A validated `xmap` object.
 #' @name as_xmap
 #' @export
@@ -1779,15 +1805,18 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
 
   ## construction
   xmap <- switch(subclass,
-                 xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
-                 stop("Unknown xmap subclass"))
+    xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
+    stop("Unknown xmap subclass")
+  )
 
   ## validation
   ## ---- xmap graph properties ----
   abort_weights_col_type(df, col_weights)
   abort_dup_pairs(df, col_from, col_to)
   stop_bad_weights <- !vhas_complete_weights(df[[col_from]], df[[col_weights]], tol)
-  if (stop_bad_weights) { abort_bad_weights(col_weights) }
+  if (stop_bad_weights) {
+    abort_bad_weights(col_weights)
+  }
 
   ## ---- xmap_df attributes ----
   validate_xmap_df(xmap)
@@ -1800,23 +1829,27 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
 testthat::test_that(
   "as_xmap() is returns expected xmap subclasses",
   {
-     tbl_links <- tibble::tribble(
+    tbl_links <- tibble::tribble(
       ~f, ~t, ~w,
       "A1", "B01", 1,
       "A2", "B02", 1,
       "A3", "B02", 1,
       "A4", "B03", 0.67,
       "A4", "B04", 0.33
-      )
-     df_links <- as.data.frame(tbl_links)
-     
-     ## default subclasses work as expected
-     testthat::expect_s3_class(as_xmap_df(df_links, f, t, w),
-                               .calc_xmap_subclass_attr("xmap_df"))
-     
-     ## override subclass works as well
-     testthat::expect_s3_class(as_xmap_df(tbl_links, f, t, w, subclass = "xmap_df"),
-                               .calc_xmap_subclass_attr("xmap_df"))
+    )
+    df_links <- as.data.frame(tbl_links)
+
+    ## default subclasses work as expected
+    testthat::expect_s3_class(
+      as_xmap_df(df_links, f, t, w),
+      .calc_xmap_subclass_attr("xmap_df")
+    )
+
+    ## override subclass works as well
+    testthat::expect_s3_class(
+      as_xmap_df(tbl_links, f, t, w, subclass = "xmap_df"),
+      .calc_xmap_subclass_attr("xmap_df")
+    )
   }
 )
 ```
@@ -1829,17 +1862,17 @@ testthat::test_that(
 
 ```{r send_to="R/xmap_to.R"}
 #' Extract incidence matrix from xmap objects
-#' 
+#'
 #' Transforms `xmap` objects into incidence matrix where the rows are indexed by the `from` values
 #' and the columns are indexed by `to` values. Drops any additional variables.
-#' 
+#'
 #' @param .xmap an xmap object
 #' @param sparse logical specifying if the result should be a sparse matrix. Defaults to TRUE.
 #' @param ... Reversed for passing arguments to `stats::xtabs`
-#' 
+#'
 #' @return A matrix or sparse matrix object
 #' @family {xmap coercion}
-#' 
+#'
 #' @export
 xmap_to_matrix <- function(.xmap, sparse, ...) {
   UseMethod("xmap_to_matrix")
@@ -1854,22 +1887,27 @@ xmap_to_matrix <- function(.xmap, sparse, ...) {
 #' @export
 #' @examples
 #' abc_xmap <- data.frame(
-#'  stringsAsFactors = FALSE,
-#'                  origin = c("a","b","c","d","e",
-#'                           "f","g","h","i","i","j","j","j"),
-#'                    dest = c("AA","AA","AA","AA",
-#'                           "BB","BB","CC","DD","EE","FF","GG","HH","II"),
-#'            link = c(1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.3, 0.3, 0.4)
-#'  ) |>
-#' as_xmap_df(origin, dest, link)
+#'   stringsAsFactors = FALSE,
+#'   origin = c(
+#'     "a", "b", "c", "d", "e",
+#'     "f", "g", "h", "i", "i", "j", "j", "j"
+#'   ),
+#'   dest = c(
+#'     "AA", "AA", "AA", "AA",
+#'     "BB", "BB", "CC", "DD", "EE", "FF", "GG", "HH", "II"
+#'   ),
+#'   link = c(1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.3, 0.3, 0.4)
+#' ) |>
+#'   as_xmap_df(origin, dest, link)
 #' xmap_to_matrix(abc_xmap)
-xmap_to_matrix.xmap_df <- function(.xmap, sparse = TRUE, ...){
+xmap_to_matrix.xmap_df <- function(.xmap, sparse = TRUE, ...) {
   x_attrs <- attributes(.xmap)
   df <- .xmap |> as.data.frame(stringsAsFactors = TRUE)
   fm <- paste(x_attrs$col_weights, "~", x_attrs$col_from, "+", x_attrs$col_to,
-              collapse = "")
-  
-  if(sparse){
+    collapse = ""
+  )
+
+  if (sparse) {
     x_mtx <- stats::xtabs(stats::as.formula(fm), df, sparse = TRUE)
   } else {
     x_mtx <- stats::xtabs(stats::as.formula(fm), df, sparse = FALSE)
@@ -1881,7 +1919,7 @@ xmap_to_matrix.xmap_df <- function(.xmap, sparse = TRUE, ...){
 ```
 
 ```{r test-xmap-to-matrix}
-testthat::test_that("xmap_to_matrix handles xmaps with different column counts",{
+testthat::test_that("xmap_to_matrix handles xmaps with different column counts", {
   links <- tibble::tribble(
     ~f, ~t, ~w,
     "A1", "B01", 1,
@@ -1889,19 +1927,18 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
     "A3", "B02", 1,
     "A4", "B03", 0.25,
     "A4", "B04", 0.75
-  ) 
+  )
   xmap_small <- new_xmap_df(links, "f", "t", "w")
 
-  links_extra <- links |> 
+  links_extra <- links |>
     dplyr::mutate(ex = "extra")
   xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
-  
+
   xmap_matrix_small <- xmap_small |> xmap_to_matrix()
   xmap_matrix_extra <- xmap_extra |> xmap_to_matrix()
-  
+
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
-  }
-  )
+})
 ```
 
 ### to List:
@@ -1909,11 +1946,11 @@ testthat::test_that("xmap_to_matrix handles xmaps with different column counts",
 ```{r send_to="R/abort.R"}
 #' @describeIn abort Abort message for fractional weights
 #' @export
-msg_abort_frac_weights <- function(impact){
+msg_abort_frac_weights <- function(impact) {
   cli::format_error(c(
-            "`x` contains fractional weights. {impact}",
-      "x" = "You've supplied a xmap with weights not equal to 1")
-    )
+    "`x` contains fractional weights. {impact}",
+    "x" = "You've supplied a xmap with weights not equal to 1"
+  ))
 }
 ```
 
@@ -1922,14 +1959,14 @@ msg_abort_frac_weights <- function(impact){
 ```{r send_to="R/xmap_to.R"}
 #' Coerce a unit weight `xmap_df` to a named vector or list
 #'
-#' Checks that an `xmap` has unit weights, and converts the 
+#' Checks that an `xmap` has unit weights, and converts the
 #'   `from` values into:
 #'   * a vector for `xmap_to_named_vector()`
 #'   * a nested list for `xmap_to_named_list()`
-#'   
+#'
 #' Names are the unique target nodes in `to`,
 #'   and each element contains the source node(s) in `from`.
-#' 
+#'
 #' @param .xmap xmap with only unit weights
 #'
 #' @return Named vector or list.
@@ -1939,12 +1976,12 @@ msg_abort_frac_weights <- function(impact){
 #'
 #' @examples
 #' iso_vector <- c(AF = "004", AL = "008", DZ = "012", AS = "016", AD = "020")
-#' iso_xmap <- iso_vector |> 
+#' iso_xmap <- iso_vector |>
 #'   as_pairs_from_named(names_to = "iso2c", values_to = "iso3n") |>
 #'   add_weights_unit() |>
 #'   as_xmap_df(from = iso3n, to = iso2c, weights)
-#' identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
-xmap_to_named_vector <- function(.xmap){
+#' identical(iso_vector, xmap_to_named_vector(iso_xmap))
+xmap_to_named_vector <- function(.xmap) {
   stopifnot(is_xmap(.xmap))
   x_attrs <- attributes(.xmap)
   df <- as.data.frame(.xmap)
@@ -1968,13 +2005,15 @@ xmap_to_named_vector <- function(.xmap){
 #' @export
 #'
 #' @examples
-#' animal_list <- list(MAMM = c("elephant", "whale", "monkey"),
-#'                  REPT = c("lizard", "turtle"),
-#'                  CRUS = c("crab"))
+#' animal_list <- list(
+#'   MAMM = c("elephant", "whale", "monkey"),
+#'   REPT = c("lizard", "turtle"),
+#'   CRUS = c("crab")
+#' )
 #' animal_xmap <- animal_list |>
-#'  as_pairs_from_named(names_to = "class", values_to = "animals") |>
-#'  add_weights_unit() |>
-#'  as_xmap_df(from = animals, to = class, weights = weights)
+#'   as_pairs_from_named(names_to = "class", values_to = "animals") |>
+#'   add_weights_unit() |>
+#'   as_xmap_df(from = animals, to = class, weights = weights)
 #' identical(xmap_to_named_list(animal_xmap), animal_list)
 xmap_to_named_list <- function(.xmap) {
   stopifnot(is_xmap(.xmap))
@@ -2011,29 +2050,33 @@ testthat::test_that("xmap_to_named works as expected", {
     "A4", "B04", 0.75
   )
   ## works for collapse relations
-  xmap_unit <- new_xmap_df(links[1:3,], "f", "t", "w")
+  xmap_unit <- new_xmap_df(links[1:3, ], "f", "t", "w")
   unit_list <- list(B01 = c("A1"), B02 = c("A2", "A3"))
-  unit_vector <- tibble::deframe(xmap_unit[,c("t", "f")])
+  unit_vector <- tibble::deframe(xmap_unit[, c("t", "f")])
   testthat::expect_identical(unit_list, xmap_to_named_list(xmap_unit))
   testthat::expect_identical(unit_vector, xmap_to_named_vector(xmap_unit))
   ## rejects split relations
   xmap_mixed <- new_xmap_df(links, "f", "t", "w")
-  testthat::expect_error(xmap_to_named_list(xmap_mixed), 
-                         class = "abort_frac_weights")
+  testthat::expect_error(xmap_to_named_list(xmap_mixed),
+    class = "abort_frac_weights"
+  )
 })
 ```
 
 ```{r}
 testthat::test_that("xmap_to_named_list() reverses as_pairs_from_named()", {
-  link_list <- list(AA = c("x3", "x4", "x6"),
-                    BB = c("x1", "x5"),
-                    CC = c("x2")
-                  )
+  link_list <- list(
+    AA = c("x3", "x4", "x6"),
+    BB = c("x1", "x5"),
+    CC = c("x2")
+  )
   link_xmap <-
-   as_pairs_from_named(link_list,
-                  "capital", "xvars") |>
-   add_weights_unit(weights_into = "w") |>
-   new_xmap_df("xvars", "capital", "w")
+    as_pairs_from_named(
+      link_list,
+      "capital", "xvars"
+    ) |>
+    add_weights_unit(weights_into = "w") |>
+    new_xmap_df("xvars", "capital", "w")
   testthat::expect_identical(xmap_to_named_list(link_xmap), link_list)
 })
 ```
@@ -2041,11 +2084,13 @@ testthat::test_that("xmap_to_named_list() reverses as_pairs_from_named()", {
 with dplyr:
 
 ```{r}
-pairs_df <- 
-     as_pairs_from_named(link_list,
-                  "capital", "xvars") 
+pairs_df <-
+  as_pairs_from_named(
+    link_list,
+    "capital", "xvars"
+  )
 
-pairs_df |> 
+pairs_df |>
   dplyr::group_by(capital) |>
   dplyr::summarise(source = list(xvars)) |>
   tibble::deframe()
@@ -2054,7 +2099,7 @@ pairs_df |>
 without dplyr:
 
 ```{r}
-pairs_df |> 
+pairs_df |>
   subset(select = c("capital", "xvars")) |>
   tidyr::nest(source = c("xvars")) |>
   tibble::deframe() |>
@@ -2073,12 +2118,11 @@ See [conformr-project #63](https://github.com/cynthiahqy/conformr-project/issues
 #'
 abort_not_reversible <- function(df, col_to) {
   x_to <- df[[col_to]]
-  if (vhas_collapse(x_to)){
+  if (vhas_collapse(x_to)) {
     cli::cli_abort("Collapse links in {.var xmap_df} cannot be reversed. Please supply new weights and create a new xmap.")
   }
   invisible(df)
 }
-  
 ```
 
 ## Modification
@@ -2091,22 +2135,22 @@ See [conformr-project #67](https://github.com/cynthiahqy/conformr-project/issues
 #' Reverse xmap direction
 #'
 #' @param .xmap xmap object to be reversed
-#' @param weights_into A string specifying the name of a new or existing column to store reverse weights in. 
+#' @param weights_into A string specifying the name of a new or existing column to store reverse weights in.
 #'
 #' @return xmap object of same class as `x`, or throws an error if `x` is not reversible
 #' @export
-xmap_reverse <- function(.xmap, weights_into){
+xmap_reverse <- function(.xmap, weights_into) {
   UseMethod("xmap_reverse")
 }
 
 #' @describeIn xmap_reverse Reverse a `xmap_df`
-#' 
+#'
 #' @export
-xmap_reverse.xmap_df <- function(.xmap, weights_into = "r_weights"){
+xmap_reverse.xmap_df <- function(.xmap, weights_into = "r_weights") {
   stopifnot(inherits(.xmap, "xmap_df"))
   x_attrs <- attributes(.xmap)
   df <- as.data.frame(.xmap)
-  
+
   ## check xmap can be reversed
   abort_not_reversible(df, x_attrs$col_to)
 
@@ -2117,56 +2161,56 @@ xmap_reverse.xmap_df <- function(.xmap, weights_into = "r_weights"){
   new_weights <- weights_into
   new_cols <- c(new_from, new_to, new_weights)
   ## rearrange columns
-  #col_order <- c(new_cols, setdiff(names(df), new_cols))
+  # col_order <- c(new_cols, setdiff(names(df), new_cols))
   df <- df[new_cols]
-  
+
   ## construction
   xmap <- new_xmap_df(df, new_from, new_to, new_weights)
-  
+
   ## validation
   validate_xmap_df(xmap)
-  
+
   return(xmap)
 }
 ```
 
 ```{r}
-testthat::test_that("xmap_reverse.xmap_df() works as expected",             {
+testthat::test_that("xmap_reverse.xmap_df() works as expected", {
   df_x <- tibble::tribble(
-      ~from, ~to, ~weights,
-      "A1", "B01", 1,
-      "A4", "B03", 0.25,
-      "A4", "B04", 0.75
-    ) |> as.data.frame() |> 
+    ~from, ~to, ~weights,
+    "A1", "B01", 1,
+    "A4", "B03", 0.25,
+    "A4", "B04", 0.75
+  ) |>
+    as.data.frame() |>
     new_xmap_df("from", "to", "weights")
-  
+
   df_x_rev <- data.frame(
     to = df_x$to,
     from = df_x$from,
     r_weights = 1
   ) |>
     new_xmap_df("to", "from", "r_weights")
-  
+
   # class checks
   testthat::expect_s3_class(xmap_reverse.xmap_df(df_x), class(df_x_rev))
   testthat::expect_s3_class(xmap_reverse(df_x), class(df_x_rev))
-  
+
   # output checks
   testthat::expect_identical(xmap_reverse.xmap_df(df_x), df_x_rev)
-  testthat::expect_identical(abort_not_reversible(df_x,"to"), df_x)
-}
-)
+  testthat::expect_identical(abort_not_reversible(df_x, "to"), df_x)
+})
 ```
 
 ### Helper: `xmap_drop_extra()`
 
 ```{r}
 #' Drop extra columns from `xmap` objects
-#' 
+#'
 #' @param .xmap an xmap object
 #'
 #' @export
-xmap_drop_extra <- function(.xmap){
+xmap_drop_extra <- function(.xmap) {
   stopifnot(is_xmap_df(.xmap))
   # get col names
   col_strings <- simplify2array(.get_col_attrs.xmap_df(.xmap))
@@ -2174,31 +2218,31 @@ xmap_drop_extra <- function(.xmap){
   z_attrs <- attributes(.xmap)
   z_attrs$names <- unname(col_strings)
   z <- as.data.frame(.xmap)
-  z <- z[,col_strings]
+  z <- z[, col_strings]
   attributes(z) <- z_attrs
-  
+
   return(z)
 }
 ```
 
 ```{r test-drop-extra, render='as-is'}
-testthat::test_that('xmap_drop_extra works as expected', {
+testthat::test_that("xmap_drop_extra works as expected", {
   links <- tibble::tribble(
-  ~f, ~t, ~w,
-  "A1", "B01", 1,
-  "A2", "B02", 1,
-  "A3", "B02", 1,
-  "A4", "B03", 0.25,
-  "A4", "B04", 0.75
-  ) 
+    ~f, ~t, ~w,
+    "A1", "B01", 1,
+    "A2", "B02", 1,
+    "A3", "B02", 1,
+    "A4", "B03", 0.25,
+    "A4", "B04", 0.75
+  )
   xmap_small <- new_xmap_df(links, "f", "t", "w")
 
-  links_extra <- links |> 
+  links_extra <- links |>
     dplyr::mutate(ex = "extra")
   xmap_extra <- new_xmap_df(links_extra, "f", "t", "w")
-  
+
   xmap_drop <- xmap_extra |> xmap_drop_extra()
-  
+
   testthat::expect_identical(xmap_small, xmap_drop)
 })
 ```
@@ -2224,11 +2268,10 @@ from_degree <- mock$xmap_abc |>
 from_degree |>
   dplyr::select(lower, upper, share) |>
   reactable::reactable(groupBy = "upper")
-
 ```
 
 ```{r}
-summary_reactable <- function(.xmap){
+summary_reactable <- function(.xmap) {
   col_attrs <- .get_col_attrs.xmap_df(.xmap)
   .xmap |>
     dplyr::group_by(col_attrs$col_from) |>
@@ -2251,14 +2294,17 @@ disjoint_abc <- mock$xmap_abc |> .calc_unique_sets.xmap_df()
 mock$xmap_abc |>
   as_tbl_graph() |>
   activate(nodes) |>
-  mutate(layer = case_when(name %in% disjoint_abc$from_set ~ 1,
-                           name %in% disjoint_abc$to_set ~ 2),
-         out_degree = centrality_degree(mode = "out"),
-         out_split = ifelse(out_degree > 1, TRUE, FALSE)) |>
+  mutate(
+    layer = case_when(
+      name %in% disjoint_abc$from_set ~ 1,
+      name %in% disjoint_abc$to_set ~ 2
+    ),
+    out_degree = centrality_degree(mode = "out"),
+    out_split = ifelse(out_degree > 1, TRUE, FALSE)
+  ) |>
   activate(edges) |>
   mutate(frac_weight = ifelse(share < 1, TRUE, FALSE)) |>
   convert(to_subgraph, !frac_weight)
-
 ```
 
 #### Glue Collapse
@@ -2290,8 +2336,10 @@ mock$xmap_abc |>
 mock$xmap_abc |>
   as_tibble() |>
   group_by(upper) |>
-  mutate(share_char = case_when(share == 1 ~ "",
-                           TRUE ~ paste0("*", as.character(share)))) |>
+  mutate(share_char = case_when(
+    share == 1 ~ "",
+    TRUE ~ paste0("*", as.character(share))
+  )) |>
   mutate(from_share = glue::glue("{lower}{share_char}")) |>
   summarise(composition = glue::glue_collapse(from_share, "+"))
 ```
@@ -2321,23 +2369,25 @@ mock$xmap_abc |>
 #'
 #' @export
 #' @examples
-#' mock$xmap_abc |> 
+#' mock$xmap_abc |>
 #'   as.data.frame() |>
 #'   add_weights_placeholder(from = upper, to = lower)
-add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1){
+add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1) {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   weights_into <- rlang::englue(weights_into)
   df |>
-    dplyr::group_by({{from}}) |>
-    dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
+    dplyr::group_by({{ from }}) |>
+    dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup() -> w_df
-  if(all(w_df[[weights_into]] == 1)){
+  if (all(w_df[[weights_into]] == 1)) {
     cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
     return(w_df)
   } else {
     w_df |>
-      dplyr::mutate("{weights_into}" := case_when(.data[[weights_into]] < 1 ~ frac_symbol,
-                                                  TRUE ~ unit_symbol))
+      dplyr::mutate("{weights_into}" := case_when(
+        .data[[weights_into]] < 1 ~ frac_symbol,
+        TRUE ~ unit_symbol
+      ))
   }
 }
 ```
@@ -2352,70 +2402,74 @@ mock$xmap_abc |>
 ### Mock-Up: Summarise
 
 ```{r}
-summarise_target0.data.frame <- function(
-    df, from, to, weights,
-    frac_formula = "{from}*{weights}",
-    collapse = "+",
-    mask_ones = TRUE){
+summarise_target0.data.frame <- function(df, from, to, weights,
+                                         frac_formula = "{from}*{weights}",
+                                         collapse = "+",
+                                         mask_ones = TRUE) {
   ## rename
   r_df <- df |>
-    dplyr::rename(from = {{from}},
-                  to = {{to}},
-                  weights = {{weights}})
-  
+    dplyr::rename(
+      from = {{ from }},
+      to = {{ to }},
+      weights = {{ weights }}
+    )
+
   r_df |>
-      mutate(part = dplyr::case_when(
-        weights == 1 ~ paste0(from, ifelse(mask_ones, "", "1")),
-        weights < 1 ~ glue::glue(frac_formula))
-      ) |>
+    mutate(part = dplyr::case_when(
+      weights == 1 ~ paste0(from, ifelse(mask_ones, "", "1")),
+      weights < 1 ~ glue::glue(frac_formula)
+    )) |>
     group_by(to) |>
     summarise(composition = glue::glue_collapse(part, collapse))
 }
 ```
 
 ```{r}
-mock$xmap_abc |>  as_tibble() |>
+mock$xmap_abc |>
+  as_tibble() |>
   summarise_target0.data.frame(from = lower, to = upper, weights = share)
 ```
 
 Switch `mask_ones` to `unit_formula`
 
 ```{r}
-summarise_target.data.frame <- function(
-    df, from, to, weights,
-    frac_formula = "{from}*{weights}",
-    unit_formula = "{from}",
-    collapse = "+"){
+summarise_target.data.frame <- function(df, from, to, weights,
+                                        frac_formula = "{from}*{weights}",
+                                        unit_formula = "{from}",
+                                        collapse = "+") {
   ## rename
   r_df <- df |>
-    dplyr::rename(from = {{from}},
-                  to = {{to}},
-                  weights = {{weights}})
-  
+    dplyr::rename(
+      from = {{ from }},
+      to = {{ to }},
+      weights = {{ weights }}
+    )
+
   r_df |>
-      mutate(part = dplyr::case_when(
-        weights == 1 ~ glue::glue(unit_formula),
-        weights < 1 ~ glue::glue(frac_formula))
-      ) |> 
+    mutate(part = dplyr::case_when(
+      weights == 1 ~ glue::glue(unit_formula),
+      weights < 1 ~ glue::glue(frac_formula)
+    )) |>
     group_by(to) |>
     summarise(composition = glue::glue_collapse(part, collapse))
 }
-
 ```
 
 ```{r}
 mock$xmap_abc |>
   as_tibble() |>
-  summarise_target0.data.frame(from = lower, to = upper, weights = share,
-                               frac_formula = "{from} [{weights}]",
-                               collapse = ",")
+  summarise_target0.data.frame(
+    from = lower, to = upper, weights = share,
+    frac_formula = "{from} [{weights}]",
+    collapse = ","
+  )
 ```
 
 ### S3: `summarise_target()`
 
 ```{r send_to="R/rename-helpers.R"}
 #'
-.rename_xmap <- function(.xmap, new_col_from, new_col_to, new_col_weights){
+.rename_xmap <- function(.xmap, new_col_from, new_col_to, new_col_weights) {
   old_cols <- .get_col_attrs.xmap_df(.xmap)
   new_cols <- c(new_col_from, new_col_to, new_col_weights)
   df <- as.data.frame(.xmap)
@@ -2444,35 +2498,35 @@ mock$xmap_abc |>
 #'   the weighting variable.
 #'
 #' @export
-print_target_summary <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula){
+print_target_summary <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula) {
   UseMethod("summarise_target")
 }
 
 #' @export
 #' @rdname summarise_target
 #' @examples
-#' df <- data.frame(group = c("x", "y", "z", "x", "y", "z"),
-#'                  parent = c("A", "A", "A", "B", "B", "B"),
-#'                  weights = c(0.5, 0.3, 0.2, 0.7, 0.1, 0.2))
+#' df <- data.frame(
+#'   group = c("x", "y", "z", "x", "y", "z"),
+#'   parent = c("A", "A", "A", "B", "B", "B"),
+#'   weights = c(0.5, 0.3, 0.2, 0.7, 0.1, 0.2)
+#' )
 #' summarise_target(df, group, parent, weights)
 #' mock$xmap_abc |> summarise_target()
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
-print_target_summary.data.frame <- function(
-  links, from, to, weights,
-  composition_to = "parts_{from}",
-  collapse = "+",
-  frac_formula = "{from}*{weights}",
-  unit_formula = "{from}"
-) {
+print_target_summary.data.frame <- function(links, from, to, weights,
+                                            composition_to = "parts_{from}",
+                                            collapse = "+",
+                                            frac_formula = "{from}*{weights}",
+                                            unit_formula = "{from}") {
   ## rename
   # r_df <- links |>
   #   dplyr::rename(from = {{from}},
   #                 to = {{to}},
   #                 weights = {{weights}})
-  
-  englue_xmap <- function(string_f, col_from, col_to, col_weights){
-    string_f |>   
+
+  englue_xmap <- function(string_f, col_from, col_to, col_weights) {
+    string_f |>
       gsub("from", col_from, x = _) |>
       gsub("to", col_to, x = _) |>
       gsub("weights", col_weights, x = _)
@@ -2486,29 +2540,30 @@ print_target_summary.data.frame <- function(
   ## summarise
   links |>
     dplyr::mutate(part = dplyr::case_when(
-      {{weights}} == 1 ~ glue::glue(unit_formula),
-      {{weights}} < 1 ~ glue::glue(frac_formula))
-    ) |>
-    dplyr::group_by({{to}}) |>
+      {{ weights }} == 1 ~ glue::glue(unit_formula),
+      {{ weights }} < 1 ~ glue::glue(frac_formula)
+    )) |>
+    dplyr::group_by({{ to }}) |>
     dplyr::summarise("{comp_col}" := glue::glue_collapse(part, collapse))
 }
 
 #' @export
 #' @rdname summarise_target
 print_target_summary.xmap_df <- function(links,
-                                     composition_to = "parts_{{from}}",
-                                     collapse = "+",
-                                     frac_formula = "{from}*{weights}",
-                                     unit_formula = "{from}"
-                                     ){
+                                         composition_to = "parts_{{from}}",
+                                         collapse = "+",
+                                         frac_formula = "{from}*{weights}",
+                                         unit_formula = "{from}") {
   df <- links |>
     xmap_drop_extra() |>
     .rename_xmap("from", "to", "weights") |>
     as.data.frame()
 
-  sum_df <- summarise_target.data.frame(df, from, to, weights,
-                              composition_to, collapse,
-                              frac_formula, unit_formula)
+  sum_df <- summarise_target.data.frame(
+    df, from, to, weights,
+    composition_to, collapse,
+    frac_formula, unit_formula
+  )
 
   names(sum_df)[names(sum_df) == "to"] <- .get_col_attrs.xmap_df(links)$col_to
   return(sum_df)
@@ -2516,9 +2571,9 @@ print_target_summary.xmap_df <- function(links,
 ```
 
 ```{r}
-mock$xmap_abc |> as.data.frame() |>
+mock$xmap_abc |>
+  as.data.frame() |>
   print_target_summary.data.frame(from = lower, to = upper, weights = share)
-  
 ```
 
 ## Visualisation
@@ -2552,20 +2607,20 @@ mock$xmap_abc |>
 #### COERCE: xmap_df to tbl_graph
 
 ```{r}
-pull_from <- function(.xmap){
+pull_from <- function(.xmap) {
   x_attrs <- attributes(.xmap)
   .xmap |> pull(x_attrs$col_from)
 }
 ```
 
 ```{r}
-as_tbl_graph.xmap_df <- function(x, ...){
- x <- xmap_drop_extra(x)
- x_attrs <- attributes(x)
- x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
- x_edges <- data.frame(x)
- names(x_edges)[names(x_edges) == x_attrs$col_from] <- 'weights'
- tidygraph::tbl_graph(x_nodes, x_edges)
+as_tbl_graph.xmap_df <- function(x, ...) {
+  x <- xmap_drop_extra(x)
+  x_attrs <- attributes(x)
+  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
+  x_edges <- data.frame(x)
+  names(x_edges)[names(x_edges) == x_attrs$col_from] <- "weights"
+  tidygraph::tbl_graph(x_nodes, x_edges)
 }
 ```
 
@@ -2645,16 +2700,16 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
 
 ```{r print-xmap-df, send_to="R/print.R", results='asis', paged.print=FALSE}
 #'
-.calc_link_types.xmap_df <- function(xmap_df){
+.calc_link_types.xmap_df <- function(xmap_df) {
   x_attrs <- attributes(xmap_df)
   x_weights <- xmap_df[[x_attrs$col_weights]]
   x_to <- xmap_df[[x_attrs$col_to]]
-  
+
   flags <- c(
-      "recode" = vhas_recode(x_weights),
-      "split" = vhas_split(x_weights),
-      "collapse" = vhas_collapse(x_to)
-    )
+    "recode" = vhas_recode(x_weights),
+    "split" = vhas_split(x_weights),
+    "collapse" = vhas_collapse(x_to)
+  )
   types <- names(flags[flags == TRUE])
   type <- cli::pluralize("{types} {? }")
 
@@ -2662,28 +2717,30 @@ See discussion [here](https://github.com/cynthiahqy/conformr-project/issues/43#i
 }
 
 #'
-.calc_link_direction.xmap_df <- function(xmap_df){
+.calc_link_direction.xmap_df <- function(xmap_df) {
   x_attrs <- attributes(xmap_df)
-  direction <- paste0("(", x_attrs$col_from, " -> ", x_attrs$col_to, ") ", 
-                      "BY " ,x_attrs$col_weights)
+  direction <- paste0(
+    "(", x_attrs$col_from, " -> ", x_attrs$col_to, ") ",
+    "BY ", x_attrs$col_weights
+  )
   return(direction)
 }
 
 #' Print an `xmap` object
-#' 
+#'
 #' @name print.xmap
 NULL
 
 #' @describeIn print.xmap Print an `xmap_df`
 #'
 #' @export
-print.xmap_df <- function(x){
+print.xmap_df <- function(x) {
   x_direction <- .calc_link_direction.xmap_df(x)
   x_type <- .calc_link_types.xmap_df(x)
   x_links <- as.data.frame(x)
 
   ## print headers and links
-  cat(paste0("xmap_df:\n",  x_type, "\n", x_direction, "\n"))
+  cat(paste0("xmap_df:\n", x_type, "\n", x_direction, "\n"))
   print(x_links)
 }
 ```
@@ -2733,10 +2790,14 @@ add_vignettes(vignette_images)
 ```{r}
 litr::add_readme("../xmap-source-files/README.Rmd")
 litr::add_vignettes("../xmap-source-files/xmap.Rmd")
-litr::add_vignettes(c("../xmap-source-files/making-xmaps.Rmd",
-                      "../xmap-source-files/plot-anzsco-isco-bigraph.png"))
-litr::add_vignettes(c("../xmap-source-files/vis-xmaps.Rmd",
-                      "../xmap-source-files/plot-weight-sum-matrix.png"))
+litr::add_vignettes(c(
+  "../xmap-source-files/making-xmaps.Rmd",
+  "../xmap-source-files/plot-anzsco-isco-bigraph.png"
+))
+litr::add_vignettes(c(
+  "../xmap-source-files/vis-xmaps.Rmd",
+  "../xmap-source-files/plot-weight-sum-matrix.png"
+))
 rm(list = ls())
 litr::document()
 ```
