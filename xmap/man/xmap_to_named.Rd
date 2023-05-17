@@ -22,24 +22,27 @@ Checks that an \code{xmap} has unit weights, and converts the
 \item a vector for \code{xmap_to_named_vector()}
 \item a nested list for \code{xmap_to_named_list()}
 }
-
+}
+\details{
 Names are the unique target nodes in \code{to},
 and each element contains the source node(s) in \code{from}.
 }
 \examples{
 iso_vector <- c(AF = "004", AL = "008", DZ = "012", AS = "016", AD = "020")
-iso_xmap <- iso_vector |> 
+iso_xmap <- iso_vector |>
   as_pairs_from_named(names_to = "iso2c", values_to = "iso3n") |>
   add_weights_unit() |>
   as_xmap_df(from = iso3n, to = iso2c, weights)
-identical(iso_vector, xmap_to_named_vector(iso_xmap)) 
-animal_list <- list(MAMM = c("elephant", "whale", "monkey"),
-                 REPT = c("lizard", "turtle"),
-                 CRUS = c("crab"))
+identical(iso_vector, xmap_to_named_vector(iso_xmap))
+animal_list <- list(
+  MAMM = c("elephant", "whale", "monkey"),
+  REPT = c("lizard", "turtle"),
+  CRUS = c("crab")
+)
 animal_xmap <- animal_list |>
- as_pairs_from_named(names_to = "class", values_to = "animals") |>
- add_weights_unit() |>
- as_xmap_df(from = animals, to = class, weights = weights)
+  as_pairs_from_named(names_to = "class", values_to = "animals") |>
+  add_weights_unit() |>
+  as_xmap_df(from = animals, to = class, weights = weights)
 identical(xmap_to_named_list(animal_xmap), animal_list)
 }
 \seealso{

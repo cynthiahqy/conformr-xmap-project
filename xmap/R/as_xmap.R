@@ -1,9 +1,9 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
 #' Coerce objects to xmap_df
-#' 
+#'
 #' Validates and creates a valid crossmap `xmap_df` object.
-#' 
+#'
 #' @param x
 #'  * For `as_xmap_df()`: An object to coerce
 #'  * For `is_xmap_df()`: An object to test.
@@ -12,7 +12,7 @@
 #' @inheritParams vhas_complete_weights
 #' @param subclass Which xmap subclass to return. Defaults to `xmap_df` for `data.frame` and `tibble`
 #' @param .drop_extra Drop columns other than `from`, `to` and `weights`. Defaults to `TRUE`
-#' 
+#'
 #' @return A validated `xmap` object.
 #' @name as_xmap
 #' @export
@@ -63,15 +63,18 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
 
   ## construction
   xmap <- switch(subclass,
-                 xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
-                 stop("Unknown xmap subclass"))
+    xmap_df = new_xmap_df(df, col_from, col_to, col_weights),
+    stop("Unknown xmap subclass")
+  )
 
   ## validation
   ## ---- xmap graph properties ----
   abort_weights_col_type(df, col_weights)
   abort_dup_pairs(df, col_from, col_to)
   stop_bad_weights <- !vhas_complete_weights(df[[col_from]], df[[col_weights]], tol)
-  if (stop_bad_weights) { abort_bad_weights(col_weights) }
+  if (stop_bad_weights) {
+    abort_bad_weights(col_weights)
+  }
 
   ## ---- xmap_df attributes ----
   validate_xmap_df(xmap)

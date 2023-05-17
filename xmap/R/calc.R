@@ -1,7 +1,7 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
 #'
-.calc_unique_sets.xmap_df <- function(x){
+.calc_unique_sets.xmap_df <- function(x) {
   stopifnot(is_xmap_df(x))
   df <- data.frame(x)
   x_attrs <- attributes(x)
@@ -12,7 +12,7 @@
 }
 
 #'
-.calc_all_nodes.xmap_df <- function(x){
+.calc_all_nodes.xmap_df <- function(x) {
   uniq_sets <- .calc_unique_sets.xmap_df(x)
-  nodes <- unname(unlist(uniq_sets)) 
+  nodes <- unname(unlist(uniq_sets))
 }

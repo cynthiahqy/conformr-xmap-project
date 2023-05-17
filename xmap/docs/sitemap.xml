@@ -43,6 +43,9 @@
     <loc>/reference/as_xmap.html</loc>
   </url>
   <url>
+    <loc>/reference/autoplot.xmap.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
@@ -58,7 +61,7 @@
     <loc>/reference/print.xmap.html</loc>
   </url>
   <url>
-    <loc>/reference/summarise_target.html</loc>
+    <loc>/reference/summary_by_target.html</loc>
   </url>
   <url>
     <loc>/reference/validate_xmap_df.html</loc>

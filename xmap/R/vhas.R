@@ -7,13 +7,13 @@
 #' The functions only accepts equal length vector inputs to support multiple link formats,
 #' but does not check if the inputs are from the same xmap.
 #' @param v_from,v_to,v_weights equal length vectors containing the source-target node pairs
-#' 
+#'
 #' @return TRUE or FALSE
-#' 
+#'
 #' @name vhas
 NULL
 
-#' @describeIn vhas Returns TRUE if xmap does not have 
+#' @describeIn vhas Returns TRUE if xmap does not have
 #' duplicate pairs of source-target nodes (irrespective of weights)
 #'
 vhas_no_dup_pairs <- function(v_from, v_to) {
@@ -44,23 +44,23 @@ vhas_complete_weights <- function(v_from, v_weights, tol = .Machine$double.eps^0
   all(isTRUE(all.equal(sum_w, ones, tolerance = tol)))
 }
 
-.calc_vector_lens <- function(...){
+.calc_vector_lens <- function(...) {
   v_list <- list(...)
   v_lens <- sapply(v_list, length)
   return(v_lens)
 }
 
 #' @describeIn vhas Returns TRUE if links have no duplicate pairs and complete weights
-vhas_xmap_props <- function(v_from, v_to, v_weights){
+vhas_xmap_props <- function(v_from, v_to, v_weights) {
   ## check vectors are equal length
   v_lengths <- .calc_vector_lens(v_from, v_to, v_weights)
   stopifnot(length(unique(v_lengths)) == 1)
-  
+
   ## check properties
   v_props <- c(
     pairs = vhas_no_dup_pairs(v_from, v_to),
     weights = vhas_complete_weights(v_from, v_weights)
-  ) 
+  )
   all(v_props)
 }
 
@@ -81,7 +81,7 @@ vhas_1toM <- function(v_weights) {
 vhas_split <- vhas_1toM
 
 #' @describeIn vhas Return TRUE if xmap has collapsing links between `from` and `to`
-vhas_1fromM <- function(v_to){
+vhas_1fromM <- function(v_to) {
   stopifnot(is.vector(v_to))
   as.logical(anyDuplicated(v_to))
 }

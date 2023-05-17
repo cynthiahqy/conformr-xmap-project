@@ -9,8 +9,8 @@ add_weights_placeholder(
   from,
   to,
   weights_into = "weights_{{from}}",
-  frac_symbol = "?",
-  unit_symbol = ""
+  frac_symbol = NA,
+  unit_symbol = 1
 )
 }
 \arguments{
@@ -23,9 +23,9 @@ add_weights_placeholder(
 \item{weights_into}{The name to use for the column containing the weights
 placeholders. Default is "weights_{{from}}".}
 
-\item{frac_symbol}{The placeholder symbol to use for fractional weights. Default is "?".}
+\item{frac_symbol}{The placeholder symbol to use for fractional weights. Default is NA.}
 
-\item{unit_symbol}{The placeholder symbol to use for unit weights. Default is "".}
+\item{unit_symbol}{The placeholder symbol to use for unit weights. Default is 1.}
 }
 \value{
 A data frame with a new column containing the weights placeholders.
@@ -36,6 +36,7 @@ the values of \code{from} and \code{to} columns. 1-to-1 links are given unit wei
 and 1-to-many links are given fractional weight placeholders.
 }
 \examples{
-mock$xmap_abc |> as.data.frame() |>
-add_weights_placeholder(from = upper, to = lower, unit_symbol = "1")
+mock$xmap_abc |>
+  as.data.frame() |>
+  add_weights_placeholder(from = upper, to = lower)
 }

@@ -69,8 +69,8 @@ and 1-to-many links are given fractional weight placeholders.</p>
 <span>  <span class="va">from</span>,</span>
 <span>  <span class="va">to</span>,</span>
 <span>  weights_into <span class="op">=</span> <span class="st">"weights_{{from}}"</span>,</span>
-<span>  frac_symbol <span class="op">=</span> <span class="st">"?"</span>,</span>
-<span>  unit_symbol <span class="op">=</span> <span class="st">""</span></span>
+<span>  frac_symbol <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  unit_symbol <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,11 +94,11 @@ placeholders. Default is "weights_from".</p></dd>
 
 
 <dt>frac_symbol</dt>
-<dd><p>The placeholder symbol to use for fractional weights. Default is "?".</p></dd>
+<dd><p>The placeholder symbol to use for fractional weights. Default is NA.</p></dd>
 
 
 <dt>unit_symbol</dt>
-<dd><p>The placeholder symbol to use for unit weights. Default is "".</p></dd>
+<dd><p>The placeholder symbol to use for unit weights. Default is 1.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -110,17 +110,18 @@ placeholders. Default is "weights_from".</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mock</span><span class="op">$</span><span class="va">xmap_abc</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span><span class="fu">add_weights_placeholder</span><span class="op">(</span>from <span class="op">=</span> <span class="va">upper</span>, to <span class="op">=</span> <span class="va">lower</span>, unit_symbol <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mock</span><span class="op">$</span><span class="va">xmap_abc</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_weights_placeholder</span><span class="op">(</span>from <span class="op">=</span> <span class="va">upper</span>, to <span class="op">=</span> <span class="va">lower</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   lower upper share weights_upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> a     AA      1   1            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> b     BB      1   ?            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> c     BB      1   ?            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> d     CC      0.3 1            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> d     DD      0.6 1            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> d     EE      0.1 1            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> a     AA      1               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> b     BB      1              <span style="color: #BB0000;">NA</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> c     BB      1              <span style="color: #BB0000;">NA</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> d     CC      0.3             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> d     DD      0.6             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> d     EE      0.1             1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

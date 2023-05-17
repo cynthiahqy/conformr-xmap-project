@@ -51,6 +51,6 @@ Verify unique names or values of named vector or list match expected set
 \examples{
 fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 fruit_set <- c("apple", "strawberry", "banana", "pear")
-fruit_color |> 
+fruit_color |>
   verify_named_matchset_names_within(ref_set = fruit_set)
 }

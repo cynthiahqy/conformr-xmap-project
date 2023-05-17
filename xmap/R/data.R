@@ -1,13 +1,13 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
 #' Mock input objects for the `xmap` package
-#' 
+#'
 #' A collection of mock inputs for experimenting with functions
 #' in the `xmap` package.
 #' `named_` objects are either named vectors or nested lists.
 #' `df_` objects may contain source-target *pairs* (no weights),
 #' or weighted source-target *links*.
-#' 
+#'
 #' @format ## `mock`
 #' A list with:
 #' \describe{
@@ -20,7 +20,7 @@
 #'  \item{df_aus_pop}{tibble containing 2022 population figures for Australia by state. Retrieved from:
 #'    \url{https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/jun-2022}}
 #'  }
-#'@examples
+#' @examples
 #' links_aus_agg <- mock$named_aus |>
 #'   as_pairs_from_named(names_to = "ctr", values_to = "state") |>
 #'   add_weights_unit() |>

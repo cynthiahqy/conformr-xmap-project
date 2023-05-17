@@ -46,19 +46,22 @@ AUS_pairs <- list(AUS = c("NSW", "QLD", "SA", "TAS", "VIC", "WA", "ACT", "NT")) 
   as_pairs_from_named(names_to = "ctr", values_to = "state")
 AUS_pairs |>
   add_weights_unit(weights_into = "weights")
-  
+
 # fractional weights
-animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
-                 REPT = c("lizard", "turtle"),
-                 CRUS = c("crab")) |>
+animal_pairs <- list(
+  MAMM = c("elephant", "whale", "monkey"),
+  REPT = c("lizard", "turtle"),
+  CRUS = c("crab")
+) |>
   as_pairs_from_named("class", "animal")
 animal_pairs |>
   add_weights_equal(from = class, to = animal)
-  
+
 # proportional weights
-data.frame(recipe = c(rep("cake", 4), rep("pasta", 2)),
-          ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
-          grams = c(c(500, 250, 200, 250),c(250, 150))
-          ) |>
- add_weights_prop(recipe, ingredients, grams)
+data.frame(
+  recipe = c(rep("cake", 4), rep("pasta", 2)),
+  ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
+  grams = c(c(500, 250, 200, 250), c(250, 150))
+) |>
+  add_weights_prop(recipe, ingredients, grams)
 }

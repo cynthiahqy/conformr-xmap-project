@@ -19,14 +19,16 @@ Depends:
 Imports: 
     cli,
     dplyr,
+    ggplot2,
+    ggraph,
     glue,
     rlang (>= 1.0.0),
     tibble,
+    tidygraph,
     tidyr
 Suggests: 
     forcats,
     ggbump,
-    ggplot2,
     knitr,
     matlib,
     Matrix,
@@ -34,8 +36,9 @@ Suggests:
     rmarkdown,
     stats,
     stringr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    vdiffr
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: 6af9ecb0e1e879142e125b91fb7caed6
+LitrId: 8860f942d8f62a64ff445ba04fd2212f
