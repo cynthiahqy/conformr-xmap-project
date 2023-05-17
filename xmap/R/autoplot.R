@@ -12,9 +12,7 @@
 #' @param object An xmap_df object.
 #' @param ... Additional arguments (currently unused).
 #'
-#' @importFrom ggraph ggraph geom_edge_diagonal geom_node_label
-#' @importFrom ggplot2 scale_fill_brewer coord_flip scale_y_reverse theme_minimal autoplot aes
-#' @importFrom tidygraph as_tbl_graph activate mutate centrality_degree
+#' @importFrom ggplot2 autoplot
 #' @importFrom rlang sym
 #'
 #' @return ggplot2 object
@@ -24,10 +22,11 @@
 #' library(ggplot2)
 #' library(ggraph)
 #' library(tidygraph)
+#' library(xmap)
 #' df <- data.frame(from = c("A", "A", "B", "B", "B"),
 #'                  to = c("X", "Y", "X", "Y", "Z"),
 #'                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
-#' xmap <- xmap::as_xmap_df(df, from, to, weights)
+#' xmap <- as_xmap_df(df, from, to, weights)
 #' autoplot(xmap)
 NULL
 

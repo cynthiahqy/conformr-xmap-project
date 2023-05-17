@@ -20,15 +20,14 @@ Imports:
     cli,
     dplyr,
     ggplot2,
-    ggraph,
     glue,
     rlang (>= 1.0.0),
     tibble,
-    tidygraph,
     tidyr
 Suggests: 
     forcats,
     ggbump,
+    ggraph,
     knitr,
     matlib,
     Matrix,
@@ -37,8 +36,9 @@ Suggests:
     stats,
     stringr,
     testthat (>= 3.0.0),
+    tidygraph,
     vdiffr
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: 8860f942d8f62a64ff445ba04fd2212f
+LitrId: bfd81bb531bdba0cfd96e7fb6d8b43d8
