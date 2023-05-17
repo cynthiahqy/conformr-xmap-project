@@ -2617,8 +2617,8 @@ Adding in more dependencies
 
 ```{r vis-depend}
 usethis::use_package("ggplot2")
-usethis::use_package("ggraph")
-usethis::use_package("tidygraph")
+usethis::use_package("ggraph", type = "Suggests")
+usethis::use_package("tidygraph", type = "Suggests")
 usethis::use_package("vdiffr", type = "Suggests")
 ```
 
@@ -2629,6 +2629,7 @@ Now make an `autoplot()` and `plot()` methods for `xmap_df` using:
 -   <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> mockup
 
 ```{r send_to="R/plot.R"}
+#' @rdname autoplot.xmap
 #' @importFrom graphics plot
 #' @export
 plot.xmap_df <- function(x, ...) {
@@ -2649,9 +2650,7 @@ plot.xmap_df <- function(x, ...) {
 #' @param object An xmap_df object.
 #' @param ... Additional arguments (currently unused).
 #'
-#' @importFrom ggraph ggraph geom_edge_diagonal geom_node_label
-#' @importFrom ggplot2 scale_fill_brewer coord_flip scale_y_reverse theme_minimal autoplot aes
-#' @importFrom tidygraph as_tbl_graph activate mutate centrality_degree
+#' @importFrom ggplot2 autoplot
 #' @importFrom rlang sym
 #'
 #' @return ggplot2 object
@@ -2661,10 +2660,11 @@ plot.xmap_df <- function(x, ...) {
 #' library(ggplot2)
 #' library(ggraph)
 #' library(tidygraph)
+#' library(xmap)
 #' df <- data.frame(from = c("A", "A", "B", "B", "B"),
 #'                  to = c("X", "Y", "X", "Y", "Z"),
 #'                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
-#' xmap <- xmap::as_xmap_df(df, from, to, weights)
+#' xmap <- as_xmap_df(df, from, to, weights)
 #' autoplot(xmap)
 NULL
 
