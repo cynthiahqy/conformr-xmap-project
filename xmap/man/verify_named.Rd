@@ -57,10 +57,12 @@ fruit_color <- c(apple = "green", strawberry = "red", banana = "yellow")
 verify_named_all_1to1(fruit_color)
 
 ## check no student is assigned to multiple groups
-student_groups <- list(GRP1 = c("kate", "jane", "peter"),
-                      GRP2 = c("terry", "ben", "grace"),
-                      GRP3 = c("cindy", "lucy", "alex" ))
+student_groups <- list(
+  GRP1 = c("kate", "jane", "peter"),
+  GRP2 = c("terry", "ben", "grace"),
+  GRP3 = c("cindy", "lucy", "alex")
+)
 verify_named_no_dup_names(student_groups)
 
-## check 
+## check
 }

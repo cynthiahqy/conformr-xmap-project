@@ -23,9 +23,9 @@ NULL
 #'   as_pairs_from_named(names_to = "ctr", values_to = "state")
 #' AUS_pairs |>
 #'   add_weights_unit(weights_into = "weights")
-#'   
-add_weights_unit <- function(df, weights_into = "weights"){
-  df[,weights_into] <- 1
+#'
+add_weights_unit <- function(df, weights_into = "weights") {
+  df[, weights_into] <- 1
   return(df)
 }
 
@@ -33,18 +33,20 @@ add_weights_unit <- function(df, weights_into = "weights"){
 #' @export
 #' @examples
 #' # fractional weights
-#' animal_pairs <- list(MAMM = c("elephant", "whale", "monkey"),
-#'                  REPT = c("lizard", "turtle"),
-#'                  CRUS = c("crab")) |>
+#' animal_pairs <- list(
+#'   MAMM = c("elephant", "whale", "monkey"),
+#'   REPT = c("lizard", "turtle"),
+#'   CRUS = c("crab")
+#' ) |>
 #'   as_pairs_from_named("class", "animal")
 #' animal_pairs |>
 #'   add_weights_equal(from = class, to = animal)
-#'   
-add_weights_equal <- function(df, from, to, weights_into = "weights"){
+#'
+add_weights_equal <- function(df, from, to, weights_into = "weights") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   df |>
-    dplyr::group_by({{from}}) |>
-    dplyr::mutate("{weights_into}" := 1/dplyr::n_distinct({{to}})) |>
+    dplyr::group_by({{ from }}) |>
+    dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup()
 }
 
@@ -52,16 +54,17 @@ add_weights_equal <- function(df, from, to, weights_into = "weights"){
 #' @export
 #' @examples
 #' # proportional weights
-#' data.frame(recipe = c(rep("cake", 4), rep("pasta", 2)),
-#'           ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
-#'           grams = c(c(500, 250, 200, 250),c(250, 150))
-#'           ) |>
-#'  add_weights_prop(recipe, ingredients, grams)
-add_weights_prop <- function(df, from, to, prop, weights_into = "weights"){
+#' data.frame(
+#'   recipe = c(rep("cake", 4), rep("pasta", 2)),
+#'   ingredients = c(c("flour", "sugar", "eggs", "milk"), c("flour", "water")),
+#'   grams = c(c(500, 250, 200, 250), c(250, 150))
+#' ) |>
+#'   add_weights_prop(recipe, ingredients, grams)
+add_weights_prop <- function(df, from, to, prop, weights_into = "weights") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   abort_any_na(df)
   df |>
-    dplyr::group_by({{from}}) |>
-    dplyr::mutate("{weights_into}" := {{prop}}/sum({{prop}})) |>
+    dplyr::group_by({{ from }}) |>
+    dplyr::mutate("{weights_into}" := {{ prop }} / sum({{ prop }})) |>
     dplyr::ungroup()
 }

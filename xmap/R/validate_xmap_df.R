@@ -10,12 +10,12 @@ validate_xmap_df <- function(x) {
 
   df <- data.frame(x) # unclass(x)
   x_attrs <- attributes(x)
-  col_attrs <- c(x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights) 
+  col_attrs <- c(x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
 
   ## ---- df attributes ----
   abort_missing_cols(df, col_attrs)
   abort_any_na(df)
-  
+
   ## ---- xmap_df attributes ---
   abort_col_order(df, x_attrs$col_from, x_attrs$col_to, x_attrs$col_weights)
   abort_from_set(df, x_attrs$col_from, x_attrs$from_set)

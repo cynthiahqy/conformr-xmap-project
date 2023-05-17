@@ -2536,15 +2536,15 @@ summary_by_target <- function(links, from, to, weights, composition_to, collapse
 }
 
 #' @export
-#' @rdname summarise_target
+#' @rdname summary_by_target
 #' @examples
 #' df <- data.frame(
 #'   group = c("x", "y", "z", "x", "y", "z"),
 #'   parent = c("A", "A", "A", "B", "B", "B"),
 #'   weights = c(0.5, 0.3, 0.2, 0.7, 0.1, 0.2)
 #' )
-#' summarise_target(df, group, parent, weights)
-#' mock$xmap_abc |> summarise_target()
+#' summary_by_target(df, group, parent, weights)
+#' mock$xmap_abc |> summary_by_target()
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
 summary_by_target.data.frame <- function(links, from, to, weights,
@@ -2581,7 +2581,7 @@ summary_by_target.data.frame <- function(links, from, to, weights,
 }
 
 #' @export
-#' @rdname summarise_target
+#' @rdname summary_by_target
 summary_by_target.xmap_df <- function(links,
                                       composition_to = "parts_{{from}}",
                                       collapse = "+",
@@ -2592,7 +2592,7 @@ summary_by_target.xmap_df <- function(links,
     .rename_xmap("from", "to", "weights") |>
     as.data.frame()
 
-  sum_df <- summarise_target.data.frame(
+  sum_df <- summary_by_target.data.frame(
     df, from, to, weights,
     composition_to, collapse,
     frac_formula, unit_formula
@@ -2616,9 +2616,10 @@ mock$xmap_abc |>
 Adding in more dependencies
 
 ```{r vis-depend}
-usethis::use_package("ggplot2", type = "suggests")
-usethis::use_package("ggraph", type = "suggests")
-usethis::use_package("tidygraph", type = "suggests")
+usethis::use_package("ggplot2")
+usethis::use_package("ggraph")
+usethis::use_package("tidygraph")
+usethis::use_package("vdiffr", type = "Suggests")
 ```
 
 Now make an `autoplot()` and `plot()` methods for `xmap_df` using:
@@ -2627,7 +2628,7 @@ Now make an `autoplot()` and `plot()` methods for `xmap_df` using:
 -   [`ggplot::autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
 -   <https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/> mockup
 
-```{r}
+```{r send_to="R/plot.R"}
 #' @importFrom graphics plot
 #' @export
 plot.xmap_df <- function(x, ...) {
@@ -2635,7 +2636,9 @@ plot.xmap_df <- function(x, ...) {
 }
 ```
 
-```{r}
+```{r send_to="R/autoplot.R"}
+# Generated from create-xmap.Rmd: do not edit by hand
+
 #' Autoplot function for xmap_df objects
 #'
 #' This function generates a plot of an xmap_df object using the ggraph and ggplot2
@@ -2646,27 +2649,31 @@ plot.xmap_df <- function(x, ...) {
 #' @param object An xmap_df object.
 #' @param ... Additional arguments (currently unused).
 #'
-#' @importFrom tidygraph as_tbl_graph activate mutate centrality_degree
 #' @importFrom ggraph ggraph geom_edge_diagonal geom_node_label
-#' @importFrom ggplot2 scale_fill_brewer coord_flip scale_y_reverse theme_minimal autoplot
+#' @importFrom ggplot2 scale_fill_brewer coord_flip scale_y_reverse theme_minimal autoplot aes
+#' @importFrom tidygraph as_tbl_graph activate mutate centrality_degree
 #' @importFrom rlang sym
-#' @importFrom methods require
 #'
-#' @export
+#' @return ggplot2 object
+#' @name autoplot.xmap
+#'
 #' @examples
+#' library(ggplot2)
+#' library(ggraph)
+#' library(tidygraph)
 #' df <- data.frame(from = c("A", "A", "B", "B", "B"),
 #'                  to = c("X", "Y", "X", "Y", "Z"),
 #'                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
 #' xmap <- xmap::as_xmap_df(df, from, to, weights)
 #' autoplot(xmap)
-#'
+NULL
+
+#' @rdname autoplot.xmap
+#' @export
 autoplot.xmap_df <- function(object, ...){
-  require(tidygraph)
-  require(ggraph)
-  require(ggplot2)
-  
+
   x_attrs <- attributes(object)
-  
+
   tidygraph_data <-
     as_tbl_graph(object) |>
   ## calculating edge properties
@@ -2679,7 +2686,7 @@ autoplot.xmap_df <- function(object, ...){
     tidygraph::mutate(n_from = tidygraph::centrality_degree(mode = "in"),
          in_from = n_from == 0,
          collapse = n_from > 1)
-  
+
   tidygraph_data |>
     ## now we plot...
     ggraph::ggraph(layout = "sugiyama") +
@@ -2696,7 +2703,7 @@ autoplot.xmap_df <- function(object, ...){
       aes(edge_linetype = I(edge_linetype),
           edge_alpha = !!sym(x_attrs$col_weights),
           filter = frac_weight,
-          label = share,
+          label = !!sym(x_attrs$col_weights),
           label_pos = edge_label_pos,
           ),
       end_cap = circle(6, 'mm'),
@@ -2724,12 +2731,16 @@ autoplot.xmap_df <- function(object, ...){
 }
 ```
 
-```{r error=TRUE}
-library(dplyr)
-library(ggplot2)
-library(xmap)
+This test probably doesnt work because snapshot testing doesnt work.. nevertheless, here are details of how `vdiffr` should work:
 
+-   <https://www.tidyverse.org/blog/2021/06/vdiffr-1-0-0/>
+
+``` r
 testthat::test_that("autoplot() has known output",{
+  library(dplyr)
+  library(ggplot2)
+  library(xmap)
+  
   man_plot <- mock$xmap_abc |>
     as_tbl_graph() |>
   ## calculating edge properties
@@ -3009,9 +3020,9 @@ devtools::check('xmap', document = FALSE)
 We finish by running commands that will document, build, and install the package. It may also be a good idea to check the package from within this file.
 
 ```{r}
-litr::add_pkgdown()
-# pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
-# litr::add_pkgdown(pkgdown_yml)
+# litr::add_pkgdown()
+pkgdown_yml <- file.path("..", "xmap-source-files", "_pkgdown.yml")
+litr::add_pkgdown(pkgdown_yml)
 # devtools::run_examples()
 # devtools::build()
 # devtools::install()

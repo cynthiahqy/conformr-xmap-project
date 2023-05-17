@@ -119,9 +119,11 @@ whilst <code>pairs_to_named_list()</code> nests the values first.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> eggplant aubergine</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> zucchini courgette</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">animal_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>MAMM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"elephant"</span>, <span class="st">"whale"</span>, <span class="st">"monkey"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                 REPT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lizard"</span>, <span class="st">"turtle"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                 CRUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"crab"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">animal_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  MAMM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"elephant"</span>, <span class="st">"whale"</span>, <span class="st">"monkey"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  REPT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lizard"</span>, <span class="st">"turtle"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  CRUS <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"crab"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">animal_list</span>, <span class="st">"class"</span>, <span class="st">"animal"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   class animal  </span>
@@ -134,12 +136,12 @@ whilst <code>pairs_to_named_list()</code> nests the values first.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> CRUS  crab    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Convert pairs back to named vector and lists</span></span></span>
-<span class="r-in"><span><span class="va">veg_from_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">veg_vec</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span><span class="va">veg_from_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">veg_vec</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">pairs_to_named_vector</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">name</span>, values_from <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">veg_vec</span>, <span class="va">veg_from_pairs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">animal_from_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">animal_list</span>, <span class="st">"class"</span>, <span class="st">"animal"</span><span class="op">)</span> <span class="op">|&gt;</span> </span></span>
+<span class="r-in"><span><span class="va">animal_from_pairs</span> <span class="op">&lt;-</span> <span class="fu">as_pairs_from_named</span><span class="op">(</span><span class="va">animal_list</span>, <span class="st">"class"</span>, <span class="st">"animal"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">pairs_to_named_list</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">class</span>, values_from <span class="op">=</span> <span class="va">animal</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">animal_list</span>, <span class="va">animal_from_pairs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>

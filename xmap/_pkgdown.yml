@@ -7,7 +7,7 @@ template:
 repo:
   url:
     home: https://github.com/cynthiahqy/xmap/
-    source: https://github.com/cynthiahqy/xmap/
+    source: https://github.com/cynthiahqy/xmap/blob/main/
     issue: https://github.com/cynthiahqy/conformr-xmap-project/issues
     user: https://github.com/cynthiahqy
 
@@ -35,8 +35,9 @@ reference:
 
 - title: Summarising and visualising mappings
   contents:
-    - starts_with("summarise_")
-    - summarise_target
+    - starts_with("summary")
+    - starts_with("autoplot")
+    - starts_with("plot")
     - add_weights_placeholder
 
 - title: Creating `xmap` objects

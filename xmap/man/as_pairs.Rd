@@ -49,17 +49,19 @@ whilst \code{pairs_to_named_list()} nests the values first.
 veg_vec <- c(eggplant = "aubergine", zucchini = "courgette")
 as_pairs_from_named(veg_vec, "au_eng", "uk_eng")
 
-animal_list <- list(MAMM = c("elephant", "whale", "monkey"),
-                 REPT = c("lizard", "turtle"),
-                 CRUS = c("crab"))
+animal_list <- list(
+  MAMM = c("elephant", "whale", "monkey"),
+  REPT = c("lizard", "turtle"),
+  CRUS = c("crab")
+)
 as_pairs_from_named(animal_list, "class", "animal")
 
 # Convert pairs back to named vector and lists
-veg_from_pairs <- as_pairs_from_named(veg_vec) |> 
+veg_from_pairs <- as_pairs_from_named(veg_vec) |>
   pairs_to_named_vector(names_from = name, values_from = value)
 identical(veg_vec, veg_from_pairs)
 
-animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |> 
+animal_from_pairs <- as_pairs_from_named(animal_list, "class", "animal") |>
   pairs_to_named_list(names_from = class, values_from = animal)
 identical(animal_list, animal_from_pairs)
 }
