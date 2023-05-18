@@ -2377,7 +2377,7 @@ mock$xmap_abc |>
   summarise(composition = glue::glue_collapse(from_share, "+"))
 ```
 
-### Helper: `add_weights_placeholder()`
+### Helper: `add_placeholder_weights()`
 
 ```{r}
 #' Add weights placeholder column to a data frame
@@ -2400,12 +2400,14 @@ mock$xmap_abc |>
 #' @importFrom rlang englue
 #' @importFrom cli cli_inform
 #'
+#' @seealso [add_weights] which generate valid crossmap weights.
+#'
 #' @export
 #' @examples
 #' mock$xmap_abc |>
 #'   as.data.frame() |>
-#'   add_weights_placeholder(from = upper, to = lower)
-add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1) {
+#'   add_placeholder_weights(from = upper, to = lower)
+add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1) {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
   weights_into <- rlang::englue(weights_into)
   df |>
@@ -2429,7 +2431,7 @@ add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from
 mock$xmap_abc |>
   as_tibble() |>
   select(lower, upper) |>
-  add_weights_placeholder(from = lower, to = upper, frac_symbol = NA, unit_symbol = "1")
+  add_placeholder_weights(from = lower, to = upper, frac_symbol = NA, unit_symbol = "1")
 ```
 
 ### Mock-Up: Summarise
@@ -2514,12 +2516,15 @@ mock$xmap_abc |>
 ```{r}
 #' Summarize the composition of target categories.
 #'
-#' This function summarizes a crossmap based on the target nomenclature, using a
-#' weighting variable to calculate the composition of each target category.
-#'
-#' @param links A data frame or `xmap_df`
+#' This function summarizes the composition of each target `to` category
+#' in a set of `from`, `to`, `weight` links.
+#' If a data.frame of links is provided, crossmap properties are not checked.
+#' This can be useful when combined with `add_placeholder_weights()` to highlight
+#' where weights must be chosen.
+#' 
+#' @param links A data frame or `xmap_df`.
 #' @inheritParams as_xmap
-#' @param composition_to A glue string specifying the new column to pass the summarised composition into. Default is "parts_\{from\}".
+#' @param parts_into A string specifying the new column to pass the summarised composition into. Default is "parts".
 #' @param frac_formula A glue formula specifying how to calculate the fraction of each
 #'   target value using the weighting variable. Default is "\{from\}*\{weights\}".
 #' @param unit_formula A glue formula specifying how to calculate the unit of each
@@ -2531,32 +2536,40 @@ mock$xmap_abc |>
 #'   the weighting variable.
 #'
 #' @export
-summary_by_target <- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula) {
+summary_by_target <- function(links, ...) {
   UseMethod("summary_by_target")
 }
 
 #' @export
 #' @rdname summary_by_target
 #' @examples
+#' 
+#' mock$xmap_abc |> 
+#'   summary_by_target()
+#'
 #' df <- data.frame(
-#'   group = c("x", "y", "z", "x", "y", "z"),
-#'   parent = c("A", "A", "A", "B", "B", "B"),
-#'   weights = c(0.5, 0.3, 0.2, 0.7, 0.1, 0.2)
+#'   parent = c("A", "A", "A", "B", "B", "B", "C"),
+#'   child = c("x", "y", "z", "x", "y", "z", "k")
 #' )
-#' summary_by_target(df, group, parent, weights)
-#' mock$xmap_abc |> summary_by_target()
+#' df |>
+#'   add_placeholder_weights(from = parent, to = child, weights_into = "weights",
+#'                           frac_symbol = "_", unit_symbol = "1") |>
+#'   summary_by_target(from = parent, to = child, weights = weights,
+#'                     frac_formula = "{from}*{weights}")
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
 summary_by_target.data.frame <- function(links, from, to, weights,
-                                         composition_to = "parts_{from}",
+                                         parts_into = "parts",
                                          collapse = "+",
                                          frac_formula = "{from}*{weights}",
-                                         unit_formula = "{from}") {
-  ## rename
-  # r_df <- links |>
-  #   dplyr::rename(from = {{from}},
-  #                 to = {{to}},
-  #                 weights = {{weights}})
+                                         unit_formula = "{from}",
+                                         warn = TRUE) {
+  if (warn) {
+    cli::cli_warn(c(
+      "Summary completed without verifying crossmap properties.",
+      "i" = "To silence set `warn = FALSE`")
+    )
+  }
 
   englue_xmap <- function(string_f, col_from, col_to, col_weights) {
     string_f |>
@@ -2569,21 +2582,22 @@ summary_by_target.data.frame <- function(links, from, to, weights,
   col_weights <- rlang::englue("{{weights}}")
   frac_formula <- englue_xmap(frac_formula, col_from, col_to, col_weights)
   unit_formula <- englue_xmap(unit_formula, col_from, col_to, col_weights)
-  comp_col <- englue_xmap(composition_to, col_from, col_to, col_weights)
+  
   ## summarise
   links |>
     dplyr::mutate(part = dplyr::case_when(
       {{ weights }} == 1 ~ glue::glue(unit_formula),
-      {{ weights }} < 1 ~ glue::glue(frac_formula)
+      {{ weights }} < 1 ~ glue::glue(frac_formula),
+      TRUE ~ glue::glue(frac_formula)
     )) |>
     dplyr::group_by({{ to }}) |>
-    dplyr::summarise("{comp_col}" := glue::glue_collapse(part, collapse))
+    dplyr::summarise("{parts_into}" := glue::glue_collapse(part, collapse))
 }
 
 #' @export
 #' @rdname summary_by_target
 summary_by_target.xmap_df <- function(links,
-                                      composition_to = "parts_{{from}}",
+                                      parts_into = "parts",
                                       collapse = "+",
                                       frac_formula = "{from}*{weights}",
                                       unit_formula = "{from}") {
@@ -2594,8 +2608,9 @@ summary_by_target.xmap_df <- function(links,
 
   sum_df <- summary_by_target.data.frame(
     df, from, to, weights,
-    composition_to, collapse,
-    frac_formula, unit_formula
+    parts_into, collapse,
+    frac_formula, unit_formula,
+    warn = FALSE
   )
 
   names(sum_df)[names(sum_df) == "to"] <- .get_col_attrs.xmap_df(links)$col_to
