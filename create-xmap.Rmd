@@ -50,6 +50,7 @@ usethis::use_package("tibble")
 usethis::use_package("tidyr")
 usethis::use_package("dplyr")
 usethis::use_package("glue", "Imports")
+usethis::use_package("tidyselect") ## for free with dplyr
 
 # Suggests for xmap coercion to other classes
 usethis::use_package("stats", type = "Suggests")
@@ -2121,13 +2122,14 @@ pull_from <- function(.xmap) {
 }
 ```
 
-```{r}
+```{r send_to="R/autoplot.R"}
+#' 
 as_tbl_graph.xmap_df <- function(x, ...) {
   x <- xmap_drop_extra(x)
   x_attrs <- attributes(x)
   x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
+  ## first two columns are assumed to be from & to, weights are third column.
   x_edges <- data.frame(x)
-  names(x_edges)[names(x_edges) == x_attrs$col_from] <- "weights"
   tidygraph::tbl_graph(x_nodes, x_edges)
 }
 ```
@@ -2666,7 +2668,7 @@ plot.xmap_df <- function(x, ...) {
 #' @param object An xmap_df object.
 #' @param ... Additional arguments (currently unused).
 #'
-#' @importFrom ggplot2 autoplot
+#' @importFrom ggplot2 autoplot aes
 #' @importFrom rlang sym
 #'
 #' @return ggplot2 object
@@ -2688,10 +2690,14 @@ NULL
 #' @export
 autoplot.xmap_df <- function(object, ...){
 
+  if(!requireNamespace("ggraph", quietly = TRUE)) {
+    cli::cli_abort('Please `install.package("ggraph")`')
+  }
+  
   x_attrs <- attributes(object)
 
   tidygraph_data <-
-    as_tbl_graph(object) |>
+    tidygraph::as_tbl_graph(object) |>
   ## calculating edge properties
     tidygraph::activate(edges) |>
     tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) < 1, TRUE, FALSE)) |>
