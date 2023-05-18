@@ -1043,7 +1043,8 @@ testthat::test_that("verify_named_matchset fncs work as expected", {
 
 Aliases:
 
-```{r verify-named-aliases, send_to="R/verify_named.R"}
+``` r
+#{r verify-named-aliases, send_to="R/verify_named.R"}
 #' @describeIn verify_named Alias of `verify_named_all_1to1()`
 #' @export
 verify_named_as_recode_unique <- verify_named_all_1to1
