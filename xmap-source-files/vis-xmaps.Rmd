@@ -151,7 +151,7 @@ plt_xmap_bigraph <- function(x, ...) {
                             label = .data[[x_attrs$col_to]]),
                         fill = "black",
                         alpha = 0.1) +
-    ggplot2::scale_y_reverse() +
+    ggplot2::scale_y_reverse(expand = expansion(mult = 0.2, add = 3)) +
     ggplot2::theme_minimal() +
     theme(legend.position = "bottom",
         panel.grid.major = element_blank(),
@@ -240,6 +240,9 @@ Notice that the requirement that a valid crossmap has outgoing weights which sum
 ## Visualising Types of Mapping Relations
 
 ```{r, echo=FALSE}
+library(xmap)
+library(ggplot2)
+
 veg_1a <- c("eggplant", "capsicum", "zucchini")
 veg_1b <- c("aubergine", "pepper", "courgette")
 veg_2 <- c("vegetables")
@@ -251,11 +254,23 @@ pb_1a_w <- c(0.02, 0.05, 0.93)
 
 recode <- data.frame(au = veg_1a, uk = veg_1b, link = 1) |>
   as_xmap_df(au, uk, link)
-gg_recode <- recode |> plt_xmap_bigraph()
+gg_recode <- recode |> autoplot() +
+  scale_y_reverse(expand = expansion(mult = 0.1, add = 1))
+```
 
+```{r}
+gg_recode +
+ # scale_x_continuous(expand = expansion(add = c(1, 1))) +
+  scale_y_reverse(expand = expansion(mult = 0.1, add = 1))
+```
+
+```{r, echo=FALSE}
 agg <- data.frame(item = fruit_1a, group = fruit_2, link = 1) |>
   as_xmap_df(item, group, link)
-gg_agg <- agg |> plt_xmap_bigraph()
+gg_agg <- agg |> plt_xmap_bigraph() 
+
+gg_agg +
+  scale_y_reverse(expand = expansion(mult = 2))
 
 disagg <- data.frame(group = pb_2, item = pb_1a, link = pb_1a_w) |>
   as_xmap_df(group, item, link)
