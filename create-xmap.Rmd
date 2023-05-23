@@ -1779,7 +1779,7 @@ as_xmap_df <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subc
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap_df(links, from = a, to = b, weights = w)
-as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = "xmap_df", .drop_extra = TRUE) {
+as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = "xmap_df", .drop_extra = NULL) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -1791,16 +1791,22 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
   ## check columns exist
   abort_missing_cols(x, col_strings)
 
-  ## drop additional columns
+  ## drop extra columns
+  if (is.null(.drop_extra)) {
+    cli::cli_inform(c(
+      "Dropping any additional columns in {.arg {deparse(substitute(x))}}",
+      "i" = "To silence set `.drop_extra = TRUE`")
+      )
+  }
+  
+  .drop_extra <- .drop_extra %||% TRUE
+  
   if (.drop_extra) {
     df <- x[col_strings]
   } else {
     df <- x
   }
-  if (ncol(df) < ncol(x)) {
-    cli::cli_inform("Dropped additional columns in {.arg {deparse(substitute(x))}}")
-  }
-
+  
   ## rearrange columns
   col_order <- c(col_strings, setdiff(names(df), col_strings))
   df <- df[col_order]
@@ -2394,37 +2400,42 @@ mock$xmap_abc |>
 #' @param to The name of the column containing target category values.
 #' @param weights_into The name to use for the column containing the weights
 #'   placeholders. Default is "weights_{{from}}".
-#' @param frac_symbol The placeholder symbol to use for fractional weights. Default is NA.
-#' @param unit_symbol The placeholder symbol to use for unit weights. Default is 1.
 #'
-#' @return A data frame with a new column containing the weights placeholders.
+#' @return A data frame with a new numeric column containing the weights placeholders.
 #'
 #' @importFrom dplyr group_by mutate ungroup n_distinct case_when
 #' @importFrom rlang englue
 #' @importFrom cli cli_inform
 #'
-#' @seealso [add_weights] which generate valid crossmap weights.
+#' @seealso [add_weights] to generate valid crossmap weights.
 #'
 #' @export
 #' @examples
 #' mock$xmap_abc |>
 #'   as.data.frame() |>
 #'   add_placeholder_weights(from = upper, to = lower)
-add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1) {
+add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from}}") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
+  
+  ## set up
   weights_into <- rlang::englue(weights_into)
+  frac_symbol <- NA
+  unit_symbol <- 1
+  ## equal weights
   df |>
     dplyr::group_by({{ from }}) |>
     dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup() -> w_df
+  
   if (all(w_df[[weights_into]] == 1)) {
-    cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
+    #cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
     return(w_df)
   } else {
     w_df |>
       dplyr::mutate("{weights_into}" := case_when(
+        .data[[weights_into]] == 1 ~ unit_symbol,
         .data[[weights_into]] < 1 ~ frac_symbol,
-        TRUE ~ unit_symbol
+        TRUE ~ frac_symbol
       ))
   }
 }
@@ -2432,9 +2443,13 @@ add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from
 
 ```{r}
 mock$xmap_abc |>
-  as_tibble() |>
-  select(lower, upper) |>
-  add_placeholder_weights(from = lower, to = upper, frac_symbol = NA, unit_symbol = "1")
+  tibble::as_tibble() |>
+  dplyr::select(lower, upper) |>
+  add_placeholder_weights(from = lower, to = upper)
+```
+
+```{r}
+
 ```
 
 ### Mock-Up: Summarise
@@ -2528,6 +2543,7 @@ mock$xmap_abc |>
 #' @param links A data frame or `xmap_df`.
 #' @inheritParams as_xmap
 #' @param parts_into A string specifying the new column to pass the summarised composition into. Default is "parts".
+#' @param na_placeholder. A string character to replace NA weights with.
 #' @param frac_formula A glue formula specifying how to calculate the fraction of each
 #'   target value using the weighting variable. Default is "\{from\}*\{weights\}".
 #' @param unit_formula A glue formula specifying how to calculate the unit of each
@@ -2555,8 +2571,7 @@ summary_by_target <- function(links, ...) {
 #'   child = c("x", "y", "z", "x", "y", "z", "k")
 #' )
 #' df |>
-#'   add_placeholder_weights(from = parent, to = child, weights_into = "weights",
-#'                           frac_symbol = "_", unit_symbol = "1") |>
+#'   add_placeholder_weights(from = parent, to = child, weights_into = "weights") |>
 #'   summary_by_target(from = parent, to = child, weights = weights,
 #'                     frac_formula = "{from}*{weights}")
 #' @importFrom dplyr mutate group_by summarise rename case_when
@@ -2564,6 +2579,7 @@ summary_by_target <- function(links, ...) {
 summary_by_target.data.frame <- function(links, from, to, weights,
                                          parts_into = "parts",
                                          collapse = "+",
+                                         na_placeholder = "___",
                                          frac_formula = "{from}*{weights}",
                                          unit_formula = "{from}",
                                          warn = TRUE) {
