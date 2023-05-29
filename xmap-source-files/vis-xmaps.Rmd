@@ -110,6 +110,9 @@ Visualisation as a bigraph is particularly useful for seeing the relations betwe
     dplyr::mutate(idx = dplyr::row_number())
 }
 
+library(ggrepel)
+
+
 plt_xmap_bigraph <- function(x, ...) {
   stopifnot(is_xmap_df(x))
   x_attrs <- attributes(x)
@@ -267,14 +270,14 @@ gg_recode +
 ```{r, echo=FALSE}
 agg <- data.frame(item = fruit_1a, group = fruit_2, link = 1) |>
   as_xmap_df(item, group, link)
-gg_agg <- agg |> plt_xmap_bigraph() 
+gg_agg <- agg |> autoplot() 
 
 gg_agg +
   scale_y_reverse(expand = expansion(mult = 2))
 
 disagg <- data.frame(group = pb_2, item = pb_1a, link = pb_1a_w) |>
   as_xmap_df(group, item, link)
-gg_disagg <- disagg |> plt_xmap_bigraph()
+gg_disagg <- disagg |> autoplot()
 ```
 
 ```{r}
