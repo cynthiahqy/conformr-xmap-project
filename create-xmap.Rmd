@@ -2590,6 +2590,7 @@ summary_by_target.data.frame <- function(links, from, to, weights,
     )
   }
 
+  ## evaluate glue formulas
   englue_xmap <- function(string_f, col_from, col_to, col_weights) {
     string_f |>
       gsub("from", col_from, x = _) |>
@@ -2604,6 +2605,7 @@ summary_by_target.data.frame <- function(links, from, to, weights,
   
   ## summarise
   links |>
+    dplyr::mutate("{col_weights}" := dplyr::coalesce(as.character(.data[[col_weights]]), na_placeholder)) |>
     dplyr::mutate(part = dplyr::case_when(
       {{ weights }} == 1 ~ glue::glue(unit_formula),
       {{ weights }} < 1 ~ glue::glue(frac_formula),
@@ -2760,7 +2762,7 @@ autoplot.xmap_df <- function(object, ...){
                                 ),
                             show.legend = FALSE,
                             ) +
-    ggplot2::scale_fill_brewer() +
+    ggplot2::scale_fill_brewer(palette = "Greys") +
     ## and finally modify coordinates, scale and theme
     ggplot2::coord_flip() +
     ggplot2::scale_y_reverse() +
@@ -3032,17 +3034,6 @@ litr::add_vignettes(c("../xmap-source-files/using-xmaps.Rmd",
                     ))
 ```
 
-### Add News
-
-``` {send_to="NEWS.md"}
-
-## xmap 0.0.1
-
-- This was the initial release of the package.
-- `verfiy_*` functions were relatively stable
-- `xmap_df` class and functions were experimental
-```
-
 ### Render package
 
 To debug without having to re-render the litr file every time use the `pkg = "."` argument in devtools functions:
@@ -3064,5 +3055,6 @@ litr::add_pkgdown(pkgdown_yml)
 # devtools::run_examples()
 # devtools::build()
 # devtools::install()
+# devtools::install('xmap', build_vignettes = TRUE)
 # devtools::check(document = FALSE)
 ```
