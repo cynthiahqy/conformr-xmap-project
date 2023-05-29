@@ -2183,8 +2183,8 @@ Tools</a>
 <li><a href="#summarise" id="toc-summarise">Summarise</a>
 <ul>
 <li><a href="#experiments" id="toc-experiments">Experiments</a></li>
-<li><a href="#helper-add_weights_placeholder" id="toc-helper-add_weights_placeholder">Helper:
-<code><a href='create-xmap.html#add_weights_placeholder'>add_weights_placeholder</a>()</code></a></li>
+<li><a href="#helper-add_placeholder_weights" id="toc-helper-add_placeholder_weights">Helper:
+<code><a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>()</code></a></li>
 <li><a href="#mock-up-summarise" id="toc-mock-up-summarise">Mock-Up:
 Summarise</a></li>
 <li><a href="#s3-summary_by_target" id="toc-s3-summary_by_target">S3:
@@ -2214,7 +2214,6 @@ Creation</a>
 <ul>
 <li><a href="#add-vignettes" id="toc-add-vignettes">Add
 Vignettes</a></li>
-<li><a href="#add-news" id="toc-add-news">Add News</a></li>
 <li><a href="#render-package" id="toc-render-package">Render
 package</a></li>
 </ul></li>
@@ -2256,6 +2255,7 @@ usethis::use_package(&quot;tibble&quot;)
 usethis::use_package(&quot;tidyr&quot;)
 usethis::use_package(&quot;dplyr&quot;)
 usethis::use_package(&quot;glue&quot;, &quot;Imports&quot;)
+usethis::use_package(&quot;tidyselect&quot;) ## for free with dplyr
 
 # Suggests for xmap coercion to other classes
 usethis::use_package(&quot;stats&quot;, type = &quot;Suggests&quot;)
@@ -2283,6 +2283,8 @@ usethis::use_package(&quot;ggbump&quot;, type = &quot;Suggests&quot;)</code></pr
 ## • Refer to functions with `dplyr::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;glue&#39; to Imports field in DESCRIPTION
 ## • Refer to functions with `glue::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;tidyselect&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `tidyselect::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;stats&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;stats&quot;)` or `rlang::check_installed(&quot;stats&quot;)` to test if stats is installed
 ## • Then directly refer to functions with `stats::fun()`</code></pre>
@@ -2607,15 +2609,15 @@ mock$xmap_abc &lt;- tibble::tribble(
 
 mock$named_aus &lt;- list(AUS = c(&quot;AU-NSW&quot;, &quot;AU-QLD&quot;, &quot;AU-SA&quot;, &quot;AU-TAS&quot;, &quot;AU-VIC&quot;, &quot;AU-WA&quot;, &quot;AU-ACT&quot;, &quot;AU-NT&quot;))
 mock$df_aus_pop &lt;- tibble::tribble(
-  ~state_name, ~state, ~pop,
-  &quot;New South Wales&quot;, &quot;AU-NSW&quot;, 8153600,
-  &quot;Victoria&quot;, &quot;AU-VIC&quot;, 6613700,
-  &quot;Queensland&quot;, &quot;AU-QLD&quot;, 5322100,
-  &quot;South Australia&quot;, &quot;AU-SA&quot;, 1820500,
-  &quot;Western Australia&quot;, &quot;AU-WA&quot;, 2785300,
-  &quot;Tasmania&quot;, &quot;AU-TAS&quot;, 571500,
-  &quot;Northern Territory&quot;, &quot;AU-NT&quot;, 250600,
-  &quot;Australian Capital Territory&quot;, &quot;AU-ACT&quot;, 456700
+                              ~state_name,    ~state,    ~pop,
+                   &quot;New South Wales&quot;, &quot;AU-NSW&quot;, 8153600,
+                          &quot;Victoria&quot;, &quot;AU-VIC&quot;, 6613700,
+                        &quot;Queensland&quot;, &quot;AU-QLD&quot;, 5322100,
+                   &quot;South Australia&quot;,  &quot;AU-SA&quot;, 1820500,
+                 &quot;Western Australia&quot;,  &quot;AU-WA&quot;, 2785300,
+                          &quot;Tasmania&quot;, &quot;AU-TAS&quot;,  571500,
+                &quot;Northern Territory&quot;,  &quot;AU-NT&quot;,  250600,
+      &quot;Australian Capital Territory&quot;, &quot;AU-ACT&quot;,  456700
 ) |&gt;
   dplyr::mutate(ctr = &quot;AUS&quot;)
 usethis::use_data(mock)</code></pre>
@@ -2836,7 +2838,7 @@ NULL
   abc_links &lt;- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
   testthat::expect_equal(<a href='create-xmap.html#add_weights_unit'>add_weights_unit</a>(abc_pairs), abc_links)
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="link-properties-vhas_x_" class="section level3">
@@ -2957,9 +2959,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -3002,7 +3004,7 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
@@ -3162,8 +3164,8 @@ testthat::test_that(&quot;verify_named_*_unique() work as expected&quot;, {
   testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(vdup_values), class = &quot;abort_not_unique&quot;)
   testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(ldup_values), class = &quot;abort_not_unique&quot;)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <pre class="r"><code>#&#39; @describeIn abort Abort message for verify_named_matchset_* functions
 #&#39; @export
 <span id='msg_abort_named_matchset'>msg_abort_named_matchset</span> &lt;- function(set_type = c(&quot;names&quot;, &quot;values&quot;),
@@ -3283,39 +3285,34 @@ NULL
   refn_superset_1to1 &lt;- c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;, &quot;x4&quot;)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_exact'>verify_named_matchset_names_exact</a>(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_names_exact'>verify_named_matchset_names_exact</a>(v_1to1, c(&quot;not&quot;, &quot;right&quot;)),
-    class = &quot;abort_matchset&quot;
-  )
+                         class = &quot;abort_matchset&quot;)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_contain'>verify_named_matchset_names_contain</a>(v_1to1, refn_subset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_contain'>verify_named_matchset_names_contain</a>(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_names_contain'>verify_named_matchset_names_contain</a>(v_1to1, refn_superset_1to1),
-    class = &quot;abort_matchset&quot;
-  )
+                         class = &quot;abort_matchset&quot;)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_within'>verify_named_matchset_names_within</a>(v_1to1, refn_superset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_within'>verify_named_matchset_names_within</a>(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_names_within'>verify_named_matchset_names_within</a>(v_1to1, refn_subset_1to1),
-    class = &quot;abort_matchset&quot;
-  )
+                         class = &quot;abort_matchset&quot;)
   refv_exact_1to1 &lt;- c(1, 2, 3)
   refv_subset_1to1 &lt;- c(1, 2)
   refv_superset_1to1 &lt;- c(1, 2, 3, 4)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_exact'>verify_named_matchset_values_exact</a>(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_exact'>verify_named_matchset_values_exact</a>(v_1to1, c(&quot;not&quot;, &quot;right&quot;)),
-    class = &quot;abort_matchset&quot;
-  )
+                         class = &quot;abort_matchset&quot;)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_contain'>verify_named_matchset_values_contain</a>(v_1to1, refv_subset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_contain'>verify_named_matchset_values_contain</a>(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_contain'>verify_named_matchset_values_contain</a>(v_1to1, refv_superset_1to1),
-    class = &quot;abort_matchset&quot;
-  )
+                         class = &quot;abort_matchset&quot;)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_superset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_subset_1to1),
-    class = &quot;abort_matchset&quot;
-  )
+                         class = &quot;abort_matchset&quot;)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <p>Aliases:</p>
-<pre class="r"><code>#&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
+<pre class="r"><code>#{r verify-named-aliases, send_to=&quot;R/verify_named.R&quot;}
+#&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
 #&#39; @export
 verify_named_as_recode_unique &lt;- verify_named_all_1to1
 
@@ -3373,7 +3370,7 @@ verify_pairs_as_recode_unique &lt;- verify_pairs_all_1to1</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_1to1'>verify_pairs_all_1to1</a>(pairs_1to1, f, t), pairs_1to1)
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_unique'>verify_pairs_all_unique</a>(pairs_1to1, f, t), pairs_1to1)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="verify-links" class="section level3">
 <h3>Verify: Links</h3>
@@ -3512,7 +3509,7 @@ NULL</code></pre>
     <a href='create-xmap.html#add_weights_prop'>add_weights_prop</a>(recipe, ingredients, grams)
   testthat::expect_equal(recipe_links, recipe_add)
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="verify_links_as_xmap" class="section level3">
 <h3><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code></h3>
@@ -3619,7 +3616,7 @@ a numeric vector - <code>X</code> inherits from the class
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>() rejects unknown subclass&quot;, {
   testthat::expect_error(<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;unknown&quot;))
 })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -3711,7 +3708,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -3770,7 +3767,7 @@ NULL
     class = &quot;abort_col_order&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="from-set-check" class="section level4">
 <h4>From Set Check</h4>
@@ -3940,8 +3937,7 @@ testthat::test_that(
     )
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
-      class = &quot;abort_col_type&quot;
-    )
+                           class = &quot;abort_col_type&quot;)
   }
 )
 
@@ -3974,8 +3970,7 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, &quot;f&quot;, &quot;t&quot;), class = &quot;abort_dup_pairs&quot;)
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
-      class = &quot;abort_dup_pairs&quot;
-    )
+                           class = &quot;abort_dup_pairs&quot;)
   }
 )
 
@@ -3990,16 +3985,15 @@ testthat::test_that(
     )
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
-      class = &quot;abort_bad_weights&quot;
-    )
+                           class = &quot;abort_bad_weights&quot;)
   }
 )</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <pre><code>## Test passed 🌈</code></pre>
 <pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 </div>
@@ -4062,7 +4056,7 @@ controlled by <code>.drop</code> argument</li>
 #&#39; # extra columns are dropped,
 #&#39; links$extra &lt;- c(2, 4, 5, 6)
 #&#39; <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(links, from = a, to = b, weights = w)
-<span id='as_xmap_df.data.frame'>as_xmap_df.data.frame</span> &lt;- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = &quot;xmap_df&quot;, .drop_extra = TRUE) {
+<span id='as_xmap_df.data.frame'>as_xmap_df.data.frame</span> &lt;- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = &quot;xmap_df&quot;, .drop_extra = NULL) {
   ## coercion &amp; checks
   stopifnot(is.data.frame(x))
 
@@ -4074,16 +4068,22 @@ controlled by <code>.drop</code> argument</li>
   ## check columns exist
   <a href='create-xmap.html#abort_missing_cols'>abort_missing_cols</a>(x, col_strings)
 
-  ## drop additional columns
+  ## drop extra columns
+  if (is.null(.drop_extra)) {
+    cli::cli_inform(c(
+      &quot;Dropping any additional columns in {.arg {deparse(substitute(x))}}&quot;,
+      &quot;i&quot; = &quot;To silence set `.drop_extra = TRUE`&quot;)
+      )
+  }
+  
+  .drop_extra &lt;- .drop_extra %||% TRUE
+  
   if (.drop_extra) {
     df &lt;- x[col_strings]
   } else {
     df &lt;- x
   }
-  if (ncol(df) &lt; ncol(x)) {
-    cli::cli_inform(&quot;Dropped additional columns in {.arg {deparse(substitute(x))}}&quot;)
-  }
-
+  
   ## rearrange columns
   col_order &lt;- c(col_strings, setdiff(names(df), col_strings))
   df &lt;- df[col_order]
@@ -4134,7 +4134,11 @@ controlled by <code>.drop</code> argument</li>
     )
   }
 )</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Dropping any additional columns in `df_links`
+## i To silence set `.drop_extra = TRUE`
+## Dropping any additional columns in `tbl_links`
+## i To silence set `.drop_extra = TRUE`</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 <div id="conversion" class="section level2">
@@ -4216,7 +4220,7 @@ controlled by <code>.drop</code> argument</li>
 
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
 })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="to-list" class="section level3">
@@ -4264,10 +4268,9 @@ controlled by <code>.drop</code> argument</li>
   stop &lt;- !all(w == 1)
   if (stop) {
     cli::cli_abort(<a href='create-xmap.html#msg_abort_frac_weights'>msg_abort_frac_weights</a>(&quot;Cannot convert to named vector&quot;),
-      class = &quot;abort_frac_weights&quot;
-    )
+                   class = &quot;abort_frac_weights&quot;)
   }
-
+  
   # convert
   df |&gt;
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |&gt;
@@ -4296,14 +4299,13 @@ controlled by <code>.drop</code> argument</li>
   df &lt;- as.data.frame(.xmap)
   # check only unit weights
   w &lt;- df[[x_attrs$col_weights]]
-
+  
   stop &lt;- !all(w == 1)
   if (stop) {
     cli::cli_abort(<a href='create-xmap.html#msg_abort_frac_weights'>msg_abort_frac_weights</a>(&quot;Cannot convert to named list&quot;),
-      class = &quot;abort_frac_weights&quot;
-    )
+                   class = &quot;abort_frac_weights&quot;)
   }
-
+  
   # convert
   df |&gt;
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |&gt;
@@ -4334,7 +4336,7 @@ controlled by <code>.drop</code> argument</li>
     class = &quot;abort_frac_weights&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>() reverses <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>()&quot;, {
   link_list &lt;- list(
     AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
@@ -4396,12 +4398,13 @@ pairs_df |&gt;
   x_attrs &lt;- attributes(.xmap)
   .xmap |&gt; pull(x_attrs$col_from)
 }</code></pre>
-<pre class="r"><code><span id='as_tbl_graph.xmap_df'>as_tbl_graph.xmap_df</span> &lt;- function(x, ...) {
+<pre class="r"><code>#&#39; 
+<span id='as_tbl_graph.xmap_df'>as_tbl_graph.xmap_df</span> &lt;- function(x, ...) {
   x &lt;- <a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>(x)
   x_attrs &lt;- attributes(x)
   x_nodes &lt;- data.frame(name = c(<a href='create-xmap.html#.calc_all_nodes.xmap_df'>.calc_all_nodes.xmap_df</a>(x)))
+  ## first two columns are assumed to be from &amp; to, weights are third column.
   x_edges &lt;- data.frame(x)
-  names(x_edges)[names(x_edges) == x_attrs$col_from] &lt;- &quot;weights&quot;
   tidygraph::tbl_graph(x_nodes, x_edges)
 }</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;as_tbl_graph.xmap_df works as expected&quot;,{
@@ -4501,7 +4504,7 @@ pairs_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#xmap_reverse.xmap_df'>xmap_reverse.xmap_df</a>(df_x), df_x_rev)
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x, &quot;to&quot;), df_x)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -4542,7 +4545,7 @@ pairs_df |&gt;
 
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 </div>
 <div id="summarise" class="section level2">
@@ -4583,20 +4586,19 @@ from_degree |&gt;
 ##     pairs_to_named_list, pairs_to_named_vector, verify_links_as_xmap,
 ##     verify_named_all_1to1, verify_named_all_names_unique,
 ##     verify_named_all_unique, verify_named_all_values_unique,
-##     verify_named_as_recode_unique, verify_named_matchset_names_contain,
+##     verify_named_matchset_names_contain,
 ##     verify_named_matchset_names_exact,
 ##     verify_named_matchset_names_within,
 ##     verify_named_matchset_values_contain,
 ##     verify_named_matchset_values_exact,
-##     verify_named_matchset_values_within, verify_named_no_dup_names,
-##     verify_named_no_dup_values, verify_pairs_all_1to1,
+##     verify_named_matchset_values_within, verify_pairs_all_1to1,
 ##     verify_pairs_all_unique, verify_pairs_as_recode_unique,
 ##     xmap_drop_extra, xmap_reverse, xmap_to_matrix, xmap_to_named_list,
 ##     xmap_to_named_vector</code></pre>
 <pre><code>## Warning: `bindFillRole()` only works on htmltools::tag() objects (e.g., div(),
 ## p(), etc.), not objects of type &#39;shiny.tag.list&#39;.</code></pre>
-<div id="htmlwidget-3d407dfc11d76717d664" class="reactable html-widget " style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-3d407dfc11d76717d664">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-881b460f44875ecba8ff" class="reactable html-widget " style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-881b460f44875ecba8ff">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code><span id='summary_reactable'>summary_reactable</span> &lt;- function(.xmap) {
   col_attrs &lt;- <a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(.xmap)
   .xmap |&gt;
@@ -4704,8 +4706,8 @@ mock$xmap_abc |&gt;
 ## 5 EE    d*0.1</code></pre>
 </div>
 </div>
-<div id="helper-add_weights_placeholder" class="section level3">
-<h3>Helper: <code><a href='create-xmap.html#add_weights_placeholder'>add_weights_placeholder</a>()</code></h3>
+<div id="helper-add_placeholder_weights" class="section level3">
+<h3>Helper: <code><a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>()</code></h3>
 <pre class="r"><code>#&#39; Add weights placeholder column to a data frame
 #&#39;
 #&#39; This function adds a column of character placeholders to a data frame based on
@@ -4717,54 +4719,62 @@ mock$xmap_abc |&gt;
 #&#39; @param to The name of the column containing target category values.
 #&#39; @param weights_into The name to use for the column containing the weights
 #&#39;   placeholders. Default is &quot;weights_{{from}}&quot;.
-#&#39; @param frac_symbol The placeholder symbol to use for fractional weights. Default is NA.
-#&#39; @param unit_symbol The placeholder symbol to use for unit weights. Default is 1.
 #&#39;
-#&#39; @return A data frame with a new column containing the weights placeholders.
+#&#39; @return A data frame with a new numeric column containing the weights placeholders.
 #&#39;
 #&#39; @importFrom dplyr group_by mutate ungroup n_distinct case_when
 #&#39; @importFrom rlang englue
 #&#39; @importFrom cli cli_inform
 #&#39;
+#&#39; @seealso [add_weights] to generate valid crossmap weights.
+#&#39;
 #&#39; @export
 #&#39; @examples
 #&#39; mock$xmap_abc |&gt;
 #&#39;   as.data.frame() |&gt;
-#&#39;   <a href='create-xmap.html#add_weights_placeholder'>add_weights_placeholder</a>(from = upper, to = lower)
-<span id='add_weights_placeholder'>add_weights_placeholder</span> &lt;- function(df, from, to, weights_into = &quot;weights_{{from}}&quot;, frac_symbol = NA, unit_symbol = 1) {
+#&#39;   <a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>(from = upper, to = lower)
+<span id='add_placeholder_weights'>add_placeholder_weights</span> &lt;- function(df, from, to, weights_into = &quot;weights_{{from}}&quot;) {
   <a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, rlang::englue(&quot;{{from}}&quot;), rlang::englue(&quot;{{to}}&quot;))
+  
+  ## set up
   weights_into &lt;- rlang::englue(weights_into)
+  frac_symbol &lt;- NA
+  unit_symbol &lt;- 1
+  ## equal weights
   df |&gt;
     dplyr::group_by({{ from }}) |&gt;
     dplyr::mutate(&quot;{weights_into}&quot; := 1 / dplyr::n_distinct({{ to }})) |&gt;
     dplyr::ungroup() -&gt; w_df
+  
   if (all(w_df[[weights_into]] == 1)) {
-    cli::cli_inform(&quot;No split relations found. Returning `df` with unit weights attached.&quot;)
+    #cli::cli_inform(&quot;No split relations found. Returning `df` with unit weights attached.&quot;)
     return(w_df)
   } else {
     w_df |&gt;
       dplyr::mutate(&quot;{weights_into}&quot; := case_when(
+        .data[[weights_into]] == 1 ~ unit_symbol,
         .data[[weights_into]] &lt; 1 ~ frac_symbol,
-        TRUE ~ unit_symbol
+        TRUE ~ frac_symbol
       ))
   }
 }</code></pre>
 <pre class="r"><code>mock$xmap_abc |&gt;
-  as_tibble() |&gt;
-  select(lower, upper) |&gt;
-  <a href='create-xmap.html#add_weights_placeholder'>add_weights_placeholder</a>(from = lower, to = upper, frac_symbol = NA, unit_symbol = &quot;1&quot;)</code></pre>
+  tibble::as_tibble() |&gt;
+  dplyr::select(lower, upper) |&gt;
+  <a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>(from = lower, to = upper)</code></pre>
 <pre><code>## # A tibble: 6 × 3
 ##   lower upper weights_lower
-##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;        
-## 1 a     AA    1            
-## 2 b     BB    1            
-## 3 c     BB    1            
-## 4 d     CC    &lt;NA&gt;         
-## 5 d     DD    &lt;NA&gt;         
-## 6 d     EE    &lt;NA&gt;</code></pre>
+##   &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;
+## 1 a     AA                1
+## 2 b     BB                1
+## 3 c     BB                1
+## 4 d     CC               NA
+## 5 d     DD               NA
+## 6 d     EE               NA</code></pre>
 </div>
 <div id="mock-up-summarise" class="section level3">
 <h3>Mock-Up: Summarise</h3>
+<pre class="r"><code></code></pre>
 <pre class="r"><code><span id='summarise_target0.data.frame'>summarise_target0.data.frame</span> &lt;- function(df, from, to, weights,
                                          frac_formula = &quot;{from}*{weights}&quot;,
                                          collapse = &quot;+&quot;,
@@ -4785,9 +4795,6 @@ mock$xmap_abc |&gt;
     group_by(to) |&gt;
     summarise(composition = glue::glue_collapse(part, collapse))
 }</code></pre>
-<pre class="r"><code>mock$xmap_abc |&gt;
-  as_tibble() |&gt;
-  <a href='create-xmap.html#summarise_target0.data.frame'>summarise_target0.data.frame</a>(from = lower, to = upper, weights = share)</code></pre>
 <pre><code>## # A tibble: 5 × 2
 ##   to    composition
 ##   &lt;chr&gt; &lt;glue&gt;     
@@ -4797,6 +4804,9 @@ mock$xmap_abc |&gt;
 ## 4 DD    d*0.6      
 ## 5 EE    d*0.1</code></pre>
 <p>Switch <code>mask_ones</code> to <code>unit_formula</code></p>
+<pre class="r"><code>mock$xmap_abc |&gt;
+  as_tibble() |&gt;
+  <a href='create-xmap.html#summarise_target0.data.frame'>summarise_target0.data.frame</a>(from = lower, to = upper, weights = share)</code></pre>
 <pre class="r"><code><span id='summarise_target.data.frame'>summarise_target.data.frame</span> &lt;- function(df, from, to, weights,
                                         frac_formula = &quot;{from}*{weights}&quot;,
                                         unit_formula = &quot;{from}&quot;,
@@ -4817,13 +4827,6 @@ mock$xmap_abc |&gt;
     group_by(to) |&gt;
     summarise(composition = glue::glue_collapse(part, collapse))
 }</code></pre>
-<pre class="r"><code>mock$xmap_abc |&gt;
-  as_tibble() |&gt;
-  <a href='create-xmap.html#summarise_target0.data.frame'>summarise_target0.data.frame</a>(
-    from = lower, to = upper, weights = share,
-    frac_formula = &quot;{from} [{weights}]&quot;,
-    collapse = &quot;,&quot;
-  )</code></pre>
 <pre><code>## # A tibble: 5 × 2
 ##   to    composition
 ##   &lt;chr&gt; &lt;glue&gt;     
@@ -4835,6 +4838,13 @@ mock$xmap_abc |&gt;
 </div>
 <div id="s3-summary_by_target" class="section level3">
 <h3>S3: <code><a href='create-xmap.html#summary_by_target'>summary_by_target</a>()</code></h3>
+<pre class="r"><code>mock$xmap_abc |&gt;
+  as_tibble() |&gt;
+  <a href='create-xmap.html#summarise_target0.data.frame'>summarise_target0.data.frame</a>(
+    from = lower, to = upper, weights = share,
+    frac_formula = &quot;{from} [{weights}]&quot;,
+    collapse = &quot;,&quot;
+  )</code></pre>
 <pre class="r"><code>#&#39;
 <span id='.rename_xmap'>.rename_xmap</span> &lt;- function(.xmap, new_col_from, new_col_to, new_col_weights) {
   old_cols &lt;- <a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(.xmap)
@@ -4845,12 +4855,16 @@ mock$xmap_abc |&gt;
 }</code></pre>
 <pre class="r"><code>#&#39; Summarize the composition of target categories.
 #&#39;
-#&#39; This function summarizes a crossmap based on the target nomenclature, using a
-#&#39; weighting variable to calculate the composition of each target category.
-#&#39;
-#&#39; @param links A data frame or `xmap_df`
+#&#39; This function summarizes the composition of each target `to` category
+#&#39; in a set of `from`, `to`, `weight` links.
+#&#39; If a data.frame of links is provided, crossmap properties are not checked.
+#&#39; This can be useful when combined with `<a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>()` to highlight
+#&#39; where weights must be chosen.
+#&#39; 
+#&#39; @param links A data frame or `xmap_df`.
 #&#39; @inheritParams as_xmap
-#&#39; @param composition_to A glue string specifying the new column to pass the summarised composition into. Default is &quot;parts_\{from\}&quot;.
+#&#39; @param parts_into A string specifying the new column to pass the summarised composition into. Default is &quot;parts&quot;.
+#&#39; @param na_placeholder. A string character to replace NA weights with.
 #&#39; @param frac_formula A glue formula specifying how to calculate the fraction of each
 #&#39;   target value using the weighting variable. Default is &quot;\{from\}*\{weights\}&quot;.
 #&#39; @param unit_formula A glue formula specifying how to calculate the unit of each
@@ -4862,33 +4876,42 @@ mock$xmap_abc |&gt;
 #&#39;   the weighting variable.
 #&#39;
 #&#39; @export
-<span id='summary_by_target'>summary_by_target</span> &lt;- function(links, from, to, weights, composition_to, collapse, frac_formula, unit_formula) {
+<span id='summary_by_target'>summary_by_target</span> &lt;- function(links, ...) {
   UseMethod(&quot;summary_by_target&quot;)
 }
 
 #&#39; @export
 #&#39; @rdname summary_by_target
 #&#39; @examples
+#&#39; 
+#&#39; mock$xmap_abc |&gt; 
+#&#39;   <a href='create-xmap.html#summary_by_target'>summary_by_target</a>()
+#&#39;
 #&#39; df &lt;- data.frame(
-#&#39;   group = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;),
-#&#39;   parent = c(&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;),
-#&#39;   weights = c(0.5, 0.3, 0.2, 0.7, 0.1, 0.2)
+#&#39;   parent = c(&quot;A&quot;, &quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;, &quot;C&quot;),
+#&#39;   child = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;k&quot;)
 #&#39; )
-#&#39; <a href='create-xmap.html#summary_by_target'>summary_by_target</a>(df, group, parent, weights)
-#&#39; mock$xmap_abc |&gt; <a href='create-xmap.html#summary_by_target'>summary_by_target</a>()
+#&#39; df |&gt;
+#&#39;   <a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>(from = parent, to = child, weights_into = &quot;weights&quot;) |&gt;
+#&#39;   <a href='create-xmap.html#summary_by_target'>summary_by_target</a>(from = parent, to = child, weights = weights,
+#&#39;                     frac_formula = &quot;{from}*{weights}&quot;)
 #&#39; @importFrom dplyr mutate group_by summarise rename case_when
 #&#39; @importFrom glue glue_collapse
 <span id='summary_by_target.data.frame'>summary_by_target.data.frame</span> &lt;- function(links, from, to, weights,
-                                         composition_to = &quot;parts_{from}&quot;,
+                                         parts_into = &quot;parts&quot;,
                                          collapse = &quot;+&quot;,
+                                         na_placeholder = &quot;___&quot;,
                                          frac_formula = &quot;{from}*{weights}&quot;,
-                                         unit_formula = &quot;{from}&quot;) {
-  ## rename
-  # r_df &lt;- links |&gt;
-  #   dplyr::rename(from = {{from}},
-  #                 to = {{to}},
-  #                 weights = {{weights}})
+                                         unit_formula = &quot;{from}&quot;,
+                                         warn = TRUE) {
+  if (warn) {
+    cli::cli_warn(c(
+      &quot;Summary completed without verifying crossmap properties.&quot;,
+      &quot;i&quot; = &quot;To silence set `warn = FALSE`&quot;)
+    )
+  }
 
+  ## evaluate glue formulas
   <span id='englue_xmap'>englue_xmap</span> &lt;- function(string_f, col_from, col_to, col_weights) {
     string_f |&gt;
       gsub(&quot;from&quot;, col_from, x = _) |&gt;
@@ -4900,21 +4923,23 @@ mock$xmap_abc |&gt;
   col_weights &lt;- rlang::englue(&quot;{{weights}}&quot;)
   frac_formula &lt;- <a href='create-xmap.html#englue_xmap'>englue_xmap</a>(frac_formula, col_from, col_to, col_weights)
   unit_formula &lt;- <a href='create-xmap.html#englue_xmap'>englue_xmap</a>(unit_formula, col_from, col_to, col_weights)
-  comp_col &lt;- <a href='create-xmap.html#englue_xmap'>englue_xmap</a>(composition_to, col_from, col_to, col_weights)
+  
   ## summarise
   links |&gt;
+    dplyr::mutate(&quot;{col_weights}&quot; := dplyr::coalesce(as.character(.data[[col_weights]]), na_placeholder)) |&gt;
     dplyr::mutate(part = dplyr::case_when(
       {{ weights }} == 1 ~ glue::glue(unit_formula),
-      {{ weights }} &lt; 1 ~ glue::glue(frac_formula)
+      {{ weights }} &lt; 1 ~ glue::glue(frac_formula),
+      TRUE ~ glue::glue(frac_formula)
     )) |&gt;
     dplyr::group_by({{ to }}) |&gt;
-    dplyr::summarise(&quot;{comp_col}&quot; := glue::glue_collapse(part, collapse))
+    dplyr::summarise(&quot;{parts_into}&quot; := glue::glue_collapse(part, collapse))
 }
 
 #&#39; @export
 #&#39; @rdname summary_by_target
 <span id='summary_by_target.xmap_df'>summary_by_target.xmap_df</span> &lt;- function(links,
-                                      composition_to = &quot;parts_{{from}}&quot;,
+                                      parts_into = &quot;parts&quot;,
                                       collapse = &quot;+&quot;,
                                       frac_formula = &quot;{from}*{weights}&quot;,
                                       unit_formula = &quot;{from}&quot;) {
@@ -4925,23 +4950,23 @@ mock$xmap_abc |&gt;
 
   sum_df &lt;- <a href='create-xmap.html#summary_by_target.data.frame'>summary_by_target.data.frame</a>(
     df, from, to, weights,
-    composition_to, collapse,
-    frac_formula, unit_formula
+    parts_into, collapse,
+    frac_formula, unit_formula,
+    warn = FALSE
   )
 
   names(sum_df)[names(sum_df) == &quot;to&quot;] &lt;- <a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(links)$col_to
   return(sum_df)
 }</code></pre>
-<pre class="r"><code>mock$xmap_abc |&gt;
-  as.data.frame() |&gt;
-  <a href='create-xmap.html#summary_by_target.data.frame'>summary_by_target.data.frame</a>(from = lower, to = upper, weights = share)</code></pre>
+<pre><code>## Warning: Summary completed without verifying crossmap properties.
+## ℹ To silence set `warn = FALSE`</code></pre>
 <pre><code>## # A tibble: 5 × 2
-##   upper `parts_{lower}`
-##   &lt;chr&gt; &lt;glue&gt;         
-## 1 AA    a              
-## 2 BB    b+c            
-## 3 CC    d*0.3          
-## 4 DD    d*0.6          
+##   upper parts 
+##   &lt;chr&gt; &lt;glue&gt;
+## 1 AA    a     
+## 2 BB    b+c   
+## 3 CC    d*0.3 
+## 4 DD    d*0.6 
 ## 5 EE    d*0.1</code></pre>
 </div>
 </div>
@@ -4950,12 +4975,11 @@ mock$xmap_abc |&gt;
 <div id="bigraph-autoplot-and-plot" class="section level3">
 <h3>bigraph <code>autoplot()</code> and <code>plot()</code></h3>
 <p>Adding in more dependencies</p>
-<pre class="r"><code>usethis::use_package(&quot;ggplot2&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;ggraph&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;tidygraph&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;vdiffr&quot;, type = &quot;Suggests&quot;)</code></pre>
-<pre><code>## • In your package code, use `rlang::is_installed(&quot;ggplot2&quot;)` or `rlang::check_installed(&quot;ggplot2&quot;)` to test if ggplot2 is installed
-## • Then directly refer to functions with `ggplot2::fun()`</code></pre>
+<pre class="r"><code>mock$xmap_abc |&gt;
+  as.data.frame() |&gt;
+  <a href='create-xmap.html#summary_by_target.data.frame'>summary_by_target.data.frame</a>(from = lower, to = upper, weights = share)</code></pre>
+<pre><code>## ✔ Moving &#39;ggplot2&#39; from Suggests to Imports field in DESCRIPTION
+## • Refer to functions with `ggplot2::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;ggraph&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;ggraph&quot;)` or `rlang::check_installed(&quot;ggraph&quot;)` to test if ggraph is installed
 ## • Then directly refer to functions with `ggraph::fun()`</code></pre>
@@ -4974,101 +4998,15 @@ docs: Using ggplot2 to visualize an object</a></li>
 <li><a href="https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/" class="uri">https://www.cynthiahqy.com/posts/xmap-ggraph-bipartite/</a>
 mockup</li>
 </ul>
+<pre class="r"><code>usethis::use_package(&quot;ggplot2&quot;)
+usethis::use_package(&quot;ggraph&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(&quot;tidygraph&quot;, type = &quot;Suggests&quot;)
+usethis::use_package(&quot;vdiffr&quot;, type = &quot;Suggests&quot;)</code></pre>
 <pre class="r"><code>#&#39; @rdname autoplot.xmap
 #&#39; @importFrom graphics plot
 #&#39; @export
 <span id='plot.xmap_df'>plot.xmap_df</span> &lt;- function(x, ...) {
   print(autoplot(x, ...))
-}</code></pre>
-<pre class="r"><code># Generated from create-xmap.Rmd: do not edit by hand
-
-#&#39; Autoplot function for xmap_df objects
-#&#39;
-#&#39; This function generates a plot of an xmap_df object using the ggraph and ggplot2
-#&#39; packages. It visualizes the relationships between nodes and edges in the xmap_df
-#&#39; object, with different styles for unit weight and fractional weight links, and
-#&#39; prints fractional weights on edges.
-#&#39;
-#&#39; @param object An xmap_df object.
-#&#39; @param ... Additional arguments (currently unused).
-#&#39;
-#&#39; @importFrom rlang sym
-#&#39;
-#&#39; @return ggplot2 object
-#&#39; @name autoplot.xmap
-#&#39;
-#&#39; @examples
-#&#39; library(ggplot2)
-#&#39; library(ggraph)
-#&#39; library(tidygraph)
-#&#39; library(xmap)
-#&#39; df &lt;- data.frame(from = c(&quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;),
-#&#39;                  to = c(&quot;X&quot;, &quot;Y&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;),
-#&#39;                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
-#&#39; xmap &lt;- <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(df, from, to, weights)
-#&#39; autoplot(xmap)
-NULL
-
-#&#39; @rdname autoplot.xmap
-#&#39; @export
-<span id='autoplot.xmap_df'>autoplot.xmap_df</span> &lt;- function(object, ...){
-
-  x_attrs &lt;- attributes(object)
-
-  tidygraph_data &lt;-
-    as_tbl_graph(object) |&gt;
-  ## calculating edge properties
-    tidygraph::activate(edges) |&gt;
-    tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) &lt; 1, TRUE, FALSE)) |&gt;
-    tidygraph::mutate(edge_linetype = ifelse(frac_weight, &quot;dashed&quot;, &quot;solid&quot;)) |&gt;
-    tidygraph::mutate(edge_label_pos = ifelse(frac_weight, 0.8, 0.2)) |&gt;
-  ## calculating node properties
-    tidygraph::activate(nodes) |&gt;
-    tidygraph::mutate(n_from = tidygraph::centrality_degree(mode = &quot;in&quot;),
-         in_from = n_from == 0,
-         collapse = n_from &gt; 1)
-
-  tidygraph_data |&gt;
-    ## now we plot...
-    ggraph::ggraph(layout = &quot;sugiyama&quot;) +
-    ## unit weight links,
-    ggraph::geom_edge_diagonal(
-      aes(edge_linetype = I(edge_linetype),
-          edge_alpha = !!sym(x_attrs$col_weights),
-          filter = !frac_weight),
-      end_cap = circle(6, &#39;mm&#39;),
-      show.legend = FALSE
-      ) +
-    ## frac weight links,
-    ggraph::geom_edge_diagonal(
-      aes(edge_linetype = I(edge_linetype),
-          edge_alpha = !!sym(x_attrs$col_weights),
-          filter = frac_weight,
-          label = !!sym(x_attrs$col_weights),
-          label_pos = edge_label_pos,
-          ),
-      end_cap = circle(6, &#39;mm&#39;),
-      show.legend = FALSE,
-      angle_calc = &quot;along&quot;,
-      label_dodge = grid::unit(2, &quot;mm&quot;)
-      ) +
-    ## from nodes,
-    ggraph::geom_node_label(aes(label = name,
-                                filter=in_from),
-                            ) +
-    ## to nodes,
-    ggraph::geom_node_label(aes(label = name,
-                                fill = collapse,
-                                filter=!in_from
-                                ),
-                            show.legend = FALSE,
-                            ) +
-    ggplot2::scale_fill_brewer() +
-    ## and finally modify coordinates, scale and theme
-    ggplot2::coord_flip() +
-    ggplot2::scale_y_reverse() +
-    ggplot2::theme_minimal() +
-    ggraph::th_no_axes()
 }</code></pre>
 <pre><code>## NULL</code></pre>
 <p>This test probably doesnt work because snapshot testing doesnt work..
@@ -5149,12 +5087,101 @@ work:</p>
 <ul>
 <li>doesn’t work for non-tree! (i.e. where you have collapse nodes)</li>
 </ul>
-<pre class="r"><code>library(ggraph)
-mock$xmap_abc |&gt;
-  as_tbl_graph() |&gt;
-  ggraph(layout = &quot;partition&quot;) +
-  geom_node_tile(aes(fill = centrality_degree())) +
-  geom_node_label(aes(label = name))</code></pre>
+<pre class="r"><code># Generated from create-xmap.Rmd: do not edit by hand
+
+#&#39; Autoplot function for xmap_df objects
+#&#39;
+#&#39; This function generates a plot of an xmap_df object using the ggraph and ggplot2
+#&#39; packages. It visualizes the relationships between nodes and edges in the xmap_df
+#&#39; object, with different styles for unit weight and fractional weight links, and
+#&#39; prints fractional weights on edges.
+#&#39;
+#&#39; @param object An xmap_df object.
+#&#39; @param ... Additional arguments (currently unused).
+#&#39;
+#&#39; @importFrom ggplot2 autoplot aes
+#&#39; @importFrom rlang sym
+#&#39;
+#&#39; @return ggplot2 object
+#&#39; @name autoplot.xmap
+#&#39;
+#&#39; @examples
+#&#39; library(ggplot2)
+#&#39; library(ggraph)
+#&#39; library(tidygraph)
+#&#39; library(xmap)
+#&#39; df &lt;- data.frame(from = c(&quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;),
+#&#39;                  to = c(&quot;X&quot;, &quot;Y&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;),
+#&#39;                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
+#&#39; xmap &lt;- <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(df, from, to, weights)
+#&#39; autoplot(xmap)
+NULL
+
+#&#39; @rdname autoplot.xmap
+#&#39; @export
+<span id='autoplot.xmap_df'>autoplot.xmap_df</span> &lt;- function(object, ...){
+
+  if(!requireNamespace(&quot;ggraph&quot;, quietly = TRUE)) {
+    cli::cli_abort(&#39;Please `install.package(&quot;ggraph&quot;)`&#39;)
+  }
+  
+  x_attrs &lt;- attributes(object)
+
+  tidygraph_data &lt;-
+    tidygraph::as_tbl_graph(object) |&gt;
+  ## calculating edge properties
+    tidygraph::activate(edges) |&gt;
+    tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) &lt; 1, TRUE, FALSE)) |&gt;
+    tidygraph::mutate(edge_linetype = ifelse(frac_weight, &quot;dashed&quot;, &quot;solid&quot;)) |&gt;
+    tidygraph::mutate(edge_label_pos = ifelse(frac_weight, 0.8, 0.2)) |&gt;
+  ## calculating node properties
+    tidygraph::activate(nodes) |&gt;
+    tidygraph::mutate(n_from = tidygraph::centrality_degree(mode = &quot;in&quot;),
+         in_from = n_from == 0,
+         collapse = n_from &gt; 1)
+
+  tidygraph_data |&gt;
+    ## now we plot...
+    ggraph::ggraph(layout = &quot;sugiyama&quot;) +
+    ## unit weight links,
+    ggraph::geom_edge_diagonal(
+      aes(edge_linetype = I(edge_linetype),
+          edge_alpha = !!sym(x_attrs$col_weights),
+          filter = !frac_weight),
+      end_cap = circle(6, &#39;mm&#39;),
+      show.legend = FALSE
+      ) +
+    ## frac weight links,
+    ggraph::geom_edge_diagonal(
+      aes(edge_linetype = I(edge_linetype),
+          edge_alpha = !!sym(x_attrs$col_weights),
+          filter = frac_weight,
+          label = !!sym(x_attrs$col_weights),
+          label_pos = edge_label_pos,
+          ),
+      end_cap = circle(6, &#39;mm&#39;),
+      show.legend = FALSE,
+      angle_calc = &quot;along&quot;,
+      label_dodge = grid::unit(2, &quot;mm&quot;)
+      ) +
+    ## from nodes,
+    ggraph::geom_node_label(aes(label = name,
+                                filter=in_from),
+                            ) +
+    ## to nodes,
+    ggraph::geom_node_label(aes(label = name,
+                                fill = collapse,
+                                filter=!in_from
+                                ),
+                            show.legend = FALSE,
+                            ) +
+    ggplot2::scale_fill_brewer(palette = &quot;Greys&quot;) +
+    ## and finally modify coordinates, scale and theme
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_reverse() +
+    ggplot2::theme_minimal() +
+    ggraph::th_no_axes()
+}</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Multiple parents. Unfolding graph</code></pre>
 <pre><code>## Multiple roots in graph. Choosing the first</code></pre>
@@ -5225,9 +5252,54 @@ properly developing visualisation functions for crossmaps.</p>
 #60</a></p>
 <div id="method-xmap_df" class="section level4">
 <h4>Method: <code>xmap_df</code></h4>
-<pre class="r"><code></code></pre>
+<pre class="r"><code>library(ggraph)
+mock$xmap_abc |&gt;
+  as_tbl_graph() |&gt;
+  ggraph(layout = &quot;partition&quot;) +
+  geom_node_tile(aes(fill = centrality_degree())) +
+  geom_node_label(aes(label = name))</code></pre>
 <p>NULL</p>
 <p>Test Prints:</p>
+<pre class="r"><code></code></pre>
+<pre><code>## Dropping any additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight, &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1,
+## &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;,
+## &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`
+## ℹ To silence set `.drop_extra = TRUE`</code></pre>
+<pre><code>## xmap_df:
+## recode, split, and collapse  
+## (sector -&gt; new_sec) BY weight
+##    sector new_sec    weight
+## 1    MINE  mining 1.0000000
+## 2    AGRI    agri 1.0000000
+## 3    FISH    agri 1.0000000
+## 4    MANU    text 0.2500000
+## 5    MANU    food 0.2500000
+## 6    MANU    chem 0.2500000
+## 7    MANU    elec 0.2500000
+## 8    CONS   build 0.3333333
+## 9    CONS   roads 0.3333333
+## 10   CONS   civil 0.3333333</code></pre>
+</div>
+</div>
+<div id="read-write-methods" class="section level3">
+<h3>Read / Write Methods</h3>
+<p>Discussed here: <a href="https://github.com/cynthiahqy/conformr-project/issues/62">conformr-project
+#62</a></p>
+</div>
+<div id="plot-method" class="section level3">
+<h3>Plot Method</h3>
+<p>Suggested in <a href="https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724">confomr-project
+#43</a></p>
+</div>
+</div>
+<div id="package-creation" class="section level2">
+<h2>Package Creation</h2>
+<div id="add-vignettes" class="section level3">
+<h3>Add Vignettes</h3>
+<pre class="r"><code>## doesn&#39;t work???
+vignette_images &lt;- paste0(&quot;../&quot;,
+                          list.files(&quot;xmap-source-files&quot;, pattern = &quot;plot&quot;, full.names = TRUE))
+add_vignettes(vignette_images)</code></pre>
 <pre class="r"><code>#&#39;
 <span id='.calc_link_types.xmap_df'>.calc_link_types.xmap_df</span> &lt;- function(xmap_df) {
   x_attrs &lt;- attributes(xmap_df)
@@ -5272,63 +5344,6 @@ NULL
   cat(paste0(&quot;xmap_df:\n&quot;, x_type, &quot;\n&quot;, x_direction, &quot;\n&quot;))
   print(x_links)
 }</code></pre>
-<pre><code>## Dropped additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight, &quot;mining&quot;, `, `
-## &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1, &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25,
-## &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3,
-## &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`</code></pre>
-<pre><code>## xmap_df:
-## recode, split, and collapse  
-## (sector -&gt; new_sec) BY weight
-##    sector new_sec    weight
-## 1    MINE  mining 1.0000000
-## 2    AGRI    agri 1.0000000
-## 3    FISH    agri 1.0000000
-## 4    MANU    text 0.2500000
-## 5    MANU    food 0.2500000
-## 6    MANU    chem 0.2500000
-## 7    MANU    elec 0.2500000
-## 8    CONS   build 0.3333333
-## 9    CONS   roads 0.3333333
-## 10   CONS   civil 0.3333333</code></pre>
-</div>
-</div>
-<div id="read-write-methods" class="section level3">
-<h3>Read / Write Methods</h3>
-<p>Discussed here: <a href="https://github.com/cynthiahqy/conformr-project/issues/62">conformr-project
-#62</a></p>
-</div>
-<div id="plot-method" class="section level3">
-<h3>Plot Method</h3>
-<p>Suggested in <a href="https://github.com/cynthiahqy/conformr-project/issues/43#issuecomment-1396445724">confomr-project
-#43</a></p>
-</div>
-</div>
-<div id="package-creation" class="section level2">
-<h2>Package Creation</h2>
-<div id="add-vignettes" class="section level3">
-<h3>Add Vignettes</h3>
-<pre class="r"><code>## doesn&#39;t work???
-vignette_images &lt;- paste0(&quot;../&quot;,
-                          list.files(&quot;xmap-source-files&quot;, pattern = &quot;plot&quot;, full.names = TRUE))
-add_vignettes(vignette_images)</code></pre>
-<pre class="r"><code>valid_xmap_df &lt;-
-  tibble::tribble(
-    ~new_sec, ~sector, ~weight,
-    &quot;mining&quot;, &quot;MINE&quot;, 1,
-    &quot;agri&quot;, &quot;AGRI&quot;, 1,
-    &quot;agri&quot;, &quot;FISH&quot;, 1,
-    &quot;text&quot;, &quot;MANU&quot;, 0.25,
-    &quot;food&quot;, &quot;MANU&quot;, 0.25,
-    &quot;chem&quot;, &quot;MANU&quot;, 0.25,
-    &quot;elec&quot;, &quot;MANU&quot;, 0.25,
-    &quot;build&quot;, &quot;CONS&quot;, 1 / 3,
-    &quot;roads&quot;, &quot;CONS&quot;, 1 / 3,
-    &quot;civil&quot;, &quot;CONS&quot;, 1 / 3,
-  ) |&gt;
-  dplyr::mutate(extra_col = &quot;stuff&quot;) |&gt;
-  <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(from = sector, to = new_sec, weight)
-
-print(valid_xmap_df)</code></pre>
 <pre><code>## ✔ Writing &#39;README.Rmd&#39;
 ## ✔ Adding &#39;^README\\.Rmd$&#39; to &#39;.Rbuildignore&#39;
 ## ✔ Creating &#39;.git/hooks/&#39;
@@ -5338,8 +5353,8 @@ print(valid_xmap_df)</code></pre>
 ## Writing &#39;NAMESPACE&#39;
 ## Writing &#39;NAMESPACE&#39;
 ## Writing &#39;abort.Rd&#39;
+## Writing &#39;add_placeholder_weights.Rd&#39;
 ## Writing &#39;add_weights.Rd&#39;
-## Writing &#39;add_weights_placeholder.Rd&#39;
 ## Writing &#39;as_xmap.Rd&#39;
 ## Writing &#39;autoplot.xmap.Rd&#39;
 ## Writing &#39;mock.Rd&#39;
@@ -5364,15 +5379,6 @@ print(valid_xmap_df)</code></pre>
                       &quot;../xmap-source-files/plot-missing-val-bigraph.png&quot;
                     ))</code></pre>
 </div>
-<div id="add-news" class="section level3">
-<h3>Add News</h3>
-<pre send_to="NEWS.md"><code>
-## xmap 0.0.1
-
-- This was the initial release of the package.
-- `verfiy_*` functions were relatively stable
-- `xmap_df` class and functions were experimental</code></pre>
-</div>
 <div id="render-package" class="section level3">
 <h3>Render package</h3>
 <p>To debug without having to re-render the litr file every time use the
@@ -5385,25 +5391,27 @@ devtools::check(&#39;xmap&#39;, document = FALSE)</code></pre>
 <p>We finish by running commands that will document, build, and install
 the package. It may also be a good idea to check the package from within
 this file.</p>
-<pre class="r"><code>litr::add_readme(&quot;../xmap-source-files/README.Rmd&quot;)
-litr::add_vignettes(&quot;../xmap-source-files/xmap.Rmd&quot;)
-litr::add_vignettes(c(
-  &quot;../xmap-source-files/making-xmaps.Rmd&quot;,
-  &quot;../xmap-source-files/plot-anzsco-isco-bigraph.png&quot;
-))
-litr::add_vignettes(c(
-  &quot;../xmap-source-files/vis-xmaps.Rmd&quot;,
-  &quot;../xmap-source-files/plot-weight-sum-matrix.png&quot;
-))
-rm(list = ls())
-litr::document()</code></pre>
+<pre class="r"><code>valid_xmap_df &lt;-
+  tibble::tribble(
+    ~new_sec, ~sector, ~weight,
+    &quot;mining&quot;, &quot;MINE&quot;, 1,
+    &quot;agri&quot;, &quot;AGRI&quot;, 1,
+    &quot;agri&quot;, &quot;FISH&quot;, 1,
+    &quot;text&quot;, &quot;MANU&quot;, 0.25,
+    &quot;food&quot;, &quot;MANU&quot;, 0.25,
+    &quot;chem&quot;, &quot;MANU&quot;, 0.25,
+    &quot;elec&quot;, &quot;MANU&quot;, 0.25,
+    &quot;build&quot;, &quot;CONS&quot;, 1 / 3,
+    &quot;roads&quot;, &quot;CONS&quot;, 1 / 3,
+    &quot;civil&quot;, &quot;CONS&quot;, 1 / 3,
+  ) |&gt;
+  dplyr::mutate(extra_col = &quot;stuff&quot;) |&gt;
+  <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(from = sector, to = new_sec, weight)
+
+print(valid_xmap_df)</code></pre>
 <pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;</code></pre>
-<pre><code>## -- Installing package into temporary library -----------------------------------</code></pre>
-<pre><code>## Warning in utils::install.packages(pkg$src_path, repos
-## = NULL, type = &quot;source&quot;, : installation of package
-## &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap&#39; had
-## non-zero exit status</code></pre>
-<pre><code>## == Building pkgdown site =======================================================
+<pre><code>## -- Installing package into temporary library -----------------------------------
+## == Building pkgdown site =======================================================
 ## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap&#39;
 ## Writing to:   &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap/docs&#39;
 ## -- Initialising site -----------------------------------------------------------
@@ -5419,10 +5427,10 @@ litr::document()</code></pre>
 ## Writing &#39;reference/index.html&#39;
 ## Reading &#39;man/abort.Rd&#39;
 ## Writing &#39;reference/abort.html&#39;
+## Reading &#39;man/add_placeholder_weights.Rd&#39;
+## Writing &#39;reference/add_placeholder_weights.html&#39;
 ## Reading &#39;man/add_weights.Rd&#39;
 ## Writing &#39;reference/add_weights.html&#39;
-## Reading &#39;man/add_weights_placeholder.Rd&#39;
-## Writing &#39;reference/add_weights_placeholder.html&#39;
 ## Reading &#39;man/as_pairs.Rd&#39;
 ## Writing &#39;reference/as_pairs.html&#39;
 ## Reading &#39;man/as_xmap.Rd&#39;

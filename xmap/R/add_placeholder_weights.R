@@ -11,35 +11,42 @@
 #' @param to The name of the column containing target category values.
 #' @param weights_into The name to use for the column containing the weights
 #'   placeholders. Default is "weights_{{from}}".
-#' @param frac_symbol The placeholder symbol to use for fractional weights. Default is NA.
-#' @param unit_symbol The placeholder symbol to use for unit weights. Default is 1.
 #'
-#' @return A data frame with a new column containing the weights placeholders.
+#' @return A data frame with a new numeric column containing the weights placeholders.
 #'
 #' @importFrom dplyr group_by mutate ungroup n_distinct case_when
 #' @importFrom rlang englue
 #' @importFrom cli cli_inform
 #'
+#' @seealso [add_weights] to generate valid crossmap weights.
+#'
 #' @export
 #' @examples
 #' mock$xmap_abc |>
 #'   as.data.frame() |>
-#'   add_weights_placeholder(from = upper, to = lower)
-add_weights_placeholder <- function(df, from, to, weights_into = "weights_{{from}}", frac_symbol = NA, unit_symbol = 1) {
+#'   add_placeholder_weights(from = upper, to = lower)
+add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from}}") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
+  
+  ## set up
   weights_into <- rlang::englue(weights_into)
+  frac_symbol <- NA
+  unit_symbol <- 1
+  ## equal weights
   df |>
     dplyr::group_by({{ from }}) |>
     dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup() -> w_df
+  
   if (all(w_df[[weights_into]] == 1)) {
-    cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
+    #cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
     return(w_df)
   } else {
     w_df |>
       dplyr::mutate("{weights_into}" := case_when(
+        .data[[weights_into]] == 1 ~ unit_symbol,
         .data[[weights_into]] < 1 ~ frac_symbol,
-        TRUE ~ unit_symbol
+        TRUE ~ frac_symbol
       ))
   }
 }

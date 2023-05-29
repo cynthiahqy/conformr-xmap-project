@@ -1,30 +1,29 @@
 ---
-title: "Visualising Crossmap Transformations"
+title: "Summarising and Visualising Crossmap Transformations"
 output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{Visualising Crossmap Transformations}
+  %\VignetteIndexEntry{Summarising and Visualising Crossmap Transformations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-## Alternative representations of Crossmaps
-
 Crossmaps aim to encode dataset integration and harmonisation choices separately to the code used to apply those such designs to data. It follows that visualisations and plots of the candidate crossmaps could be useful during the design process. For instance, Sankey diagrams are sometimes used to visualise schema crosswalks.
 
-This article provides a few ggplot2 code examples for visualising crossmaps. The package will offer functions for generating these visualisations from `xmap` objects in future releases.
+This article demonstrates some useful summary and visualisation methods for crossmaps.
 
 ```{r message=FALSE}
-library(ggplot2)
-library(dplyr)
-library(stringr)
-library(patchwork)
-library(ggbump)
 library(xmap)
+library(ggplot2)
+library(ggraph)
+library(tidygraph)
+library(dplyr)
 ```
 
-### Table
+## Alternative representations of Crossmaps
+
+### Crosswalk Table (no weights)
 
 Let's start with visualising a section of the ANZSCO22 to ISCO8 crosswalk published by the Australian Bureau of Statistics:
 
@@ -42,28 +41,43 @@ anzsco_cw <- tibble::tribble(
        "111312",                 "Member of Parliament", "1111",      "p",                                        "Legislators",
        "111399",                      "Legislators nec", "1111",      "p",                                        "Legislators"
       )
+```
 
-links <- anzsco_cw |>
-  dplyr::group_by(anzsco22) |>
-  dplyr::summarise(n_dest = dplyr::n_distinct(isco8)) |>
-  dplyr::ungroup() |>
-  dplyr::transmute(anzsco22, weight = 1/n_dest) |>
-  dplyr::left_join(anzsco_cw, by = "anzsco22")
+Let's also store the code descriptions in separate lookup tables for later reference (i.e. as node lists):
 
+```{r}
 ## get code tables
 table_anzsco <- anzsco_cw |>
   dplyr::distinct(anzsco22, anzsco22_descr)
 table_isco8 <- anzsco_cw |>
   dplyr::distinct(isco8, isco8_descr)
-
-## make xmap
-anzsco_xmap <- links |>
-  as_xmap_df(anzsco22, isco8, weight)
 ```
 
-The included `print()` method for `xmap_df` objects:
+### Summary by Target Nomenclature
+
+One method of summarising the crossmap is by looking at the planned composition of ISCO8 codes. Since we don't have any weights yet, we can use placeholders for now:
 
 ```{r}
+anzsco_cw |>
+  add_placeholder_weights(from = anzsco22, to = isco8) |>
+  summary_by_target(from = anzsco22, to = isco8, weights = weights_anzsco22)
+```
+
+### Conversion to Crossmap
+
+Let's assume for now that if an ANZSCO22 occupation codes matches to multiple ISCO8 codes, we distribute values equally. To do this, we `add_weights_equal()` to the crosswalk table:
+
+```{r}
+links <- anzsco_cw |>
+  add_weights_equal(from = anzsco22, to = isco8, weights_into = "weights")
+```
+
+Now we can convert our links into a sample `xmap_df`:
+
+```{r}
+## make xmap
+anzsco_xmap <- links |>
+  as_xmap_df(anzsco22, isco8, weights, .drop_extra = TRUE)
 print(anzsco_xmap)
 ```
 
@@ -95,6 +109,9 @@ Visualisation as a bigraph is particularly useful for seeing the relations betwe
                   to_x = 5) |>
     dplyr::mutate(idx = dplyr::row_number())
 }
+
+library(ggrepel)
+
 
 plt_xmap_bigraph <- function(x, ...) {
   stopifnot(is_xmap_df(x))
@@ -137,7 +154,7 @@ plt_xmap_bigraph <- function(x, ...) {
                             label = .data[[x_attrs$col_to]]),
                         fill = "black",
                         alpha = 0.1) +
-    ggplot2::scale_y_reverse() +
+    ggplot2::scale_y_reverse(expand = expansion(mult = 0.2, add = 3)) +
     ggplot2::theme_minimal() +
     theme(legend.position = "bottom",
         panel.grid.major = element_blank(),
@@ -226,6 +243,9 @@ Notice that the requirement that a valid crossmap has outgoing weights which sum
 ## Visualising Types of Mapping Relations
 
 ```{r, echo=FALSE}
+library(xmap)
+library(ggplot2)
+
 veg_1a <- c("eggplant", "capsicum", "zucchini")
 veg_1b <- c("aubergine", "pepper", "courgette")
 veg_2 <- c("vegetables")
@@ -237,15 +257,27 @@ pb_1a_w <- c(0.02, 0.05, 0.93)
 
 recode <- data.frame(au = veg_1a, uk = veg_1b, link = 1) |>
   as_xmap_df(au, uk, link)
-gg_recode <- recode |> plt_xmap_bigraph()
+gg_recode <- recode |> autoplot() +
+  scale_y_reverse(expand = expansion(mult = 0.1, add = 1))
+```
 
+```{r}
+gg_recode +
+ # scale_x_continuous(expand = expansion(add = c(1, 1))) +
+  scale_y_reverse(expand = expansion(mult = 0.1, add = 1))
+```
+
+```{r, echo=FALSE}
 agg <- data.frame(item = fruit_1a, group = fruit_2, link = 1) |>
   as_xmap_df(item, group, link)
-gg_agg <- agg |> plt_xmap_bigraph()
+gg_agg <- agg |> autoplot() 
+
+gg_agg +
+  scale_y_reverse(expand = expansion(mult = 2))
 
 disagg <- data.frame(group = pb_2, item = pb_1a, link = pb_1a_w) |>
   as_xmap_df(group, item, link)
-gg_disagg <- disagg |> plt_xmap_bigraph()
+gg_disagg <- disagg |> autoplot()
 ```
 
 ```{r}

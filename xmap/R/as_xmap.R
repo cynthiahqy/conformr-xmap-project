@@ -35,7 +35,7 @@ as_xmap_df <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subc
 #' # extra columns are dropped,
 #' links$extra <- c(2, 4, 5, 6)
 #' as_xmap_df(links, from = a, to = b, weights = w)
-as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = "xmap_df", .drop_extra = TRUE) {
+as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.eps^0.5, subclass = "xmap_df", .drop_extra = NULL) {
   ## coercion & checks
   stopifnot(is.data.frame(x))
 
@@ -47,16 +47,22 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
   ## check columns exist
   abort_missing_cols(x, col_strings)
 
-  ## drop additional columns
+  ## drop extra columns
+  if (is.null(.drop_extra)) {
+    cli::cli_inform(c(
+      "Dropping any additional columns in {.arg {deparse(substitute(x))}}",
+      "i" = "To silence set `.drop_extra = TRUE`")
+      )
+  }
+  
+  .drop_extra <- .drop_extra %||% TRUE
+  
   if (.drop_extra) {
     df <- x[col_strings]
   } else {
     df <- x
   }
-  if (ncol(df) < ncol(x)) {
-    cli::cli_inform("Dropped additional columns in {.arg {deparse(substitute(x))}}")
-  }
-
+  
   ## rearrange columns
   col_order <- c(col_strings, setdiff(names(df), col_strings))
   df <- df[col_order]

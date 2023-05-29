@@ -38,7 +38,7 @@ a nested list for xmap_to_named_list()
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/making-xmaps.html">Intro to Crossmaps</a>
-    <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
+    <a class="dropdown-item" href="../articles/vis-xmaps.html">Summarising and Visualising Crossmap Transformations</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -105,6 +105,10 @@ and each element contains the source node(s) in <code>from</code>.</p>
 <span class="r-in"><span>  <span class="fu"><a href="as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"iso2c"</span>, values_to <span class="op">=</span> <span class="st">"iso3n"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">iso3n</span>, to <span class="op">=</span> <span class="va">iso2c</span>, <span class="va">weights</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropping any additional columns in</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `add_weights_unit(as_pairs_from_named(iso_vector, names_to = "iso2c", ` and `</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> values_to = "iso3n"))`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> To silence set `.drop_extra = TRUE`</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">iso_vector</span>, <span class="fu">xmap_to_named_vector</span><span class="op">(</span><span class="va">iso_xmap</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="va">animal_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -116,6 +120,10 @@ and each element contains the source node(s) in <code>from</code>.</p>
 <span class="r-in"><span>  <span class="fu"><a href="as_pairs.html">as_pairs_from_named</a></span><span class="op">(</span>names_to <span class="op">=</span> <span class="st">"class"</span>, values_to <span class="op">=</span> <span class="st">"animals"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="add_weights.html">add_weights_unit</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="as_xmap.html">as_xmap_df</a></span><span class="op">(</span>from <span class="op">=</span> <span class="va">animals</span>, to <span class="op">=</span> <span class="va">class</span>, weights <span class="op">=</span> <span class="va">weights</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropping any additional columns in</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `add_weights_unit(as_pairs_from_named(animal_list, names_to = "class", ` and `</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> values_to = "animals"))`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> To silence set `.drop_extra = TRUE`</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu">xmap_to_named_list</span><span class="op">(</span><span class="va">animal_xmap</span><span class="op">)</span>, <span class="va">animal_list</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>

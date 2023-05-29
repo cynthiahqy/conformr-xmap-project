@@ -85,10 +85,9 @@ xmap_to_named_vector <- function(.xmap) {
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named vector"),
-      class = "abort_frac_weights"
-    )
+                   class = "abort_frac_weights")
   }
-
+  
   # convert
   df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
@@ -117,14 +116,13 @@ xmap_to_named_list <- function(.xmap) {
   df <- as.data.frame(.xmap)
   # check only unit weights
   w <- df[[x_attrs$col_weights]]
-
+  
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named list"),
-      class = "abort_frac_weights"
-    )
+                   class = "abort_frac_weights")
   }
-
+  
   # convert
   df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
