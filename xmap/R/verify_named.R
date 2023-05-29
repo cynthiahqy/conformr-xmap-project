@@ -201,15 +201,3 @@ verify_named_matchset_values_within <- function(x, ref_set) {
   }
   invisible(x)
 }
-
-#' @describeIn verify_named Alias of `verify_named_all_1to1()`
-#' @export
-verify_named_as_recode_unique <- verify_named_all_1to1
-
-#' @describeIn verify_named Alias of `verify_named_all_values_unique()`
-#' @export
-verify_named_no_dup_values <- verify_named_all_values_unique
-
-#' @describeIn verify_named Alias of `verify_named_all_names_unique()`
-#' @export
-verify_named_no_dup_names <- verify_named_all_names_unique

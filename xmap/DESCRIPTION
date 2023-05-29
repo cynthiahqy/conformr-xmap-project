@@ -23,7 +23,8 @@ Imports:
     glue,
     rlang (>= 1.0.0),
     tibble,
-    tidyr
+    tidyr,
+    tidyselect
 Suggests: 
     forcats,
     ggbump,
@@ -41,4 +42,4 @@ Suggests:
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: bfd81bb531bdba0cfd96e7fb6d8b43d8
+LitrId: 17b024685eb7b483b059365f812d757b

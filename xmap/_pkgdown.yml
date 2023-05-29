@@ -38,7 +38,7 @@ reference:
     - starts_with("summary")
     - starts_with("autoplot")
     - starts_with("plot")
-    - add_weights_placeholder
+    - add_placeholder_weights
 
 - title: Creating `xmap` objects
   contents:

@@ -13,6 +13,8 @@ vignette: >
 library(xmap)
 ```
 
+<!--- Flag technical --->
+
 ## Introduction to Crossmaps
 
 A (Nomenclature) Crossmap encodes a complete redistribution of values between a source and target classifications as a directed, bipartite, weighted graph. Numeric values transformed using a valid Crossmap will sum to the same total in both the source and target classifications. A valid Crossmap satisfies the following conditions:
@@ -59,6 +61,8 @@ Please note that the `xmap_df` class and related functions are still in active d
 
 The conditions for valid nomenclature crossmaps defined above are sufficient to ensure that the total sum of value is retained between the source and target nomenclature However, there are a number of other transformation properties which crossmaps can also encode and validate. Such special cases include "degenerate" crossmaps. We consider a crossmap "degenerate" if it has only binary weights on all possible source-target links. In such cases the weights are implied by the presence or absence of a link.
 
+<!---- WHY DO WE DISCUSS special cases? This is can handle complex cases, which are combination of simple cases. ---> 
+
 ### Types of Mapping Relations
 
 It is helpful when thinking about special cases to define some familiar types of relations:
@@ -66,9 +70,11 @@ It is helpful when thinking about special cases to define some familiar types of
 -   **one-to-one**: a set of links where pairs of source and target nodes are uniquely linked to each other and no other nodes. Any links in this type of relation will have unit weights.
 -   **one-to-many**: a set of links where a single source node is linked to multiple target nodes. Links in this "splitting" relation will have fractional weights.
 -   **one-from-many**: a set of links where a single target node is linked to multiple source nodes. This "collapse" relation is more commonly known as a **many-to-one**. Links can have either unit or fractional weights depending on whether the source nodes are part of one-to-one or one-to-many relations.
--   **many-to-many**: refers to a combination of the above relations and is often used to signal that a correspondence between sets has both **one-to-many** splitting relations and **one-from-many** collapsing relations.
+-   **many-to-many**: refers to a combination of the above relations.
 
 Note that links in a crossmap can be partitioned into subgraphs according to the number of outgoing links (i.e. one-to-one and one-to-many)
+
+<!---- recode, split /// Can you have fractional weights in COLLAPSE map? ---->
 
 ### Recode maps
 
@@ -111,9 +117,11 @@ Collapse crossmaps are similar to Recode crossmaps in that source values are unm
 Similar to the recode maps, collapse maps only have unit weights. Hence, we can use named lists to store such mappings. Consider an example such as assigning students to groups. Assume no two students share the same name:
 
 ```{r}
-student_groups <- list(GRP1 = c("kate", "jane", "peter"),
-                       GRP2 = c("terry", "ben", "grace"),
-                       GRP3 = c("cindy", "lucy", "alex" ))
+student_groups <- list(
+  GRP1 = c("kate", "jane", "peter"),
+  GRP2 = c("terry", "ben", "grace"),
+  GRP3 = c("cindy", "lucy", "alex")
+)
 ```
 
 We can check that students are not assigned to multiple groups:
@@ -127,9 +135,11 @@ Or that the every student has been assigned a group:
 
 ```{r error=TRUE}
 ## mistakenly assign kate to another group
-student_group_mistake <- list(GRP1 = c("kate", "jane", "peter"),
-                           GRP2 = c("terry", "ben", "grace"),
-                           GRP2 = c("cindy", "lucy", "kate" ))
+student_group_mistake <- list(
+  GRP1 = c("kate", "jane", "peter"),
+  GRP2 = c("terry", "ben", "grace"),
+  GRP2 = c("cindy", "lucy", "kate")
+)
 
 student_list <- c("kate", "jane", "peter", "terry", "ben", "grace", "cindy", "lucy", "alex")
 
@@ -231,6 +241,10 @@ Strict versions of the above special cases can also be characterised with the fo
 |                  | -   $Out_i = In_j = 1 \ \forall i,j$                        | -   $Out_i = 1 \ \forall i \in U$                                | -   $Out_i > 1 \ \forall i \in U$                                                   |
 +------------------+-------------------------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------------------------------------+
 
+### Complex Map
+
+<!---- discuss support for fractional aggregation as well -->
+
 ## Creating `xmap_df` from Pairs and Links
 
 The following examples demonstrate how to coerce various inputs into the experimental `xmap_df` class.
@@ -242,10 +256,10 @@ The following example shows how to create a mixed crossmap which encodes one-to-
 ```{r}
 abc_links <- tibble::tribble(
   ~lower, ~upper, ~share,
-  "a", "AA", 1,       # one-to-one
-  "b", "BB", 1,    # one-FROM-many
+  "a", "AA", 1, # one-to-one
+  "b", "BB", 1, # one-FROM-many
   "c", "BB", 1,
-  "d", "CC", 0.3,    # one-to-many
+  "d", "CC", 0.3, # one-to-many
   "d", "DD", 0.6,
   "d", "EE", 0.1
 )
@@ -266,13 +280,13 @@ Consider the first five country codes in the ISO 3166 international standard and
 
 ```{r}
 iso_codes <- tibble::tribble(
-              ~country, ~ISO2, ~ISO3, ~ISONumeric,
-         "Afghanistan",          "AF",         "AFG",    "004",
-             "Albania",          "AL",         "ALB",    "008",
-             "Algeria",          "DZ",         "DZA",    "012",
-      "American Samoa",          "AS",         "ASM",    "016",
-             "Andorra",          "AD",         "AND",    "020"
-      )
+  ~country, ~ISO2, ~ISO3, ~ISONumeric,
+  "Afghanistan", "AF", "AFG", "004",
+  "Albania", "AL", "ALB", "008",
+  "Algeria", "DZ", "DZA", "012",
+  "American Samoa", "AS", "ASM", "016",
+  "Andorra", "AD", "AND", "020"
+)
 ```
 
 We can verify any pairwise combination of columns as one-to-one recode maps using the `verify_pairs_*` functions:
@@ -327,7 +341,7 @@ adm1_list <- tibble::tribble(
 Recall that we need one row per relation between the source (`adm1`) and target (`ctr`) nomenclature. Thus we split the string list into a vector, and then unnest the values by country.
 
 ```{r}
-agg_x <- adm1_list |> 
+agg_x <- adm1_list |>
   dplyr::mutate(adm1 = stringr::str_split(adm1, ", ")) |>
   tidyr::unnest(cols = c(adm1))
 
@@ -358,21 +372,23 @@ Using Australian population statistics from 30 Jun 2022[^1]
 
 ```{r}
 state_data <- tibble::tribble(
-                              ~state,    ~adm1,    ~Pop,
-                   "New South Wales", "AU-NSW", 8153600,
-                          "Victoria", "AU-VIC", 6613700,
-                        "Queensland", "AU-QLD", 5322100,
-                   "South Australia",  "AU-SA", 1820500,
-                 "Western Australia",  "AU-WA", 2785300,
-                          "Tasmania", "AU-TAS",  571500,
-                "Northern Territory",  "AU-NT",  250600,
-      "Australian Capital Territory", "AU-ACT",  456700
+  ~state, ~adm1, ~Pop,
+  "New South Wales", "AU-NSW", 8153600,
+  "Victoria", "AU-VIC", 6613700,
+  "Queensland", "AU-QLD", 5322100,
+  "South Australia", "AU-SA", 1820500,
+  "Western Australia", "AU-WA", 2785300,
+  "Tasmania", "AU-TAS", 571500,
+  "Northern Territory", "AU-NT", 250600,
+  "Australian Capital Territory", "AU-ACT", 456700
 )
 
 state_xmap <- state_data |>
-  dplyr::mutate(ctr = "AU",
-                adm1,
-                share = Pop / sum(Pop)) |>
+  dplyr::mutate(
+    ctr = "AU",
+    adm1,
+    share = Pop / sum(Pop)
+  ) |>
   as_xmap_df(from = ctr, to = adm1, weights = share)
 
 state_xmap
@@ -395,10 +411,10 @@ In the first example, one NAICS Canada class relates to exactly one ISIC class, 
 
 ```{r}
 canada_recode <- tibble::tibble(
-  NAICS1997      = "212210", 
+  NAICS1997 = "212210",
   NAICS1997_desc = "Iron Ore Mining",
-  ISIC3          = "C1310",
-  ISIC3_desc    = "Mining of iron ores"
+  ISIC3 = "C1310",
+  ISIC3_desc = "Mining of iron ores"
 )
 ```
 
@@ -423,21 +439,7 @@ knitr::kable(canada_agg)
 
 Notice that for both one-to-one and one-from-many relations, values attached to each source category are not directly modified during the "transfer" between source and target nomenclature. Instead, the source values are either retained, or summarised when the category collapse (and value aggregation) is performed. Thus, as shown above, all links in the above examples will take unit weights.
 
-In this third example, one souce NAICS Canada class is equivalent to more than one target ISIC class, forming a one-to-many relation.
-
-```{r}
-canada_split <- tibble::tribble(
-  ~NAICS1997, ~NAICS1997_desc, ~ISIC3, ~ISIC3_desc, ~Link,
-  "483213", "Inland Water Transportation (except by Ferries)", "I6110 *", "Sea and coastal water transport", "Intracoastal water transportation",
-  "483213", "Inland Water Transportation (except by Ferries)", "I6120 *", "Inland water transport", "Inland water transportation (except ferries)"
-)
-```
-
-```{r echo=FALSE}
-knitr::kable(canada_split)
-```
-
-Let's clean up the recode and collapse relations shown above:
+Let's clean up the recode shown above:
 
 ```{r}
 canada_unit <- canada_agg |>
@@ -455,15 +457,32 @@ knitr::kable(canada_unit)
 
 Now all that remains is to prepare the split links. Similar to the disaggregation example above, we need to design weights to allocate the "pool" of numeric value associated with the NAICS class `483213` into the corresponding ISIC classes `I6110` and `I6120`.
 
+In this third example, one souce NAICS Canada class is equivalent to more than one target ISIC class, forming a one-to-many relation.
+
+```{r}
+canada_split <- tibble::tribble(
+  ~NAICS1997, ~NAICS1997_desc, ~ISIC3, ~ISIC3_desc, ~Link,
+  "483213", "Inland Water Transportation (except by Ferries)", "I6110 *", "Sea and coastal water transport", "Intracoastal water transportation",
+  "483213", "Inland Water Transportation (except by Ferries)", "I6120 *", "Inland water transport", "Inland water transportation (except ferries)"
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(canada_split)
+```
+
+
 Assume for illustration purposes that we have reference data to suggest the Canadian "Inland water transport" industry (`I6120`) is twice as big as the "Sea and coastal water transport" industry (`I6110`). This suggests that the weight between `483213` and `I6120` should be twice that of `I6110`.
 
 ```{r}
 canada_frac <- canada_split |>
   dplyr::mutate(ISIC3 = stringr::str_remove(ISIC3, " \\*")) |>
   dplyr::select(-Link) |>
-  dplyr::mutate(share = dplyr::case_when(ISIC3 == "I6110" ~ 0.33,
-                                  ISIC3 == "I6120" ~ 0.67,
-                                  T ~ NA_real_))
+  dplyr::mutate(share = dplyr::case_when(
+    ISIC3 == "I6110" ~ 0.33,
+    ISIC3 == "I6120" ~ 0.67,
+    T ~ NA_real_
+  ))
 ```
 
 Now let's combine the unit and fractional links into a crossmap:

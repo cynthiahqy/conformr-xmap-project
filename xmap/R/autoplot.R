@@ -1,5 +1,15 @@
 # Generated from create-xmap.Rmd: do not edit by hand
 
+#' 
+as_tbl_graph.xmap_df <- function(x, ...) {
+  x <- xmap_drop_extra(x)
+  x_attrs <- attributes(x)
+  x_nodes <- data.frame(name = c(.calc_all_nodes.xmap_df(x)))
+  ## first two columns are assumed to be from & to, weights are third column.
+  x_edges <- data.frame(x)
+  tidygraph::tbl_graph(x_nodes, x_edges)
+}
+
 # Generated from create-xmap.Rmd: do not edit by hand
 
 #' Autoplot function for xmap_df objects
@@ -12,7 +22,7 @@
 #' @param object An xmap_df object.
 #' @param ... Additional arguments (currently unused).
 #'
-#' @importFrom ggplot2 autoplot
+#' @importFrom ggplot2 autoplot aes
 #' @importFrom rlang sym
 #'
 #' @return ggplot2 object
@@ -34,10 +44,14 @@ NULL
 #' @export
 autoplot.xmap_df <- function(object, ...){
 
+  if(!requireNamespace("ggraph", quietly = TRUE)) {
+    cli::cli_abort('Please `install.package("ggraph")`')
+  }
+  
   x_attrs <- attributes(object)
 
   tidygraph_data <-
-    as_tbl_graph(object) |>
+    tidygraph::as_tbl_graph(object) |>
   ## calculating edge properties
     tidygraph::activate(edges) |>
     tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) < 1, TRUE, FALSE)) |>
@@ -84,7 +98,7 @@ autoplot.xmap_df <- function(object, ...){
                                 ),
                             show.legend = FALSE,
                             ) +
-    ggplot2::scale_fill_brewer() +
+    ggplot2::scale_fill_brewer(palette = "Greys") +
     ## and finally modify coordinates, scale and theme
     ggplot2::coord_flip() +
     ggplot2::scale_y_reverse() +

@@ -30,7 +30,7 @@ and the columns are indexed by to values. Drops any additional variables."><!-- 
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/making-xmaps.html">Intro to Crossmaps</a>
-    <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
+    <a class="dropdown-item" href="../articles/vis-xmaps.html">Summarising and Visualising Crossmap Transformations</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -113,6 +113,12 @@ and the columns are indexed by <code>to</code> values. Drops any additional vari
 <span class="r-in"><span>  link <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="as_xmap.html">as_xmap_df</a></span><span class="op">(</span><span class="va">origin</span>, <span class="va">dest</span>, <span class="va">link</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropping any additional columns in `data.frame(stringsAsFactors = FALSE, origin</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> = c("a", "b", "c", `, ` "d", "e", "f", "g", "h", "i", "i", "j", "j", "j"), dest</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> = c("AA", `, ` "AA", "AA", "AA", "BB", "BB", "CC", "DD", "EE", "FF", "GG", `, `</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> "HH", "II"), link = c(1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.3, `, and ` 0.3,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 0.4))`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> To silence set `.drop_extra = TRUE`</span>
 <span class="r-in"><span><span class="fu">xmap_to_matrix</span><span class="op">(</span><span class="va">abc_xmap</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 x 9 sparse Matrix of class "dgCMatrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       dest</span>

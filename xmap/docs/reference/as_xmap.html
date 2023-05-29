@@ -30,7 +30,7 @@ This function returns TRUE for crossmaps xmap or subclasses thereof (xmap_df), a
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/making-xmaps.html">Intro to Crossmaps</a>
-    <a class="dropdown-item" href="../articles/vis-xmaps.html">Visualising Crossmap Transformations</a>
+    <a class="dropdown-item" href="../articles/vis-xmaps.html">Summarising and Visualising Crossmap Transformations</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -79,7 +79,7 @@ This function returns TRUE for crossmaps xmap or subclasses thereof (xmap_df), a
 <span>  <span class="va">weights</span>,</span>
 <span>  tol <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">^</span><span class="fl">0.5</span>,</span>
 <span>  subclass <span class="op">=</span> <span class="st">"xmap_df"</span>,</span>
-<span>  .drop_extra <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  .drop_extra <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">is_xmap</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
@@ -137,6 +137,8 @@ Passed through to the <code>tolerance</code> arg of <code><a href="https://rdrr.
 <span class="r-in"><span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.15</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as_xmap_df</span><span class="op">(</span><span class="va">links</span>, from <span class="op">=</span> <span class="va">a</span>, to <span class="op">=</span> <span class="va">b</span>, weights <span class="op">=</span> <span class="va">w</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropping any additional columns in `links`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> To silence set `.drop_extra = TRUE`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> xmap_df:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> split </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> (a -&gt; b) BY w</span>
@@ -149,7 +151,8 @@ Passed through to the <code>tolerance</code> arg of <code><a href="https://rdrr.
 <span class="r-in"><span><span class="co"># extra columns are dropped,</span></span></span>
 <span class="r-in"><span><span class="va">links</span><span class="op">$</span><span class="va">extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">as_xmap_df</span><span class="op">(</span><span class="va">links</span>, from <span class="op">=</span> <span class="va">a</span>, to <span class="op">=</span> <span class="va">b</span>, weights <span class="op">=</span> <span class="va">w</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropped additional columns in `links`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Dropping any additional columns in `links`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> To silence set `.drop_extra = TRUE`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> xmap_df:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> split </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> (a -&gt; b) BY w</span>
