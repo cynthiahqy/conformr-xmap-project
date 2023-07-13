@@ -79,7 +79,7 @@ autoplot.xmap_df <- function(object, ...){
       aes(edge_linetype = I(edge_linetype),
           edge_alpha = !!sym(x_attrs$col_weights),
           filter = frac_weight,
-          label = round(!!sym(x_attrs$col_weights)),
+          label = round(!!sym(x_attrs$col_weights), digits = 3),
           label_pos = edge_label_pos,
           ),
       end_cap = circle(6, 'mm'),
