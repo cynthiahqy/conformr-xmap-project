@@ -23,7 +23,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.1.9002",
+    Version = "0.0.1.9003",
     Title = "A principled approach to recoding and redistributing data between nomenclature",
     Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.",
     `Authors@R` = c(
@@ -2655,7 +2655,6 @@ Adding in more dependencies
 usethis::use_package("ggplot2")
 usethis::use_package("ggraph", type = "Suggests")
 usethis::use_package("tidygraph", type = "Suggests")
-usethis::use_package("vdiffr", type = "Suggests")
 ```
 
 Now make an `autoplot()` and `plot()` methods for `xmap_df` using:
@@ -2743,7 +2742,7 @@ autoplot.xmap_df <- function(object, ...){
       aes(edge_linetype = I(edge_linetype),
           edge_alpha = !!sym(x_attrs$col_weights),
           filter = frac_weight,
-          label = !!sym(x_attrs$col_weights),
+          label = round(!!sym(x_attrs$col_weights)),
           label_pos = edge_label_pos,
           ),
       end_cap = circle(6, 'mm'),
@@ -2776,6 +2775,7 @@ This test probably doesnt work because snapshot testing doesnt work.. neverthele
 -   <https://www.tidyverse.org/blog/2021/06/vdiffr-1-0-0/>
 
 ``` r
+usethis::use_package("vdiffr", type = "Suggests")
 testthat::test_that("autoplot() has known output",{
   library(dplyr)
   library(ggplot2)
