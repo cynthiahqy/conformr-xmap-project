@@ -2230,7 +2230,7 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.1.9002&quot;,
+    Version = &quot;0.0.1.9003&quot;,
     Title = &quot;A principled approach to recoding and redistributing data between nomenclature&quot;,
     Description = &quot;Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.&quot;,
     `Authors@R` = c(
@@ -2621,6 +2621,9 @@ mock$df_aus_pop &lt;- tibble::tribble(
 ) |&gt;
   dplyr::mutate(ctr = &quot;AUS&quot;)
 usethis::use_data(mock)</code></pre>
+<pre><code>## Dropping any additional columns in `tibble::tribble(~lower, ~upper, ~share, &quot;a&quot;, &quot;AA&quot;, 1, &quot;b&quot;, &quot;BB&quot;, `, ` 1, &quot;c&quot;, &quot;BB&quot;, 1, &quot;d&quot;, &quot;CC&quot;, 0.3, &quot;d&quot;, &quot;DD&quot;, 0.6, &quot;d&quot;,
+## &quot;EE&quot;, `, and ` 0.1)`
+## ℹ To silence set `.drop_extra = TRUE`</code></pre>
 <pre><code>## ✔ Creating &#39;data/&#39;
 ## ✔ Setting LazyData to &#39;true&#39; in &#39;DESCRIPTION&#39;
 ## ✔ Saving &#39;mock&#39; to &#39;data/mock.rda&#39;
@@ -2838,7 +2841,7 @@ NULL
   abc_links &lt;- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
   testthat::expect_equal(<a href='create-xmap.html#add_weights_unit'>add_weights_unit</a>(abc_pairs), abc_links)
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 </div>
 <div id="link-properties-vhas_x_" class="section level3">
@@ -2959,9 +2962,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -3004,7 +3007,7 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
@@ -3165,7 +3168,7 @@ testthat::test_that(&quot;verify_named_*_unique() work as expected&quot;, {
   testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(ldup_values), class = &quot;abort_not_unique&quot;)
 })</code></pre>
 <pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre class="r"><code>#&#39; @describeIn abort Abort message for verify_named_matchset_* functions
 #&#39; @export
 <span id='msg_abort_named_matchset'>msg_abort_named_matchset</span> &lt;- function(set_type = c(&quot;names&quot;, &quot;values&quot;),
@@ -3309,7 +3312,7 @@ NULL
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_subset_1to1),
                          class = &quot;abort_matchset&quot;)
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <p>Aliases:</p>
 <pre class="r"><code>#{r verify-named-aliases, send_to=&quot;R/verify_named.R&quot;}
 #&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
@@ -3370,7 +3373,7 @@ verify_pairs_as_recode_unique &lt;- verify_pairs_all_1to1</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_1to1'>verify_pairs_all_1to1</a>(pairs_1to1, f, t), pairs_1to1)
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_unique'>verify_pairs_all_unique</a>(pairs_1to1, f, t), pairs_1to1)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 <div id="verify-links" class="section level3">
 <h3>Verify: Links</h3>
@@ -3509,7 +3512,7 @@ NULL</code></pre>
     <a href='create-xmap.html#add_weights_prop'>add_weights_prop</a>(recipe, ingredients, grams)
   testthat::expect_equal(recipe_links, recipe_add)
 })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="verify_links_as_xmap" class="section level3">
 <h3><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code></h3>
@@ -3616,7 +3619,7 @@ a numeric vector - <code>X</code> inherits from the class
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>() rejects unknown subclass&quot;, {
   testthat::expect_error(<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;unknown&quot;))
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -3767,7 +3770,7 @@ NULL
     class = &quot;abort_col_order&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="from-set-check" class="section level4">
 <h4>From Set Check</h4>
@@ -3880,7 +3883,7 @@ single row)</li>
     testthat::expect_identical(df, <a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, node_A, node_B, w_AB))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;validate &amp; verify fncs reject missing columns&quot;,
@@ -3988,12 +3991,12 @@ testthat::test_that(
                            class = &quot;abort_bad_weights&quot;)
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 </div>
@@ -4220,7 +4223,7 @@ controlled by <code>.drop</code> argument</li>
 
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="to-list" class="section level3">
@@ -4336,7 +4339,7 @@ controlled by <code>.drop</code> argument</li>
     class = &quot;abort_frac_weights&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>() reverses <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>()&quot;, {
   link_list &lt;- list(
     AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
@@ -4352,7 +4355,7 @@ controlled by <code>.drop</code> argument</li>
     <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;xvars&quot;, &quot;capital&quot;, &quot;w&quot;)
   testthat::expect_identical(<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>(link_xmap), link_list)
 })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <p>with dplyr:</p>
 <pre class="r"><code>pairs_df &lt;-
   <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(
@@ -4504,7 +4507,7 @@ pairs_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#xmap_reverse.xmap_df'>xmap_reverse.xmap_df</a>(df_x), df_x_rev)
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x, &quot;to&quot;), df_x)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -4545,7 +4548,7 @@ pairs_df |&gt;
 
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="summarise" class="section level2">
@@ -4597,8 +4600,8 @@ from_degree |&gt;
 ##     xmap_to_named_vector</code></pre>
 <pre><code>## Warning: `bindFillRole()` only works on htmltools::tag() objects (e.g., div(),
 ## p(), etc.), not objects of type &#39;shiny.tag.list&#39;.</code></pre>
-<div id="htmlwidget-881b460f44875ecba8ff" class="reactable html-widget " style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-881b460f44875ecba8ff">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dff92517ebec1859227c" class="reactable html-widget " style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-dff92517ebec1859227c">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code><span id='summary_reactable'>summary_reactable</span> &lt;- function(.xmap) {
   col_attrs &lt;- <a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(.xmap)
   .xmap |&gt;
@@ -4986,9 +4989,6 @@ mock$xmap_abc |&gt;
 <pre><code>## ✔ Adding &#39;tidygraph&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;tidygraph&quot;)` or `rlang::check_installed(&quot;tidygraph&quot;)` to test if tidygraph is installed
 ## • Then directly refer to functions with `tidygraph::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;vdiffr&#39; to Suggests field in DESCRIPTION
-## • In your package code, use `rlang::is_installed(&quot;vdiffr&quot;)` or `rlang::check_installed(&quot;vdiffr&quot;)` to test if vdiffr is installed
-## • Then directly refer to functions with `vdiffr::fun()`</code></pre>
 <p>Now make an <code>autoplot()</code> and <code>plot()</code> methods
 for <code>xmap_df</code> using:</p>
 <ul>
@@ -5000,8 +5000,7 @@ mockup</li>
 </ul>
 <pre class="r"><code>usethis::use_package(&quot;ggplot2&quot;)
 usethis::use_package(&quot;ggraph&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;tidygraph&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;vdiffr&quot;, type = &quot;Suggests&quot;)</code></pre>
+usethis::use_package(&quot;tidygraph&quot;, type = &quot;Suggests&quot;)</code></pre>
 <pre class="r"><code>#&#39; @rdname autoplot.xmap
 #&#39; @importFrom graphics plot
 #&#39; @export
@@ -5015,7 +5014,8 @@ work:</p>
 <ul>
 <li><a href="https://www.tidyverse.org/blog/2021/06/vdiffr-1-0-0/" class="uri">https://www.tidyverse.org/blog/2021/06/vdiffr-1-0-0/</a></li>
 </ul>
-<pre class="r"><code>testthat::test_that(&quot;autoplot() has known output&quot;,{
+<pre class="r"><code>usethis::use_package(&quot;vdiffr&quot;, type = &quot;Suggests&quot;)
+testthat::test_that(&quot;autoplot() has known output&quot;,{
   library(dplyr)
   library(ggplot2)
   library(xmap)
@@ -5156,7 +5156,7 @@ NULL
       aes(edge_linetype = I(edge_linetype),
           edge_alpha = !!sym(x_attrs$col_weights),
           filter = frac_weight,
-          label = !!sym(x_attrs$col_weights),
+          label = round(!!sym(x_attrs$col_weights)),
           label_pos = edge_label_pos,
           ),
       end_cap = circle(6, &#39;mm&#39;),
@@ -5415,8 +5415,8 @@ print(valid_xmap_df)</code></pre>
 ## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap&#39;
 ## Writing to:   &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap/docs&#39;
 ## -- Initialising site -----------------------------------------------------------
-## Copying &#39;../../../../../Library/R/x86_64/4.2/library/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
-## Copying &#39;../../../../../Library/R/x86_64/4.2/library/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
+## Copying &#39;../../../../../Library/Application Support/renv/cache/v5/R-4.2/x86_64-apple-darwin17.0/pkgdown/2.0.7/16fa15449c930bf3a7761d3c68f8abf9/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
+## Copying &#39;../../../../../Library/Application Support/renv/cache/v5/R-4.2/x86_64-apple-darwin17.0/pkgdown/2.0.7/16fa15449c930bf3a7761d3c68f8abf9/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
 ## -- Building home ---------------------------------------------------------------
 ## Writing &#39;authors.html&#39;
 ## Reading &#39;LICENSE.md&#39;
