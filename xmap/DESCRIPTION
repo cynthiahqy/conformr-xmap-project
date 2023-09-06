@@ -1,7 +1,7 @@
 Package: xmap
 Title: A principled approach to recoding and redistributing data between
     nomenclature
-Version: 0.0.1.9003
+Version: 0.0.1.9004
 Authors@R: c(
     person("Cynthia", "Huang", , "cynthia@gmail.com", role = c("aut", "cre")),
     person("Laura", "Puzzello", role = c("aut", "fnd"))
@@ -20,15 +20,17 @@ Imports:
     cli,
     dplyr,
     ggplot2,
+    ggraph,
     glue,
+    pillar (>= 1.6.0),
     rlang (>= 1.0.0),
-    tibble,
+    tibble (>= 3.1.0),
     tidyr,
-    tidyselect
+    tidyselect,
+    vctrs (>= 0.6.0)
 Suggests: 
     forcats,
     ggbump,
-    ggraph,
     knitr,
     matlib,
     Matrix,
@@ -41,4 +43,4 @@ Suggests:
 LazyData: true
 VignetteBuilder: knitr
 LitrVersionUsed: 0.7.0
-LitrId: fc4fcd3fee523d29786892087c1b9771
+LitrId: c6af216c7a60c0fbfa074bc5012b5701

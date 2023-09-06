@@ -23,7 +23,7 @@ usethis::create_package(
   path = ".",
   fields = list(
     Package = params$package_name,
-    Version = "0.0.1.9003",
+    Version = "0.0.1.9004",
     Title = "A principled approach to recoding and redistributing data between nomenclature",
     Description = "Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.",
     `Authors@R` = c(
@@ -39,14 +39,16 @@ usethis::use_mit_license(copyright_holder = "C. Huang")
 
 ### Dependencies
 
-```{r}
+```{r dependencies}
 # Imports for Validation
 usethis::use_package("R", type = "Depends", min_version = "4.1")
 usethis::use_package("rlang", min_version = "1.0.0")
 usethis::use_package("cli")
 
 # Imports for Construction and verification helpers
-usethis::use_package("tibble")
+usethis::use_package("tibble", min_version = "3.1.0")
+usethis::use_package("pillar", min_version = "1.6.0")
+usethis::use_package("vctrs", min_version = "0.6.0")
 usethis::use_package("tidyr")
 usethis::use_package("dplyr")
 usethis::use_package("glue", "Imports")
@@ -57,10 +59,11 @@ usethis::use_package("stats", type = "Suggests")
 usethis::use_package("Matrix", type = "Suggests") ## for sparse matrices
 
 # Suggests for Tests and Vignettes
+usethis::use_package("ggplot2", type = "Imports")
+usethis::use_package("ggraph", type = "Imports")
 usethis::use_package("testthat", type = "Suggests")
 usethis::use_package("matlib", type = "Suggests")
 usethis::use_package("forcats", type = "Suggests")
-usethis::use_package("ggplot2", type = "Suggests")
 usethis::use_package("stringr", type = "Suggests")
 usethis::use_package("patchwork", type = "Suggests")
 usethis::use_package("ggbump", type = "Suggests")
@@ -316,15 +319,15 @@ mock$xmap_abc <- tibble::tribble(
 
 mock$named_aus <- list(AUS = c("AU-NSW", "AU-QLD", "AU-SA", "AU-TAS", "AU-VIC", "AU-WA", "AU-ACT", "AU-NT"))
 mock$df_aus_pop <- tibble::tribble(
-                              ~state_name,    ~state,    ~pop,
-                   "New South Wales", "AU-NSW", 8153600,
-                          "Victoria", "AU-VIC", 6613700,
-                        "Queensland", "AU-QLD", 5322100,
-                   "South Australia",  "AU-SA", 1820500,
-                 "Western Australia",  "AU-WA", 2785300,
-                          "Tasmania", "AU-TAS",  571500,
-                "Northern Territory",  "AU-NT",  250600,
-      "Australian Capital Territory", "AU-ACT",  456700
+  ~state_name, ~state, ~pop,
+  "New South Wales", "AU-NSW", 8153600,
+  "Victoria", "AU-VIC", 6613700,
+  "Queensland", "AU-QLD", 5322100,
+  "South Australia", "AU-SA", 1820500,
+  "Western Australia", "AU-WA", 2785300,
+  "Tasmania", "AU-TAS", 571500,
+  "Northern Territory", "AU-NT", 250600,
+  "Australian Capital Territory", "AU-ACT", 456700
 ) |>
   dplyr::mutate(ctr = "AUS")
 usethis::use_data(mock)
@@ -821,11 +824,12 @@ verify_named_all_unique <- function(x) {
   dup_idx <- anyDuplicated(pairs)
   stop <- as.logical(dup_idx)
   if (stop) {
-    cli::cli_abort(c(
-      "Duplicated pairs found in `x`.",
-      "i" = "Use `as_pairs_from_named(x) |> base::duplicated()` to identify duplicates."
-    ),
-    class = "abort_not_unique"
+    cli::cli_abort(
+      c(
+        "Duplicated pairs found in `x`.",
+        "i" = "Use `as_pairs_from_named(x) |> base::duplicated()` to identify duplicates."
+      ),
+      class = "abort_not_unique"
     )
   }
   invisible(x)
@@ -838,11 +842,12 @@ verify_named_all_names_unique <- function(x) {
   dup_idx <- anyDuplicated(names(x))
   stop <- as.logical(dup_idx)
   if (stop) {
-    cli::cli_abort(c(
-      "Duplicated names found in `x`.",
-      "i" = "Use `base::duplicated(names(x))` to identify duplicates."
-    ),
-    class = "abort_not_unique"
+    cli::cli_abort(
+      c(
+        "Duplicated names found in `x`.",
+        "i" = "Use `base::duplicated(names(x))` to identify duplicates."
+      ),
+      class = "abort_not_unique"
     )
   }
   invisible(x)
@@ -855,11 +860,12 @@ verify_named_all_values_unique <- function(x) {
   dup_idx <- anyDuplicated(unlist(unname(x)))
   stop <- as.logical(dup_idx)
   if (stop) {
-    cli::cli_abort(c(
-      "Duplicated values found in `x`.",
-      "i" = "Use `base::duplicated(unlist(unname(x)))` to identify duplicates."
-    ),
-    class = "abort_not_unique"
+    cli::cli_abort(
+      c(
+        "Duplicated values found in `x`.",
+        "i" = "Use `base::duplicated(unlist(unname(x)))` to identify duplicates."
+      ),
+      class = "abort_not_unique"
     )
   }
   # stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
@@ -1016,29 +1022,35 @@ testthat::test_that("verify_named_matchset fncs work as expected", {
   refn_superset_1to1 <- c("x1", "x2", "x3", "x4")
   testthat::expect_equal(verify_named_matchset_names_exact(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(verify_named_matchset_names_exact(v_1to1, c("not", "right")),
-                         class = "abort_matchset")
+    class = "abort_matchset"
+  )
   testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_subset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_names_contain(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(verify_named_matchset_names_contain(v_1to1, refn_superset_1to1),
-                         class = "abort_matchset")
+    class = "abort_matchset"
+  )
   testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_superset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_names_within(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(verify_named_matchset_names_within(v_1to1, refn_subset_1to1),
-                         class = "abort_matchset")
+    class = "abort_matchset"
+  )
   refv_exact_1to1 <- c(1, 2, 3)
   refv_subset_1to1 <- c(1, 2)
   refv_superset_1to1 <- c(1, 2, 3, 4)
   testthat::expect_equal(verify_named_matchset_values_exact(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(verify_named_matchset_values_exact(v_1to1, c("not", "right")),
-                         class = "abort_matchset")
+    class = "abort_matchset"
+  )
   testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_subset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_values_contain(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(verify_named_matchset_values_contain(v_1to1, refv_superset_1to1),
-                         class = "abort_matchset")
+    class = "abort_matchset"
+  )
   testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_superset_1to1), v_1to1)
   testthat::expect_equal(verify_named_matchset_values_within(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(verify_named_matchset_values_within(v_1to1, refv_subset_1to1),
-                         class = "abort_matchset")
+    class = "abort_matchset"
+  )
 })
 ```
 
@@ -1230,7 +1242,6 @@ add_weights_prop <- function(df, from, to, prop, weights_into = "weights") {
 
 ```{r}
 testthat::test_that("add_weights_*() work as expected", {
-
   # equal
   animal_pairs <- list(
     MAMM = c("elephant", "whale", "monkey"),
@@ -1328,7 +1339,69 @@ Let `X` be an **validated** object of class `xmap_df`. Then:
     -   has no missing values - the character vector of all unique values in the `col_from` variable exactly match the `from_set` attribute - the `col_weights` column is a numeric vector - `X` inherits from the class `xmap`
     -   (each row represents a single weighted link)
 
-## Construction
+### `xmap_df` column vector types
+
+- `pct` print as percentage
+
+## Vctrs definitions
+
+### `xmap_to` and `xmap_from` character vectors
+
+- use factor as base type?
+
+### `xmap_percent` double class for weights
+
+```{r send_to="R/vctrs.R"}
+# --- xmap_percent -----------------------------------------------------------
+
+## constructor
+new_percent <- function(x = double()) {
+  if (!is_double(x)) {
+    abort("`x` must be a double vector.")
+  }
+  vctrs::new_vctr(x, class = "xmap_percent")
+}
+
+## helpers
+percent <- function(x = double()) {
+  x <- vctrs::vec_cast(x, double())
+  new_percent(x)
+}
+
+is_percent <- function(x) {
+  inherits(x, "xmap_percent")
+}
+
+## printing
+format.xmap_percent <- function(x, ...) {
+  out <- formatC(signif(vctrs::vec_data(x) * 100, 3))
+  out[is.na(x)] <- NA
+  out[!is.na(x)] <- paste0(out[!is.na(x)], "%")
+  out
+}
+
+vec_ptype_abbr.xmap_percent <- function(x, ...) {
+  "pct"
+}
+
+## casting and coercion
+vec_ptype2.xmap_percent.double <- function(x, y, ...) double()
+vec_ptype2.double.xmap_percent <- function(x, y, ...) double()
+
+vec_cast.xmap_percent.xmap_percent <- function(x, to, ...) x
+vec_cast.xmap_percent.double <- function(x, to, ...) percent(x)
+vec_cast.double.xmap_percent <- function(x, to, ...) vec_data(x)
+```
+
+```{r}
+x <- new_percent(c(seq(0, 1, length.out = 4), NA))
+
+tibble::tibble(x)
+
+str(x)
+```
+
+## Data Frame Construction
 
 The naming convention for constructors is: `new_<subclass>()`. For example: `new_xmap_df()`
 
@@ -1675,7 +1748,8 @@ testthat::test_that(
     )
     x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
-                           class = "abort_col_type")
+      class = "abort_col_type"
+    )
   }
 )
 
@@ -1708,7 +1782,8 @@ testthat::test_that(
     testthat::expect_error(abort_dup_pairs(df, "f", "t"), class = "abort_dup_pairs")
     x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
-                           class = "abort_dup_pairs")
+      class = "abort_dup_pairs"
+    )
   }
 )
 
@@ -1723,7 +1798,8 @@ testthat::test_that(
     )
     x <- new_xmap_df(df, "f", "t", "w")
     testthat::expect_error(verify_links_as_xmap(df, f, t, w),
-                           class = "abort_bad_weights")
+      class = "abort_bad_weights"
+    )
   }
 )
 ```
@@ -1795,18 +1871,18 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
   if (is.null(.drop_extra)) {
     cli::cli_inform(c(
       "Dropping any additional columns in {.arg {deparse(substitute(x))}}",
-      "i" = "To silence set `.drop_extra = TRUE`")
-      )
+      "i" = "To silence set `.drop_extra = TRUE`"
+    ))
   }
-  
+
   .drop_extra <- .drop_extra %||% TRUE
-  
+
   if (.drop_extra) {
     df <- x[col_strings]
   } else {
     df <- x
   }
-  
+
   ## rearrange columns
   col_order <- c(col_strings, setdiff(names(df), col_strings))
   df <- df[col_order]
@@ -1998,9 +2074,10 @@ xmap_to_named_vector <- function(.xmap) {
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named vector"),
-                   class = "abort_frac_weights")
+      class = "abort_frac_weights"
+    )
   }
-  
+
   # convert
   df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
@@ -2029,13 +2106,14 @@ xmap_to_named_list <- function(.xmap) {
   df <- as.data.frame(.xmap)
   # check only unit weights
   w <- df[[x_attrs$col_weights]]
-  
+
   stop <- !all(w == 1)
   if (stop) {
     cli::cli_abort(msg_abort_frac_weights("Cannot convert to named list"),
-                   class = "abort_frac_weights")
+      class = "abort_frac_weights"
+    )
   }
-  
+
   # convert
   df |>
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |>
@@ -2129,7 +2207,7 @@ pull_from <- function(.xmap) {
 ```
 
 ```{r send_to="R/autoplot.R"}
-#' 
+#'
 as_tbl_graph.xmap_df <- function(x, ...) {
   x <- xmap_drop_extra(x)
   x_attrs <- attributes(x)
@@ -2416,7 +2494,7 @@ mock$xmap_abc |>
 #'   add_placeholder_weights(from = upper, to = lower)
 add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from}}") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
-  
+
   ## set up
   weights_into <- rlang::englue(weights_into)
   frac_symbol <- NA
@@ -2426,9 +2504,9 @@ add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from
     dplyr::group_by({{ from }}) |>
     dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup() -> w_df
-  
+
   if (all(w_df[[weights_into]] == 1)) {
-    #cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
+    # cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
     return(w_df)
   } else {
     w_df |>
@@ -2539,7 +2617,7 @@ mock$xmap_abc |>
 #' If a data.frame of links is provided, crossmap properties are not checked.
 #' This can be useful when combined with `add_placeholder_weights()` to highlight
 #' where weights must be chosen.
-#' 
+#'
 #' @param links A data frame or `xmap_df`.
 #' @inheritParams as_xmap
 #' @param parts_into A string specifying the new column to pass the summarised composition into. Default is "parts".
@@ -2562,8 +2640,8 @@ summary_by_target <- function(links, ...) {
 #' @export
 #' @rdname summary_by_target
 #' @examples
-#' 
-#' mock$xmap_abc |> 
+#'
+#' mock$xmap_abc |>
 #'   summary_by_target()
 #'
 #' df <- data.frame(
@@ -2572,8 +2650,10 @@ summary_by_target <- function(links, ...) {
 #' )
 #' df |>
 #'   add_placeholder_weights(from = parent, to = child, weights_into = "weights") |>
-#'   summary_by_target(from = parent, to = child, weights = weights,
-#'                     frac_formula = "{from}*{weights}")
+#'   summary_by_target(
+#'     from = parent, to = child, weights = weights,
+#'     frac_formula = "{from}*{weights}"
+#'   )
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
 summary_by_target.data.frame <- function(links, from, to, weights,
@@ -2586,8 +2666,8 @@ summary_by_target.data.frame <- function(links, from, to, weights,
   if (warn) {
     cli::cli_warn(c(
       "Summary completed without verifying crossmap properties.",
-      "i" = "To silence set `warn = FALSE`")
-    )
+      "i" = "To silence set `warn = FALSE`"
+    ))
   }
 
   ## evaluate glue formulas
@@ -2602,7 +2682,7 @@ summary_by_target.data.frame <- function(links, from, to, weights,
   col_weights <- rlang::englue("{{weights}}")
   frac_formula <- englue_xmap(frac_formula, col_from, col_to, col_weights)
   unit_formula <- englue_xmap(unit_formula, col_from, col_to, col_weights)
-  
+
   ## summarise
   links |>
     dplyr::mutate("{col_weights}" := dplyr::coalesce(as.character(.data[[col_weights]]), na_placeholder)) |>
@@ -2696,71 +2776,80 @@ plot.xmap_df <- function(x, ...) {
 #' library(ggraph)
 #' library(tidygraph)
 #' library(xmap)
-#' df <- data.frame(from = c("A", "A", "B", "B", "B"),
-#'                  to = c("X", "Y", "X", "Y", "Z"),
-#'                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
+#' df <- data.frame(
+#'   from = c("A", "A", "B", "B", "B"),
+#'   to = c("X", "Y", "X", "Y", "Z"),
+#'   weights = c(0.6, 0.4, 0.2, 0.7, 0.1)
+#' )
 #' xmap <- as_xmap_df(df, from, to, weights)
 #' autoplot(xmap)
 NULL
 
 #' @rdname autoplot.xmap
 #' @export
-autoplot.xmap_df <- function(object, ...){
-
-  if(!requireNamespace("ggraph", quietly = TRUE)) {
+autoplot.xmap_df <- function(object, ...) {
+  if (!requireNamespace("ggraph", quietly = TRUE)) {
     cli::cli_abort('Please `install.package("ggraph")`')
   }
-  
+
   x_attrs <- attributes(object)
 
   tidygraph_data <-
     tidygraph::as_tbl_graph(object) |>
-  ## calculating edge properties
+    ## calculating edge properties
     tidygraph::activate(edges) |>
     tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) < 1, TRUE, FALSE)) |>
     tidygraph::mutate(edge_linetype = ifelse(frac_weight, "dashed", "solid")) |>
     tidygraph::mutate(edge_label_pos = ifelse(frac_weight, 0.8, 0.2)) |>
-  ## calculating node properties
+    ## calculating node properties
     tidygraph::activate(nodes) |>
-    tidygraph::mutate(n_from = tidygraph::centrality_degree(mode = "in"),
-         in_from = n_from == 0,
-         collapse = n_from > 1)
+    tidygraph::mutate(
+      n_from = tidygraph::centrality_degree(mode = "in"),
+      in_from = n_from == 0,
+      collapse = n_from > 1
+    )
 
   tidygraph_data |>
     ## now we plot...
     ggraph::ggraph(layout = "sugiyama") +
     ## unit weight links,
     ggraph::geom_edge_diagonal(
-      aes(edge_linetype = I(edge_linetype),
-          edge_alpha = !!sym(x_attrs$col_weights),
-          filter = !frac_weight),
-      end_cap = circle(6, 'mm'),
+      aes(
+        edge_linetype = I(edge_linetype),
+        edge_alpha = !!sym(x_attrs$col_weights),
+        filter = !frac_weight
+      ),
+      end_cap = circle(6, "mm"),
       show.legend = FALSE
-      ) +
+    ) +
     ## frac weight links,
     ggraph::geom_edge_diagonal(
-      aes(edge_linetype = I(edge_linetype),
-          edge_alpha = !!sym(x_attrs$col_weights),
-          filter = frac_weight,
-          label = round(!!sym(x_attrs$col_weights), digits = 3),
-          label_pos = edge_label_pos,
-          ),
-      end_cap = circle(6, 'mm'),
+      aes(
+        edge_linetype = I(edge_linetype),
+        edge_alpha = !!sym(x_attrs$col_weights),
+        filter = frac_weight,
+        label = round(!!sym(x_attrs$col_weights), digits = 3),
+        label_pos = edge_label_pos,
+      ),
+      end_cap = circle(6, "mm"),
       show.legend = FALSE,
       angle_calc = "along",
       label_dodge = grid::unit(2, "mm")
-      ) +
+    ) +
     ## from nodes,
-    ggraph::geom_node_label(aes(label = name,
-                                filter=in_from),
-                            ) +
+    ggraph::geom_node_label(aes(
+      label = name,
+      filter = in_from
+    ), ) +
     ## to nodes,
-    ggraph::geom_node_label(aes(label = name,
-                                fill = collapse,
-                                filter=!in_from
-                                ),
-                            show.legend = FALSE,
-                            ) +
+    ggraph::geom_node_label(
+      aes(
+        label = name,
+        fill = collapse,
+        filter = !in_from
+      ),
+      show.legend = FALSE,
+    ) +
     ggplot2::scale_fill_brewer(palette = "Greys") +
     ## and finally modify coordinates, scale and theme
     ggplot2::coord_flip() +

@@ -51,18 +51,18 @@ as_xmap_df.data.frame <- function(x, from, to, weights, tol = .Machine$double.ep
   if (is.null(.drop_extra)) {
     cli::cli_inform(c(
       "Dropping any additional columns in {.arg {deparse(substitute(x))}}",
-      "i" = "To silence set `.drop_extra = TRUE`")
-      )
+      "i" = "To silence set `.drop_extra = TRUE`"
+    ))
   }
-  
+
   .drop_extra <- .drop_extra %||% TRUE
-  
+
   if (.drop_extra) {
     df <- x[col_strings]
   } else {
     df <- x
   }
-  
+
   ## rearrange columns
   col_order <- c(col_strings, setdiff(names(df), col_strings))
   df <- df[col_order]

@@ -62,7 +62,7 @@ where weights must be chosen.
 }
 \examples{
 
-mock$xmap_abc |> 
+mock$xmap_abc |>
   summary_by_target()
 
 df <- data.frame(
@@ -71,6 +71,8 @@ df <- data.frame(
 )
 df |>
   add_placeholder_weights(from = parent, to = child, weights_into = "weights") |>
-  summary_by_target(from = parent, to = child, weights = weights,
-                    frac_formula = "{from}*{weights}")
+  summary_by_target(
+    from = parent, to = child, weights = weights,
+    frac_formula = "{from}*{weights}"
+  )
 }

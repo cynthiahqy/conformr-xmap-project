@@ -27,7 +27,7 @@
 #'   add_placeholder_weights(from = upper, to = lower)
 add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from}}") {
   abort_dup_pairs(df, rlang::englue("{{from}}"), rlang::englue("{{to}}"))
-  
+
   ## set up
   weights_into <- rlang::englue(weights_into)
   frac_symbol <- NA
@@ -37,9 +37,9 @@ add_placeholder_weights <- function(df, from, to, weights_into = "weights_{{from
     dplyr::group_by({{ from }}) |>
     dplyr::mutate("{weights_into}" := 1 / dplyr::n_distinct({{ to }})) |>
     dplyr::ungroup() -> w_df
-  
+
   if (all(w_df[[weights_into]] == 1)) {
-    #cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
+    # cli::cli_inform("No split relations found. Returning `df` with unit weights attached.")
     return(w_df)
   } else {
     w_df |>

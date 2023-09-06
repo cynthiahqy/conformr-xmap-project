@@ -7,7 +7,7 @@
 #' If a data.frame of links is provided, crossmap properties are not checked.
 #' This can be useful when combined with `add_placeholder_weights()` to highlight
 #' where weights must be chosen.
-#' 
+#'
 #' @param links A data frame or `xmap_df`.
 #' @inheritParams as_xmap
 #' @param parts_into A string specifying the new column to pass the summarised composition into. Default is "parts".
@@ -30,8 +30,8 @@ summary_by_target <- function(links, ...) {
 #' @export
 #' @rdname summary_by_target
 #' @examples
-#' 
-#' mock$xmap_abc |> 
+#'
+#' mock$xmap_abc |>
 #'   summary_by_target()
 #'
 #' df <- data.frame(
@@ -40,8 +40,10 @@ summary_by_target <- function(links, ...) {
 #' )
 #' df |>
 #'   add_placeholder_weights(from = parent, to = child, weights_into = "weights") |>
-#'   summary_by_target(from = parent, to = child, weights = weights,
-#'                     frac_formula = "{from}*{weights}")
+#'   summary_by_target(
+#'     from = parent, to = child, weights = weights,
+#'     frac_formula = "{from}*{weights}"
+#'   )
 #' @importFrom dplyr mutate group_by summarise rename case_when
 #' @importFrom glue glue_collapse
 summary_by_target.data.frame <- function(links, from, to, weights,
@@ -54,8 +56,8 @@ summary_by_target.data.frame <- function(links, from, to, weights,
   if (warn) {
     cli::cli_warn(c(
       "Summary completed without verifying crossmap properties.",
-      "i" = "To silence set `warn = FALSE`")
-    )
+      "i" = "To silence set `warn = FALSE`"
+    ))
   }
 
   ## evaluate glue formulas
@@ -70,7 +72,7 @@ summary_by_target.data.frame <- function(links, from, to, weights,
   col_weights <- rlang::englue("{{weights}}")
   frac_formula <- englue_xmap(frac_formula, col_from, col_to, col_weights)
   unit_formula <- englue_xmap(unit_formula, col_from, col_to, col_weights)
-  
+
   ## summarise
   links |>
     dplyr::mutate("{col_weights}" := dplyr::coalesce(as.character(.data[[col_weights]]), na_placeholder)) |>

@@ -2140,8 +2140,18 @@ weights</a></li>
 properties</a></li>
 <li><a href="#xmap_df-subclass-properties" id="toc-xmap_df-subclass-properties"><code>xmap_df</code> subclass
 properties</a></li>
+<li><a href="#xmap_df-column-vector-types" id="toc-xmap_df-column-vector-types"><code>xmap_df</code> column vector
+types</a></li>
 </ul></li>
-<li><a href="#construction" id="toc-construction">Construction</a>
+<li><a href="#vctrs-definitions" id="toc-vctrs-definitions">Vctrs
+definitions</a>
+<ul>
+<li><a href="#xmap_to-and-xmap_from-character-vectors" id="toc-xmap_to-and-xmap_from-character-vectors"><code>xmap_to</code>
+and <code>xmap_from</code> character vectors</a></li>
+<li><a href="#xmap_percent-double-class-for-weights" id="toc-xmap_percent-double-class-for-weights"><code>xmap_percent</code>
+double class for weights</a></li>
+</ul></li>
+<li><a href="#data-frame-construction" id="toc-data-frame-construction">Data Frame Construction</a>
 <ul>
 <li><a href="#helper-for-subclass-attributes" id="toc-helper-for-subclass-attributes">Helper for subclass
 attributes</a></li>
@@ -2230,7 +2240,7 @@ package</a></li>
   path = &quot;.&quot;,
   fields = list(
     Package = params$package_name,
-    Version = &quot;0.0.1.9003&quot;,
+    Version = &quot;0.0.1.9004&quot;,
     Title = &quot;A principled approach to recoding and redistributing data between nomenclature&quot;,
     Description = &quot;Provides tools for creating and verifying classification, category and/or nomenclature mapping objects.&quot;,
     `Authors@R` = c(
@@ -2251,7 +2261,9 @@ usethis::use_package(&quot;rlang&quot;, min_version = &quot;1.0.0&quot;)
 usethis::use_package(&quot;cli&quot;)
 
 # Imports for Construction and verification helpers
-usethis::use_package(&quot;tibble&quot;)
+usethis::use_package(&quot;tibble&quot;, min_version = &quot;3.1.0&quot;)
+usethis::use_package(&quot;pillar&quot;, min_version = &quot;1.6.0&quot;)
+usethis::use_package(&quot;vctrs&quot;, min_version = &quot;0.6.0&quot;)
 usethis::use_package(&quot;tidyr&quot;)
 usethis::use_package(&quot;dplyr&quot;)
 usethis::use_package(&quot;glue&quot;, &quot;Imports&quot;)
@@ -2262,10 +2274,11 @@ usethis::use_package(&quot;stats&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;Matrix&quot;, type = &quot;Suggests&quot;) ## for sparse matrices
 
 # Suggests for Tests and Vignettes
+usethis::use_package(&quot;ggplot2&quot;, type = &quot;Imports&quot;)
+usethis::use_package(&quot;ggraph&quot;, type = &quot;Imports&quot;)
 usethis::use_package(&quot;testthat&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;matlib&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;forcats&quot;, type = &quot;Suggests&quot;)
-usethis::use_package(&quot;ggplot2&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;stringr&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;patchwork&quot;, type = &quot;Suggests&quot;)
 usethis::use_package(&quot;ggbump&quot;, type = &quot;Suggests&quot;)</code></pre>
@@ -2277,6 +2290,10 @@ usethis::use_package(&quot;ggbump&quot;, type = &quot;Suggests&quot;)</code></pr
 ## • Refer to functions with `cli::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;tibble&#39; to Imports field in DESCRIPTION
 ## • Refer to functions with `tibble::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;pillar&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `pillar::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;vctrs&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `vctrs::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;tidyr&#39; to Imports field in DESCRIPTION
 ## • Refer to functions with `tidyr::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;dplyr&#39; to Imports field in DESCRIPTION
@@ -2291,20 +2308,19 @@ usethis::use_package(&quot;ggbump&quot;, type = &quot;Suggests&quot;)</code></pr
 <pre><code>## ✔ Adding &#39;Matrix&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;Matrix&quot;)` or `rlang::check_installed(&quot;Matrix&quot;)` to test if Matrix is installed
 ## • Then directly refer to functions with `Matrix::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;ggplot2&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `ggplot2::fun()`</code></pre>
+<pre><code>## ✔ Adding &#39;ggraph&#39; to Imports field in DESCRIPTION
+## • Refer to functions with `ggraph::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;testthat&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;testthat&quot;)` or `rlang::check_installed(&quot;testthat&quot;)` to test if testthat is installed
 ## • Then directly refer to functions with `testthat::fun()`</code></pre>
-<pre><code>## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</code></pre>
-<pre><code>## Warning: &#39;rgl.init&#39; failed, running with &#39;rgl.useNULL = TRUE&#39;.</code></pre>
 <pre><code>## ✔ Adding &#39;matlib&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;matlib&quot;)` or `rlang::check_installed(&quot;matlib&quot;)` to test if matlib is installed
 ## • Then directly refer to functions with `matlib::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;forcats&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;forcats&quot;)` or `rlang::check_installed(&quot;forcats&quot;)` to test if forcats is installed
 ## • Then directly refer to functions with `forcats::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;ggplot2&#39; to Suggests field in DESCRIPTION
-## • In your package code, use `rlang::is_installed(&quot;ggplot2&quot;)` or `rlang::check_installed(&quot;ggplot2&quot;)` to test if ggplot2 is installed
-## • Then directly refer to functions with `ggplot2::fun()`</code></pre>
 <pre><code>## ✔ Adding &#39;stringr&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;stringr&quot;)` or `rlang::check_installed(&quot;stringr&quot;)` to test if stringr is installed
 ## • Then directly refer to functions with `stringr::fun()`</code></pre>
@@ -2609,21 +2625,18 @@ mock$xmap_abc &lt;- tibble::tribble(
 
 mock$named_aus &lt;- list(AUS = c(&quot;AU-NSW&quot;, &quot;AU-QLD&quot;, &quot;AU-SA&quot;, &quot;AU-TAS&quot;, &quot;AU-VIC&quot;, &quot;AU-WA&quot;, &quot;AU-ACT&quot;, &quot;AU-NT&quot;))
 mock$df_aus_pop &lt;- tibble::tribble(
-                              ~state_name,    ~state,    ~pop,
-                   &quot;New South Wales&quot;, &quot;AU-NSW&quot;, 8153600,
-                          &quot;Victoria&quot;, &quot;AU-VIC&quot;, 6613700,
-                        &quot;Queensland&quot;, &quot;AU-QLD&quot;, 5322100,
-                   &quot;South Australia&quot;,  &quot;AU-SA&quot;, 1820500,
-                 &quot;Western Australia&quot;,  &quot;AU-WA&quot;, 2785300,
-                          &quot;Tasmania&quot;, &quot;AU-TAS&quot;,  571500,
-                &quot;Northern Territory&quot;,  &quot;AU-NT&quot;,  250600,
-      &quot;Australian Capital Territory&quot;, &quot;AU-ACT&quot;,  456700
+  ~state_name, ~state, ~pop,
+  &quot;New South Wales&quot;, &quot;AU-NSW&quot;, 8153600,
+  &quot;Victoria&quot;, &quot;AU-VIC&quot;, 6613700,
+  &quot;Queensland&quot;, &quot;AU-QLD&quot;, 5322100,
+  &quot;South Australia&quot;, &quot;AU-SA&quot;, 1820500,
+  &quot;Western Australia&quot;, &quot;AU-WA&quot;, 2785300,
+  &quot;Tasmania&quot;, &quot;AU-TAS&quot;, 571500,
+  &quot;Northern Territory&quot;, &quot;AU-NT&quot;, 250600,
+  &quot;Australian Capital Territory&quot;, &quot;AU-ACT&quot;, 456700
 ) |&gt;
   dplyr::mutate(ctr = &quot;AUS&quot;)
 usethis::use_data(mock)</code></pre>
-<pre><code>## Dropping any additional columns in `tibble::tribble(~lower, ~upper, ~share, &quot;a&quot;, &quot;AA&quot;, 1, &quot;b&quot;, &quot;BB&quot;, `, ` 1, &quot;c&quot;, &quot;BB&quot;, 1, &quot;d&quot;, &quot;CC&quot;, 0.3, &quot;d&quot;, &quot;DD&quot;, 0.6, &quot;d&quot;,
-## &quot;EE&quot;, `, and ` 0.1)`
-## ℹ To silence set `.drop_extra = TRUE`</code></pre>
 <pre><code>## ✔ Creating &#39;data/&#39;
 ## ✔ Setting LazyData to &#39;true&#39; in &#39;DESCRIPTION&#39;
 ## ✔ Saving &#39;mock&#39; to &#39;data/mock.rda&#39;
@@ -2841,7 +2854,7 @@ NULL
   abc_links &lt;- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
   testthat::expect_equal(<a href='create-xmap.html#add_weights_unit'>add_weights_unit</a>(abc_pairs), abc_links)
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 <div id="link-properties-vhas_x_" class="section level3">
@@ -2962,9 +2975,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -3007,7 +3020,7 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
@@ -3100,11 +3113,12 @@ NULL</code></pre>
   dup_idx &lt;- anyDuplicated(pairs)
   stop &lt;- as.logical(dup_idx)
   if (stop) {
-    cli::cli_abort(c(
-      &quot;Duplicated pairs found in `x`.&quot;,
-      &quot;i&quot; = &quot;Use `<a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(x) |&gt; base::duplicated()` to identify duplicates.&quot;
-    ),
-    class = &quot;abort_not_unique&quot;
+    cli::cli_abort(
+      c(
+        &quot;Duplicated pairs found in `x`.&quot;,
+        &quot;i&quot; = &quot;Use `<a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(x) |&gt; base::duplicated()` to identify duplicates.&quot;
+      ),
+      class = &quot;abort_not_unique&quot;
     )
   }
   invisible(x)
@@ -3117,11 +3131,12 @@ NULL</code></pre>
   dup_idx &lt;- anyDuplicated(names(x))
   stop &lt;- as.logical(dup_idx)
   if (stop) {
-    cli::cli_abort(c(
-      &quot;Duplicated names found in `x`.&quot;,
-      &quot;i&quot; = &quot;Use `base::duplicated(names(x))` to identify duplicates.&quot;
-    ),
-    class = &quot;abort_not_unique&quot;
+    cli::cli_abort(
+      c(
+        &quot;Duplicated names found in `x`.&quot;,
+        &quot;i&quot; = &quot;Use `base::duplicated(names(x))` to identify duplicates.&quot;
+      ),
+      class = &quot;abort_not_unique&quot;
     )
   }
   invisible(x)
@@ -3134,11 +3149,12 @@ NULL</code></pre>
   dup_idx &lt;- anyDuplicated(unlist(unname(x)))
   stop &lt;- as.logical(dup_idx)
   if (stop) {
-    cli::cli_abort(c(
-      &quot;Duplicated values found in `x`.&quot;,
-      &quot;i&quot; = &quot;Use `base::duplicated(unlist(unname(x)))` to identify duplicates.&quot;
-    ),
-    class = &quot;abort_not_unique&quot;
+    cli::cli_abort(
+      c(
+        &quot;Duplicated values found in `x`.&quot;,
+        &quot;i&quot; = &quot;Use `base::duplicated(unlist(unname(x)))` to identify duplicates.&quot;
+      ),
+      class = &quot;abort_not_unique&quot;
     )
   }
   # stopifnot(unlist(unname(x)) == unique(unlist(unname(student_groups))))
@@ -3168,7 +3184,7 @@ testthat::test_that(&quot;verify_named_*_unique() work as expected&quot;, {
   testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(ldup_values), class = &quot;abort_not_unique&quot;)
 })</code></pre>
 <pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre class="r"><code>#&#39; @describeIn abort Abort message for verify_named_matchset_* functions
 #&#39; @export
 <span id='msg_abort_named_matchset'>msg_abort_named_matchset</span> &lt;- function(set_type = c(&quot;names&quot;, &quot;values&quot;),
@@ -3288,31 +3304,37 @@ NULL
   refn_superset_1to1 &lt;- c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;, &quot;x4&quot;)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_exact'>verify_named_matchset_names_exact</a>(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_names_exact'>verify_named_matchset_names_exact</a>(v_1to1, c(&quot;not&quot;, &quot;right&quot;)),
-                         class = &quot;abort_matchset&quot;)
+    class = &quot;abort_matchset&quot;
+  )
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_contain'>verify_named_matchset_names_contain</a>(v_1to1, refn_subset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_contain'>verify_named_matchset_names_contain</a>(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_names_contain'>verify_named_matchset_names_contain</a>(v_1to1, refn_superset_1to1),
-                         class = &quot;abort_matchset&quot;)
+    class = &quot;abort_matchset&quot;
+  )
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_within'>verify_named_matchset_names_within</a>(v_1to1, refn_superset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_names_within'>verify_named_matchset_names_within</a>(v_1to1, refn_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_names_within'>verify_named_matchset_names_within</a>(v_1to1, refn_subset_1to1),
-                         class = &quot;abort_matchset&quot;)
+    class = &quot;abort_matchset&quot;
+  )
   refv_exact_1to1 &lt;- c(1, 2, 3)
   refv_subset_1to1 &lt;- c(1, 2)
   refv_superset_1to1 &lt;- c(1, 2, 3, 4)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_exact'>verify_named_matchset_values_exact</a>(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_exact'>verify_named_matchset_values_exact</a>(v_1to1, c(&quot;not&quot;, &quot;right&quot;)),
-                         class = &quot;abort_matchset&quot;)
+    class = &quot;abort_matchset&quot;
+  )
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_contain'>verify_named_matchset_values_contain</a>(v_1to1, refv_subset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_contain'>verify_named_matchset_values_contain</a>(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_contain'>verify_named_matchset_values_contain</a>(v_1to1, refv_superset_1to1),
-                         class = &quot;abort_matchset&quot;)
+    class = &quot;abort_matchset&quot;
+  )
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_superset_1to1), v_1to1)
   testthat::expect_equal(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_exact_1to1), v_1to1)
   testthat::expect_error(<a href='create-xmap.html#verify_named_matchset_values_within'>verify_named_matchset_values_within</a>(v_1to1, refv_subset_1to1),
-                         class = &quot;abort_matchset&quot;)
+    class = &quot;abort_matchset&quot;
+  )
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <p>Aliases:</p>
 <pre class="r"><code>#{r verify-named-aliases, send_to=&quot;R/verify_named.R&quot;}
 #&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
@@ -3373,7 +3395,7 @@ verify_pairs_as_recode_unique &lt;- verify_pairs_all_1to1</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_1to1'>verify_pairs_all_1to1</a>(pairs_1to1, f, t), pairs_1to1)
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_unique'>verify_pairs_all_unique</a>(pairs_1to1, f, t), pairs_1to1)
 })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 <div id="verify-links" class="section level3">
 <h3>Verify: Links</h3>
@@ -3483,7 +3505,6 @@ NULL</code></pre>
     dplyr::ungroup()
 }</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;add_weights_*() work as expected&quot;, {
-
   # equal
   animal_pairs &lt;- list(
     MAMM = c(&quot;elephant&quot;, &quot;whale&quot;, &quot;monkey&quot;),
@@ -3512,7 +3533,7 @@ NULL</code></pre>
     <a href='create-xmap.html#add_weights_prop'>add_weights_prop</a>(recipe, ingredients, grams)
   testthat::expect_equal(recipe_links, recipe_add)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 <div id="verify_links_as_xmap" class="section level3">
 <h3><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code></h3>
@@ -3596,9 +3617,68 @@ a numeric vector - <code>X</code> inherits from the class
 </ul></li>
 </ul>
 </div>
+<div id="xmap_df-column-vector-types" class="section level3">
+<h3><code>xmap_df</code> column vector types</h3>
+<ul>
+<li><code>pct</code> print as percentage</li>
+</ul>
 </div>
-<div id="construction" class="section level2">
-<h2>Construction</h2>
+</div>
+<div id="vctrs-definitions" class="section level2">
+<h2>Vctrs definitions</h2>
+<div id="xmap_to-and-xmap_from-character-vectors" class="section level3">
+<h3><code>xmap_to</code> and <code>xmap_from</code> character
+vectors</h3>
+<ul>
+<li>use factor as base type?</li>
+</ul>
+</div>
+<div id="xmap_percent-double-class-for-weights" class="section level3">
+<h3><code>xmap_percent</code> double class for weights</h3>
+<pre class="r"><code><span id='new_percent'>new_percent</span> &lt;- function(x = double()) {
+  if (!is_double(x)) {
+    abort(&quot;`x` must be a double vector.&quot;)
+  }
+  vctrs::new_vctr(x, class = &quot;xmap_percent&quot;)
+}
+
+<span id='percent'>percent</span> &lt;- function(x = double()) {
+  x &lt;- vctrs::vec_cast(x, double())
+  <a href='create-xmap.html#new_percent'>new_percent</a>(x)
+}
+
+<span id='is_percent'>is_percent</span> &lt;- function(x) {
+  inherits(x, &quot;xmap_percent&quot;)
+}
+
+<span id='format.xmap_percent'>format.xmap_percent</span> &lt;- function(x, ...) {
+  out &lt;- formatC(signif(vctrs::vec_data(x) * 100, 3))
+  out[is.na(x)] &lt;- NA
+  out[!is.na(x)] &lt;- paste0(out[!is.na(x)], &quot;%&quot;)
+  out
+}
+
+<span id='vec_ptype_abbr.xmap_percent'>vec_ptype_abbr.xmap_percent</span> &lt;- function(x, ...) {
+  &quot;pct&quot;
+}</code></pre>
+<pre class="r"><code>x &lt;- <a href='create-xmap.html#new_percent'>new_percent</a>(c(seq(0, 1, length.out = 4), NA))
+
+tibble::tibble(x)
+
+str(x)</code></pre>
+<pre><code>## # A tibble: 5 × 1
+##       x
+##   &lt;pct&gt;
+## 1    0%
+## 2 33.3%
+## 3 66.7%
+## 4  100%
+## 5    NA</code></pre>
+<pre><code>##  pct [1:5] 0%, 33.3%, 66.7%, 100%, &lt;NA&gt;</code></pre>
+</div>
+</div>
+<div id="data-frame-construction" class="section level2">
+<h2>Data Frame Construction</h2>
 <p>The naming convention for constructors is:
 <code>new_&lt;subclass&gt;()</code>. For example:
 <code><a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>()</code></p>
@@ -3711,7 +3791,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -3770,7 +3850,7 @@ NULL
     class = &quot;abort_col_order&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 <div id="from-set-check" class="section level4">
 <h4>From Set Check</h4>
@@ -3883,7 +3963,7 @@ single row)</li>
     testthat::expect_identical(df, <a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, node_A, node_B, w_AB))
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <pre class="r"><code>## columns present
 testthat::test_that(
   &quot;validate &amp; verify fncs reject missing columns&quot;,
@@ -3940,7 +4020,8 @@ testthat::test_that(
     )
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
-                           class = &quot;abort_col_type&quot;)
+      class = &quot;abort_col_type&quot;
+    )
   }
 )
 
@@ -3973,7 +4054,8 @@ testthat::test_that(
     testthat::expect_error(<a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, &quot;f&quot;, &quot;t&quot;), class = &quot;abort_dup_pairs&quot;)
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
-                           class = &quot;abort_dup_pairs&quot;)
+      class = &quot;abort_dup_pairs&quot;
+    )
   }
 )
 
@@ -3988,15 +4070,16 @@ testthat::test_that(
     )
     x &lt;- <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(df, &quot;f&quot;, &quot;t&quot;, &quot;w&quot;)
     testthat::expect_error(<a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>(df, f, t, w),
-                           class = &quot;abort_bad_weights&quot;)
+      class = &quot;abort_bad_weights&quot;
+    )
   }
 )</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 </div>
@@ -4029,19 +4112,20 @@ testthat::test_that(
 <ul>
 <li>checks for:
 <ul class="task-list">
-<li><input type="checkbox" checked></input>existence of columns via
-<code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
+<li><label><input type="checkbox" checked></input>existence of columns via
+<code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></label></li>
 </ul></li>
 <li>warns for:
 <ul class="task-list">
-<li><input type="checkbox" checked></input>dropping extra columns (anything
-other than <code>from</code>, <code>to</code>, <code>weights</code>) as
-controlled by <code>.drop</code> argument</li>
+<li><label><input type="checkbox" checked></input>dropping extra columns
+(anything other than <code>from</code>, <code>to</code>,
+<code>weights</code>) as controlled by <code>.drop</code>
+argument</label></li>
 </ul></li>
 <li>throws errors for:
 <ul class="task-list">
-<li><input type="checkbox" checked></input>any validation failures via
-<code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></li>
+<li><label><input type="checkbox" checked></input>any validation failures
+via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</code></label></li>
 </ul></li>
 </ul>
 <pre class="r"><code>#&#39; @describeIn as_xmap Coerce a `data.frame` to `xmap`
@@ -4075,18 +4159,18 @@ controlled by <code>.drop</code> argument</li>
   if (is.null(.drop_extra)) {
     cli::cli_inform(c(
       &quot;Dropping any additional columns in {.arg {deparse(substitute(x))}}&quot;,
-      &quot;i&quot; = &quot;To silence set `.drop_extra = TRUE`&quot;)
-      )
+      &quot;i&quot; = &quot;To silence set `.drop_extra = TRUE`&quot;
+    ))
   }
-  
+
   .drop_extra &lt;- .drop_extra %||% TRUE
-  
+
   if (.drop_extra) {
     df &lt;- x[col_strings]
   } else {
     df &lt;- x
   }
-  
+
   ## rearrange columns
   col_order &lt;- c(col_strings, setdiff(names(df), col_strings))
   df &lt;- df[col_order]
@@ -4141,7 +4225,7 @@ controlled by <code>.drop</code> argument</li>
 ## i To silence set `.drop_extra = TRUE`
 ## Dropping any additional columns in `tbl_links`
 ## i To silence set `.drop_extra = TRUE`</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 </div>
 </div>
 <div id="conversion" class="section level2">
@@ -4223,7 +4307,7 @@ controlled by <code>.drop</code> argument</li>
 
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 <div id="to-list" class="section level3">
@@ -4271,9 +4355,10 @@ controlled by <code>.drop</code> argument</li>
   stop &lt;- !all(w == 1)
   if (stop) {
     cli::cli_abort(<a href='create-xmap.html#msg_abort_frac_weights'>msg_abort_frac_weights</a>(&quot;Cannot convert to named vector&quot;),
-                   class = &quot;abort_frac_weights&quot;)
+      class = &quot;abort_frac_weights&quot;
+    )
   }
-  
+
   # convert
   df |&gt;
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |&gt;
@@ -4302,13 +4387,14 @@ controlled by <code>.drop</code> argument</li>
   df &lt;- as.data.frame(.xmap)
   # check only unit weights
   w &lt;- df[[x_attrs$col_weights]]
-  
+
   stop &lt;- !all(w == 1)
   if (stop) {
     cli::cli_abort(<a href='create-xmap.html#msg_abort_frac_weights'>msg_abort_frac_weights</a>(&quot;Cannot convert to named list&quot;),
-                   class = &quot;abort_frac_weights&quot;)
+      class = &quot;abort_frac_weights&quot;
+    )
   }
-  
+
   # convert
   df |&gt;
     subset(select = c(x_attrs$col_to, x_attrs$col_from)) |&gt;
@@ -4339,7 +4425,7 @@ controlled by <code>.drop</code> argument</li>
     class = &quot;abort_frac_weights&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>() reverses <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>()&quot;, {
   link_list &lt;- list(
     AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
@@ -4355,7 +4441,7 @@ controlled by <code>.drop</code> argument</li>
     <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;xvars&quot;, &quot;capital&quot;, &quot;w&quot;)
   testthat::expect_identical(<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>(link_xmap), link_list)
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <p>with dplyr:</p>
 <pre class="r"><code>pairs_df &lt;-
   <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(
@@ -4401,7 +4487,7 @@ pairs_df |&gt;
   x_attrs &lt;- attributes(.xmap)
   .xmap |&gt; pull(x_attrs$col_from)
 }</code></pre>
-<pre class="r"><code>#&#39; 
+<pre class="r"><code>#&#39;
 <span id='as_tbl_graph.xmap_df'>as_tbl_graph.xmap_df</span> &lt;- function(x, ...) {
   x &lt;- <a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>(x)
   x_attrs &lt;- attributes(x)
@@ -4507,7 +4593,7 @@ pairs_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#xmap_reverse.xmap_df'>xmap_reverse.xmap_df</a>(df_x), df_x_rev)
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x, &quot;to&quot;), df_x)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -4548,7 +4634,7 @@ pairs_df |&gt;
 
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="summarise" class="section level2">
@@ -4583,12 +4669,12 @@ from_degree |&gt;
 ## Attaching package: &#39;xmap&#39;</code></pre>
 <pre><code>## The following objects are masked _by_ &#39;.GlobalEnv&#39;:
 ## 
-##     add_weights_equal, add_weights_prop, add_weights_unit,
-##     as_pairs_from_named, as_xmap_df, is_xmap, is_xmap_df,
-##     msg_abort_frac_weights, msg_abort_named_matchset,
-##     pairs_to_named_list, pairs_to_named_vector, verify_links_as_xmap,
-##     verify_named_all_1to1, verify_named_all_names_unique,
-##     verify_named_all_unique, verify_named_all_values_unique,
+##     add_weights_equal, add_weights_unit, as_pairs_from_named,
+##     as_xmap_df, is_xmap, is_xmap_df, mock, msg_abort_frac_weights,
+##     msg_abort_named_matchset, pairs_to_named_list,
+##     pairs_to_named_vector, verify_links_as_xmap, verify_named_all_1to1,
+##     verify_named_all_names_unique, verify_named_all_unique,
+##     verify_named_all_values_unique,
 ##     verify_named_matchset_names_contain,
 ##     verify_named_matchset_names_exact,
 ##     verify_named_matchset_names_within,
@@ -4600,8 +4686,8 @@ from_degree |&gt;
 ##     xmap_to_named_vector</code></pre>
 <pre><code>## Warning: `bindFillRole()` only works on htmltools::tag() objects (e.g., div(),
 ## p(), etc.), not objects of type &#39;shiny.tag.list&#39;.</code></pre>
-<div id="htmlwidget-dff92517ebec1859227c" class="reactable html-widget " style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-dff92517ebec1859227c">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d0720904ebaa7a602dbd" class="reactable html-widget " style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d0720904ebaa7a602dbd">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code><span id='summary_reactable'>summary_reactable</span> &lt;- function(.xmap) {
   col_attrs &lt;- <a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(.xmap)
   .xmap |&gt;
@@ -4738,7 +4824,7 @@ mock$xmap_abc |&gt;
 #&#39;   <a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>(from = upper, to = lower)
 <span id='add_placeholder_weights'>add_placeholder_weights</span> &lt;- function(df, from, to, weights_into = &quot;weights_{{from}}&quot;) {
   <a href='create-xmap.html#abort_dup_pairs'>abort_dup_pairs</a>(df, rlang::englue(&quot;{{from}}&quot;), rlang::englue(&quot;{{to}}&quot;))
-  
+
   ## set up
   weights_into &lt;- rlang::englue(weights_into)
   frac_symbol &lt;- NA
@@ -4748,9 +4834,9 @@ mock$xmap_abc |&gt;
     dplyr::group_by({{ from }}) |&gt;
     dplyr::mutate(&quot;{weights_into}&quot; := 1 / dplyr::n_distinct({{ to }})) |&gt;
     dplyr::ungroup() -&gt; w_df
-  
+
   if (all(w_df[[weights_into]] == 1)) {
-    #cli::cli_inform(&quot;No split relations found. Returning `df` with unit weights attached.&quot;)
+    # cli::cli_inform(&quot;No split relations found. Returning `df` with unit weights attached.&quot;)
     return(w_df)
   } else {
     w_df |&gt;
@@ -4863,7 +4949,7 @@ mock$xmap_abc |&gt;
 #&#39; If a data.frame of links is provided, crossmap properties are not checked.
 #&#39; This can be useful when combined with `<a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>()` to highlight
 #&#39; where weights must be chosen.
-#&#39; 
+#&#39;
 #&#39; @param links A data frame or `xmap_df`.
 #&#39; @inheritParams as_xmap
 #&#39; @param parts_into A string specifying the new column to pass the summarised composition into. Default is &quot;parts&quot;.
@@ -4886,8 +4972,8 @@ mock$xmap_abc |&gt;
 #&#39; @export
 #&#39; @rdname summary_by_target
 #&#39; @examples
-#&#39; 
-#&#39; mock$xmap_abc |&gt; 
+#&#39;
+#&#39; mock$xmap_abc |&gt;
 #&#39;   <a href='create-xmap.html#summary_by_target'>summary_by_target</a>()
 #&#39;
 #&#39; df &lt;- data.frame(
@@ -4896,8 +4982,10 @@ mock$xmap_abc |&gt;
 #&#39; )
 #&#39; df |&gt;
 #&#39;   <a href='create-xmap.html#add_placeholder_weights'>add_placeholder_weights</a>(from = parent, to = child, weights_into = &quot;weights&quot;) |&gt;
-#&#39;   <a href='create-xmap.html#summary_by_target'>summary_by_target</a>(from = parent, to = child, weights = weights,
-#&#39;                     frac_formula = &quot;{from}*{weights}&quot;)
+#&#39;   <a href='create-xmap.html#summary_by_target'>summary_by_target</a>(
+#&#39;     from = parent, to = child, weights = weights,
+#&#39;     frac_formula = &quot;{from}*{weights}&quot;
+#&#39;   )
 #&#39; @importFrom dplyr mutate group_by summarise rename case_when
 #&#39; @importFrom glue glue_collapse
 <span id='summary_by_target.data.frame'>summary_by_target.data.frame</span> &lt;- function(links, from, to, weights,
@@ -4910,8 +4998,8 @@ mock$xmap_abc |&gt;
   if (warn) {
     cli::cli_warn(c(
       &quot;Summary completed without verifying crossmap properties.&quot;,
-      &quot;i&quot; = &quot;To silence set `warn = FALSE`&quot;)
-    )
+      &quot;i&quot; = &quot;To silence set `warn = FALSE`&quot;
+    ))
   }
 
   ## evaluate glue formulas
@@ -4926,7 +5014,7 @@ mock$xmap_abc |&gt;
   col_weights &lt;- rlang::englue(&quot;{{weights}}&quot;)
   frac_formula &lt;- <a href='create-xmap.html#englue_xmap'>englue_xmap</a>(frac_formula, col_from, col_to, col_weights)
   unit_formula &lt;- <a href='create-xmap.html#englue_xmap'>englue_xmap</a>(unit_formula, col_from, col_to, col_weights)
-  
+
   ## summarise
   links |&gt;
     dplyr::mutate(&quot;{col_weights}&quot; := dplyr::coalesce(as.character(.data[[col_weights]]), na_placeholder)) |&gt;
@@ -4981,11 +5069,9 @@ mock$xmap_abc |&gt;
 <pre class="r"><code>mock$xmap_abc |&gt;
   as.data.frame() |&gt;
   <a href='create-xmap.html#summary_by_target.data.frame'>summary_by_target.data.frame</a>(from = lower, to = upper, weights = share)</code></pre>
-<pre><code>## ✔ Moving &#39;ggplot2&#39; from Suggests to Imports field in DESCRIPTION
-## • Refer to functions with `ggplot2::fun()`</code></pre>
-<pre><code>## ✔ Adding &#39;ggraph&#39; to Suggests field in DESCRIPTION
-## • In your package code, use `rlang::is_installed(&quot;ggraph&quot;)` or `rlang::check_installed(&quot;ggraph&quot;)` to test if ggraph is installed
-## • Then directly refer to functions with `ggraph::fun()`</code></pre>
+<pre><code>## • Refer to functions with `ggplot2::fun()`</code></pre>
+<pre><code>## Warning: Package &#39;ggraph&#39; is already listed in &#39;Imports&#39; in DESCRIPTION, no
+## change made.</code></pre>
 <pre><code>## ✔ Adding &#39;tidygraph&#39; to Suggests field in DESCRIPTION
 ## • In your package code, use `rlang::is_installed(&quot;tidygraph&quot;)` or `rlang::check_installed(&quot;tidygraph&quot;)` to test if tidygraph is installed
 ## • Then directly refer to functions with `tidygraph::fun()`</code></pre>
@@ -5110,71 +5196,80 @@ testthat::test_that(&quot;autoplot() has known output&quot;,{
 #&#39; library(ggraph)
 #&#39; library(tidygraph)
 #&#39; library(xmap)
-#&#39; df &lt;- data.frame(from = c(&quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;),
-#&#39;                  to = c(&quot;X&quot;, &quot;Y&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;),
-#&#39;                  weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
+#&#39; df &lt;- data.frame(
+#&#39;   from = c(&quot;A&quot;, &quot;A&quot;, &quot;B&quot;, &quot;B&quot;, &quot;B&quot;),
+#&#39;   to = c(&quot;X&quot;, &quot;Y&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;),
+#&#39;   weights = c(0.6, 0.4, 0.2, 0.7, 0.1)
+#&#39; )
 #&#39; xmap &lt;- <a href='create-xmap.html#as_xmap_df'>as_xmap_df</a>(df, from, to, weights)
 #&#39; autoplot(xmap)
 NULL
 
 #&#39; @rdname autoplot.xmap
 #&#39; @export
-<span id='autoplot.xmap_df'>autoplot.xmap_df</span> &lt;- function(object, ...){
-
-  if(!requireNamespace(&quot;ggraph&quot;, quietly = TRUE)) {
+<span id='autoplot.xmap_df'>autoplot.xmap_df</span> &lt;- function(object, ...) {
+  if (!requireNamespace(&quot;ggraph&quot;, quietly = TRUE)) {
     cli::cli_abort(&#39;Please `install.package(&quot;ggraph&quot;)`&#39;)
   }
-  
+
   x_attrs &lt;- attributes(object)
 
   tidygraph_data &lt;-
     tidygraph::as_tbl_graph(object) |&gt;
-  ## calculating edge properties
+    ## calculating edge properties
     tidygraph::activate(edges) |&gt;
     tidygraph::mutate(frac_weight = ifelse(!!sym(x_attrs$col_weights) &lt; 1, TRUE, FALSE)) |&gt;
     tidygraph::mutate(edge_linetype = ifelse(frac_weight, &quot;dashed&quot;, &quot;solid&quot;)) |&gt;
     tidygraph::mutate(edge_label_pos = ifelse(frac_weight, 0.8, 0.2)) |&gt;
-  ## calculating node properties
+    ## calculating node properties
     tidygraph::activate(nodes) |&gt;
-    tidygraph::mutate(n_from = tidygraph::centrality_degree(mode = &quot;in&quot;),
-         in_from = n_from == 0,
-         collapse = n_from &gt; 1)
+    tidygraph::mutate(
+      n_from = tidygraph::centrality_degree(mode = &quot;in&quot;),
+      in_from = n_from == 0,
+      collapse = n_from &gt; 1
+    )
 
   tidygraph_data |&gt;
     ## now we plot...
     ggraph::ggraph(layout = &quot;sugiyama&quot;) +
     ## unit weight links,
     ggraph::geom_edge_diagonal(
-      aes(edge_linetype = I(edge_linetype),
-          edge_alpha = !!sym(x_attrs$col_weights),
-          filter = !frac_weight),
-      end_cap = circle(6, &#39;mm&#39;),
+      aes(
+        edge_linetype = I(edge_linetype),
+        edge_alpha = !!sym(x_attrs$col_weights),
+        filter = !frac_weight
+      ),
+      end_cap = circle(6, &quot;mm&quot;),
       show.legend = FALSE
-      ) +
+    ) +
     ## frac weight links,
     ggraph::geom_edge_diagonal(
-      aes(edge_linetype = I(edge_linetype),
-          edge_alpha = !!sym(x_attrs$col_weights),
-          filter = frac_weight,
-          label = round(!!sym(x_attrs$col_weights)),
-          label_pos = edge_label_pos,
-          ),
-      end_cap = circle(6, &#39;mm&#39;),
+      aes(
+        edge_linetype = I(edge_linetype),
+        edge_alpha = !!sym(x_attrs$col_weights),
+        filter = frac_weight,
+        label = round(!!sym(x_attrs$col_weights), digits = 3),
+        label_pos = edge_label_pos,
+      ),
+      end_cap = circle(6, &quot;mm&quot;),
       show.legend = FALSE,
       angle_calc = &quot;along&quot;,
       label_dodge = grid::unit(2, &quot;mm&quot;)
-      ) +
+    ) +
     ## from nodes,
-    ggraph::geom_node_label(aes(label = name,
-                                filter=in_from),
-                            ) +
+    ggraph::geom_node_label(aes(
+      label = name,
+      filter = in_from
+    ), ) +
     ## to nodes,
-    ggraph::geom_node_label(aes(label = name,
-                                fill = collapse,
-                                filter=!in_from
-                                ),
-                            show.legend = FALSE,
-                            ) +
+    ggraph::geom_node_label(
+      aes(
+        label = name,
+        fill = collapse,
+        filter = !in_from
+      ),
+      show.legend = FALSE,
+    ) +
     ggplot2::scale_fill_brewer(palette = &quot;Greys&quot;) +
     ## and finally modify coordinates, scale and theme
     ggplot2::coord_flip() +
@@ -5185,10 +5280,6 @@ NULL
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## Multiple parents. Unfolding graph</code></pre>
 <pre><code>## Multiple roots in graph. Choosing the first</code></pre>
-<pre><code>## Warning: Using the `size` aesthetic in this geom was deprecated in ggplot2 3.4.0.
-## ℹ Please use `linewidth` in the `default_aes` field and elsewhere instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
 <p><img src="data:image/png;base64,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QIAAAQIECBAgQIAAAQLlFBAALWe7qTUBAgQIECBAgAABAgQIECBAgAABAgUEBEALIMlCgAABAgQIECBAgAABAgQIECBAgEA5BQRAy9luak2AAAECBAgQIECAAAECBAgQIECAQAEBAdACSLIQIECAAAECBAgQIECAAAECBAgQIFBOAQHQcrabWhMgQIAAAQIECBAgQIAAAQIECBAgUEBAALQAkiwECBAgQIAAAQIECBAgQIAAAQIECJRTQAC0nO2m1gQIECBAgAABAgQIECBAgAABAgQIFBAQAC2AJAsBAgQIECBAgAABAgQIECBAgAABAuUUEAAtZ7upNQECBAgQIECAAAECBAgQIECAAAECBQQEQAsgyUKAAAECBAgQIECAAAECBAgQIECAQDkFBEDL2W5qTYAAAQIECBAgQIAAAQIECBAgQIBAAQEB0AJIshAgQIAAAQIECBAgQIAAAQIECBAgUE4BAdBytptaEyBAgAABAgQIECBAgAABAgQIECBQQEAAtACSLAQIECBAgAABAgQIECBAgAABAgQIlFNAALSc7abWBAgQIECAAAECBAgQIECAAAECBAgUEBAALYAkCwECBAgQIECAAAECBAgQIECAAAEC5RQQAC1nu6k1AQIECBAgQIAAAQIECBAgQIAAAQIFBARACyDJQoAAAQIECBAgQIAAAQIECBAgQIBAOQUEQMvZbmpNgAABAgQIECBAgAABAgQIECBAgEABAQHQAkiyECBAgAABAgQIECBAgAABAgQIECBQTgEB0HK2m1oTIECAAAECBAgQIECAAAECBAgQIFBAQAC0AJIsBAgQIECAAAECBAgQIECAAAECBAiUU0AAtJztptYECBAgQIAAAQIECBAgQIAAAQIECBQQEAAtgCQLAQIECBAgQIAAAQIECBAgQIAAAQLlFBAALWe7qTUBAgQIECBAgAABAgQIECBAgAABAgUEBEALIMlCgAABAgQIECBAgAABAgQIECBAgEA5BQRAy9luak2AAAECBAgQIECAAAECBAgQIECAQAEBAdACSLIQIECAAAECBAgQIECAAAECBAgQIFBOAQHQcrabWhMgQIAAAQIECBAgQIAAAQIECBAgUEBAALQAkiwECBAgQIAAAQIECBAgQIAAAQIECJRTQAC0nO2m1gQIECBAgAABAgQIECBAgAABAgQIFBAQAC2AJAsBAgQIECBAgAABAgQIECBAgAABAuUUEAAtZ7upNQECBAgQIECAAAECBAgQIECAAAECBQQEQAsgyUKAAAECBAgQIECAAAECBAgQIECAQDkFBEDL2W5qTYAAAQIECBAgQIAAAQIECBAgQIBAAQEB0AJIshAgQIAAAQIECBAgQIAAAQIECBAgUE6BgeWsdn1q/T/HHJcee/yJ1L+/uHB9hJu71Ndffy0NHz5LGjFiRHNDuPq6CHz4wfvp1FNOSmPHjq1L+QptboG33nor7bXPvmngoMHNDeHq6yIwadKk9PZbb6a5x85Tl/IVSuCVl19K88w3f+qHgkAdBIYMHpR+9YvjfMavg60iCRAgUEsBAdAKzQh+PviPf1ds8ZBA7QQGTHg7TRowPvUf+H7tClUSgf8I9JsyPj3zzDMCoO6Iugi8/PLL6bmX3kjvTxA+qAtwkxc6beqUNGjKB+lf705rcgmXXzeBj15Pr3ygg0PdfJu84HlnH5zeeecdAdAmvw9cPgECfV9AALSyjfp98oddv/4DKrd6TKB2Ai33mPurdpxK+lSg3xSBqU81PKqXgNevesk2d7nTpk3NANxfzX0f1PPqs9B6v/6p338+69fzXMpuQgH3VRM2uksmQKCMAr4KLWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUEQMvYaupMgAABAgQIECBAgAABAgQIECBAgEAhAQHQQkwyESBAgAABAgQIECBAgAABAgQIECBQRgEB0DK2mjoTIECAAAECBAgQIECAAAECBAgQIFBIQAC0EJNMBAgQIECAAAECBAgQIECAAAECBAiUUUAAtIytps4ECBAgQIAAAQIECBAgQIAAAQIECBQSEAAtxCQTAQIECBAgQIAAAQIECBAgQIAAAQJlFBAALWOrqTMBAgQIECBAgAABAgQIECBAgAABAoUEBEALMclEgAABAgQIECBAgAABAgQIECBAgEAZBQRAy9hq6kyAAAECBAgQIECAAAECBAgQIECAQCEBAdBCTDIRIECAAAECBAgQIECAAAECBAgQIFBGAQHQMraaOhMgQIAAAQIECBAgQIAAAQIECBAgUEhAALQQk0wECBAgQIAAAQIECBAgQIAAAQIECJRRQAC0jK2mzgQIECBAgAABAgQIECBAgAABAgQIFBIQAC3EJBMBAgQIECBAgAABAgQIECBAgAABAmUUEAAtY6upMwECBAgQIECAAAECBAgQIECAAAEChQQEQAsxyUSAAAECBAgQIECAAAECBAgQIECAQBkFBEDL2GrqTIAAAQIECBAgQIAAAQIECBAgQIBAIQEB0EJMMhEgQIAAAQIECBAgQIAAAQIECBAgUEYBAdAytpo6EyBAgAABAgQIECBAgAABAgQIECBQSEAAtBCTTAQIECBAgAABAgQIECBAgAABAgQIlFFAALSMrabOBAgQIECAAAECBAgQIECAAAECBAgUEhAALcQkEwECBAgQIECAAAECBAgQIECAAAECZRQQAC1jq6kzAQIECBAgQIAAAQIECBAgQIAAAQKFBARACzHJRIAAAQIECBAgQIAAAQIECBAgQIBAGQUGlrHS6ty5wJRJE9KUiePStKlTOs/cR3P069cv9R80NA0YPDzFY6nvCEydMilNmfBRmjplct+pVBdrEvdUvwGD08Ahs6R+/X0X1EU+2QmUUmDKpI9b3hvHl/q9sRLe61ilRu8/njq55b1xYrnfGysVs/ur/8A0oOV9sv8AfzJU2vTm40Z4HYt7y2f83ryLnJsAAQLNKeDTTIO1++SWoNTEd19OE8d/0DBXNmjw0DRwxJg0eOQYgdBebtWpkyekj99pub8+eqeXa1K70w8YODANHD5nGjrbvAKhtWNVEoE+JTD54w/SxPdeaXlv/LBP1atWlfE6VivJ7pUTAakJ77yUJo57r3sF9PGj+vXrnwYNny0NnX3+1H/goD5e28atXiO+jmWf8UfOnYaMHN24DefKCBAgQKDPCAiA9pmmqL4iEz98O41/659pscUXTwcfdFBaZ5110iyzzJIGDx5cysDhxx9/nB599NF02mmnpUsvvTTrcThs9MKlvJbqW7f3S4jg+vg3nk1zzD5bOuSoE9Mmm2ySRo8enQa2BBD7l7AH5eTJk9PTTz+dLrroovTrX/86jZ/0URo6elG9XHr/VlMDAjUVmPDBGy3vjS+mZZddNv30pz9Na621Vho2bFgaMmRITc/TG4V5HesN9enPGUGp8W88l+aee650yPFHpw033DDNMcccpX1vrLy6qVOnppdeeildc8016aijj07jX/9H9j45oOWLaalnBSZ88GbL69gLaZlllkkHtXzGL/vr2Pjx49PDDz+cTj755HT11Ve3fMb/MA2bcyGf8Xv2tnI2AgQINJ2AAGiDNPnkCePSx2+/kL7+9a9nAZ0IepY9DR8+PAviRiB30003TTvvvHPq9+6QNGz2ect+aaWrfwx1n/DW82nppZZMt912W5pzzjlLdw1tVXiFFVZI8bPtttum9ddfP/t/aPiYRdvKahsBAiUUmPzxhy3/X/8r7brrrunMM8/MglIlvIwOq5y/jn3zm99M6623ntexDrVquzOGvH/c8sXzSiutmG666aY0atSo2p6gD5S2eMuX6vGzww47pLXXXif96+Xn0/C5FzNiogfb5pPXsRezz8Fnn312Q7yOxWf8+NwVP2eccUbaY489siHxQ0eN7UFZpyJAgACBZhMw8V2DtPjE915NCy64ULrggguyHp8Nclmtl7HjjjumH/3oR2nSB6+1zDs5qXW7Bz0jMOH911LMwnrttdc2TPCzUm6VVVZJp59+esvQ/ndT9OaRCBBoDIF4b1xiiSWzP7Cjt3ojp5VXXjm7zngdm9RA0+D05Tb7uOX+GjpkcNZDshGDn5X2888/f0tPvatSNty/pVe11HMCE99/NS2+xBLprLPOaojg54xy3/3ud7MA6KSWz5plXrtgxuvynAABAgT6noAAaN9rky7XKHrnTRz3bvrxj3+Uhg5t3GFJ++23X4rhWJNarlXqWYGpH7+Xdtxxh5Yg+4I9e+IePNt2222Xxo4d2xIEfbsHz+pUBAjUS2Dq5Iktc36+n/bf/ydp0KDmmLcweoHOM888aZLXsXrdVtOVG++Nu+22W5prrrmm296oT77whS+kjTbaKMV1Sz0jkL2OjWt5HftJY7+O7b///mlKy98zkxp0Ht2euVuchQABAgQ6ExAA7UyoBPuntky+H2n11VcvQW27X8UITkUv11jBV+o5gfg2ftKE8Q1/f8U8pmussUZqucF6DteZCBCom0D+XtHo742VgPE6tuaaa3odq0Sp0+MY/j550sSGf2+ckS/ur8kTx8242fM6CUyZ9Mln3kZ/HVtkkUXSHC3TK+XXWydOxRIgQIBAkwsIgDbADTBt2tTsKkaOHNkAV9PxJcw666ypZXxMx5nsralAM91fMYSx37RpNfVTGAECvSPQTK9dlcLZ61jyOlZpUo/H+f2VfS6pxwn6aJlxvVOnTOmjtWu8ak1rGfkUqRk+449qubfy6228lnRFBAgQINAXBARA+0IrqENhgX79YiZKiQABAgQIECBAoKcFfA7raXHnI0CAAAECBGolIABaK0nlECBAgAABAgQIECBAgAABAgQIECDQ5wQEQPtck6gQAQIECBAgQIAAAQIECBAgQIAAAQK1EhhYq4KU0xgCb7/96QrYs88+e6pmqNPHH3+cxo37ZKL8WJ1++PDhjYHkKjoVeO+991pW82x/jrCu3A8TJ05MH374YbvnjEU/Yk6y+C0RIECgHgLPPvts+uc//5lefPHFFK9fiy66aPrsZz+b5phjjm6fLl7XnnzyyazMt956Ky2wwAJZmQsvvHAaONDHs27D9uEDP/jggzRp0qQ2axift4YMGZKGDRvWpc9e9SizzQraWAqB+OwVn8G6m2b87F/r8rpbL8cRIECAAIFaCPiEXQvFBinj8ccfT0svvXTr1dxwww1pk002aX3e1Qc77bRTuuKKK7LDVlpppXTfffd1tQj5Syqw6qqrZn/Yd1T9CCLEqp8bbrhh+ulPf5rGjBnTZvarrroqffOb32xzX74x/nCMQESskrrLLrukr3/96/kuvwkQINAtgffffz+dd9556ayzzkqPPfZYm2VsscUW6bDDDktf/OIX29zf1sa77747nX766enyyy9v/ZKwMt/YsWPTAQcckPbYY48sGFa5z+NyC8R70y233NLhRcT72fzzz59itfUDDzwwLbPMMh3mr0eZHZ7Qzj4tEF+qVH6W72pl33nnnTTbbLO1Hlbr8loL9oAAAQIECPSCgC5TvYDeV095zjnnTFe10047bbrnXXny5ptvpmuvvbb1kPvvvz89+OCDrc89IBA9hP/+97+nX/7ylykCpk899VS3Uaa1rNwePaiuu+66tPXWW6dDDjkkxTaJAAEC3RGI96sIav7gBz+YLvg5YMCA6Yq75ppr0vLLL58OOuig6ba39WTy5Mlpv/32y76oOf/886cLflb2+Pz3v/+d9t1337TYYoul6HkqNZdAvHf961//ShdffHFabrnl0pZbbpmeeOKJqhDqUWZVFXIwAQIECBAgQKAXBPQA7QX0vnjKGJJ1wQUXZFWLYNQ999yTogdoDPdbcMEFu1zlCy+8MMXQ5RjSN3Xq1PTyyy+nU089NZ155pldLssB5RWIXp6/+MUvpruACAKMHz8+xR/50RPmb3/7W3ruuefSaqutlu68884Oey5ET5f111+/tbz4o27ChAkphgBGL4XocRz38pFHHplef/31dMYZZ7Tm9YAAAQJFBK6//vrsi5R4bYm0yiqrZIHLFVZYIXtPi+3PPPNMOvvss7P3tPgy5+ijj06zzDJLOvjgg9s8RbwubbDBBumOO+7I9o8YMSJ973vfS9ttt13WE37UqFHplVdeSX/5y1/SUUcdlR555JEsCPblL385/fnPf07zzTdfm+XaWF6BE044YboevvFZ6aOPPkrvvvtuevjhh7N7Jd4rI8j+f//3f9m98bnPfa7DC65HmR2e0M4+LRCfq2I0VldSR9NV1bq8rtRLXgIECBAgUAsBAdBaKDZAGdFz7o033siu5JRTTkkxZD0+jEcA6YgjjujyFea9STfaaKM0ePDgFGVGb4bjjz8+xR96UnMIRNt///vfb/diI0gePayit3EMu4p77ZJLLmk3/xprrNFheVHWVlttlV599dVs2OoPf/jDtOSSS7Zbnh0ECBCoFIjXjl133TX7YiWGIv/6179Oe+65Z2WWbH7OZZddNp100klZADO+lIlAVfQ8X2eddVK8Ts2YYpj8Hf8Jfn7hC1/IvvyZe+65p8sWQc5vfOMbWfB1m222SVdeeWU272jUp7Nh09MV5EkpBHbbbbcOPw/FF4ORJ+6b+Hy28cYbp5iqKOYJbS/Vo8z2zmV73xdYfPHFO/zM1NUrqHV5XT2//AQIECBAoFoBQ+CrFWyQ4/OAZfxhFsP51l577ezKoodLexP2t3fpf/3rX1uHDEYANP6gixQ9G37729+2d5jtTSgQAdLosZL/QVftH/nRU2v33XfPJKN36G233daEqi6ZAIHuCsS8mzGdRqRjjz12puDnjOVGj6jf/OY3rZuPO+641sf5g5gC5phjjsmeLrTQQumPf/xjmjH4meeN37Gg2+9+97tsCHw8v/XWW7MegfFYah6BmCM7RuJEsD1STIcQc8dWk+pRZjX1cSwBAgQIECBAoCcFBEB7UruPniuG3d10001Z7SJgGWnHHXfMfscw5auvvjp7XPSfCJpGijnNYvjeWmutleKPvkjVzCuaFeCfhhOI4VYxtDRS9KLqaPX4Ihcf91ueOlo9Ps/jNwECBEIg5l2M4e+RIlAUPciLpHi/zN/jYuh69GavTDGSIkZURDr00EPTnHPOWbm7zcfxpdCPf/zjbF88zt+j28xsY8MKxPtjTCmUpwjKV5vqUWa1dXI8AQIECBAgQKAnBARAe0K5j58jFmPIg04xfDhSLCQzbNiw7HHM3Vk0RQArhrpHWm+99dKss86aYhjhDjvskG2LRW9inkeJQC4Q916+wMO6666bZlxkJM9X9Hflas0RgJcIECBQRCDeu6LneKTvfOc72Zd4RY6LL/tiGpmYM/v5559Ps88+e+thMV9ozE0cKeYI3XnnnVv3dfYg8sb8n++99162Gnhn+e1vTIFY0XvllVfOLi7mU495s6tN9Siz2jo5ngABAgQIECBQbwEB0HoLl6D8c889N6vl5z//+WwhmngSgcs8GBrD9WKBmSIp5iyLP9Yi7bLLLq2HxBxmeepKQDU/xu/GFYgew3mPqU033bSqC42Fj/JpFsaOHZtWXHHFqspzMAECzSPwhz/8ofViI0DUlRTTx8SifzOm++67L1vUJrbH/HmVq73PmHfG59HzM+YTzacImXG/580jEAsA5ik+k9Ui1aPMWtRLGQQIECBAgACBegkMrFfByi2HQPTGfPrpp7PKVgYsY8O3vvWtbB6yeBxD13/1q1/Fww5TPvw9FjrKA6hxQKxcGn/IxQq3ESSNQNVcc83VYVl2ll8genfee++9011IDAWNVZNjeoVLL700W+E2Muy9994p5t/rKL3wwgszlRdz1MYq8NHzM4YHxvx9sZhIzJ0WvY8lAgQIFBF46aWXWrPVavG0epTZWkkPmkagMrge74O1SPUosxb1UkbtBGIaoOiVXjTFF8f56K+2jql1eW2dwzYCBAgQIFBPAQHQeuqWoOx88aNYdGHGoXkxhD0+IMe8aNGr7uijj+7wg1F8yIrVSiPFwkczfoiKXqARAI2Vv+O8Bx54YJbXP40rEAtfrbrqqp1e4M9+9rP085//vNN8J554YoqfjtK8886b7rnnnjT//PN3lM0+AgQITCcQ82FHiveuhRdeOHtc7T95mVFOrYKq1dbJ8eUTiMBUnt588838YVW/61FmVRVycM0FLr/88hQ/RVP0gt9ggw3azV7r8to9kR0ECBAgQKBOAobA1wm2DMVGr7n8g9H6668/U8AogqJ5r9AYonzJJZd0eFkxlD6fP61yyHt+UARFY/L9SLGSab4oRL7f7+YViJXgowdozCFbbYqAw+abb24F+GohHU+giQTi/Si+sIkUixTF+18t0vvvv99azJgxY1ofe0CgKwKVXyjHCIpapHqUWYt6KYMAAQIECBAgUC8BPUDrJVuCciOgOW7cuKymbQUsY0cEQI844ogsT8zdGcPi20rxx+N5552X7Yrh7quvvvpM2WJe0a997WvZiqb//Oc/s1VtN9lkk5ny2dA4AhHwvuaaa2a6oAh0vvvuu9mw9TPPPDN7fPLJJ6eHH3443XzzzTP1Hs4L+N73vpcq5y2L7THMPoZlRU/lGPZ+6623poceeihtvPHGWdA+7jmJAAECHQlEwDMCn9G7LhaaideUESNGdHRIoX2VU70UnUu7UMEyNZVAfGbK04ILLpg/rOp3PcqsqkIOrrnAOuusk+JzU9G07LLLdpi11uV1eDI7CRAgQIBAHQQEQOuAWpYi8+HvUd/LLrssW8W2rbpHECsCpffff3964IEH0gorrDBTtltuuSULQMWOCIZut912M+WJDc8991zr9gioCoC2cjTkg1jwo7OV2Pfcc8+07bbbZnN7xorHEQj9yU9+0qZHLNTVUXk//OEPs+P33XffFHODfv/738+Gc9UikNFmhWwkQKBhBGJIcARAYyTDE088kVZaaaWqr61ymPHf//73qstTQHMKPPvss60Xvsgii7Q+ruZBPcqspj6Orb3AZz7zmezzVa1KrnV5taqXcggQIECAQFEBAdCiUg2WL/64i3kS89RWL718X+XvWAwpeuzNmCqDqfGhuvKD9Yx58+e///3v04svvphq1ZshL9fvcgkstNBCKYbAr7nmmlnF4/5qLwBa5Mr22muvrNdp9ASNxbauvfbatP322xc5VB4CBJpYYIkllkh/+9vfMoHHH3+8SwHQWNQt3s/iC8IBAwa0KkaZeYoyu5riS6EYVTH33HN39VD5G0ig8svjCELVItWjzFrUSxkECBAgQIAAgXoJCIDWS7aPl1sZsIzV2mebbbYOaxw9RGN+tIsvvjgdf/zxKVZ5z1Osun311VdnT2PhiHXXXTff1ebvWHU+/qiLnqJnnHFG6xD7NjPb2BQCsVDSHHPMkd5+++2sl3D03hw0aFC3r/2rX/1qNhQ+CjDstNuMDiTQVAKbbbZZ67zYXQ1WnnLKKdl72ciRI1OMbthhhx0yu1j4KHrsRbApAqRdGVof83THgiQxZciKK66YfWlZGVxtqsZp4ouNz0qVX1gvvvjiVWvUo8yqK6UAAgQIECBAgECdBQRA6wzcF4uP4FKs6h5pnnnmyf7g6+yPqn79+mUrt0cQNI6NBWvydNFFF2Uru8fz/fffPxt2nO9r6/cLL7yQogdDDDM8++yz02GHHVZVsKutc9hWPoGJEydmlY7gegydryblZUUZo0ePrqYoxxIg0CQC8cVJvBfGvMLxpd/Pf/7zducjriSJ97J4H4wU75FrrLFG5e5sUbZf/epX2Xve+eefn2LajyLpyiuvbF0YbplllpmuZ2mR4+VpDIH4wjqfPiHmto5RE9WmepRZbZ0cT4AAAQIECBCot0Btljmtdy2VX1OBWCgmhgZHiqHBnQU/I9+3v/3t+JWlGAZfmfLepIMHDy4011B8eI9V5yPFsMGrrrqqsjiPm1Dg7rvvznpGxaWvttpqKQLu1aRYSClPbS3Ile/zmwABArlA9ELfbbfdsqfRW/Poo4/Od3X4+6ijjkrPP/98lmejjTZKMRKiMu2zzz5p6NCh2ab4wi9//63MM+Pj1157LR1yyCGtm7uykEnrQR6UXuC9995LBx98cOt1HHjgga2Pu/ugHmV2ty6OI0CAAAECBAj0pIAAaE9q95Fz5QHLqM5OO+1UqFbRo2WxxRbL8kZPhDvvvDN7/OCDD6ZHHnkkexwLGsUfkEVS/kdm5J0xoFrkeHkaRyCGhlbO0dnRIkedXXUM6zv00EPTbbfdlmWNVZ2XW265zg6znwABAplABDNnn3327PHhhx+ejVDoiCZGRPzsZz/LssSXgJXBqvy4GPEQoyMixZQx8X4aU8G0lyJA+rWvfS299NJLWZbomVqLBZnaO5/tfVMg3sdibuw8YB4rcH/pS1+qqrL1KLOqCjmYAAECBAgQINCDAtWNM+3BijpVbQReffXVFIsPRVp66aXTsssuW7jg6AV6wAEHZPljjrP4IB5D2PO044475g87/R3zjsYfme+880764x//mM3TWIt5rTo9sQw9KjBhwoQ253iNQOW4cePSX//616z943mktddeO8UiRu2l6NkZQ0xnTDGtQ/Qmvu6661Lc45H69++fDUutdjj9jOfynACBxhWIL03OPffcbDRDvH7FMPgYih6vS9GbfIEFFsheY+KLwJNOOqn1y8AQOeuss7I8belEz7277rore7175plnUgxpj3lC4ycWOYrg6VNPPZXtj3m2Y/7PSPEFziWXXNJWkbaVXOC4445r7RkclxJTKcQcsW+++WaKL5cffvjh1iuMxbXiPuws1aPMzs5pf98ViA4KRxxxRJcquMoqq6SvfOUrbR5T6/LaPImNBAgQIECgjgICoHXE7YtFR2+VmN8sUtHen/l17LzzzlnvlsmTJ2cfxGOI4O9+97tsdwQzN9100zxrp7+HDBmS/eF38sknZ3mjF2jMkSY1lkAEEPLeUZ1dWSyEFPPudRSwvOmmm1L8dJZiIZIYvrrhhht2ltV+AgQITCewxRZbZK8zW265ZYrhwrEyfEdD0IcPH5693nT0njps2LB04403Zu+7l19+efr444+zLxArv0ScrhItT1ZeeeVsipgRI0bMuMvzBhA48sgjO72K+CJv8803z4LynS1WGYXVo8xOKylDnxWIQHr8dCX96Ec/ajcAWuvyulIveQkQIECAQC0EDIGvhWKJysiHv8eH6nyV2qLVHzt2bIqheJFikZkY0vfuu+9mz7fZZpsUQc2upMp5RWNhiFjpVmoOgZgPL1ZGXmuttdIuu+yS9YyKeUDnmmuuLgPEfKFjxozJejPHNAzHHHNM+te//lV4oZEun9ABBAg0vEAMN3722WezwOaCCy7Y5vVG4DMCo9GjM+b57CzFe2R8yXP77benGAXR3vzbMTrjiiuuSPfee2+ad955OyvW/gYSiC+To/3jy7voNRz3VsyTXiT42R5DPcps71y2EyBAgAABAgT6soAeoH25depQtxhiV026+uqrpzu8mqF5X/ziF7MhX9MV6ElDCDzxxBM1u45tt9220OJaNTuhgggQINAiEMPhIwgVU7/EPIzxxUrMyxk9Mj//+c9nw+G7s2Dbuuuum+InvvTLy4wvE2Ou0Ch3lllm4d+gApUL9NXqEutRZq3qppyeF1hqqaVq+tm61uX1vIgzEiBAgACBTwUEQD+18KgEAjFHlkSAAAECBHpKIIKcc889d/az4oor1uy0MSw+Ap7xIxEgQIAAAQIECBAgUF8BQ+Dr69ujpedze/boSZ2saQTcX03T1C6UQEMJNNtrV/ZFYb+GasI+fTExL3ozJV9E905rN8PrmHurd+4tZyVAgEAzCQiANkBr9+v3STPmq8Y2wCW1ewmxanzqN6Dd/XbUXqDff7yb5f6alkQOan8XKZFAzwv0a5nrOlIzvHZV6sZw+mnTvI5VmtTjcbPeX/E5bMAAA8jqcU+1VWa//p985n3//ffb2t1Q22LRufz/q4a6MBdDgAABAn1GQAC0zzRF9ysyYPCwFEP07rrrru4XUoIjY660l19+KcX1Sj0nEB9GBw8dnu68886eO2kvnCl68WT/Dw3s2mJevVBVpyRAoIDAgEHDs1yN/t5YSRG9xLLXaq9jlSx1edx/wKA0aPCQhv/sNSPen/70J5/DZkSp4/MBgz75zPvnP/+5jmfp/aKffPLJlAXXfcbv/cZQAwIECDSwgABoAzRufDs8aPhs6YQTTkgffvhhA1xR25dw9NFHp/4DPrnWtnPYWi+B/kNHpUsvvTQ9/fTT9TpFr5d7zjnnpDfffDMNHjFnr9dFBQgQqF6g/8BBafDwUemYY45JH3/8cfUFlqCEc889N73xxhtp8CxzlKC25a9i/6GzpTCPL2ibId1///3p1ltvTQOGzd4Ml9snrvHT17FjG/p17Mgjj0wDWl6zBw0b1SfcVYIAAQIEGlNAALRB2nXIqHnTv197LW299dbpo48+apCr+vQyTj755HTqqaemwbOObQmCGnr1qUzPPBoy69wtMw8MSl/96qbZKsg9c9aeO0v8Qbf33vtkQYOBQ6zA3HPyzkSgvgKDW94bn3/++bT99ts3dPAgFG+77ba01157ffI6NnREfWGVngkMGTU2TZ46LW266abp9ddfb2iVf/zjH2mLLbZoGREySxo8cnRDX2tfu7jsdeyfz6ftttuuIV/H4kuqCy+8sOUz/jwtQ+BNc9XX7j/1IUCAQCMJiCQ1SGsOGDw0DZtz4XTLLbemJZZYIu2///5pnXXWSbPPXt5v6cePH58ee+yxdNppp6Wbb765pWfe6BSBOKnnBeID6dA5P5Oef+HZtORSS6Uf/+hHaZNNNknzzNPyYbVl+oUypokTJ6Znn302XXTRRen8889v6XUwsuX/oYXKeCnqTIBAOwIDhwxvee1aKF199TVpqaWWTj/5yX7pS1/6Uho1qjF6GcXr2HPPPZe9jp133nn/eR1bsB0Nm2stEF/Ixnvj3594Mi2++BJpv/1+nDbaaKM099yN8VklpoZ55ZVX0jXXXJNOPPHENGVa/zR09CKlfd+vdfv3VHnxOhafT6655tq05JJLtXzG/0npX8fGjRuXHnnkkXTyKaekP91xR8vn+7lafsb0FKnzECBAgECTCvRrWXFvWj2u/dVXX61HsXUtc4dddksPPvVqqb99nDJxfJrw7stp4rj36mrVk4UPapl/ctCIuVsCoOUe0td//Btp0sCRacCgoT3JV9NzTZ0yKX38zstp8rh30tSpU2tadm8VNrBlDreBs3wSXC9rMDfs+k36KJ3+y5+nNddcs7conbeBBR599NH0nb0PSB9MKuf3ppMnjEsT33ulod4bK2+37HVseMvr2KiW3vol/FIq3lsGTX4/TRlSzilIpk6emL03ThoXC1A1xntj5f0Vix4NGD57GjrbvKUdhTPtg5dTGjFvKf//yNuiEV/HokfxwJEtn/FnKW+HjWifeWYbmM47/aS0wAIL5M1Vit/RkUEiQIBAMwmU8y+ZZmqhLl5rLBA0fK7PpqFTJqcpE8elaSUOUsUfcf0HDSl1wLCLzdfns8eiD8NHL9xyXy3Qcn+NT1Nb7rOypogR9BswOFvMoYwBg7K6qzeB3hCIHlQDs/fGSdlrV5nfGyv9vI5VavTe4/4DB6fhYz7T8t44JfvsNbVlMapGSNn91b8l+Dl4uNW5+0CDNtLrmM/4feCGUgUCBAg0oYAAaIM2egzL6j9s1ga9OpfV2wIxJH6gOeZ6uxmcnwCBLgrElzj9hw3q4lGyEygm8Ml748himeUi0E0Br2PdhHMYAQIECDS9gEWQmv4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBpXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQaFwBAdDGbVtXRoAAAQIECBAgQIAAAQIECBAgQKDpBQRAm/4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBpXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQaFwBAdDGbVtXRoAAAQIECBAgQIAAAQIECBAgQKDpBQRAm/4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBpXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQaFwBAdDGbVtXRoAAAQIECBAgQIAAAQIECBAgQKDpBQRAm/4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBo+tvraAABAAElEQVRXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQaFwBAdDGbVtXRoAAAQIECBAgQIAAAQIECBAgQKDpBQRAm/4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBpXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQaFwBAdDGbVtXRoAAAQIECBAgQIAAAQIECBAgQKDpBQRAm/4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBpXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQaFwBAdDGbVtXRoAAAQIECBAgQIAAAQIECBAgQKDpBQRAm/4WAECAAAECBAgQIECAAAECBAgQIECgcQUEQBu3bV0ZAQIECBAgQIAAAQIECBAgQIAAgaYXEABt+lsAAAECBAgQIECAAAECBAgQIECAAIHGFRAAbdy2dWUECBAgQIAAAQIECBAgQIAAAQIEml5AALTpbwEABAgQIECAAAECBAgQIECAAAECBBpXQAC0cdvWlREgQIAAAQIECBAgQIAAAQIECBBoegEB0Ka/BQAQIECAAAECBAgQIECAAAECBAgQ6JrAa6+9li666KJ07733th740UcfZdtuu+221m194YEAaF9oBXUgQIAAAQIECBAgQIAAAQIEGl7gww8/TI8++mivXee3vvWt1K9fvzRy5Mjp6vDBBx9k22PfQQcdNN2+/Elv1z2vR3d+L7LIItn1bbHFFt053DHtCHznO99JO+64Y5oyZUprjllmmSWdffbZaaONNkoPPvhg6/befiAA2tst4PwECBAgQIAAAQIECBAgQIBAwwtcdtllafHFF0+///3ve/1ap02b1qU69KW6d6niMtdN4JJLLknXXXdd+sY3vpFWX3316c7zi1/8Ik2dOjXttttuafLkydPt660nAqC9Je+8BAgQIECAAAECBAgQIECAQFMIxFDhbbfdNr388st98nqj5+fQoUOzn4EDB05Xx75e9+kq60mPCLz55ptpn332SXGvHH300TOdc7nllkvbb799evjhh9Oxxx470/7e2CAA2hvqzkmAAAECBAgQIECAAAECBAgQ6CMCI0aMSOPHj89+fv7zn/eRWqlGXxX42c9+lt5444208847p5heoK0UeQYMGJDifnrllVfaytKj2wRAe5TbyQgQIECAAAECBAgQIECAAAECBAiUUyACn+edd15W+e9+97vtXsTnP//5tO6666YJEyakk046qd18PbVj+n7NPXVW5yFAgAABAgQIECBAgAABAgQIdFPgrbfeSjfddFP65z//mS3Asuiii6ZVVlklffazn+2wxJj78umnn06PPPJIevzxx9O8886bYrjuF77whTRs2LA2j40FXh544IFs3xJLLJEtIBTzGsZiRnfffXd6//330/LLL59WWGGFNHr06JnKuP/++1PUN08vvfRSuu+++7KncUz0kovreP3119OoUaPSYostlj2+9tprs98xv+I666yTH976O4bTP/nkk9nPv//977Twwgunz33uc2nJJZdssx6tB7bxIOZr/Otf/5rtCZP5558/e9xZ3WORmzCNHqRx3o7SP/7xj/Tuu+9mw+yXWWaZjrJ2a997772XbrjhhvTMM8+kOeecM6255ppZu/bvX7zvX5QR90b8xOOoZ9wfCy64YKE6xTExx+tzzz2XXedqq62W3RsxvUC0e/SEjPss7rc8daftu3Mf5+eL39Ucf8opp6SPP/44LbTQQtn/c5Xlzvh46623Trfeems6/fTT0yGHHJLdJzPm6annAqA9Je08BAgQIECAAAECBAgQIECAQFUCsRL5D3/4w3ThhRdmPcsqC4tAV6xIffzxx6cxY8ZU7soeR2As9t97770z7Ztrrrmylas33XTTmfbFCukRXI30xz/+MQ0aNCjFauKVQc3YF0GuE088Mc3YKy4CmJULwUQAKX4iRUAwgp7/8z//kwWJNthgg3T44YenL3/5yynOm6cYRhxDiiO9+OKL6dvf/na67bbb8t3T/Y56HHbYYWm//fbL5micbmc7Tz766KPWa/zpT3+ajjrqqCxnZ3WPc9x5551p+PDhKeYKjUBoWymuf6211soCujvssEPWfm3l6+62I488Mh1zzDHTmUVZEcCMoGhnKQKCsXDPwQcfPNN9FcfGfJbRZrPNNlu7RbVXhwgoX3XVVenqq6/O5suMnpFPPfVUazldafs4qLv3cX7Cao6PwGd+70Zws7O01VZbpT333DO7z88666zs/93OjqnX/uJh8HrVQLkECBAgQIAAAQIECBAgQIAAgU4EIuC46qqrZoHKGFYbQcsIWG655ZZpyJAh2arTv/3tb9Pmm2+e9VCrLO7KK6/MevJF8DMW/Fl55ZXTt771rSzQOOuss2aBuc022ywdcMABlYfN9DiCaV/5yley4Gf0No1AZd7rM4JDe+yxRxYErTwwenkuu+yyrZvmm2++tOKKK2Y/0fuzMsU8nBFsqwx+xv4NN9wwy3bLLbekpZdeOgt+RsA3gooxD2MEFVdaaaUsT9QjgpgRBK02dVb3MIw0bty4LMjX3vmit270cI206667Zr9r9U8EnKN3YZhFADba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005Ll112WdbzNcqdMmVK+ulPf5pGjBiRBUnzYHAtzllNGQKg1eg5lgABAgQIECBAgAABAgQIECDQxAKXX355evPNN7PVwCPoVSRFj8lGShEE/fa3v539TJ06NcVq9NH7c+zYsdmK9I10rZXXEsP799xzzzRq1KjWzZMnT05xT8w666xpwQUXbN3e2w8EQHu7BZyfAAECBAgQIECAAAECBAgQIFBigdGjR5e49rWtegxxj9XVmyENHTp0plXtY27WWq50XytHq8DXSlI5BAgQIECAAAECBAgQIECAAAECBAj0OQE9QPtck6gQAQIECBAgQIAAAQIECBAgQOATgUsuuSRdccUV6ZlnnkkLL7xwNs/mNttskz1mRIBAMQEB0GJOchEgQIAAAQIECBAgQIAAAQIEekwg5lLcbLPN0k033ZSdc/bZZ0+PPfZYuuaaa9Kxxx6bbrjhhrTyyiv3WH2ciECZBQyBL3PrqTsBAgQIECBAgAABAgQIECDQkAKxknYEPxdddNF01VVXpddeey29+OKL6aCDDsoWHVpvvfXSv//974a8dhdFoNYCAqC1FlUeAQIECBAgQIAAAQIECBAgQKAKgQkTJqTTTz89K+HQQw9NW265ZYqVxuebb7505JFHpsUWWyx99NFHrb1DqziVQwk0hYAAaFM0s4skQIAAAQIECBAgQIAAAQIEyiIQvT232mqrtP7666fttttupmpHQDTSfffdN9M+GwgQmFnAHKAzm9hCgAABAgQIECBAgAABAgQIEOg1gQUXXDCdf/757Z7/0Ucfzfatttpq7eaxgwCBTwUEQD+18IgAAQIECBAgQIAAAQIECBAg0GcFYiX4M888M914443ZKvBf/epX+2xdVYxAXxIQAO1LraEuBAgQIECAAAECBAgQIECAAIEZBB544IFsKPzTTz+d7VljjTXS1VdfneaYY44ZcnpKgEBbAgKgbanYRoAAAQIECBAgQIAAAQIECPQJgX+8OSWNHdnxEibnPzQx3fLMlB6r72mbD00jhvTr8HyvfjA1LTZ6QId5iu587LHH0ocffpjGjh2brfz+5JNPpmuvvTZ961vfSv36dVyPoueQj0AjCwiANnLrujYCBAgQIECAAAECBAgQIFBygVPumZieagmC9qX07SvHdVqdw788rNM8RTPssssuadddd82yP/TQQ2mHHXZIu+22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oAIC0EFZvEmAAAECBAgQIECAAAECBAiUQ6AWJKbL4HNbMiw5N2L1EhiugAB0uFK2I0CAAAECBAgQIECAAAECBFou0F8LP/tzvAY+y1mrLW+vAxJoiYCnwLeE2UEIECBAgAABAgQIECBAgAABAgQIEGiHgBmg7VB3TAIECBAgQIAAAQIECBAgQGB4Ark+BWl4o7MVAQItEBCAtgDZIQgQIECAAAECBAgQIECAAIHRCaRbaXby7TS///3vx49+9KO47777YtmyZbHLLrvE2972tjjiiCNGB+pTBDpQQADagU03ZAIECBAgQIAAAQIECBAgkI1AegBSjg9BWsfYdtGiRfHWt741rrnmmnqrpk+fXv/1lltuie9+97tx7rnnxuWXXx7rrbdeNq1UKIF2CbgHaLvkHZcAAQIECBAgQIAAAQIECBBYu8BAAJrdr2sfWtEWJ510Uj383G233SKFnnPnzq1/3XzzzbHzzjvHtddeG5/4xCeKdmEdAQL/KyAAdSoQIECAAAECBAgQIECAAAECJRcYuBA+p19HTzpv3rz6DM+enp6YPXt27Lvvvst3NmvWrLjsssvq359//vmRtrUQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQaKNAPfKs/U9uE0DXhex//ud/YunSpbHTTjtFmgG6+rL77rvHFltsEX19fXH77bevvtr3BAisJuAeoKuB+JYAAQIECBAgQIAAAQIECBAok0BfrZj0lduSotvRLQcddFA888wzMX/+/EF3kMLRZ599tr5uo402GnQbbxIgsEJAALrCwisCBAgQIECAAAECBAgQIECgbAIDUz/LVlcT6+nq6ooUbA4Vbl500UWxcOHCmDFjRmy//fZNrMSuCVRDQABajT4aBQECBAgQIECAAAECBAgQqKTAm/fePA7ca/PCsV13++Px+4demRFZuGGDVv71/9ktJo4rjlQmjO1p0NFW3c1DDz0Uf/u3f1t/8/TTT48UlloIECgWKP5/a/FnrSVAgAABAgQIECBAgAABAgQINFVgUe+yWLxkWeExeuvrR3/JeeHOB1k5b2Fv7R6dxZfl96eZqw1ennrqqRi4PP7ggw+OD37wgw0+gt0RqKaAALSafTUqAgQIECBAgAABAgQIECBQCYH/ufPJuOPh1s3uHA7apdfet9bN9t2hsffmvOeee+KQQw6JNAN0v/32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Y6Sv3BahbW4dU291BVwCX93eGhkBAgQIECBAgAABAgQIECBAgACBjhcwA7TjTwEABAgQIECAAAECBAgQIECgxAJpImWOkylzrLnEp4HSCKyLgBmg66LnswQIECBAgAABAgQIECBAgECTBVKSOHAZfE6/Np7lW9/6Vmy//fZx8803N37n9kigwgJmgFa4uYZGgAABAgQIECBAgAABAgSyF8h1BmiD4W+88cY47rjjore3NxYuXNjgvdsdgWoLCECr3V+jI0CAAAECBAgQIECAAAECmQvkmoA27hr46667Lt71rnfVw8/Mm6l8Am0REIC2hd1BCRAgQIAAAQIECBAgQIAAgeEI9Pf3R39f48LE4RyzEdvUyl7n5eWXX45PfepTcc4550Ry6OnpiWXLlq3zfu2AQKcJuAdop3XceAkQIECAAAECBAgQIECAQHYCA7NAc/p13ZFnzZoVZ599dqy//vrx3e9+N3bfffd136k9EOhAAQFoBzbdkAkQIECAAAECBAgQIECAQC4COUWeK9faCN85c+bEUUcdFbfddlu85z3vacQu7YNARwq4BL4j227QBAgQIECAAAECBAgQIEAgF4GBWDGXegfqTHWv23LrrbfGVltttW478WkCBEIA6iQgQIAAAQIECBAgQIAAAQIEyiuQbqbZiBtqlneEQ1Ym/BySxgoCIxIQgI6Iy8YECBAgQIAAAQIECBAgQIBAKwU+f/J7Y8etZxYe8p++9r34zo+uLdymkStv+cGZscGU9Qp3efu9jxSut5IAgdYJCEBbZ+1IBAgQIECAAAECBAgQIECAwAgFPnXmhfH7ex4u/FR6Qnorl1f/5Sejq6ur8JD/fvpHCtdbSYBA6wQEoK2zdiQCBAgQIECAAAECBAgQIEBgpAK1cLOvr2+kn2r69q0OXZs+IAcgUGEBAWiFm2toBAgQIECAAAECBAgQIECgGgKtneHZGLMca27MyO2FQNkEustWkHoIECBAgAABAgQIECBAgAABAgQIECDQKAEzQBslaT8ECBAgQIAAAQIECBAgQIBAEwRql7/3l+8S+LUO1ATQtRLZgECrBMwAbZW04xAgQIAAAQIECBAgQIAAAQIECBAg0HIBM0BbTu6ABAgQIECAAAECBAgQIECAwHAF0sOGcnzgUK3q4Q7RdgQINFnADNAmA9s9AQIECBAgQIAAAQIECBAgQIAAAQLtEzADtH32jkyAAAECBAgQIECAAAECBAisTaA2A7Q2BXRtW3XE+ttuu60jxmmQBBotIABttKj9ESBAgAABAgQIECBAgAABAg0USOFnhg9BaqCAXREgsG4CAtB18/NpAgQIECBAgAABAgQIECBAoJkCueafJq0286ywbwIjEhCAjojLxgQIECBAgAABAgQIECBAgEArBdLDhPJ8oJAEtJXniWMRKBLwEKQiHesIECBAgAABAgQIECBAgAABAgQIEMhawAzQrNuneAIECBAgQIAAAQIECBAgUHEBD0GqeIMNj0DzBQSgzTd2BAIECBAgQIAAAQIECBAgQGCUAulC8jwvgR/lgH2MAIGGCwhAG05qhwQIECBAgAABAgQIECBAgEDDBLKdAeoeoA07B+yIwDoKuAfoOgL6OAECBAgQIECAAAECBAgQIECAAAEC5RUwA7S8vVEZAQIECBAgQIAAAQIECBAgULsAPl0EbyFAgMBoBQSgo5XzOQIECBAgQIAAAQIECBAgQKAFAgLQFiA7BIFKCwhAK91egyNAgAABAgQIECBAgAABApkL5Jp/mrSa+Ymn/CoJCECr1E1jIUCAAAECBAgQIECAAAECVROoPwSpL8NRSUAzbJqSKyrgIUgVbaxhESBAgAABAgQIECBAgAABAgQIECAQYQaos4AAAQIECBAgQIAAAQIECBAorUB/7QFI/WkWqIUAAQKjFDADdJRwPkaAAAECBAgQIECAAAECBAgQIECAQPkFzAAtf49USIAAAQIECBAgQIAAAQIEOlgg16cgdXDLDJ1AyQQEoCVriHIIECBAgAABAgQIECBAgACBlQT6aw9ASl+5LS7bz61j6q2wgAC0ws01NAIECBAgQIAAAQIECBAgkL1AbQJojlmiu5Zmf+YZQIUEBKAVaqahECBAgAABAgQIECBAgACBygm4Ar5yLTUgAq0WEIC2WtzxCBAgQIAAAQIECBAgQIAAgeELdNU27TKfcvhgtiRAYHUBAejqIr4nQIAAAQIECBAgQIAAAQIESiPQX7v+PX1ZCBAgMFqB7tF+0OcIECBAgAABAgQIECBAgAABAgQIECBQdgEzQMveIfURIECAAAECBAgQIECAAIFOFsj1KfBh1monn7bGXi4BM0DL1Q/VECBAgAABAgQIECBAgAABAgQIECDQQAEzQBuIaVcECBAg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LM0ATcvAtkNuaAUBAiEAdRIQIECAAAECBAgQIECAAAECpRX4i4MPrNWWnoA09DJrnz3iqafnDL1Bg9e8Zp89Y+zY4khloxnTR33UdA/QtAyEnIPtaNq0afW3FyxYMNhq7xEgsJJA8f9bV9rQSwIECBAgQIAAAQIECBAgQIBAqwX23mOXtR5y7z12Xes2OW0wderUerkLFy4csuyBdRMmTBhyGysIEHhFwD1AnQkECBAgQIAAAQIECBAgQIAAgRIJbLbZZvVqnnvuuSGrGlg3EJYOuaEVBAiEANRJQIAAAQIECBAgQIAAAQIECBAokcBAAPr8888PWdVAALrxxhsPuY0VBAi8IiAAdSYQIECAAAECBAgQIECAAAECBEoksOWWW9arSU947+3tXaOyZ599Np566qno6emJffbZZ4313iBAYFUBAeiqHr4jQIAAAQIECBAgQIAAAQIECLRVYNttt43XvOY18cILL8TPfvazNWqZPXt2LF26NGbNmhWTJ09eY703CBBYVUAAuqqH7wgQIECAAAECBAgQIECAAAECbRc4+eST6zWceuqpsfKl8I899liceeaZ9XUnnHBC2+tUAIEcBDwFPocuqZEAAQIECBAgQIAAAQIECBDoKIG/+qu/ite+9rXx61//uj4b9LDDDqtfDn/ppZfGE088EYceemgcfvjhHWVisARGKyAAHa2czxEgQIAAAQIECBAgQIAAAQIEmiSQ7u953XXXxUc/+tG46KKL4l/+5V/qRxo7dmx8/OMfjzPOOCO6u13Y2yR+u62YgAC0Yg01HAIECBAgQIAAAQIECBAgQKAaAhMmTIjzzjsvvvnNb8btt98efX19sdNOO8WUKVOqMUCjINAiAQFoi6AdhgABAgQIECBAgAABAgQIECAwGoE063PfffcdzUd9hgCBmoC50k4DAgQIECBAgAABAgQIECBAgAABAgQqKyAArWxrDYwAAQIECBAgQIAAAQIECBAgQIAAAQGoc4AAAQIECBAgQIAAAQIECBAgQIAAgcoKCEAr21oDI0CAAAECBAgQIECAAAECBAgQIEBAAOocIECAAAECBAgQIECAAAECBAgQIECgsgIC0Mq21sAIECBAgAABAgQIECBAgAABAgQIEBCAOgcIECBAgAABAgQIECBAgAABAgQIEKisgAC0sq01MAIECBAgQIAAAQIECBAgQIAAAQIEBKDOAQIECBAgQIAAAQIECBAgQIAAAQIEKisgAK1saw2MAAECBAgQIECAAAECBAgQIECAAAEBqHOAAAECBAgQIECAAAECBAgQIECAAIHKCghAK9taAyNAgAABAgQIECBAgAABAgQIECBAQADqHCBAgAABAgQIECBAgAABAgQIECBAoLICAtDKttbACBAgQIAAAQIECBAgQIAAAQIECBAQgDoHCBAgQIAAAQIECBAgQIAAAQIECBCorIAAtLKtNTACBAgQIECAAAECBAgQIECAAAECBASgzgECBAgQIECAAAECBAgQIECAAAECBCorIACtbGsNjAABAgQIECBAgAABAgQIECBAgAABAahzgAABAgQIECBAgAABAgQIECBAgACBygoIQCvbWgMjQIAAAQIECBAgQIAAAQIECBAgQEAA6hwgQIAAAQIECBAgQIAAAQIECBAgQKCyAgLQyrbWwAgQIECAAAECBAgQIECAAAECBAgQEIA6BwgQIECAAAECBAgQIECAAAECBAgQqKyAALSyrTUwAgQIECBAgAABAgQIECBAgAABAgQEoM4BAgQIECBAgAABAgQIECBAgAABAgQqKyAArWxrDYwAAQIECBAgQIAAAQIECBAgQIAAAQGoc4AAAQIECBAgQIAAAQIECBAgQIAAgcoKCEAr21oDI0CAAAECBAgQIECAAAECBAgQIEBAAOocIECAAAECBAgQIECAAAECBAgQIECgsgIC0Mq21sAIECBAgAABAgQIECBAgAABAgQIEBCAOgcIECBAgAABAgQIECBAgAABAgQIEKisgAC0sq01MAIECBAgQIAAAQIECBAgQIAAAQIEBKDOAQIECBAgQIAAAQIECBAgQIAAAQIEKisgAK1saw2MAAECBAgQIECAAAECBAgQIECAAAEBqHOAAAECBAgQIECAAAECBAgQIECAAIHKCghAK9taAyNAgAABAgQIECBAgAABAgQIECBAQADqHCBAgAABAgQIECBAgAABAgQIECBAoLICAtDKttbACBAgQIAAAQIECBAgQIAAAQIECBAQgDoHCBAgQIAAAQIECBAgQIAAAQIECBCorIAAtLKtNTACBAgQIECAAAECBAgQIECAAAECBASgzgECBAgQIECAAAECBAgQIECAAAECBCorIACtbGsNjAABAgQIECBAgAABAgQIECBAgACBMQgILHrhyVj0/OOxbPG86O/vHwFI1wi2fWXT7rHjY/z6G8XEGVtHd8/YEX/eB/IT6J3/fCyc+3AsXfRS9PctG+EARnaOdfeMibGTp8ekGdtEz7iJIzyWzXMVWNa7MJYsfDH6liyuDWEkP8NGMuKu6B4zLsZMnBpjxk8ayQdtS4AAgUEF+pb2xpzbrowXHrgplrw0t/bTa/g/v7piZL8/Rnd3jJ+6SWyw8xtj+m4HRlftewsBAgQIECBAoJMEBKCd1O3VxrqkFkw9f+91sfCFp2O99SbHFltuGT21PxD3jGnOaZHC1Tlz5sTTf/h9jK0FCFO2e11M3nTH1arybVUEUij1/H03xPxnHoxx48bF1ttsG2NqAeWYsc0Lvl988cV45J4744X7b4z1t3pVTN163+jqGuFfEqvSgA4YR9+ypbHouUejd/5zMTadY1ttHWPH1s6xMY0/x5YsWRIPPfRQzHvhiRg3aWpM2HCreiDaAcyGSIBAEwTm3PazuPuCj8eC5x6PGRtvEhtttFH09PTUcsrmBJN9fX3x6O8fiQd/8vmYssWusdv7z4mp2726CSOzSwIECBAgQIBAOQWak3SVc6yqWkmgd96ztVkHl8fmm20aX/3Oj+Otb31r/Q/eK23StJd33313fPrTn44f/ehHsax3fkytBVWWagmk8HPObT+J8d3L4pxzzomjjjoqJk5szYzMJ598Mj7/+c/HWWedFUsXvBjTd63NdBGCVusEq40mhZ8L59wX48d0x1nf+EYcc8wxMWlSc2dm9vb2xuzZs+OEE06IF5+5LyZuvKMQtHJnlgERaL7AEzdeEnf82wdj//0PiC984T/j1a9uTRCZ/iH6mmuuieNP+ETcfMafx74n/ig23PXPmj9gRyBAgAABAgQIlECgOf/MXIKBKWFogXQZ8nN3XR3bbbt1/PaWW+Ltb397y8LPVNUuu+wSP/zhD+P444+PFx78dSx+8emhi7UmS4Hn770+xnUti1/96lfxoQ99qGXhZ8KaOXNmfOlLX4pvf/vbMf/p+2Lek3dlaajoYoE08zOFn7/85S/jwx/+cNPDz1RNmsl85JFHxi21n5sbbjAtFj37x+IirSVAgMBqAvOffiD+8K2PxGGHHRZXX/3zloWfqYz0j4FvetOb4tc3/Sr2e82suP3sY2LJ/BdWq9C3BAgQIECAAIFqCghAq9nXwlHNf+aBWDzv+fjuRRfFhhtuWLhtM1d+4QtfiO233z5eeuR3zTyMfbdYIM0unj/nofjiF/9v7Lrrri0++orDpRmBf/mXfxnzHr11hPe2XbEPr8opkGYYp8vezzzzzNhjjz1aXuRWW21Vm9l8dvQufLl279GXWn58ByRAIF+BP17xpZg6Zf04//zzm3a5+9p00hUZF1/83Vr4+Vw8eu35a9vcegIECBAgQIBAJQQEoJVo48gGkR5Is/fee8esWbNG9sEGbz2mdq/RD33wg7V7+D0W/bXLWS3VEEjn1/gJE+K9731v2wd03HHHRe+Cl6N33ty216KAxgmkBx6le34effTRjdvpCPd06KGHxozaPfuW1mqxECBAYLgCz952RRz13iNj8uTJw/1IU7bbeuut4/8cfHA8e+sVTdm/nRIgQIAAAQIEyiYgAC1bR1pQT3/vvNhnn31acKS1H2LPPfeMvtol+Utr9wK1VEMgzYjbYYcdY0ItBG33ks6vtCytzdSzVEcgPe192222acll70OppUtJ96qdX8vqT54faivvEyBAYIXA0sXz6w+e3GuvvVa82cZXqY6FtSs2LAQIECBAgACBThAQgHZCl1cfY39fjB8/fvV32/L9wINx+mtPJ7VURCCdX7XZeWVYBkLYdN9bS5UE+ms/w9ofsK+33nrRFf1VgjUWAgSaKNC/dEl972X6M1jf0sVNHLFdEyBAgAABAgTKIyAALU8vVEKAAAECBAgQIECAAAECBAgQIECAQIMFBKANBrU7AgQIECBAgAABAgQIECBAgAABAgTKIzCmPKWohACBThRYsGBBLFq0qD70DTfcsBMJjJkAAQIECIxaoLe3N+bNm1f//JQpUyI9ZNJCgAABAgQIECCwqoAZoKt6+I4AgRYLnHLKKTF9+vT617Jl7tXZYn6HI0CAAIHMBX7yk58s/330xhtvzHw0yidAgAABAgQINEdAANocV3slQIAAAQIECBAgQIAAAQIECBAgQKAEAgLQEjRBCQQIECBAgAABAgQIECBAgAABAgQINEdAANocV3slQIAAAQIECBAgQIAAAQIECBAgQKAEAgLQEjRBCQQIECBAgAABAgQIECBAgAABAgQINEfAYyKb41rJvfb19cU999xT/7r77rvjiSeeiK233jp23HHH2GuvvWKbbbap5LgNqrUCS5cujV/96lf1rzlz5sSsWbNiv/32i6222qq1hThaJQXSz7Grrroqfve739V/hm2yySaxww47xF/8xV/E5MmTKzlmgyJAoBoCP//5z+PXv/51pN8b99133/jTP/1Tf/aqRmuNggABAgQIEGiBgAC0BchVOMR9990X73vf+2Kop4v29PTE8ccfH5/97Gdj0qRJVRiyMbRBIP2l7vDDD4/rr79+jaOfeOKJ8a//+q8xZowfW2vgeGNYAj/84Q/rP6ceffTRNbbfaKON4tRTT40Pf/jDa6zzBgECBNopcPvtt8eRRx4Z6dfVl09/+tOxzz77rP627wkQIECAAAECBFYTkCSsBuLbNQX+67/+Kw477LBYuHBhPXx6y1veEtttt12kmVQpGL3mmmti2bJl8cUvfjHmz58fZ5999po78Q6BYQikmZ6PPPJIfWbxAQccUD+v0vn1+OOP18+vm2++OdIMmHHjxg1jbzYhsEIg/Xw66aST6m+MHTs2Xv/618eee+4ZN910U/zmN7+pz6j6m7/5m+ju7o5jjz12xQe9IkCAQBsFfvvb38ab3vSmePHFF+tVpJmfr3nNayL9Q076x8Izzjgjtt9++zZW6NAECBAgQIAAgTwEBKB59KmtVf7DP/xDPfxMM6RuuOGG2GmnnVap584774w3v/nN8fTTT8cFF1wQp512WkyfPn2VbXxDYDgCKfz867/+6/j617++PORcsGBBffbx7Nmz63/Z+7d/+7f4yEc+Mpzd2YZAXeCOO+6IU045pf463bbjP/7jP+q3VRjgSbf2SJeSphnIH/3oR+PQQw+NmTNnDqz2KwECBNoikP6h+UMf+lA9/Ez/8PeNb3wjPvCBDyyvJf2e+Y53vCNuvfXW5e95QYAAAQIECBAgMLiAhyAN7uLd/xVIgWeafZCWz33uc2uEn+n93XffvX5ZaXq9aNGiSIGohcBoBP7kT/4kUsC58gzPdEuFiy++ePl9zk4//fT6eTaa/ftMZwqkc2bJkiX1wV900UWrhJ/pzZ133jnSP/SkJd2D9pJLLqm/9j8ECBBop8DVV18dt9xyS72E9I8zK4ef6c10b+x0lc7Kv2e2s17HJkCAAAECBAiUWUAAWubulKC29HCjdN/PCy+8MI444oghK1p5Vmi6DN5CYDQC//zP/zzox9J9Pz/1qU/V16WHb/33f//3oNt5k8DqAin4vOKKK+pvH3jggfHGN75x9U3q36fL3tO99NItPNJtPiwECBBot0B6WFta0u+BA7fwWL2mzTbbrH6VxOrv+54AAQIECBAgQGBVAZfAr+rhu9UEpkyZUr9XXrpf3upLb29v3H///fWndadLSgeWNIPKQmCkAunei+ky5KGWlc/Be++9Nw466KChNvU+geUCd9999/J7573uda9b/v7qL9J9QdNMUQsBAgTKInDbbbfVS9liiy0iBZ1DLekfd84999yhVnufAAECBAgQIECgJiAAdRoMW+DKK6+sP/AoXeJ+1113xR//+Mf6Q2qGvQMbEigQSPdcLLqMb8stt1z+6RSAWggMRyDdm3hgSZeLWggQIJCLwMoBaFHNKSC1ECBAgAABAgQIFAsIQIt9rK0JpEuwjj766EgPEll9STNE999//0gPSPr3f//31Vf7nsCwBTbccMPCbadNm7Z8fXowkoXAcARefvnl5Zut7RxbvqEXBAgQKIHAgw8+WK9igw02KKxm0003LVxvJQECBAgQIECAgBmgzoG1CDz00ENxyCGH1J/wnjZNYWd64nu6N+jee+8d6YnKXV1d8f3vf18AuhZLq4sFnn322cINHn/88eXrt99+++WvvSBQJJB+Rg0sTz755MBLvxIgQKD0AtOnT4/HHnss0r2vi5a5c+cWrbaOAAECBAgQIECgJmAGqNOgUOCss85aHn5+8YtfjE984hODbr9yeLVs2bJBt/EmgSKB9Be49MCadC/GwZaHH354+ds77LDD8tdeECgSWPlcefTRR4s2jW9/+9vx3HPP1Z8K/7a3va1wWysJECDQbIF0244UgK78+99gx3zkkUcGe9t7BAgQIECAAAECKwl4CvxKGF6uKXDttdfW30yXX3384x9fc4P/feeXv/zl8nUegrScwosRCKSHal111VVDfuKSSy5Zvm733Xdf/toLAkUC6TYdm2yySX2Tn/70p9HX1zfk5p/5zGfqT1r+5je/OeQ2VhAgQKBVAukKnLSkfyC85pprhjxs+tlmIUCAAAECBAgQKBYQgBb7dPzagTAz3UdvqEuw0hPgL7zwwuVWaRafhcBoBD772c/G/Pnz1/jo/fffH+eff379/Xe+852x2267rbGNNwgMJXD88cfXV/3hD3+I2bNnD7pZ+jk2cJuFdI5ZCBAg0G6BI444IiZOnFgvI/0DzWBX2Nxzzz2r/Bms3TU7PgECBAgQIECgrAIC0LJ2piR17bfffvVKUhD6d3/3d8sDgvRmmpFw7rnnxnvf+95VZlU9//zzJaleGbkJ3HTTTXHooYdGCjzT0t/fH7/4xS/ijW98Y6QZouny+M9//vO5DUu9bRY48cQTY5tttqlXccwxx8Q555xTP58Gyrr00kvjuOOOq3+bZhe/+93vHljlVwIECLRNIN3vOt2aI91r/cYbb4yDDz54+Z/DBn5/POCAAwYNRttWtAMTIECAAAECBEoqIAAtaWPKUlaakZduwp+Wiy66KLbYYovYd999Y4899oiNN944jj322EiXx5933nnLZyncfvvtZSlfHRkJ7LjjjvXwMwWe6XV6eM2MGTPqD916+umnY9KkSfGtb30rVr6nY0bDU2obBcaPHx8XX3xx/efX4sWL62Hn+uuvX/85Nm3atEizrF544YX6z7If/OAHsd5667WxWocmQIDACoHDDz88Tj311PobV199df3nWApGB35/fOaZZ4a8P/uKvXhFgAABAgQIECAgAHUOFApsvvnmcd1118VBBx20fLvf/e53ceedd8bkyZPjAx/4QNx99931X9MT4tOSLjF1GfxyLi+GKZBCqssuu6weqqewMz3UIT2Qpru7O9JM5JtvvjmOPPLIYe7NZgRWFXj9618f6R9njjrqqHqYnmYUp59jL774Yv0ce9/73hfpEvmddtpp1Q/6jgABAm0W+Pu///s488wzl9/P+MEHH6z//rjpppvGd77znfrvm20u0eEJECBAgAABAqUX8BT40reo/QWmS0KvvPLKePLJJ+OBBx6oBwbpHozpktJ0WdbA4ib8AxJ+HYnAV77ylUhfA8vZZ58dX/va1+K3v/1tLFiwIF796ldHmq1nIbCuAmm2ZwoL0iWl6WdZunfeZpttVn/qu1mf66rr8wQINFPg5JNPjo997GNx11131Z8Mn/4ctt122y0/ZLok3kKAAAECBAgQIDC0gAB0aBtrVhOYOXNmpC8LgWYLjBkzJl772tc2+zD236ECaVZxus1C+rIQIEAgF4F0pcSrXvWq+lcuNauTAAECBAgQIFAWAZfAl6UTHVqHGQsd2njDJlABAT+/KtBEQyBAgAABAgQIECBAoCMEBKAd0eY1B5me6l6Gpa+vr17Gigvpy1CVGtZVoHTnlxNsXVtaus+X4T7D6eeX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AAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgYwEBaMbNUzoBAgQIECBAgAABAgQIECBAgAABAsUCAtBiH2sJECBAgAABAgQIECBAgAABAgQIEMhYQACacfOUToAAAQIECBAgQIAAAQIECBAgQIBAsYAAtNjHWgIECBAgQIAAAQIECBAgQIAAAQIEMhYQgGbcPKUTIECAAAECBAgQIECAAAECBAgQIFAsIAAt9rGWAAECBAgQIECAAAECBAgQIECAAIGMBQSgGTdP6QQIECBAgAABAgQIECBAgAABAgQIFAsIQIt9rCVAgAABAgQIECBAgAABAgQIECBAIGMBAWjGzVM6AQIECBAgQIAAAQIECBAgQIAAAQLFAgLQYh9rCRAgQIAAAQIECBAgQIAAAQIECBDIWEAAmnHzlE6AAAECBAgQIECAAAECBAgQIECAQLGAALTYx1oCBAgQIECAAAECBAgQIECAAAECBDIWEIBm3DylEyBAgAABAgQIECBAgAABAgQIECBQLCAALfaxlgABAgQIECBAgAABAgQIECBAgACBjAUEoBk3T+kECBAgQIAAAQIECBAgQIAAAQIECBQLCECLfawlQIAAAQIECBAgQIAAAQIECBAgQCBjAQFoxs1TOgECBAgQIECAAAECBAgQIECAAAECxQIC0GIfawkQIECAAAECBAgQIECAAAECBAgQyFhAAJpx85ROgAABAgQIECBAgAABAgQIECBAgECxgAC02MdaAgQIECBAgAABAgQIECBAgAABAgQyFhCAZtw8pRMgQIAAAQIECBAgQIAAAQIECBAgUCwgAC32sZYAAQIECBAgQIAAAQIECBAgQIAAgYwFBKAZN0/pBAgQIECAAAECBAgQIECAAAECBAgUCwhAi32sJUCAAAECBAgQIECAAAECBAgQIEAgY4ExGdfe8NKXLVsavS/Pja6urobv2w4J9C6cH2MXzYu+JYtgEGi4QO/8F6O/P2Jp7RyzEGi0QH/fsliyaH68cP9Njd61/REgQIAAgawFFj52X63+t2Q9BsUTIECgEwS6+mtLMwb65JNPNmO3Td3nb275bdx5193RVfvPQqDRAosXL4qenp4YM2Zso3dtfwRi0aJF0de3NCZOmEiDQMMFltb+gTB6JsSEic6vhuPaIQECBAhkLTB1/clxyJ8fUP9zfk4DmTlzZk7lqpUAAQLrLCAAXWdCOyBAgAABAgQIECBAgAABAvkICEDz6ZVKCRBojIB7gDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAC0hE1REgECBAgQIECAAAECBAgQIECAAAECjREQgDbG0V4IECBAgAABAgQIECBAgAABAgQIECihgAD0/7drxzYAgEAMxMT+QwNDXJHCDBC9nC5isBQnESBAgAABAgQIECBAgAABAgQIECDQCBhAG0cpBAgQIECAAAECBAgQIECAAAECBAgMChhAB0txEgECBAgQIECAAAECBAgQIECAAAECjYABtHGUQoAAAQIECBAgQIAAAQIECBAgQIDAoIABdLAUJxEgQIAAAQIECBAgQIAAAQIECBAg0AgYQBtHKQQIECBAgAABAgQIECBAgAABAgQIDAoYQAdLcRIBAgQIECBAgAABAgQIECBAgAABAo3Auf81UVIIECBAgAABAgQIECBAgAABAgQIECCwJeAH6FYfriFAgAABAgQIECBAgAABAgQIECBAIBQwgIaYoggQIECAAAECBAgQIECAAAECBAgQ2BIwgG714RoCBAgQIECAAAECBAgQIECAAAECBEIBA2iIKYoAAQIECBAgQIAAAQIECBAgQIAAgS0BA+hWH64hQIAAAQIECBAgQIAAAQIECBAgQCAUMICGmKIIECBAgAABAgQIECBAgAABAgQIENgSMIBu9eEaAgQIECBAgAABAgQIECBAgAABAgRCAQNoiCmKAAECBAgQIECAAAECBAgQIECAAIEtAQPoVh+uIUCAAAECBAgQIECAAAECBAgQIEAgFDCAhpiiCBAgQIAAAQIECBAgQIAAAQIECBDYEjCAbvXhGgIECBAgQIAAAQIECBAgQIAAAQIEQgEDaIgpigABAgQIECBAgAABAgQIECBAgACBLQED6FYfriFAgAABAgQIECBAgAABAgQIECBAIBQwgIaYoggQIECAAAECBAgQIECAAAECBAgQ2BIwgG714RoCBAgQIECAAAECBAgQIECAAAECBEIBA2iIKYoAAQIECBAgQIAAAQIECBAgQIAAgS0BA+hWH64hQIAAAQIECBAgQIAAAQIECBAgQCAUMICGmKIIECBAgAABAgQIECBAgAABAgQIENgSMIBu9eEaAgQIECBAgAABAgQIECBAgAABAgRCAQNoiCmKAAECBAgQIECAAAECBAgQIECAAIEtAQPoVh+uIUCAAAECBAgQIECAAAECBAgQIEAgFHh4LtSrYSRNawAAAABJRU5ErkJggg==" width="672" /></p>
 </div>
 </div>
@@ -5261,9 +5352,11 @@ mock$xmap_abc |&gt;
 <p>NULL</p>
 <p>Test Prints:</p>
 <pre class="r"><code></code></pre>
-<pre><code>## Dropping any additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector, ~weight, &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1,
-## &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;,
-## &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`
+<pre><code>## Dropping any additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector,
+## ~weight, &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1, &quot;text&quot;, `, `
+## &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25,
+## &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col =
+## &quot;stuff&quot;)`
 ## ℹ To silence set `.drop_extra = TRUE`</code></pre>
 <pre><code>## xmap_df:
 ## recode, split, and collapse  
@@ -5412,11 +5505,11 @@ print(valid_xmap_df)</code></pre>
 <pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;</code></pre>
 <pre><code>## -- Installing package into temporary library -----------------------------------
 ## == Building pkgdown site =======================================================
-## Reading from: &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap&#39;
-## Writing to:   &#39;/Users/cynthiahqy/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap/docs&#39;
+## Reading from: &#39;/Users/chua0032/Library/CloudStorage/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap&#39;
+## Writing to:   &#39;/Users/chua0032/Library/CloudStorage/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap/docs&#39;
 ## -- Initialising site -----------------------------------------------------------
-## Copying &#39;../../../../../Library/Application Support/renv/cache/v5/R-4.2/x86_64-apple-darwin17.0/pkgdown/2.0.7/16fa15449c930bf3a7761d3c68f8abf9/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
-## Copying &#39;../../../../../Library/Application Support/renv/cache/v5/R-4.2/x86_64-apple-darwin17.0/pkgdown/2.0.7/16fa15449c930bf3a7761d3c68f8abf9/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
+## Copying &#39;../renv/library/R-4.3/aarch64-apple-darwin20/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
+## Copying &#39;../renv/library/R-4.3/aarch64-apple-darwin20/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
 ## -- Building home ---------------------------------------------------------------
 ## Writing &#39;authors.html&#39;
 ## Reading &#39;LICENSE.md&#39;

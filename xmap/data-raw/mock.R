@@ -31,15 +31,15 @@ mock$xmap_abc <- tibble::tribble(
 
 mock$named_aus <- list(AUS = c("AU-NSW", "AU-QLD", "AU-SA", "AU-TAS", "AU-VIC", "AU-WA", "AU-ACT", "AU-NT"))
 mock$df_aus_pop <- tibble::tribble(
-                              ~state_name,    ~state,    ~pop,
-                   "New South Wales", "AU-NSW", 8153600,
-                          "Victoria", "AU-VIC", 6613700,
-                        "Queensland", "AU-QLD", 5322100,
-                   "South Australia",  "AU-SA", 1820500,
-                 "Western Australia",  "AU-WA", 2785300,
-                          "Tasmania", "AU-TAS",  571500,
-                "Northern Territory",  "AU-NT",  250600,
-      "Australian Capital Territory", "AU-ACT",  456700
+  ~state_name, ~state, ~pop,
+  "New South Wales", "AU-NSW", 8153600,
+  "Victoria", "AU-VIC", 6613700,
+  "Queensland", "AU-QLD", 5322100,
+  "South Australia", "AU-SA", 1820500,
+  "Western Australia", "AU-WA", 2785300,
+  "Tasmania", "AU-TAS", 571500,
+  "Northern Territory", "AU-NT", 250600,
+  "Australian Capital Territory", "AU-ACT", 456700
 ) |>
   dplyr::mutate(ctr = "AUS")
 usethis::use_data(mock)

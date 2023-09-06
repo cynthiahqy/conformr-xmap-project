@@ -29,9 +29,11 @@ library(ggplot2)
 library(ggraph)
 library(tidygraph)
 library(xmap)
-df <- data.frame(from = c("A", "A", "B", "B", "B"),
-                 to = c("X", "Y", "X", "Y", "Z"),
-                 weights = c(0.6, 0.4, 0.2, 0.7, 0.1))
+df <- data.frame(
+  from = c("A", "A", "B", "B", "B"),
+  to = c("X", "Y", "X", "Y", "Z"),
+  weights = c(0.6, 0.4, 0.2, 0.7, 0.1)
+)
 xmap <- as_xmap_df(df, from, to, weights)
 autoplot(xmap)
 }
