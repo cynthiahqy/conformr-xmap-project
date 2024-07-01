@@ -1,3 +1,0 @@
-# Package Datasets
-
-Data used in vignettes or examples in the package.
