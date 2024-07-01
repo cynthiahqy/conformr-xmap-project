@@ -1,9 +1,9 @@
-pandoc: 3.1.7
+pandoc: 3.1.11
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   making-xmaps: making-xmaps.html
   vis-xmaps: vis-xmaps.html
   xmap: xmap.html
-last_built: 2023-09-05T03:52Z
+last_built: 2024-07-01T05:44Z
 

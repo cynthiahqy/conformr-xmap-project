@@ -2713,7 +2713,8 @@ link_list |&gt;
 ## 
 ## See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
 ## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <pre><code>## # A tibble: 6 × 3
 ##   target source weights
 ##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
@@ -2854,7 +2855,7 @@ NULL
   abc_links &lt;- data.frame(lower = letters[1:5], upper = LETTERS[1:5], weights = 1)
   testthat::expect_equal(<a href='create-xmap.html#add_weights_unit'>add_weights_unit</a>(abc_pairs), abc_links)
 })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 </div>
 </div>
 <div id="link-properties-vhas_x_" class="section level3">
@@ -2975,9 +2976,9 @@ testthat::test_that(
     testthat::expect_true(<a href='create-xmap.html#vhas_complete_weights'>vhas_complete_weights</a>(df$key1, df$share))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="relation-type-flags" class="section level4">
 <h4>Relation Type Flags</h4>
@@ -3020,7 +3021,7 @@ vhas_collapse &lt;- vhas_1fromM</code></pre>
     testthat::expect_true(vhas_collapse(to_1fromM))
   }
 )</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 </div>
 </div>
 <div id="helper-df-property-checks" class="section level3">
@@ -3183,8 +3184,8 @@ testthat::test_that(&quot;verify_named_*_unique() work as expected&quot;, {
   testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(vdup_values), class = &quot;abort_not_unique&quot;)
   testthat::expect_error(<a href='create-xmap.html#verify_named_all_values_unique'>verify_named_all_values_unique</a>(ldup_values), class = &quot;abort_not_unique&quot;)
 })</code></pre>
-<pre><code>## Test passed 😀</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
 <pre class="r"><code>#&#39; @describeIn abort Abort message for verify_named_matchset_* functions
 #&#39; @export
 <span id='msg_abort_named_matchset'>msg_abort_named_matchset</span> &lt;- function(set_type = c(&quot;names&quot;, &quot;values&quot;),
@@ -3334,7 +3335,7 @@ NULL
     class = &quot;abort_matchset&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😀</code></pre>
 <p>Aliases:</p>
 <pre class="r"><code>#{r verify-named-aliases, send_to=&quot;R/verify_named.R&quot;}
 #&#39; @describeIn verify_named Alias of `<a href='create-xmap.html#verify_named_all_1to1'>verify_named_all_1to1</a>()`
@@ -3395,7 +3396,7 @@ verify_pairs_as_recode_unique &lt;- verify_pairs_all_1to1</code></pre>
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_1to1'>verify_pairs_all_1to1</a>(pairs_1to1, f, t), pairs_1to1)
   testthat::expect_identical(<a href='create-xmap.html#verify_pairs_all_unique'>verify_pairs_all_unique</a>(pairs_1to1, f, t), pairs_1to1)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 <div id="verify-links" class="section level3">
 <h3>Verify: Links</h3>
@@ -3533,7 +3534,7 @@ NULL</code></pre>
     <a href='create-xmap.html#add_weights_prop'>add_weights_prop</a>(recipe, ingredients, grams)
   testthat::expect_equal(recipe_links, recipe_add)
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="verify_links_as_xmap" class="section level3">
 <h3><code><a href='create-xmap.html#verify_links_as_xmap'>verify_links_as_xmap</a>()</code></h3>
@@ -3635,13 +3636,17 @@ vectors</h3>
 </div>
 <div id="xmap_percent-double-class-for-weights" class="section level3">
 <h3><code>xmap_percent</code> double class for weights</h3>
-<pre class="r"><code><span id='new_percent'>new_percent</span> &lt;- function(x = double()) {
+<pre class="r"><code># --- xmap_percent -----------------------------------------------------------
+
+## constructor
+<span id='new_percent'>new_percent</span> &lt;- function(x = double()) {
   if (!is_double(x)) {
     abort(&quot;`x` must be a double vector.&quot;)
   }
   vctrs::new_vctr(x, class = &quot;xmap_percent&quot;)
 }
 
+## helpers
 <span id='percent'>percent</span> &lt;- function(x = double()) {
   x &lt;- vctrs::vec_cast(x, double())
   <a href='create-xmap.html#new_percent'>new_percent</a>(x)
@@ -3651,6 +3656,7 @@ vectors</h3>
   inherits(x, &quot;xmap_percent&quot;)
 }
 
+## printing
 <span id='format.xmap_percent'>format.xmap_percent</span> &lt;- function(x, ...) {
   out &lt;- formatC(signif(vctrs::vec_data(x) * 100, 3))
   out[is.na(x)] &lt;- NA
@@ -3660,7 +3666,15 @@ vectors</h3>
 
 <span id='vec_ptype_abbr.xmap_percent'>vec_ptype_abbr.xmap_percent</span> &lt;- function(x, ...) {
   &quot;pct&quot;
-}</code></pre>
+}
+
+## casting and coercion
+<span id='vec_ptype2.xmap_percent.double'>vec_ptype2.xmap_percent.double</span> &lt;- function(x, y, ...) double()
+<span id='vec_ptype2.double.xmap_percent'>vec_ptype2.double.xmap_percent</span> &lt;- function(x, y, ...) double()
+
+<span id='vec_cast.xmap_percent.xmap_percent'>vec_cast.xmap_percent.xmap_percent</span> &lt;- function(x, to, ...) x
+<span id='vec_cast.xmap_percent.double'>vec_cast.xmap_percent.double</span> &lt;- function(x, to, ...) <a href='create-xmap.html#percent'>percent</a>(x)
+<span id='vec_cast.double.xmap_percent'>vec_cast.double.xmap_percent</span> &lt;- function(x, to, ...) vec_data(x)</code></pre>
 <pre class="r"><code>x &lt;- <a href='create-xmap.html#new_percent'>new_percent</a>(c(seq(0, 1, length.out = 4), NA))
 
 tibble::tibble(x)
@@ -3699,7 +3713,7 @@ str(x)</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>() rejects unknown subclass&quot;, {
   testthat::expect_error(<a href='create-xmap.html#.calc_xmap_subclass_attr'>.calc_xmap_subclass_attr</a>(&quot;unknown&quot;))
 })</code></pre>
-<pre><code>## Test passed 🥇</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 <div id="construct-from-links-data-frame" class="section level3">
 <h3>Construct From Links Data Frame</h3>
@@ -3791,7 +3805,7 @@ NULL
     testthat::expect_identical(xmap_attrs$from_set, unique(df$x))
   }
 )</code></pre>
-<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <p>Snapshot tests don’t work in litr</p>
 <pre class="r"><code>testthat::test_that(
   &quot;<a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>() rejects incorrect object types&quot;,
@@ -3850,7 +3864,7 @@ NULL
     class = &quot;abort_col_order&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 <div id="from-set-check" class="section level4">
 <h4>From Set Check</h4>
@@ -4074,12 +4088,12 @@ testthat::test_that(
     )
   }
 )</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 😸</code></pre>
 <pre><code>## Test passed 🥇</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
-<pre><code>## Test passed 😸</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
 </div>
 </div>
 </div>
@@ -4225,7 +4239,7 @@ via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</co
 ## i To silence set `.drop_extra = TRUE`
 ## Dropping any additional columns in `tbl_links`
 ## i To silence set `.drop_extra = TRUE`</code></pre>
-<pre><code>## Test passed 😀</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 </div>
 <div id="conversion" class="section level2">
@@ -4307,7 +4321,7 @@ via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</co
 
   testthat::expect_identical(xmap_matrix_small, xmap_matrix_extra)
 })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 🎊</code></pre>
 </div>
 </div>
 <div id="to-list" class="section level3">
@@ -4425,7 +4439,7 @@ via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</co
     class = &quot;abort_frac_weights&quot;
   )
 })</code></pre>
-<pre><code>## Test passed 🌈</code></pre>
+<pre><code>## Test passed 😸</code></pre>
 <pre class="r"><code>testthat::test_that(&quot;<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>() reverses <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>()&quot;, {
   link_list &lt;- list(
     AA = c(&quot;x3&quot;, &quot;x4&quot;, &quot;x6&quot;),
@@ -4441,7 +4455,7 @@ via <code><a href='create-xmap.html#validate_xmap_df'>validate_xmap_df</a>()</co
     <a href='create-xmap.html#new_xmap_df'>new_xmap_df</a>(&quot;xvars&quot;, &quot;capital&quot;, &quot;w&quot;)
   testthat::expect_identical(<a href='create-xmap.html#xmap_to_named_list'>xmap_to_named_list</a>(link_xmap), link_list)
 })</code></pre>
-<pre><code>## Test passed 😸</code></pre>
+<pre><code>## Test passed 🥇</code></pre>
 <p>with dplyr:</p>
 <pre class="r"><code>pairs_df &lt;-
   <a href='create-xmap.html#as_pairs_from_named'>as_pairs_from_named</a>(
@@ -4593,7 +4607,7 @@ pairs_df |&gt;
   testthat::expect_identical(<a href='create-xmap.html#xmap_reverse.xmap_df'>xmap_reverse.xmap_df</a>(df_x), df_x_rev)
   testthat::expect_identical(<a href='create-xmap.html#abort_not_reversible'>abort_not_reversible</a>(df_x, &quot;to&quot;), df_x)
 })</code></pre>
-<pre><code>## Test passed 🥳</code></pre>
+<pre><code>## Test passed 🎉</code></pre>
 </div>
 <div id="helper-xmap_drop_extra" class="section level3">
 <h3>Helper: <code><a href='create-xmap.html#xmap_drop_extra'>xmap_drop_extra</a>()</code></h3>
@@ -4634,7 +4648,7 @@ pairs_df |&gt;
 
   testthat::expect_identical(xmap_small, xmap_drop)
 })</code></pre>
-<pre><code>## Test passed 🎊</code></pre>
+<pre><code>## Test passed 🥳</code></pre>
 </div>
 </div>
 <div id="summarise" class="section level2">
@@ -4686,8 +4700,8 @@ from_degree |&gt;
 ##     xmap_to_named_vector</code></pre>
 <pre><code>## Warning: `bindFillRole()` only works on htmltools::tag() objects (e.g., div(),
 ## p(), etc.), not objects of type &#39;shiny.tag.list&#39;.</code></pre>
-<div id="htmlwidget-d0720904ebaa7a602dbd" class="reactable html-widget " style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-d0720904ebaa7a602dbd">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-628361bf50b82fa7afc2" class="reactable html-widget " style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-628361bf50b82fa7afc2">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"lower":["d","d","d","a","b","c"],"upper":["CC","DD","EE","AA","BB","BB"],"share":[0.3,0.6,0.1,1,1,1]},"columns":[{"accessor":"lower","name":"lower","type":"character"},{"accessor":"upper","name":"upper","type":"character"},{"accessor":"share","name":"share","type":"numeric"}],"pivotBy":["upper"],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"01ec7df72b5b44e57636db144ab042be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code><span id='summary_reactable'>summary_reactable</span> &lt;- function(.xmap) {
   col_attrs &lt;- <a href='create-xmap.html#.get_col_attrs.xmap_df'>.get_col_attrs.xmap_df</a>(.xmap)
   .xmap |&gt;
@@ -5352,11 +5366,11 @@ mock$xmap_abc |&gt;
 <p>NULL</p>
 <p>Test Prints:</p>
 <pre class="r"><code></code></pre>
-<pre><code>## Dropping any additional columns in `dplyr::mutate(tibble::tribble(~new_sec, ~sector,
-## ~weight, &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;, 1, &quot;text&quot;, `, `
-## &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, ` &quot;elec&quot;, &quot;MANU&quot;, 0.25,
-## &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3, &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col =
-## &quot;stuff&quot;)`
+<pre><code>## Dropping any additional columns in `dplyr::mutate(tibble::tribble(~new_sec,
+## ~sector, ~weight, &quot;mining&quot;, `, ` &quot;MINE&quot;, 1, &quot;agri&quot;, &quot;AGRI&quot;, 1, &quot;agri&quot;, &quot;FISH&quot;,
+## 1, &quot;text&quot;, `, ` &quot;MANU&quot;, 0.25, &quot;food&quot;, &quot;MANU&quot;, 0.25, &quot;chem&quot;, &quot;MANU&quot;, 0.25, `, `
+## &quot;elec&quot;, &quot;MANU&quot;, 0.25, &quot;build&quot;, &quot;CONS&quot;, 1/3, &quot;roads&quot;, &quot;CONS&quot;, `, and ` 1/3,
+## &quot;civil&quot;, &quot;CONS&quot;, 1/3, ), extra_col = &quot;stuff&quot;)`
 ## ℹ To silence set `.drop_extra = TRUE`</code></pre>
 <pre><code>## xmap_df:
 ## recode, split, and collapse  
@@ -5505,8 +5519,8 @@ print(valid_xmap_df)</code></pre>
 <pre><code>## ✔ Adding &#39;^_pkgdown\\.yml$&#39;, &#39;^docs$&#39;, &#39;^pkgdown$&#39; to &#39;.Rbuildignore&#39;</code></pre>
 <pre><code>## -- Installing package into temporary library -----------------------------------
 ## == Building pkgdown site =======================================================
-## Reading from: &#39;/Users/chua0032/Library/CloudStorage/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap&#39;
-## Writing to:   &#39;/Users/chua0032/Library/CloudStorage/Dropbox/WORK/PROJECTS/conformr-xmap-project/xmap/docs&#39;
+## Reading from: &#39;/Users/chua0032/Library/CloudStorage/Dropbox/WORK/PROJECTS/CROSSMAPS/conformr-xmap-project/xmap&#39;
+## Writing to:   &#39;/Users/chua0032/Library/CloudStorage/Dropbox/WORK/PROJECTS/CROSSMAPS/conformr-xmap-project/xmap/docs&#39;
 ## -- Initialising site -----------------------------------------------------------
 ## Copying &#39;../renv/library/R-4.3/aarch64-apple-darwin20/pkgdown/BS5/assets/link.svg&#39; to &#39;link.svg&#39;
 ## Copying &#39;../renv/library/R-4.3/aarch64-apple-darwin20/pkgdown/BS5/assets/pkgdown.js&#39; to &#39;pkgdown.js&#39;
